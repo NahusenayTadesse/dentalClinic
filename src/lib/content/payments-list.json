@@ -1,0 +1,61 @@
+{
+	"match": "/dashboard/payments",
+	"languages": {
+		"en": {
+			"title": "Payment Collections",
+			"summary": "The money that actually arrived from your customers, checked against the bank before it counts.",
+			"sections": [
+				{
+					"heading": "The tabs",
+					"body": "• Add New Payment Collection — record money received\n• Pending Payments — recorded, waiting to be checked against the bank\n• Approved Payments — confirmed as received\n• Cancelled Payments — rejected or withdrawn, with the reason\n\nApproving a collection is a statement that the money is genuinely in the account. Approving from the paperwork alone is exactly the habit this queue exists to prevent."
+				},
+				{
+					"heading": "What is on a collection",
+					"body": "• Site, service, and the month and year it covers\n• Request amount — what was billed\n• Before VAT, VAT, Payment amount\n• Withhold amount and its invoice number\n• Penalty amount, where one applies\n• FS number, invoice number, payment method\n• The request file, the withholding certificate and the receipt"
+				},
+				{
+					"heading": "VAT is a rate, not an amount",
+					"body": "The VAT column holds the percentage, not the birr figure. Adding that column up gives you a sum of percentages, which means nothing.\n\nTake VAT from the reports, which derive it properly from the amount before VAT. The same applies to the CSV export — the VAT column there is the rate too."
+				},
+				{
+					"heading": "Recording one",
+					"body": "1. Pick the site and the contract the money is against.\n2. Enter the amount received and the date it arrived — the date it arrived, not the date you are typing.\n3. Pick the payment method and the bank account it landed in.\n4. Enter the VAT rate, and the withholding amount, invoice number and certificate if the customer withheld tax.\n5. Attach the receipt or the bank advice, and save.\n\nWithholding is the customer paying part of your tax on your behalf. Without the certificate on file, the amount cannot be claimed."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Billing",
+					"href": "/dashboard/help#section-billing"
+				}
+			]
+		},
+		"am": {
+			"title": "የክፍያ አሰባሰብ",
+			"summary": "ከደንበኞች በትክክል የገባው ገንዘብ፤ ከመቆጠሩ በፊት ከባንክ ጋር ይመሳከራል።",
+			"sections": [
+				{
+					"heading": "ትሮቹ",
+					"body": "• አዲስ ክፍያ መመዝገብ — የገባውን ገንዘብ መመዝገብ\n• በመጠባበቅ ላይ ያሉ — ተመዝግበው ከባንክ ጋር መመሳከር የሚጠብቁ\n• የጸደቁ — መግባታቸው የተረጋገጠ\n• የተሰረዙ — ውድቅ የተደረጉ ወይም የተነሱ፤ ምክንያቱ ተመዝግቦ\n\nክፍያን ማጽደቅ ገንዘቡ በእርግጥ በሒሳቡ ውስጥ መኖሩን መመስከር ነው። በወረቀት ብቻ ማጽደቅ ይህ ወረፋ ሊከላከለው የተቋቋመው ልማድ ነው።"
+				},
+				{
+					"heading": "በአንድ ክፍያ ላይ ያለው",
+					"body": "• ጣቢያ፣ አገልግሎት፣ የሚሸፍነው ወርና ዓመት\n• የተጠየቀው መጠን\n• ከተጨማሪ እሴት ታክስ በፊት፣ ተጨማሪ እሴት ታክስ፣ የተከፈለው መጠን\n• ተቀናሽ ግብር መጠንና የደረሰኝ ቁጥሩ\n• የቅጣት መጠን፣ ሲኖር\n• የFS ቁጥር፣ የደረሰኝ ቁጥር፣ የክፍያ ዘዴ\n• የጥያቄ ፋይል፣ የተቀናሽ ግብር ማስረጃና ደረሰኝ"
+				},
+				{
+					"heading": "ተጨማሪ እሴት ታክስ መጠን እንጂ ብር አይደለም",
+					"body": "የተጨማሪ እሴት ታክስ ዓምድ የሚይዘው መቶኛውን እንጂ የብር አኃዙን አይደለም። ያንን ዓምድ መደመር የመቶኛዎች ድምር ይሰጣል፤ ትርጉምም የለውም።\n\nየተጨማሪ እሴት ታክስ አኃዝ ከሪፖርቶች ይውሰዱ፤ እነሱ ከግብር በፊት ካለው መጠን በትክክል ያሰሉታል። ወደ CSV ሲወጣም ተመሳሳይ ነው።"
+				},
+				{
+					"heading": "ክፍያ መመዝገብ",
+					"body": "1. ገንዘቡ የሚመለከተውን ጣቢያና ኮንትራት ይምረጡ።\n2. የገባውን መጠንና የገባበትን ቀን ያስገቡ — የሚተይቡበትን ሳይሆን የገባበትን ቀን።\n3. የክፍያ ዘዴውንና የገባበትን የባንክ ሒሳብ ይምረጡ።\n4. የተጨማሪ እሴት ታክስ መጠን ያስገቡ፤ ደንበኛው ግብር ቀንሶ ከሆነም መጠኑን፣ የደረሰኝ ቁጥሩንና ማስረጃውን ያስገቡ።\n5. ደረሰኙን ወይም የባንክ ማስረጃውን አያይዘው ያስቀምጡ።\n\nተቀናሽ ግብር ማለት ደንበኛው የግብርዎን ከፊል በእርስዎ ስም መክፈሉ ነው። ማስረጃው ካልተያዘ መጠኑ ሊጠየቅ አይችልም።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ክፍያ",
+					"href": "/dashboard/help#section-billing"
+				}
+			]
+		}
+	}
+}

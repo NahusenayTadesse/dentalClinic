@@ -1,0 +1,45 @@
+{
+	"match": "/dashboard/sites/add-site",
+	"languages": {
+		"en": {
+			"title": "Add Site",
+			"summary": "Create a location under a customer. This is the anchor for staffing, stock and billing.",
+			"sections": [
+				{
+					"heading": "What to fill in",
+					"body": "• Customer — the organisation it belongs to. This is the part that is expensive to get wrong: moving a site to a different customer after a year of invoices is a great deal of work.\n• Name — how the site is known internally and on invoices\n• Address and contact details\n\nOne customer can have many sites. A bank with twelve branches is one customer and twelve sites."
+				},
+				{
+					"heading": "After saving",
+					"body": "The site is created as pending and waits for approval before contracts can be written against it.\n\nOnce it is live, it is what employees are assigned to, what attendance is taken against, what supplies are leased to, and what the monthly payment request is raised for."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Customers, sites and contracts",
+					"href": "/dashboard/help#section-commercial"
+				}
+			]
+		},
+		"am": {
+			"title": "ጣቢያ መጨመር",
+			"summary": "በደንበኛ ሥር ቦታ መፍጠሪያ። የሠራተኛ ምደባ፣ የግብዓትና የክፍያ መሠረት ነው።",
+			"sections": [
+				{
+					"heading": "የሚሞላው",
+					"body": "• ደንበኛ — የሚገባበት ድርጅት። ስህተት ቢሆን ለማረም ውድ የሚሆነው ይህ ነው፦ ከዓመት ደረሰኞች በኋላ ጣቢያን ወደ ሌላ ደንበኛ ማዛወር በጣም አድካሚ ነው።\n• ስም — ጣቢያው በውስጥም በደረሰኝም የሚታወቅበት\n• አድራሻና የመገናኛ መረጃ\n\nአንድ ደንበኛ ብዙ ጣቢያ ሊኖረው ይችላል። አሥራ ሁለት ቅርንጫፍ ያለው ባንክ አንድ ደንበኛና አሥራ ሁለት ጣቢያ ነው።"
+				},
+				{
+					"heading": "ካስቀመጡ በኋላ",
+					"body": "ጣቢያው በመጠባበቅ ላይ ሆኖ ይፈጠራል፤ ኮንትራት ከመጻፉ በፊትም መጽደቅ አለበት።\n\nሥራ ላይ ከዋለ በኋላ ሠራተኞች የሚመደቡበት፣ የመገኘት መዝገብ የሚያዝበት፣ ግብዓት የሚከራይለትና ወርሃዊ የክፍያ ጥያቄ የሚቀርብለት ይሆናል።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ደንበኞች፣ ጣቢያዎችና ኮንትራቶች",
+					"href": "/dashboard/help#section-commercial"
+				}
+			]
+		}
+	}
+}

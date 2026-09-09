@@ -1,0 +1,61 @@
+{
+	"match": "/dashboard/salary/add-payroll",
+	"languages": {
+		"en": {
+			"title": "Unpaid Salaries — Running Payroll",
+			"summary": "The payroll sheet for one month. Check it, choose the bank, attach the receipt, run it.",
+			"sections": [
+				{
+					"heading": "Before you press run",
+					"body": "1. The month's attendance is entered.\n2. Every new hire has been approved — a pending employee cannot be paid.\n3. Overtime for the month is entered.\n4. Deductions for the month are entered.\n\nAnything added after the run is not in it. The order is what makes the month reconcile."
+				},
+				{
+					"heading": "Running it",
+					"body": "1. Check the totals panel: gross, tax, pension (employee and employer), transport, housing and position allowances, deductions, net.\n2. Choose the bank account the money leaves from.\n3. Set the payment date.\n4. Attach the transfer receipt — this is what reconciles the payroll to the bank statement later.\n5. Press Run payroll.\n\nThe run, every payslip and the bank transaction are written together as one transaction. If anything fails, nothing is written: you will never find half a month paid."
+				},
+				{
+					"heading": "If it refuses or looks short",
+					"body": "• Unapproved employees are refused and the message names how many. Approve them in the Employees queue, then run again for the remainder.\n• A total that looks light is usually a missing overtime or deduction entry, or an employee still pending.\n• Once the run exists it waits in the Payroll Runs approval queue before it counts."
+				},
+				{
+					"heading": "By site",
+					"body": "UnPaid Salaries by Site is the same sheet, one site at a time, so one site's payroll can be closed while another is still being checked. Overtime and deductions can be entered per site from there too."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Payroll and finance",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		},
+		"am": {
+			"title": "ያልተከፈሉ ደመወዞች — ደመወዝ ማስኬድ",
+			"summary": "የአንድ ወር የደመወዝ ሉህ። ያረጋግጡ፣ ባንክ ይምረጡ፣ ደረሰኝ ያያይዙ፣ ያስኪዱ።",
+			"sections": [
+				{
+					"heading": "ከማስኬድዎ በፊት",
+					"body": "1. የወሩ የመገኘት መዝገብ ገብቷል።\n2. አዲስ ተቀጣሪዎች ሁሉ ጸድቀዋል — ያልጸደቀ ሠራተኛ ክፍያ አይፈጸምለትም።\n3. የወሩ ትርፍ ሰዓት ገብቷል።\n4. የወሩ ተቀናሾች ገብተዋል።\n\nከክፍያው በኋላ የተጨመረ ማንኛውም ነገር አልተካተተም። ወሩ እንዲመሳከር የሚያደርገው ይህ ቅደም ተከተል ነው።"
+				},
+				{
+					"heading": "ማስኬድ",
+					"body": "1. የድምር ክፍሉን ይመልከቱ፦ ጠቅላላ፣ ግብር፣ ጡረታ (የሠራተኛና የድርጅት)፣ የትራንስፖርት፣ የቤትና የሥራ መደብ አበሎች፣ ተቀናሾች፣ የተጣራ።\n2. ገንዘቡ የሚወጣበትን የባንክ ሒሳብ ይምረጡ።\n3. የክፍያ ቀን ያስቀምጡ።\n4. የዝውውር ደረሰኝ ያያይዙ — በኋላ ደመወዙን ከባንክ መግለጫ ጋር የሚያመሳክረው ይኸው ነው።\n5. Run payroll ይጫኑ።\n\nክፍያው፣ እያንዳንዱ የደመወዝ ወረቀትና የባንክ ግብይቱ በአንድ ግብይት አብረው ይመዘገባሉ። አንድ ነገር ቢሳሳት ምንም አይመዘገብም፦ ግማሽ የተከፈለ ወር አያገኙም።"
+				},
+				{
+					"heading": "ካልተቀበለ ወይም ያነሰ ከመሰለ",
+					"body": "• ያልጸደቁ ሠራተኞች አይካተቱም፤ መልእክቱም ስንት እንደሆኑ ይነግርዎታል። በሠራተኞች ወረፋ ውስጥ አጽድቀው ለቀሪው እንደገና ያስኪዱ።\n• ያነሰ የመሰለ ድምር አብዛኛውን ጊዜ ያልገባ ትርፍ ሰዓት ወይም ተቀናሽ፣ ወይም ገና ያልጸደቀ ሠራተኛ ነው።\n• ክፍያው ከተፈጠረ በኋላ ከመቆጠሩ በፊት በደመወዝ ማጽደቅ ወረፋ ውስጥ ይጠብቃል።"
+				},
+				{
+					"heading": "በጣቢያ",
+					"body": "UnPaid Salaries by Site ያው ሉህ ሆኖ በአንድ ጊዜ አንድ ጣቢያ ነው፤ ስለዚህ የአንዱ ጣቢያ ደመወዝ ሲዘጋ ሌላው እየተመረመረ ሊሆን ይችላል። ትርፍ ሰዓትና ተቀናሾችም ከዚያ በጣቢያ ሊገቡ ይችላሉ።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ደመወዝና ፋይናንስ",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		}
+	}
+}

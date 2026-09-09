@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/reports/compensation",
+	"languages": {
+		"en": {
+			"title": "Compensation Report",
+			"summary": "The variable pay around the basic salary.",
+			"sections": [
+				{
+					"heading": "What it covers",
+					"body": "Ledgers: Bonuses, Overtime, Commissions, Deductions.\n\nEverything added to or taken off a payslip that is not the basic salary and its standing allowances."
+				},
+				{
+					"heading": "Using it",
+					"body": "Overtime rates come from the overtime type, set in Admin Panel → Overtime Types, so a figure that looks wrong is usually the type rather than the entry.\n\nFilter to a site or a department to see where the overtime is actually being worked.\n\nNeeds the reports.finance permission."
+				},
+				{
+					"heading": "Every report works the same way",
+					"body": "Set the date range and the filters at the top — both ends of the range are included, and the query follows you when you move to another report. Choose a section below the charts to load the rows behind them, then filter, print or export that table like any other in the system."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Reports",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		},
+		"am": {
+			"title": "የካሳ ሪፖርት",
+			"summary": "ከመሠረታዊ ደመወዝ ውጪ ያሉ ተለዋዋጭ ክፍያዎች።",
+			"sections": [
+				{
+					"heading": "የሚሸፍነው",
+					"body": "መዝገቦች፦ ጉርሻዎች፣ ትርፍ ሰዓት፣ ኮሚሽኖች፣ ተቀናሾች።\n\nከመሠረታዊ ደመወዝና ከቋሚ አበሎች ውጪ በደመወዝ ወረቀት ላይ የሚጨመር ወይም የሚቀነስ ሁሉ።"
+				},
+				{
+					"heading": "አጠቃቀም",
+					"body": "የትርፍ ሰዓት መጠኖች ከትርፍ ሰዓት ዓይነቱ ይመጣሉ፤ እሱም በAdmin Panel → Overtime Types ይቀመጣል፤ ስለዚህ ስህተት የመሰለ አኃዝ አብዛኛውን ጊዜ የመዝገቡ ሳይሆን የዓይነቱ ጉዳይ ነው።\n\nትርፍ ሰዓቱ በእርግጥ የት እየተሠራ እንደሆነ ለማየት በጣቢያ ወይም በክፍል ያጣሩ።\n\nየreports.finance ፈቃድ ይፈልጋል።"
+				},
+				{
+					"heading": "ሁሉም ሪፖርቶች በአንድ መንገድ ይሠራሉ",
+					"body": "ከላይ የቀን ክልሉንና ማጣሪያዎቹን ያስቀምጡ — ሁለቱም ጫፎች ይካተታሉ፤ ወደ ሌላ ሪፖርት ሲሄዱም መጠይቁ አብሮ ይመጣል። ከገበታዎቹ በታች ያለውን ክፍል መርጠው ከበስተጀርባ ያሉትን መስመሮች ይጫኑ፤ ከዚያ እንደማንኛውም ሠንጠረዥ ያጣሩ፣ ያትሙ ወይም ወደ ውጭ ያውጡ።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሪፖርቶች",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		}
+	}
+}

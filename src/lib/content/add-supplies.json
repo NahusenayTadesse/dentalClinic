@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/supplies/add-supplies",
+	"languages": {
+		"en": {
+			"title": "Add Supply",
+			"summary": "Register an item, or a new purchase of one you already hold.",
+			"sections": [
+				{
+					"heading": "What to fill in",
+					"body": "• Name and description\n• Type — from Admin Panel → Supply Types. If the type you need is missing, add it there first.\n• Quantity and unit cost\n• Supplier\n• Reorder level — the point at which the item starts appearing on the dashboard"
+				},
+				{
+					"heading": "Setting the reorder level",
+					"body": "Set it to cover the time it really takes to get more, not to zero. An alert that fires on the day you run out is not an alert.\n\nIf an item keeps running out without ever appearing in \"Supplies to reorder\", its reorder level is too low."
+				},
+				{
+					"heading": "After saving",
+					"body": "The item appears in Stock Levels with its four figures: on hand, reserved, leased out and available. Reserved and leased out are worked out from the leases, so they will be zero until the item is leased to a site."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Supplies and leases",
+					"href": "/dashboard/help#section-supplies"
+				}
+			]
+		},
+		"am": {
+			"title": "ግብዓት መጨመር",
+			"summary": "አዲስ ዕቃ ወይም አስቀድመው የያዙትን ዕቃ አዲስ ግዢ መመዝገቢያ።",
+			"sections": [
+				{
+					"heading": "የሚሞላው",
+					"body": "• ስምና መግለጫ\n• ዓይነት — ከAdmin Panel → Supply Types። የሚፈልጉት ዓይነት ከሌለ መጀመሪያ እዚያ ይጨምሩት።\n• መጠንና የአንዱ ዋጋ\n• አቅራቢ\n• የዳግም ትዕዛዝ ደረጃ — ዕቃው በዳሽቦርድ ላይ መታየት የሚጀምርበት ነጥብ"
+				},
+				{
+					"heading": "የዳግም ትዕዛዝ ደረጃ ማስቀመጥ",
+					"body": "ደረጃውን አዲስ ዕቃ እስኪመጣ ባለው ጊዜ ልክ ያስቀምጡ እንጂ ዜሮ አያድርጉት። ዕቃው በሚያልቅበት ቀን የሚነሳ ማንቂያ ማንቂያ አይደለም።\n\nአንድ ዕቃ \"እንደገና መታዘዝ ያለባቸው\" ውስጥ ሳይታይ ደጋግሞ የሚያልቅ ከሆነ የዳግም ትዕዛዝ ደረጃው በጣም ዝቅተኛ ነው።"
+				},
+				{
+					"heading": "ካስቀመጡ በኋላ",
+					"body": "ዕቃው በክምችት ደረጃ ውስጥ ከአራቱ አኃዞቹ ጋር ይታያል፦ በእጅ ያለ፣ የተያዘ፣ የተከራየና ነፃ። የተያዘውና የተከራየው ከኪራዮች ስለሚሰሉ ዕቃው ለጣቢያ እስኪከራይ ድረስ ዜሮ ይሆናሉ።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ግብዓቶችና ኪራዮች",
+					"href": "/dashboard/help#section-supplies"
+				}
+			]
+		}
+	}
+}

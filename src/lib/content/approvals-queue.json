@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/approvals/",
+	"languages": {
+		"en": {
+			"title": "Settling an Approval Queue",
+			"summary": "Read the rows, tick what you have decided on, and approve or reject with a reason.",
+			"sections": [
+				{
+					"heading": "How to work through it",
+					"body": "1. Read the rows. Columns that point at another record are links — open the site, the contract or the employee behind a row before deciding.\n2. Tick the rows you have decided on. The box in the header takes the whole page at once.\n3. Press Approve, or press Reject and give a reason.\n\nA rejection without a reason is refused. The reason becomes part of the record's permanent history and shows on the rejections desk."
+				},
+				{
+					"heading": "Bulk approval is still a decision",
+					"body": "Ticking the header box and pressing Approve is a real decision on every row you took. The count in the confirmation message is your check that you took what you meant to.\n\nIf you are not sure about one row, untick it and leave it for a second look. A pending record costs nothing; a wrongly released one has to be unpicked."
+				},
+				{
+					"heading": "When some rows are left behind",
+					"body": "You cannot release your own request. If some of the ticked rows were yours, the rest are still settled and the message tells you exactly how many were left pending and why.\n\nThe one exception is the approvals.override permission, held by very few people. When they release their own request it goes through, and the trail records that the same person did both halves."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Approvals",
+					"href": "/dashboard/help#section-approvals"
+				}
+			]
+		},
+		"am": {
+			"title": "የማጽደቅ ወረፋ መጨረስ",
+			"summary": "መስመሮቹን ያንብቡ፣ የወሰኑበትን ምልክት ያድርጉ፣ ያጽድቁ ወይም ምክንያት ሰጥተው ውድቅ ያድርጉ።",
+			"sections": [
+				{
+					"heading": "እንዴት እንደሚሠራ",
+					"body": "1. መስመሮቹን ያንብቡ። ወደ ሌላ መዝገብ የሚያመለክቱ ዓምዶች አገናኞች ናቸው — ከመወሰንዎ በፊት ከመስመሩ ጀርባ ያለውን ጣቢያ፣ ኮንትራት ወይም ሠራተኛ ይክፈቱ።\n2. የወሰኑባቸውን መስመሮች ምልክት ያድርጉ። በራስጌ ላይ ያለው ሳጥን ገጹን በሙሉ ይይዛል።\n3. Approve ይጫኑ፤ ወይም Reject ጫነው ምክንያት ይስጡ።\n\nምክንያት የሌለው ውድቅ ማድረግ አይፈቀድም። ምክንያቱ የመዝገቡ ቋሚ ታሪክ አካል ሆኖ በውድቅ ማድረጊያ ክፍል ውስጥ ይታያል።"
+				},
+				{
+					"heading": "በጅምላ ማጽደቅም ውሳኔ ነው",
+					"body": "የራስጌውን ሳጥን ምልክት አድርጎ Approve መጫን በያዙት እያንዳንዱ መስመር ላይ እውነተኛ ውሳኔ ነው። በማረጋገጫ መልእክቱ ውስጥ ያለው ቁጥር ያሰቡትን መያዝዎን የሚያረጋግጥልዎት ነው።\n\nስለ አንድ መስመር እርግጠኛ ካልሆኑ ምልክቱን አንስተው ለሌላ ጊዜ ይተውት። በመጠባበቅ ላይ ያለ መዝገብ ምንም አያስከፍልም፤ በስህተት የተለቀቀ ግን መፍታት ይጠይቃል።"
+				},
+				{
+					"heading": "አንዳንድ መስመሮች ሲቀሩ",
+					"body": "የራስዎን ጥያቄ መልቀቅ አይችሉም። ምልክት ካደረጓቸው መካከል የእርስዎ ካሉ ቀሪዎቹ ይጠናቀቃሉ፤ መልእክቱም ስንቱ በመጠባበቅ እንደቀረና ለምን እንደሆነ ይነግርዎታል።\n\nብቸኛው ልዩ ሁኔታ በጣም ጥቂት ሰዎች የሚይዙት approvals.override ፈቃድ ነው። እነሱ የራሳቸውን ጥያቄ ሲለቁ ያልፋል፤ መዝገቡም ሁለቱንም ተግባር አንድ ሰው እንዳደረገው ያሳያል።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ማጽደቅ",
+					"href": "/dashboard/help#section-approvals"
+				}
+			]
+		}
+	}
+}

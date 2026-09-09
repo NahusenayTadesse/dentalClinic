@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/reports/system",
+	"languages": {
+		"en": {
+			"title": "System Report",
+			"summary": "The audit log: who did what, and when.",
+			"sections": [
+				{
+					"heading": "What it covers",
+					"body": "Ledger: Audit Log.\n\nA record of what happened in the system, readable by the people responsible for it."
+				},
+				{
+					"heading": "Using it",
+					"body": "Most \"who did this\" questions are answered faster by the System Information panel at the bottom of the record itself. Come here for a change you cannot account for, or a sequence of events you need in order.\n\nNeeds the audit_logs.view permission."
+				},
+				{
+					"heading": "Every report works the same way",
+					"body": "Set the date range and the filters at the top — both ends of the range are included, and the query follows you when you move to another report. Choose a section below the charts to load the rows behind them, then filter, print or export that table like any other in the system."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Reports",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		},
+		"am": {
+			"title": "የሲስተም ሪፖርት",
+			"summary": "የክትትል መዝገብ፦ ማን ምን አደረገ፣ መቼ።",
+			"sections": [
+				{
+					"heading": "የሚሸፍነው",
+					"body": "መዝገብ፦ የክትትል መዝገብ።\n\nበሲስተሙ ውስጥ የተከናወነው ሁሉ መዝገብ፤ ኃላፊነት ላለባቸው ሰዎች የሚነበብ።"
+				},
+				{
+					"heading": "አጠቃቀም",
+					"body": "አብዛኞቹ \"ይህን ማን አደረገው\" ጥያቄዎች በመዝገቡ ግርጌ ባለው የሲስተም መረጃ ክፍል በፍጥነት ይመለሳሉ። እዚህ የሚመጡት ሊያብራሩት ላልቻሉት ለውጥ ወይም በቅደም ተከተል ለሚያስፈልግዎት ተከታታይ ክስተት ነው።\n\nየaudit_logs.view ፈቃድ ይፈልጋል።"
+				},
+				{
+					"heading": "ሁሉም ሪፖርቶች በአንድ መንገድ ይሠራሉ",
+					"body": "ከላይ የቀን ክልሉንና ማጣሪያዎቹን ያስቀምጡ — ሁለቱም ጫፎች ይካተታሉ፤ ወደ ሌላ ሪፖርት ሲሄዱም መጠይቁ አብሮ ይመጣል። ከገበታዎቹ በታች ያለውን ክፍል መርጠው ከበስተጀርባ ያሉትን መስመሮች ይጫኑ፤ ከዚያ እንደማንኛውም ሠንጠረዥ ያጣሩ፣ ያትሙ ወይም ወደ ውጭ ያውጡ።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሪፖርቶች",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/reports/leave",
+	"languages": {
+		"en": {
+			"title": "Time & Leave Report",
+			"summary": "Attendance, leave taken and leave granted.",
+			"sections": [
+				{
+					"heading": "What it covers",
+					"body": "Ledgers: Attendance, Leaves, Leave Grants.\n\nAttendance is what payroll rests on; leaves are what was taken; grants are the days the accrual added to people's balances."
+				},
+				{
+					"heading": "Using it",
+					"body": "Read this before running payroll, not after — payroll takes attendance as it stands at the moment it runs.\n\nAfter changing an entitlement or running the accrual in Admin Panel, come here and check the Leave Grants ledger to see what actually moved.\n\nNeeds the reports.hr permission."
+				},
+				{
+					"heading": "Every report works the same way",
+					"body": "Set the date range and the filters at the top — both ends of the range are included, and the query follows you when you move to another report. Choose a section below the charts to load the rows behind them, then filter, print or export that table like any other in the system."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Reports",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		},
+		"am": {
+			"title": "የጊዜና ፈቃድ ሪፖርት",
+			"summary": "መገኘት፣ የተወሰደ ፈቃድና የተሰጠ ፈቃድ።",
+			"sections": [
+				{
+					"heading": "የሚሸፍነው",
+					"body": "መዝገቦች፦ መገኘት፣ ፈቃዶች፣ የፈቃድ ስጦታዎች።\n\nመገኘት ደመወዝ የሚመሠረትበት ነው፤ ፈቃዶች የተወሰዱት ናቸው፤ ስጦታዎች ደግሞ ክምችቱ ወደ ሰዎች ሒሳብ የጨመራቸው ቀኖች ናቸው።"
+				},
+				{
+					"heading": "አጠቃቀም",
+					"body": "ይህን ደመወዝ ከማስኪያዎ በፊት ያንብቡ እንጂ በኋላ አይደለም — ደመወዝ የሚወስደው በሚሠራበት ወቅት ያለውን የመገኘት መዝገብ ነው።\n\nበAdmin Panel ውስጥ መብት ከቀየሩ ወይም ክምችት ካስኬዱ በኋላ እዚህ መጥተው የፈቃድ ስጦታዎችን መዝገብ በማየት በትክክል ምን እንደተለወጠ ያረጋግጡ።\n\nየreports.hr ፈቃድ ይፈልጋል።"
+				},
+				{
+					"heading": "ሁሉም ሪፖርቶች በአንድ መንገድ ይሠራሉ",
+					"body": "ከላይ የቀን ክልሉንና ማጣሪያዎቹን ያስቀምጡ — ሁለቱም ጫፎች ይካተታሉ፤ ወደ ሌላ ሪፖርት ሲሄዱም መጠይቁ አብሮ ይመጣል። ከገበታዎቹ በታች ያለውን ክፍል መርጠው ከበስተጀርባ ያሉትን መስመሮች ይጫኑ፤ ከዚያ እንደማንኛውም ሠንጠረዥ ያጣሩ፣ ያትሙ ወይም ወደ ውጭ ያውጡ።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሪፖርቶች",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		}
+	}
+}

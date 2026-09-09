@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/help",
+	"languages": {
+		"en": {
+			"title": "The Help Centre",
+			"summary": "Every screen in the system explained in one searchable place, plus the route map and a printable manual.",
+			"sections": [
+				{
+					"heading": "What is here",
+					"body": "• Ten chapters covering every part of the system, from signing in to backups.\n• A route map: every address in the system, what it is for, and the permission it sits behind.\n• A search box that reads every word of every answer and every route — not just the headings."
+				},
+				{
+					"heading": "Using it",
+					"body": "• Type what you are trying to do. Matching topics open themselves, and sections with nothing in them disappear.\n• With the search empty, use the buttons under it to jump to a chapter, or Expand all to read straight through.\n• Press Download the manual for the whole thing as one document; choose \"Save as PDF\" in the print dialog to keep a copy."
+				},
+				{
+					"heading": "The ? button",
+					"body": "This page is the whole manual. The round ? button in the corner of every screen — or just the ? key — gives you help about the screen you are on, which is usually the faster answer."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Getting started",
+					"href": "/dashboard/help#section-start"
+				}
+			]
+		},
+		"am": {
+			"title": "የእገዛ ማዕከል",
+			"summary": "የሲስተሙ ገጾች በሙሉ በአንድ የሚፈለግ ቦታ ተብራርተው፤ ከመስመር ካርታና ከሚታተም መመሪያ ጋር።",
+			"sections": [
+				{
+					"heading": "እዚህ ያለው",
+					"body": "• ከመግቢያ እስከ ምትኬ ድረስ የሲስተሙን ሁሉንም ክፍል የሚሸፍኑ አሥር ምዕራፎች።\n• የመስመር ካርታ፦ በሲስተሙ ውስጥ ያለ እያንዳንዱ አድራሻ፣ ለምን እንደሆነና በየትኛው ፈቃድ ሥር እንደሆነ።\n• የፍለጋ ሳጥን፦ ራስጌዎችን ብቻ ሳይሆን የእያንዳንዱን መልስና መስመር እያንዳንዱን ቃል ያነባል።"
+				},
+				{
+					"heading": "አጠቃቀም",
+					"body": "• ማድረግ የሚፈልጉትን ይጻፉ። የተገኙት ርዕሶች ራሳቸውን ይከፍታሉ፤ ምንም የሌላቸው ክፍሎችም ይሰወራሉ።\n• የፍለጋ ሳጥኑ ባዶ ሲሆን ከሱ በታች ባሉት ቁልፎች ወደ ምዕራፍ ይሂዱ፤ ወይም Expand all ተጭነው በተከታታይ ያንብቡ።\n• ሁሉንም እንደ አንድ ሰነድ ለማግኘት Download the manual ይጫኑ፤ ቅጂ ለማስቀመጥ በህትመት መስኮት \"Save as PDF\" ይምረጡ።"
+				},
+				{
+					"heading": "የ ? ቁልፍ",
+					"body": "ይህ ገጽ ሙሉው መመሪያ ነው። በእያንዳንዱ ገጽ ጥግ ላይ ያለው ክብ ? ቁልፍ — ወይም በቀላሉ የ ? ቁልፍ — ስለሚገኙበት ገጽ እገዛ ይሰጣል፤ አብዛኛውን ጊዜም ፈጣኑ መልስ ያ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — መጀመሪያ",
+					"href": "/dashboard/help#section-start"
+				}
+			]
+		}
+	}
+}

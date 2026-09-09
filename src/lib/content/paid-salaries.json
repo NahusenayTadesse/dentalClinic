@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/salary/paid-salaries",
+	"languages": {
+		"en": {
+			"title": "Paid Salaries",
+			"summary": "Payslips already paid, month by month — and how to correct one.",
+			"sections": [
+				{
+					"heading": "Reading a month",
+					"body": "Pick the month at the top. Every payslip for it is listed with its gross, tax, pension, allowances, deductions and net.\n\nHide the columns you do not need before printing — payroll is a wide table, and it reads far better with half of it switched off. The print picks landscape paper by itself for wide tables."
+				},
+				{
+					"heading": "Correcting a payslip",
+					"body": "Open the payslip and use Adjust.\n\nAn adjustment is a new record, not an edit. The original payslip stays exactly as it was paid, and the adjustment carries the correction with its own approval — that is what keeps a paid month auditable. Adjustments have their own queue, Payroll adjustments."
+				},
+				{
+					"heading": "Where the totals come from",
+					"body": "The Payroll report holds the same ground for any range: payroll runs, payslips, adjustments, receipts and salary changes, filtered by site, department or person and exportable.\n\nA payroll run's totals are the sum of the payslips under it — if the two disagree, an adjustment is usually the reason."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Payroll and finance",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		},
+		"am": {
+			"title": "የተከፈሉ ደመወዞች",
+			"summary": "አስቀድመው የተከፈሉ የደመወዝ ወረቀቶች በወር በወር — እንዲሁም አንዱን እንዴት ማረም እንደሚቻል።",
+			"sections": [
+				{
+					"heading": "አንድን ወር ማንበብ",
+					"body": "ከላይ ወሩን ይምረጡ። የዚያ ወር እያንዳንዱ የደመወዝ ወረቀት ከጠቅላላ፣ ከግብር፣ ከጡረታ፣ ከአበሎች፣ ከተቀናሾችና ከተጣራ ጋር ይዘረዘራል።\n\nከማተምዎ በፊት የማይፈልጓቸውን ዓምዶች ይደብቁ — ደመወዝ ሰፊ ሠንጠረዥ ነው፤ ግማሹ ሲጠፋ በጣም ይነበባል። ሰፊ ሠንጠረዦችን ሲያትሙ ወረቀቱን ራሱ ይመርጣል።"
+				},
+				{
+					"heading": "የደመወዝ ወረቀት ማረም",
+					"body": "ወረቀቱን ከፍተው Adjust ይጠቀሙ።\n\nማስተካከያ ማረም ሳይሆን አዲስ መዝገብ ነው። የመጀመሪያው ወረቀት እንደተከፈለ ይቀራል፤ ማስተካከያውም የራሱን ማጽደቅ ይዞ እርማቱን ይይዛል — የተከፈለ ወር ሊመረመር የሚችለውም በዚህ ነው። ማስተካከያዎች የራሳቸው ወረፋ አላቸው።"
+				},
+				{
+					"heading": "ድምሮቹ ከየት እንደሚመጡ",
+					"body": "የደመወዝ ሪፖርት ለማንኛውም ክልል ተመሳሳይ መረጃ ይይዛል፦ የደመወዝ ክፍያዎች፣ ወረቀቶች፣ ማስተካከያዎች፣ ደረሰኞችና የደመወዝ ለውጦች፤ በጣቢያ፣ በክፍል ወይም በሰው ተጣርተውና ወደ ውጭ ሊወጡ በሚችሉበት ሁኔታ።\n\nየአንድ ክፍያ ድምር በሱ ሥር ያሉት ወረቀቶች ድምር ነው — ሁለቱ ካልተስማሙ ምክንያቱ አብዛኛውን ጊዜ ማስተካከያ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ደመወዝና ፋይናንስ",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		}
+	}
+}

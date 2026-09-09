@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/reports/people",
+	"languages": {
+		"en": {
+			"title": "People Report",
+			"summary": "The workforce as it stands, and how it changed over the range.",
+			"sections": [
+				{
+					"heading": "What it covers",
+					"body": "Ledgers: Employees, Hires, Terminations.\n\nHeadcount, who joined, who left, and the shape of the workforce by department, position, site, employment status, education and gender."
+				},
+				{
+					"heading": "Using it",
+					"body": "Filter to a site and take the Employees ledger for a roster you can hand to a customer. Filter to a range and take Hires and Terminations for turnover.\n\nNeeds the reports.hr permission."
+				},
+				{
+					"heading": "Every report works the same way",
+					"body": "Set the date range and the filters at the top — both ends of the range are included, and the query follows you when you move to another report. Choose a section below the charts to load the rows behind them, then filter, print or export that table like any other in the system."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Reports",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		},
+		"am": {
+			"title": "የሰዎች ሪፖርት",
+			"summary": "የሠራተኛው ኃይል አሁን ያለበትና በተመረጠው ጊዜ ውስጥ የተለወጠበት መንገድ።",
+			"sections": [
+				{
+					"heading": "የሚሸፍነው",
+					"body": "መዝገቦች፦ ሠራተኞች፣ አዲስ ተቀጣሪዎች፣ የተሰናበቱ።\n\nየሠራተኛ ብዛት፣ የገቡና የወጡ፣ እንዲሁም በክፍል፣ በሥራ መደብ፣ በጣቢያ፣ በቅጥር ሁኔታ፣ በትምህርትና በጾታ ያለው ስብጥር።"
+				},
+				{
+					"heading": "አጠቃቀም",
+					"body": "ለደንበኛ የሚሰጥ ዝርዝር ለማግኘት በጣቢያ አጣርተው የሠራተኞችን መዝገብ ይውሰዱ። የሠራተኛ እንቅስቃሴ ለማየት ደግሞ በጊዜ ክልል አጣርተው አዲስ ተቀጣሪዎችንና የተሰናበቱትን ይውሰዱ።\n\nየreports.hr ፈቃድ ይፈልጋል።"
+				},
+				{
+					"heading": "ሁሉም ሪፖርቶች በአንድ መንገድ ይሠራሉ",
+					"body": "ከላይ የቀን ክልሉንና ማጣሪያዎቹን ያስቀምጡ — ሁለቱም ጫፎች ይካተታሉ፤ ወደ ሌላ ሪፖርት ሲሄዱም መጠይቁ አብሮ ይመጣል። ከገበታዎቹ በታች ያለውን ክፍል መርጠው ከበስተጀርባ ያሉትን መስመሮች ይጫኑ፤ ከዚያ እንደማንኛውም ሠንጠረዥ ያጣሩ፣ ያትሙ ወይም ወደ ውጭ ያውጡ።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሪፖርቶች",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		}
+	}
+}

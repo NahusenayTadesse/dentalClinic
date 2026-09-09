@@ -1,0 +1,61 @@
+{
+	"match": "/dashboard/reports",
+	"languages": {
+		"en": {
+			"title": "Reports",
+			"summary": "Charts and totals on top, the ledger they came from underneath — all answering to one query you set at the top.",
+			"sections": [
+				{
+					"heading": "Set the query first",
+					"body": "Press Filters to open the report query. Everything on the page answers to it.\n\n• Start and end dates — both ends are included, so a range ending today includes everything entered today.\n• Department, Position, Site, Customer, Employment Status, Education, Gender, Employee, Payment Method, Expense Type.\n• A search box over the open ledger, and a page size.\n\nThe badge on the Filters button counts how many narrowings are active. A total that looks wrong is nearly always a scope question — check the range and the filters before anything else."
+				},
+				{
+					"heading": "Your query follows you",
+					"body": "Move between reports with the buttons under the heading and the query comes with you. Set the range and the site once, then read the same slice across People, Payroll, Money and Commercial without setting it again."
+				},
+				{
+					"heading": "The ledger below",
+					"body": "Under the charts you choose a section — payslips, attendance, expenses, contracts, and so on. Only the one you ask for is fetched, which is why the tiles stay fast however much history the range covers.\n\nThe detail table filters, prints and exports like every other table in the system, so a board pack is a matter of choosing the range and pressing the download button."
+				},
+				{
+					"heading": "Who sees which report",
+					"body": "• People and Time & Leave need reports.hr\n• Payroll, Compensation, Money, Stock and the Overview need reports.finance\n• Commercial needs reports.customer_site\n• System needs audit_logs.view\n\nOnly the reports you hold appear in the row of buttons."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Reports",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		},
+		"am": {
+			"title": "ሪፖርቶች",
+			"summary": "ከላይ ገበታዎችና ድምሮች፣ ከታች የመጡበት መዝገብ — ሁሉም ከላይ ላስቀመጡት አንድ መጠይቅ ይመልሳሉ።",
+			"sections": [
+				{
+					"heading": "መጀመሪያ መጠይቁን ያስቀምጡ",
+					"body": "የሪፖርት መጠይቁን ለመክፈት Filters ይጫኑ። በገጹ ላይ ያለው ሁሉ ለሱ ይመልሳል።\n\n• የመጀመሪያና የመጨረሻ ቀን — ሁለቱም ጫፎች ይካተታሉ፤ ስለዚህ ዛሬ የሚያልቅ ክልል ዛሬ የገባውን ሁሉ ይይዛል።\n• ክፍል፣ የሥራ መደብ፣ ጣቢያ፣ ደንበኛ፣ የቅጥር ሁኔታ፣ ትምህርት፣ ጾታ፣ ሠራተኛ፣ የክፍያ ዘዴ፣ የወጪ ዓይነት።\n• በተከፈተው መዝገብ ላይ የሚሠራ የፍለጋ ሳጥንና የገጽ መጠን።\n\nበFilters ቁልፍ ላይ ያለው ምልክት ስንት ማጥበቢያ እንደሠራ ይቆጥራል። ስህተት የመሰለ ድምር ሁልጊዜ ማለት ይቻላል የክልል ጉዳይ ነው — ከሁሉ በፊት ቀኑንና ማጣሪያዎቹን ይመልከቱ።"
+				},
+				{
+					"heading": "መጠይቁ አብሮዎት ይሄዳል",
+					"body": "ከርዕሱ በታች ባሉት ቁልፎች ከሪፖርት ወደ ሪፖርት ሲሄዱ መጠይቁ አብሮ ይመጣል። ክልሉንና ጣቢያውን አንዴ አስቀምጠው በሰዎች፣ በደመወዝ፣ በገንዘብና በንግድ ሪፖርቶች ላይ ያንኑ ክፍል እንደገና ሳያስቀምጡ ያንብቡ።"
+				},
+				{
+					"heading": "ከታች ያለው መዝገብ",
+					"body": "ከገበታዎቹ በታች አንድ ክፍል ይመርጣሉ — የደመወዝ ወረቀቶች፣ የመገኘት መዝገብ፣ ወጪዎች፣ ኮንትራቶች እና የመሳሰሉት። የጠየቁት ብቻ ነው የሚመጣው፤ ክልሉ ምንም ያህል ታሪክ ቢሸፍን ድምሮቹ ፈጣን የሚሆኑትም ለዚህ ነው።\n\nየዝርዝሩ ሠንጠረዥ እንደሌሎቹ ሁሉ ይጣራል፣ ይታተማል፣ ወደ ውጭም ይወጣል፤ ስለዚህ የስብሰባ ሰነድ ማዘጋጀት ክልል መምረጥና ቁልፍ መጫን ብቻ ነው።"
+				},
+				{
+					"heading": "የትኛውን ሪፖርት ማን ያያል",
+					"body": "• ሰዎችና ጊዜ/ፈቃድ reports.hr ይፈልጋሉ\n• ደመወዝ፣ ካሳ፣ ገንዘብ፣ ክምችትና አጠቃላይ እይታ reports.finance ይፈልጋሉ\n• ንግድ reports.customer_site ይፈልጋል\n• ሲስተም audit_logs.view ይፈልጋል\n\nፈቃድ ያለዎት ሪፖርቶች ብቻ በቁልፎቹ ረድፍ ውስጥ ይታያሉ።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሪፖርቶች",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		}
+	}
+}

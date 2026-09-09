@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/reports/commercial",
+	"languages": {
+		"en": {
+			"title": "Commercial Report",
+			"summary": "The customer side: what was billed, what came in, and the contracts behind it.",
+			"sections": [
+				{
+					"heading": "What it covers",
+					"body": "Ledgers: Site Payments, Payment Requests, Contracts, Renewals, Site Penalties, Customers, Sites.\n\nRequests are what you asked for; site payments are what arrived; contracts and renewals are the agreements behind both."
+				},
+				{
+					"heading": "Using it",
+					"body": "Take Payment Requests and Site Payments over the same range and filtered to the same customer, and the gap between them is the arrears conversation you were about to have.\n\nRenewals over a year tell you which customers actually stay.\n\nNeeds the reports.customer_site permission."
+				},
+				{
+					"heading": "Every report works the same way",
+					"body": "Set the date range and the filters at the top — both ends of the range are included, and the query follows you when you move to another report. Choose a section below the charts to load the rows behind them, then filter, print or export that table like any other in the system."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Reports",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		},
+		"am": {
+			"title": "የንግድ ሪፖርት",
+			"summary": "የደንበኛው ጎን፦ የተጠየቀው፣ የገባውና ከበስተጀርባቸው ያሉት ኮንትራቶች።",
+			"sections": [
+				{
+					"heading": "የሚሸፍነው",
+					"body": "መዝገቦች፦ የጣቢያ ክፍያዎች፣ የክፍያ ጥያቄዎች፣ ኮንትራቶች፣ ዕድሳቶች፣ የጣቢያ ቅጣቶች፣ ደንበኞች፣ ጣቢያዎች።\n\nጥያቄዎች የጠየቁት ናቸው፤ የጣቢያ ክፍያዎች የገቡት ናቸው፤ ኮንትራቶችና ዕድሳቶች ደግሞ ከሁለቱም በስተጀርባ ያሉት ውሎች ናቸው።"
+				},
+				{
+					"heading": "አጠቃቀም",
+					"body": "የክፍያ ጥያቄዎችንና የጣቢያ ክፍያዎችን በተመሳሳይ ክልልና ለተመሳሳይ ደንበኛ አጣርተው ይውሰዱ፤ በመካከላቸው ያለው ልዩነት ሊያደርጉት ስላሰቡት የዕዳ ውይይት ይነግርዎታል።\n\nየዓመቱ ዕድሳቶች የትኞቹ ደንበኞች በእርግጥ እንደሚቀጥሉ ያሳያሉ።\n\nየreports.customer_site ፈቃድ ይፈልጋል።"
+				},
+				{
+					"heading": "ሁሉም ሪፖርቶች በአንድ መንገድ ይሠራሉ",
+					"body": "ከላይ የቀን ክልሉንና ማጣሪያዎቹን ያስቀምጡ — ሁለቱም ጫፎች ይካተታሉ፤ ወደ ሌላ ሪፖርት ሲሄዱም መጠይቁ አብሮ ይመጣል። ከገበታዎቹ በታች ያለውን ክፍል መርጠው ከበስተጀርባ ያሉትን መስመሮች ይጫኑ፤ ከዚያ እንደማንኛውም ሠንጠረዥ ያጣሩ፣ ያትሙ ወይም ወደ ውጭ ያውጡ።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሪፖርቶች",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		}
+	}
+}

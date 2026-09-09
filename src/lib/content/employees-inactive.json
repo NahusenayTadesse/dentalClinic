@@ -1,0 +1,45 @@
+{
+	"match": "/dashboard/employees/inactive",
+	"languages": {
+		"en": {
+			"title": "Inactive Employees",
+			"summary": "People who have left. Kept, not deleted, because the history depends on them.",
+			"sections": [
+				{
+					"heading": "Why they are still here",
+					"body": "An employee who leaves is terminated, not deleted. The payslips they were paid, the leaves they took and the attendance they were marked on all still point at them, and the reports for past periods have to keep working.\n\nThe termination reason and date are on the record."
+				},
+				{
+					"heading": "Bringing somebody back",
+					"body": "Open the profile and use Reinstate. Their history comes back with them — you are continuing a record, not creating a second one.\n\nDo not create a new employee for a returning member of staff. That is how two records for one person start, and it is painful to unpick once both have been paid."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Employees",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		},
+		"am": {
+			"title": "ንቁ ያልሆኑ ሠራተኞች",
+			"summary": "የለቀቁ ሰዎች። ታሪኩ ስለሚመሠረትባቸው ይቀመጣሉ እንጂ አይሰረዙም።",
+			"sections": [
+				{
+					"heading": "ለምን አሁንም እዚህ አሉ",
+					"body": "የሚለቅ ሠራተኛ ይሰናበታል እንጂ አይሰረዝም። የተከፈላቸው የደመወዝ ወረቀቶች፣ የወሰዷቸው ፈቃዶችና የተመዘገበላቸው መገኘት ሁሉ አሁንም ወደ እነሱ ያመለክታሉ፤ የቀድሞ ጊዜያት ሪፖርቶችም መሥራታቸውን መቀጠል አለባቸው።\n\nየስንብቱ ምክንያትና ቀን በመዝገቡ ላይ አሉ።"
+				},
+				{
+					"heading": "ሰውን መልሶ ማስገባት",
+					"body": "መገለጫውን ከፍተው Reinstate ይጠቀሙ። ታሪካቸው አብሮ ይመለሳል — ሁለተኛ መዝገብ ሳይሆን ያለውን እየቀጠሉ ነው።\n\nለተመላሽ ሠራተኛ አዲስ መዝገብ አይፍጠሩ። ለአንድ ሰው ሁለት መዝገብ የሚጀምረው በዚህ ነው፤ ሁለቱም ክፍያ ከተፈጸመላቸው በኋላ መፍታቱም ከባድ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሠራተኞች",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		}
+	}
+}

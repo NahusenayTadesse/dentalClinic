@@ -1,0 +1,61 @@
+{
+	"match": "/dashboard/contracts/",
+	"languages": {
+		"en": {
+			"title": "Contract Details",
+			"summary": "One agreement in full: its terms, its file, its billing and its renewal.",
+			"sections": [
+				{
+					"heading": "What is on this page",
+					"body": "• Site, customer and service — who, where and what\n• Start date, end date and days remaining\n• Monthly amount, and whether office commission applies\n• Signing officer and signed date\n• The contract file, if one was attached\n• System information — who entered the contract, who approved it, and who changed it last"
+				},
+				{
+					"heading": "Billing this contract",
+					"body": "• Request Payment raises the monthly bill for this site. Only one request can exist per site per month — the system refuses a second, and that check counts deleted requests too.\n• Add Payment records money that has arrived: amount, date, method, bank account, VAT rate, withholding and the receipt.\n• Payment History shows everything billed and everything collected, in order. Print it straight from the table when a customer asks for a statement.\n\nBoth the request and the collection wait for somebody else's approval before they count."
+				},
+				{
+					"heading": "Renewing",
+					"body": "1. Check the payment history first — renewing a site that has not paid for months is a decision, not a formality.\n2. Confirm the new dates and the monthly amount for the coming period.\n3. Renew. The renewal is recorded and the renewal count goes up.\n\nA contract past its end date has already been marked inactive by the system. Renewing is still the right move if the customer is staying."
+				},
+				{
+					"heading": "Ending a contract",
+					"body": "Terminating records the reason and moves the contract to the Terminated list. Nothing is deleted: the payments, the requests and the history all stay exactly as they were, which is what lets you answer a query about it two years later."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Customers, sites and contracts",
+					"href": "/dashboard/help#section-commercial"
+				}
+			]
+		},
+		"am": {
+			"title": "የኮንትራት ዝርዝር",
+			"summary": "አንድ ውል በሙሉ፦ ውሎቹ፣ ፋይሉ፣ ክፍያውና ዕድሳቱ።",
+			"sections": [
+				{
+					"heading": "በዚህ ገጽ ላይ ያለው",
+					"body": "• ጣቢያ፣ ደንበኛና አገልግሎት — ማን፣ የት፣ ምን\n• የመጀመሪያ ቀን፣ የመጨረሻ ቀንና የቀሩ ቀናት\n• ወርሃዊ መጠን፤ የቢሮ ኮሚሽን የሚሠራበት መሆኑ\n• ፈራሚ ኃላፊና የተፈረመበት ቀን\n• የኮንትራት ፋይል፣ ከተያያዘ\n• የሲስተም መረጃ — ማን እንዳስገባ፣ ማን እንዳጸደቀና በመጨረሻ ማን እንደለወጠው"
+				},
+				{
+					"heading": "የዚህ ኮንትራት ክፍያ",
+					"body": "• Request Payment ለዚህ ጣቢያ ወርሃዊ ክፍያ ጥያቄ ያቀርባል። ለአንድ ጣቢያ በአንድ ወር አንድ ጥያቄ ብቻ ነው የሚፈቀደው — ሲስተሙ ሁለተኛውን አይቀበልም፤ ይህ ማጣሪያ የተሰረዙትንም ይቆጥራል።\n• Add Payment የገባውን ገንዘብ ይመዘግባል፦ መጠን፣ ቀን፣ የክፍያ ዘዴ፣ የባንክ ሒሳብ፣ የተጨማሪ እሴት ታክስ መጠን፣ ተቀናሽ ግብርና ደረሰኝ።\n• Payment History የተጠየቀውንና የተሰበሰበውን በቅደም ተከተል ያሳያል። ደንበኛ መግለጫ ሲጠይቅ በቀጥታ ከሠንጠረዡ ያትሙት።\n\nሁለቱም ጥያቄውና ክፍያው ከመቆጠራቸው በፊት የሌላ ሰው ማጽደቅ ይጠብቃሉ።"
+				},
+				{
+					"heading": "ማደስ",
+					"body": "1. መጀመሪያ የክፍያ ታሪኩን ይመልከቱ — ለወራት ያልከፈለ ጣቢያ ማደስ ውሳኔ እንጂ መደበኛ ተግባር አይደለም።\n2. ለሚመጣው ጊዜ አዲሶቹን ቀኖችና ወርሃዊ መጠን ያረጋግጡ።\n3. ያድሱ። ዕድሳቱ ይመዘገባል፤ የዕድሳት ቁጥሩም ይጨምራል።\n\nየመጨረሻ ቀኑ ያለፈ ኮንትራት ሲስተሙ አስቀድሞ ንቁ ያልሆነ አድርጎታል። ደንበኛው የሚቀጥል ከሆነ ማደስ አሁንም ትክክለኛው እርምጃ ነው።"
+				},
+				{
+					"heading": "ኮንትራት ማቋረጥ",
+					"body": "ማቋረጥ ምክንያቱን መዝግቦ ኮንትራቱን ወደ የተቋረጡት ዝርዝር ያዛውራል። ምንም አይሰረዝም፦ ክፍያዎቹ፣ ጥያቄዎቹና ታሪኩ እንዳሉ ይቀራሉ፤ ከሁለት ዓመት በኋላ ለሚነሳ ጥያቄ መልስ መስጠት የሚያስችለውም ይኸው ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ደንበኞች፣ ጣቢያዎችና ኮንትራቶች",
+					"href": "/dashboard/help#section-commercial"
+				}
+			]
+		}
+	}
+}

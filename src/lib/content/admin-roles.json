@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/admin-panel/roles",
+	"languages": {
+		"en": {
+			"title": "Roles",
+			"summary": "A role is a named bundle of permissions. Change the bundle and everyone holding it changes with it.",
+			"sections": [
+				{
+					"heading": "Creating and editing",
+					"body": "1. Add role names a new one and ticks the permissions it carries.\n2. Open a role to change what it holds. Everyone with that role is affected as soon as you save.\n\nGive the least that lets somebody do their job. Permissions are cheap to add later and awkward to take back."
+				},
+				{
+					"heading": "Keep entering and approving apart",
+					"body": "The whole system rests on the maker–checker rule: whoever enters a record is not the person who releases it.\n\nGiving one person both \"create\" and \"approve\" for the same thing — payment_requests.create and payment_requests.approve, say — quietly cancels that check. The system will not stop you; this is the moment to notice."
+				},
+				{
+					"heading": "The permissions worth thinking twice about",
+					"body": "• approvals.override lets its holder release their own requests. It should be rare, and it is recorded every time it is used.\n• settings.manage covers the whole admin panel and the database backup — the entire business in one file.\n• users.manage and roles.manage let their holder change who can do what, including their own role."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Admin panel",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		},
+		"am": {
+			"title": "ሚናዎች",
+			"summary": "ሚና ማለት ስም የተሰጠው የፈቃዶች ጥምር ነው። ጥምሩን ሲቀይሩ የያዙት ሁሉ አብረው ይቀየራሉ።",
+			"sections": [
+				{
+					"heading": "መፍጠርና ማስተካከል",
+					"body": "1. Add role አዲስ ሚና ሰይሞ የሚይዛቸውን ፈቃዶች ምልክት ያደርጋል።\n2. የሚይዘውን ለመቀየር ሚናውን ይክፈቱ። ሲያስቀምጡ ወዲያውኑ ያንን ሚና የያዙ ሁሉ ይነካሉ።\n\nሥራቸውን ለመሥራት የሚያስፈልገውን ዝቅተኛውን ይስጡ። ፈቃድ በኋላ መጨመር ቀላል ነው፤ መመለስ ግን ያስቸግራል።"
+				},
+				{
+					"heading": "ማስገባትንና ማጽደቅን ይለያዩ",
+					"body": "ሲስተሙ በሙሉ የሚመሠረተው መዝገብ ያስገባው ሰው የሚለቀውም ሰው አይደለም በሚለው ደንብ ላይ ነው።\n\nለአንድ ሰው በአንድ ጉዳይ ላይ \"መፍጠር\"ንም \"ማጽደቅ\"ንም መስጠት ያንን ቁጥጥር በዝምታ ይሰርዘዋል። ሲስተሙ አያግድዎትም፤ ማስተዋል ያለብዎት አሁን ነው።"
+				},
+				{
+					"heading": "ሁለት ጊዜ ሊታሰብባቸው የሚገቡ ፈቃዶች",
+					"body": "• approvals.override የያዘው ሰው የራሱን ጥያቄ እንዲለቅ ያስችላል። ብርቅ መሆን አለበት፤ በተጠቀሙበት ጊዜም ሁሉ ይመዘገባል።\n• settings.manage ሙሉውን የአስተዳደር ክፍልና የመረጃ ቋት ምትኬን ይሸፍናል — ንግዱ በሙሉ በአንድ ፋይል።\n• users.manage እና roles.manage የያዘው ሰው ማን ምን እንደሚያደርግ እንዲቀይር ያስችላሉ፤ የራሱን ሚናም ጨምሮ።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — የአስተዳደር ክፍል",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		}
+	}
+}

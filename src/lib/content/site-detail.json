@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/sites/",
+	"languages": {
+		"en": {
+			"title": "Site Details",
+			"summary": "One location: its contracts, its people, and what it has been billed and has paid.",
+			"sections": [
+				{
+					"heading": "What is here",
+					"body": "• The site's details and the customer it belongs to\n• Its contracts — one per service delivered here\n• Payments — the collections against each contract, and the full payment history behind them\n• System information — who entered the site, who approved it, and who changed it last"
+				},
+				{
+					"heading": "Reading the money",
+					"body": "Expected payments against actual payments, and the gap between them, is the arrears position for this site. Open the payment history of a contract for the row-by-row detail, and print it straight from the table when the customer asks for a statement."
+				},
+				{
+					"heading": "What else points at this site",
+					"body": "• Employees are assigned to it — see Employees by Site for the roster and its attendance.\n• Supplies are leased to it — see Site Leases for what is out there now.\n• Payroll can be run for it alone, from Finance → UnPaid Salaries by Site."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Customers, sites and contracts",
+					"href": "/dashboard/help#section-commercial"
+				}
+			]
+		},
+		"am": {
+			"title": "የጣቢያ ዝርዝር",
+			"summary": "አንድ ቦታ፦ ኮንትራቶቹ፣ ሰዎቹ፣ የተጠየቀውና የከፈለው።",
+			"sections": [
+				{
+					"heading": "እዚህ ያለው",
+					"body": "• የጣቢያው መረጃና የሚገባበት ደንበኛ\n• ኮንትራቶቹ — እዚህ ለሚሰጥ እያንዳንዱ አገልግሎት አንድ\n• ክፍያዎች — በእያንዳንዱ ኮንትራት ላይ የገቡት፣ እንዲሁም ከበስተጀርባቸው ያለው ሙሉ የክፍያ ታሪክ\n• የሲስተም መረጃ — ጣቢያውን ማን እንዳስገባ፣ ማን እንዳጸደቀና በመጨረሻ ማን እንደለወጠ"
+				},
+				{
+					"heading": "ገንዘቡን ማንበብ",
+					"body": "የሚጠበቁት ክፍያዎች ከተከፈሉት ጋር ተነጻጽረው በመካከላቸው ያለው ልዩነት የዚህ ጣቢያ የዕዳ ሁኔታ ነው። መስመር በመስመር ለማየት የኮንትራቱን የክፍያ ታሪክ ይክፈቱ፤ ደንበኛው መግለጫ ሲጠይቅም በቀጥታ ከሠንጠረዡ ያትሙት።"
+				},
+				{
+					"heading": "ሌላ ምን ወደዚህ ጣቢያ ያመለክታል",
+					"body": "• ሠራተኞች ወደዚህ ይመደባሉ — ዝርዝሩንና የመገኘት መዝገቡን በ\"ሠራተኞች በጣቢያ\" ይመልከቱ።\n• ግብዓቶች ለዚህ ይከራያሉ — አሁን ውጪ ያለውን በ\"የጣቢያ ኪራዮች\" ይመልከቱ።\n• ደመወዝ ለዚህ ጣቢያ ብቻ ሊሠራ ይችላል፤ ከFinance → UnPaid Salaries by Site።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ደንበኞች፣ ጣቢያዎችና ኮንትራቶች",
+					"href": "/dashboard/help#section-commercial"
+				}
+			]
+		}
+	}
+}

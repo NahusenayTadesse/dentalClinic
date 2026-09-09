@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/reports/payroll",
+	"languages": {
+		"en": {
+			"title": "Payroll Report",
+			"summary": "What was paid, to whom, in which run.",
+			"sections": [
+				{
+					"heading": "What it covers",
+					"body": "Ledgers: Payroll Runs, Payslips, Payroll Adjustments, Payroll Receipts, Salary Changes.\n\nPayroll runs are one row per month with every total on them; payslips are one row per person per month."
+				},
+				{
+					"heading": "Using it",
+					"body": "Reconcile a month by taking the Payroll Runs row and the Payslips ledger for the same range — the run's totals are the sum of the payslips under it.\n\nAdjustments are separate rows on purpose: the original payslip is never edited, so what was paid and what was corrected stay distinguishable.\n\nNeeds the reports.finance permission."
+				},
+				{
+					"heading": "Every report works the same way",
+					"body": "Set the date range and the filters at the top — both ends of the range are included, and the query follows you when you move to another report. Choose a section below the charts to load the rows behind them, then filter, print or export that table like any other in the system."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Reports",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		},
+		"am": {
+			"title": "የደመወዝ ሪፖርት",
+			"summary": "ምን ተከፈለ፣ ለማን፣ በየትኛው ክፍያ።",
+			"sections": [
+				{
+					"heading": "የሚሸፍነው",
+					"body": "መዝገቦች፦ የደመወዝ ክፍያዎች፣ የደመወዝ ወረቀቶች፣ የደመወዝ ማስተካከያዎች፣ ደረሰኞች፣ የደመወዝ ለውጦች።\n\nየደመወዝ ክፍያ በወር አንድ መስመር ሆኖ ድምሮቹን ሁሉ ይይዛል፤ የደመወዝ ወረቀት ደግሞ ለአንድ ሰው በአንድ ወር አንድ መስመር ነው።"
+				},
+				{
+					"heading": "አጠቃቀም",
+					"body": "አንድን ወር ለማመሳከር በተመሳሳይ ክልል የደመወዝ ክፍያውን መስመርና የደመወዝ ወረቀቶችን መዝገብ ይውሰዱ — የክፍያው ድምር በሱ ሥር ያሉት ወረቀቶች ድምር ነው።\n\nማስተካከያዎች ሆን ተብለው የተለዩ መስመሮች ናቸው፦ የመጀመሪያው ወረቀት ስለማይታረም የተከፈለውና የተስተካከለው ተለይተው ይታያሉ።\n\nየreports.finance ፈቃድ ይፈልጋል።"
+				},
+				{
+					"heading": "ሁሉም ሪፖርቶች በአንድ መንገድ ይሠራሉ",
+					"body": "ከላይ የቀን ክልሉንና ማጣሪያዎቹን ያስቀምጡ — ሁለቱም ጫፎች ይካተታሉ፤ ወደ ሌላ ሪፖርት ሲሄዱም መጠይቁ አብሮ ይመጣል። ከገበታዎቹ በታች ያለውን ክፍል መርጠው ከበስተጀርባ ያሉትን መስመሮች ይጫኑ፤ ከዚያ እንደማንኛውም ሠንጠረዥ ያጣሩ፣ ያትሙ ወይም ወደ ውጭ ያውጡ።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሪፖርቶች",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		}
+	}
+}

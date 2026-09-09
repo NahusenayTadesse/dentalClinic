@@ -1,0 +1,61 @@
+{
+	"match": "/dashboard/admin-panel",
+	"languages": {
+		"en": {
+			"title": "Admin Panel",
+			"summary": "The lists every dropdown in the system chooses from, plus the accounts and roles of the people using it.",
+			"sections": [
+				{
+					"heading": "The four groups",
+					"body": "• Locations — Regions, Cities, Subcities. These cascade: a city belongs to a region, a subcity to a city, so add them in that order.\n• Organization — Departments, Positions, Educational Levels, Employment Status, Leave Types, Annual Leave Entitlements, Leave Expiry Policy, Run Leave Accrual, Services.\n• User Management — Users and Roles.\n• Finance — Payment Methods, Tax Types, Overtime Types, Pensions, Vat and Withhold, Bank Amount.\n\nIf a form does not offer the value you need, this is where you add it — then go back to the form."
+				},
+				{
+					"heading": "These lists are shared",
+					"body": "• Renaming a department renames it on every employee attached to it.\n• Deleting a value hides it from the pickers but leaves the records already using it intact — that is why last year's figures do not change when you tidy a list.\n• Rate changes (tax, pension, VAT, overtime) apply from the moment you save. They do not rewrite anything already calculated: an old payslip keeps the rates it was paid under, which is correct.\n• Change a rate at a month boundary wherever you can. Changing one mid-month makes the month hard to explain afterwards."
+				},
+				{
+					"heading": "Users and roles",
+					"body": "• Users — create accounts, assign a role, add a special permission for a one-off responsibility, reset a password. One account per person, always: every approval in the system names a person, and a shared login makes that name worthless.\n• Roles — a named bundle of permissions. Change the bundle and everyone holding it changes with it.\n\nKeep the approving permissions away from the entering ones. Giving one person both \"create\" and \"approve\" for the same thing quietly cancels the check the whole system is built around."
+				},
+				{
+					"heading": "Leave configuration",
+					"body": "• Leave Types — the kinds of leave that exist.\n• Annual Leave Entitlements — how many days a person is due, usually stepped by length of service.\n• Leave Expiry Policy — whether unused days carry into the next year, and for how long before they lapse.\n• Run Leave Accrual — grants the accrued days across the workforce. Accrual also runs on a schedule of its own, so the manual run is for a correction or a catch-up, not for routine use.\n\nAfter changing an entitlement, check the leave report to see what actually moved."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Admin panel",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		},
+		"am": {
+			"title": "የአስተዳደር ክፍል",
+			"summary": "በሲስተሙ ውስጥ ያሉ ምርጫዎች ሁሉ የሚመጡባቸው ዝርዝሮች፤ እንዲሁም የተጠቃሚዎች ሒሳቦችና ሚናዎች።",
+			"sections": [
+				{
+					"heading": "አራቱ ቡድኖች",
+					"body": "• ቦታዎች — ክልሎች፣ ከተሞች፣ ክፍለ ከተሞች። እነዚህ ተያያዥ ናቸው፦ ከተማ በክልል ሥር፣ ክፍለ ከተማ በከተማ ሥር ነው፤ ስለዚህ በዚያ ቅደም ተከተል ይጨምሩ።\n• ድርጅት — ክፍሎች፣ የሥራ መደቦች፣ የትምህርት ደረጃዎች፣ የቅጥር ሁኔታ፣ የፈቃድ ዓይነቶች፣ ዓመታዊ የፈቃድ መብት፣ የፈቃድ ማብቂያ ፖሊሲ፣ የፈቃድ ክምችት ማስኬጃ፣ አገልግሎቶች።\n• የተጠቃሚ አስተዳደር — ተጠቃሚዎችና ሚናዎች።\n• ፋይናንስ — የክፍያ ዘዴዎች፣ የግብር ዓይነቶች፣ የትርፍ ሰዓት ዓይነቶች፣ ጡረታ፣ ተጨማሪ እሴት ታክስና ተቀናሽ ግብር፣ የባንክ ሒሳብ።\n\nአንድ ቅጽ የሚፈልጉትን አማራጭ ካላቀረበ እዚህ ይጨምሩት፤ ከዚያ ወደ ቅጹ ይመለሱ።"
+				},
+				{
+					"heading": "እነዚህ ዝርዝሮች የጋራ ናቸው",
+					"body": "• አንድ ክፍል ስሙ ሲቀየር በሱ ሥር ባሉ ሠራተኞች ሁሉ ላይ ይቀየራል።\n• አንድ እሴት መሰረዝ ከምርጫዎች ይደብቀዋል እንጂ አስቀድመው የተጠቀሙበትን መዝገቦች አይነካም — ዝርዝሩን ሲያጸዱ የአምናው አኃዝ የማይቀየረውም ለዚህ ነው።\n• የመጠን ለውጦች (ግብር፣ ጡረታ፣ ተጨማሪ እሴት ታክስ፣ ትርፍ ሰዓት) ካስቀመጡበት ጊዜ ጀምሮ ይሠራሉ። አስቀድሞ የተሰላውን አይለውጡም፦ የቀድሞ የደመወዝ ወረቀት በተከፈለበት መጠን ይቀራል፤ ትክክሉም ይኸው ነው።\n• የሚቻል ከሆነ መጠን በወር መጀመሪያ ላይ ይቀይሩ። በወር መሃል መቀየር ወሩን ለማብራራት አስቸጋሪ ያደርገዋል።"
+				},
+				{
+					"heading": "ተጠቃሚዎችና ሚናዎች",
+					"body": "• ተጠቃሚዎች — ሒሳብ መፍጠር፣ ሚና መስጠት፣ ለልዩ ኃላፊነት ተጨማሪ ፈቃድ መስጠት፣ የይለፍ ቃል መቀየር። ሁሌም ለአንድ ሰው አንድ ሒሳብ፦ በሲስተሙ ውስጥ እያንዳንዱ ማጽደቅ ሰው ይሰይማል፤ የጋራ ሒሳብ ያንን ስም ዋጋ ቢስ ያደርገዋል።\n• ሚናዎች — ስም የተሰጠው የፈቃዶች ጥምር። ጥምሩን ሲቀይሩ የያዙት ሁሉ አብረው ይቀየራሉ።\n\nየማጽደቅ ፈቃዶችን ከማስገቢያ ፈቃዶች ይለዩ። ለአንድ ሰው በአንድ ጉዳይ ላይ \"መፍጠር\"ንም \"ማጽደቅ\"ንም መስጠት ሲስተሙ የተመሠረተበትን ቁጥጥር በዝምታ ይሰርዘዋል።"
+				},
+				{
+					"heading": "የፈቃድ ውቅር",
+					"body": "• የፈቃድ ዓይነቶች — ያሉት የፈቃድ ዓይነቶች።\n• ዓመታዊ የፈቃድ መብት — ለአንድ ሰው የሚገባው ቀን፤ አብዛኛውን ጊዜ በአገልግሎት ዘመን ይለያያል።\n• የፈቃድ ማብቂያ ፖሊሲ — ያልተጠቀሙበት ቀን ወደ ቀጣዩ ዓመት ይተላለፍ አይተላለፍ፣ ከተላለፈም ለምን ያህል ጊዜ።\n• የፈቃድ ክምችት ማስኬጃ — የተጠራቀሙ ቀኖችን ለሠራተኞች ይሰጣል። ክምችቱ በራሱ መርሐግብር ስለሚሠራ በእጅ ማስኬድ ለማስተካከያ እንጂ ለመደበኛ ሥራ አይደለም።\n\nመብት ከቀየሩ በኋላ በትክክል ምን እንደተለወጠ ለማየት የፈቃድ ሪፖርቱን ይመልከቱ።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — የአስተዳደር ክፍል",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,242 @@
+<script lang="ts">
+	import { renderComponent } from '$lib/components/ui/data-table/index.js';
+	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
+	import DataTable from '$lib/components/Table/data-table.svelte';
+	import Copy from '$lib/Copy.svelte';
+	import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+	import Statuses from '$lib/components/Table/statuses.svelte';
+	import Edit from './editSchedule.svelte';
+	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
+	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import Errors from '$lib/formComponents/Errors.svelte';
+	import { superForm } from 'sveltekit-superforms/client';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+
+	function getWeekdayName(dayIndex: number): string {
+		const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+		// Optional: Handle numbers out of range
+		if (dayIndex < 0 || dayIndex > 6) {
+			throw new Error('Invalid day index. Please provide a number between 0 and 6.');
+		}
+
+		return days[dayIndex];
+	}
+
+	import { Plus } from '@lucide/svelte';
+	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+
+	const weekDays = [
+		{ value: 0, name: 'Monday' },
+		{ value: 1, name: 'Tuesday' },
+		{ value: 2, name: 'Wednesday' },
+		{ value: 3, name: 'Thursday' },
+		{ value: 4, name: 'Friday' },
+		{ value: 5, name: 'Saturday' },
+		{ value: 6, name: 'Sunday' }
+	];
+
+	function formatAMPM(timeString: string): string {
+		let [hours, minutes] = timeString.split(':');
+		let hoursInt = parseInt(hours);
+		const ampm = hoursInt >= 12 ? 'PM' : 'AM';
+
+		hoursInt = hoursInt % 12;
+		hoursInt = hoursInt ? hoursInt : 12; // The hour '0' should be '12'
+
+		return `${hoursInt}:${minutes} ${ampm}`;
+	}
+
+	let {
+		data,
+		form: editForm,
+		addForm,
+		canDelete = false
+	}: {
+		data: any;
+		form: SuperValidated<Infer<EditSchedule>>;
+		addForm: SuperValidated<Infer<AddSchedule>>;
+		/** Only a super admin gets the per-row delete button. */
+		canDelete?: boolean;
+	} = $props();
+	export const columns = [
+		{
+			id: 'index',
+			header: '#',
+			cell: (info) => {
+				const rowIndex = info.table.getRowModel().rows.findIndex((row) => row.id === info.row.id);
+				return rowIndex + 1;
+			},
+			enableSorting: false
+		},
+		{
+			accessorKey: 'day',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'Day',
+					onclick: column.getToggleSortingHandler()
+				}),
+			sortable: true,
+			cell: ({ row }) => {
+				// You can pass whatever you need from `row.original` to the component
+				return renderComponent(Edit, {
+					data: editForm,
+					id: row.original?.id,
+					day: row.original?.day,
+					startTime: row.original?.startTime,
+					endTime: row.original?.endTime,
+					status: row.original?.status,
+					icon: false
+				});
+			}
+		},
+
+		{
+			accessorKey: 'startTime',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'Start Time',
+					onclick: column.getToggleSortingHandler()
+				}),
+			sortable: true,
+			cell: ({ row }) => {
+				// You can pass whatever you need from `row.original` to the component
+				return formatAMPM(row.original.startTime);
+			}
+		},
+
+		{
+			accessorKey: 'endTime',
+			header: ({ column }) =>
+				renderComponent(DataTableSort, {
+					name: 'End Time',
+					onclick: column.getToggleSortingHandler()
+				}),
+			sortable: true,
+			cell: ({ row }) => {
+				// You can pass whatever you need from `row.original` to the component
+				return formatAMPM(row.original.endTime);
+			}
+		},
+
+		{
+			accessorKey: 'status',
+			header: 'Status',
+			sortable: true,
+			cell: ({ row }) => {
+				return renderComponent(Statuses, {
+					status: row.original.status ? 'Active' : 'Inactive'
+				});
+			}
+		},
+		{
+			accessorKey: 'addedBy',
+			header: 'Added By',
+			sortable: true,
+			cell: ({ row }) => {
+				return renderComponent(DataTableLinks, {
+					id: row.original.addedById,
+					name: row.original.addedBy,
+					link: '/dashboard/admin-panel/users',
+
+					target: '_blank'
+				});
+			}
+		},
+
+		{
+			accessorKey: '',
+			header: 'Edit',
+			sortable: true,
+			cell: ({ row }) => {
+				// You can pass whatever you need from `row.original` to the component
+				return renderComponent(Edit, {
+					id: row.original?.id,
+					data: editForm,
+					day: row.original?.day,
+					startTime: row.original?.startTime,
+					endTime: row.original?.endTime,
+					status: row.original?.status,
+					icon: true
+				});
+			}
+		},
+
+		{
+			id: 'delete',
+			header: '',
+			enableSorting: false,
+			// Renders nothing unless `canDelete`; the action re-checks on the server.
+			cell: ({ row }) =>
+				renderComponent(DeleteEntity, {
+					entity: 'Schedule',
+					name: `${row.original?.startTime} - ${row.original?.endTime}`,
+					id: row.original?.id,
+					action: '?/deleteSchedule',
+					icon: true,
+					canDelete
+				})
+		}
+	];
+
+	const { form, errors, enhance, delayed, message, allErrors } = superForm(addForm, {
+		resetForm: false
+	});
+
+	import { toast } from 'svelte-sonner';
+	import type { AddFamily, AddSchedule } from './schema';
+	import EditFamily from './editFamily.svelte';
+	import type EditSchedule from './editSchedule.svelte';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
+		}
+	});
+</script>
+
+<DialogComp variant="default" title="Add New Schedule" IconComp={Plus}>
+	<form
+		action="?/addSchedule"
+		use:enhance
+		method="post"
+		id="edit"
+		class="flex w-full flex-col gap-4 p-4"
+	>
+		<Errors allErrors={$allErrors} />
+		<input type="hidden" name="id" value={$form.id} />
+		<InputComp label="Day" name="day" type="select" {form} {errors} items={weekDays} />
+		<InputComp label="Start Time" name="startTime" type="time" {form} {errors} required />
+		<InputComp label="End Time" name="endTime" type="time" {form} {errors} required />
+		<InputComp
+			label="Status"
+			name="status"
+			type="select"
+			{form}
+			{errors}
+			items={[
+				{ value: true, name: 'Active' },
+				{ value: false, name: 'Inactive' }
+			]}
+		/>
+
+		<Button type="submit" class="mt-4" form="edit">
+			{#if $delayed}
+				<LoadingBtn name="Adding Schedule" />
+			{:else}
+				<Plus class="h-4 w-4" />
+
+				Add Schedule
+			{/if}
+		</Button>
+	</form>
+</DialogComp>
+
+{#key data}
+	<DataTable {columns} {data} search={true} fileName="Schedules" />
+{/key}

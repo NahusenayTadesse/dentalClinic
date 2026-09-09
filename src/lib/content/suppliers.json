@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/supplies/suppliers",
+	"languages": {
+		"en": {
+			"title": "Suppliers",
+			"summary": "Who you buy from, their details, and what you have bought from each.",
+			"sections": [
+				{
+					"heading": "Managing them",
+					"body": "• Suppliers lists them all with their contact details.\n• Add Supplier creates one: name, TIN, phone, email and address.\n• Open a supplier to see the purchases recorded against them."
+				},
+				{
+					"heading": "Deleting is safe",
+					"body": "Deleting a supplier hides them from the pickers but leaves the purchase history intact. That is why last year's figures do not change when you tidy the list — and why a supplier you no longer use should be deleted rather than renamed into a different one."
+				},
+				{
+					"heading": "Comparing spend",
+					"body": "Use the advanced filter for the questions the menus cannot answer — \"spend over 10,000\", \"added in the last 90 days\". Then export the result for the conversation you were about to have."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Supplies and leases",
+					"href": "/dashboard/help#section-supplies"
+				}
+			]
+		},
+		"am": {
+			"title": "አቅራቢዎች",
+			"summary": "ከማን እንደሚገዙ፣ መረጃቸውና ከእያንዳንዳቸው የገዙት።",
+			"sections": [
+				{
+					"heading": "አያያዝ",
+					"body": "• አቅራቢዎች ሁሉንም ከመገናኛ መረጃቸው ጋር ይዘረዝራል።\n• Add Supplier አዲስ ይፈጥራል፦ ስም፣ ቲን ቁጥር፣ ስልክ፣ ኢሜይልና አድራሻ።\n• በእነሱ ላይ የተመዘገቡ ግዢዎችን ለማየት አቅራቢውን ይክፈቱ።"
+				},
+				{
+					"heading": "መሰረዝ አደጋ የለውም",
+					"body": "አቅራቢን መሰረዝ ከምርጫዎች ይደብቀዋል እንጂ የግዢ ታሪኩን አይነካም። ዝርዝሩን ሲያጸዱ የአምናው አኃዝ የማይቀየረውም ለዚህ ነው — የማይጠቀሙበትን አቅራቢ ወደ ሌላ ስም ከመቀየር ይልቅ መሰረዝ የሚሻለውም ለዚህ ነው።"
+				},
+				{
+					"heading": "ወጪን ማነጻጸር",
+					"body": "ምናሌዎቹ መመለስ የማይችሏቸውን ጥያቄዎች ለመጠየቅ የላቀውን ማጣሪያ ይጠቀሙ — \"ከ10,000 በላይ ወጪ\"፣ \"ባለፉት 90 ቀናት የተጨመሩ\"። ከዚያ ውጤቱን ወደ ውጭ አውጥተው ለሚያደርጉት ውይይት ይጠቀሙበት።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ግብዓቶችና ኪራዮች",
+					"href": "/dashboard/help#section-supplies"
+				}
+			]
+		}
+	}
+}

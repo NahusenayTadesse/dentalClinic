@@ -1,0 +1,45 @@
+{
+	"match": "/dashboard/customers/add-customer",
+	"languages": {
+		"en": {
+			"title": "Add Customer",
+			"summary": "Register an organisation you have signed with. It starts pending.",
+			"sections": [
+				{
+					"heading": "What to fill in",
+					"body": "• Name — as it should appear on invoices\n• TIN — enter it carefully; it goes onto the invoices and the withholding paperwork, and correcting it later means reissuing documents\n• Phone and email\n• Region, City, Subcity and the address details\n\nRegion, city and subcity come from Admin Panel and cascade — if the one you need is missing, add it there first, region before city before subcity."
+				},
+				{
+					"heading": "After saving",
+					"body": "The customer is created as pending and waits for somebody else to approve it. Sites and contracts cannot be written against it until then.\n\nOnce approved, add the customer's sites, then a contract for each service at each site."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Customers, sites and contracts",
+					"href": "/dashboard/help#section-commercial"
+				}
+			]
+		},
+		"am": {
+			"title": "ደንበኛ መጨመር",
+			"summary": "ውል የተዋዋሉበትን ድርጅት መመዝገቢያ። በመጠባበቅ ላይ ሆኖ ይጀምራል።",
+			"sections": [
+				{
+					"heading": "የሚሞላው",
+					"body": "• ስም — በደረሰኞች ላይ መውጣት እንዳለበት\n• ቲን ቁጥር — በጥንቃቄ ያስገቡ፤ በደረሰኞችና በተቀናሽ ግብር ሰነዶች ላይ ስለሚወጣ በኋላ ማረም ሰነዶችን እንደገና ማውጣት ያስከትላል\n• ስልክና ኢሜይል\n• ክልል፣ ከተማ፣ ክፍለ ከተማና የአድራሻ ዝርዝር\n\nክልል፣ ከተማና ክፍለ ከተማ ከAdmin Panel ይመጣሉ፤ ተያያዥም ናቸው — የሚፈልጉት ከሌለ መጀመሪያ እዚያ ይጨምሩት፤ ክልል ከከተማ በፊት፣ ከተማ ከክፍለ ከተማ በፊት።"
+				},
+				{
+					"heading": "ካስቀመጡ በኋላ",
+					"body": "ደንበኛው በመጠባበቅ ላይ ሆኖ ይፈጠራል፤ የሌላ ሰው ማጽደቅም ይጠብቃል። እስከዚያ ድረስ ጣቢያና ኮንትራት ሊጻፍለት አይችልም።\n\nከጸደቀ በኋላ የደንበኛውን ጣቢያዎች ይጨምሩ፤ ከዚያ በእያንዳንዱ ጣቢያ ለእያንዳንዱ አገልግሎት ኮንትራት ይጻፉ።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ደንበኞች፣ ጣቢያዎችና ኮንትራቶች",
+					"href": "/dashboard/help#section-commercial"
+				}
+			]
+		}
+	}
+}

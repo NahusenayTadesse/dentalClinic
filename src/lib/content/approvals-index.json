@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/approvals",
+	"languages": {
+		"en": {
+			"title": "Approval Queues",
+			"summary": "What is waiting to be released, and by whom. Nothing counts in this system until somebody other than its author approves it.",
+			"sections": [
+				{
+					"heading": "The rule behind this page",
+					"body": "Whoever enters a record is not the person who releases it.\n\n1. You create a record. It is saved immediately as pending, stamped with your name as the requester.\n2. It appears in the queue for that kind of record.\n3. Somebody else approves or rejects it.\n4. Only then does it count: it appears in listings, joins the reports, and can be paid or acted on.\n\nA pending record is not invisible — you can see it and correct it. It just does not count yet. A pending contract is not chased for renewal; a pending employee cannot be paid."
+				},
+				{
+					"heading": "The queues",
+					"body": "Employees, Salary changes, Expenses, Payroll runs, Payroll adjustments, Customers, Customer contracts, Sites and Site contracts.\n\nThis page shows how much is waiting in each. Open the one you are responsible for to settle it."
+				},
+				{
+					"heading": "Two permissions, on purpose",
+					"body": "• approvals.view lets you see the counts and watch the backlog.\n• approvals.approve lets you settle what is in a queue.\n\nThey are separate so a supervisor can watch the backlog without being able to clear it. If you can see this page but not open a queue, that is the split doing its job."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Approvals",
+					"href": "/dashboard/help#section-approvals"
+				}
+			]
+		},
+		"am": {
+			"title": "የማጽደቅ ወረፋዎች",
+			"summary": "ለመለቀቅ የሚጠብቀው ምንድን ነው፣ በማንስ። በዚህ ሲስተም ውስጥ ከጻፈው ሌላ ሰው እስኪያጸድቀው ድረስ ምንም አይቆጠርም።",
+			"sections": [
+				{
+					"heading": "ከዚህ ገጽ ጀርባ ያለው ደንብ",
+					"body": "መዝገብ ያስገባው ሰው የሚለቀውም ሰው አይደለም።\n\n1. መዝገብ ይፈጥራሉ። ወዲያውኑ በመጠባበቅ ላይ ሆኖ ይቀመጣል፤ ስምዎም እንደ ጠያቂ ይመዘገባል።\n2. ለዚያ ዓይነት መዝገብ በተዘጋጀው ወረፋ ውስጥ ይታያል።\n3. ሌላ ሰው ያጸድቀዋል ወይም ውድቅ ያደርገዋል።\n4. ከዚያ በኋላ ብቻ ይቆጠራል፦ በዝርዝሮች ውስጥ ይታያል፣ በሪፖርቶች ይካተታል፣ ክፍያም ሊፈጸምበት ይችላል።\n\nበመጠባበቅ ላይ ያለ መዝገብ አይሰወርም — ማየትና ማስተካከል ይችላሉ። ገና አልተቆጠረም ብቻ ነው። በመጠባበቅ ላይ ያለ ኮንትራት ለዕድሳት አይጠየቅም፤ ያልጸደቀ ሠራተኛም ክፍያ አይፈጸምለትም።"
+				},
+				{
+					"heading": "ወረፋዎቹ",
+					"body": "ሠራተኞች፣ የደመወዝ ለውጦች፣ ወጪዎች፣ የደመወዝ ክፍያዎች፣ የደመወዝ ማስተካከያዎች፣ ደንበኞች፣ የደንበኛ ኮንትራቶች፣ ጣቢያዎችና የጣቢያ ኮንትራቶች።\n\nይህ ገጽ በእያንዳንዱ ውስጥ ስንት እንደሚጠብቅ ያሳያል። ኃላፊነት የሚሰማዎትን ከፍተው ይጨርሱት።"
+				},
+				{
+					"heading": "ሁለት ፈቃዶች፤ ሆን ተብሎ",
+					"body": "• approvals.view ቁጥሮቹን አይተው ክምችቱን እንዲከታተሉ ያስችላል።\n• approvals.approve በወረፋው ውስጥ ያለውን እንዲጨርሱ ያስችላል።\n\nየተለያዩት ተቆጣጣሪ ክምችቱን ማየት እየቻለ ማጽዳት እንዳይችል ነው። ይህን ገጽ አይተው ወረፋ መክፈት ካልቻሉ ይህ ልዩነት እየሠራ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ማጽደቅ",
+					"href": "/dashboard/help#section-approvals"
+				}
+			]
+		}
+	}
+}

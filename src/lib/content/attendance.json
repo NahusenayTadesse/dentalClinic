@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/employees/attendance",
+	"languages": {
+		"en": {
+			"title": "Attendance",
+			"summary": "Who was at work, over a period. This is what overtime and absence rest on.",
+			"sections": [
+				{
+					"heading": "Entering it",
+					"body": "1. Pick the period. The date range is part of the address, so a screen you have open can be bookmarked or sent to a colleague and it opens on the same period.\n2. Mark the days for each person on the roster.\n3. Save.\n\nAttendance is taken per site. Employees by Site → a site → Attendance is the same screen reached the way a supervisor thinks about it."
+				},
+				{
+					"heading": "Do it before payroll",
+					"body": "Payroll takes the figures as they stand at the moment it runs. Attendance entered afterwards is not in that month's payroll — it would have to go through a payroll adjustment instead.\n\nThe order that works: attendance, then overtime and deductions, then the payroll run."
+				},
+				{
+					"heading": "Where it shows up",
+					"body": "The Time & Leave report carries the attendance ledger for any range and any site, filtered and exportable — that is the copy to print for a customer or a file."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Employees",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		},
+		"am": {
+			"title": "የመገኘት መዝገብ",
+			"summary": "በተወሰነ ጊዜ ውስጥ ማን ሥራ ላይ እንደነበረ። ትርፍ ሰዓትና መቅረት የሚመሠረቱበት ይኸው ነው።",
+			"sections": [
+				{
+					"heading": "እንዴት እንደሚገባ",
+					"body": "1. ጊዜውን ይምረጡ። የቀን ክልሉ የአድራሻው አካል ነው፤ ስለዚህ የከፈቱትን ገጽ ማስቀመጥ ወይም ለባልደረባ መላክ ይችላሉ፤ በተመሳሳይ ጊዜ ላይ ይከፈታል።\n2. ለእያንዳንዱ ሠራተኛ ቀኖቹን ምልክት ያድርጉ።\n3. ያስቀምጡ።\n\nየመገኘት መዝገብ በጣቢያ ይያዛል። Employees by Site → ጣቢያ → Attendance ተቆጣጣሪ በሚያስብበት መንገድ የተደረሰበት ተመሳሳይ ገጽ ነው።"
+				},
+				{
+					"heading": "ከደመወዝ በፊት ይሙሉት",
+					"body": "ደመወዝ የሚወስደው በሚሠራበት ወቅት ያሉትን አኃዞች ነው። ከዚያ በኋላ የገባ የመገኘት መዝገብ በዚያ ወር ደመወዝ ውስጥ አይካተትም — በደመወዝ ማስተካከያ በኩል መሄድ ይኖርበታል።\n\nየሚሠራው ቅደም ተከተል፦ መገኘት፣ ከዚያ ትርፍ ሰዓትና ተቀናሾች፣ ከዚያ ደመወዝ።"
+				},
+				{
+					"heading": "የት እንደሚታይ",
+					"body": "የጊዜና ፈቃድ ሪፖርት የመገኘትን መዝገብ ለማንኛውም ክልልና ጣቢያ ተጣርቶና ወደ ውጭ ሊወጣ በሚችል መልኩ ይይዛል — ለደንበኛ ወይም ለመዝገብ የሚታተመው ያ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሠራተኞች",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		}
+	}
+}

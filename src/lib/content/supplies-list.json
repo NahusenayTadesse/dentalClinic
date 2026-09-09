@@ -1,0 +1,61 @@
+{
+	"path": "/dashboard/supplies",
+	"languages": {
+		"en": {
+			"title": "Stock Levels",
+			"summary": "What the company owns, what is spoken for, and what you can still promise to somebody.",
+			"sections": [
+				{
+					"heading": "Four numbers, and only two are stored",
+					"body": "• On hand — what is physically in the store\n• Reserved — promised to a lease that is approved but not yet issued. Still on the shelf, but already spoken for.\n• Leased out — physically at a site right now\n• Available — what you can actually promise to somebody new: on hand, less what is reserved\n• Total owned — everything the company owns, wherever it is\n\nReserved and leased out are worked out from the leases every time they are shown, never stored on the item. That is why they can never drift out of step with the leases themselves."
+				},
+				{
+					"heading": "Reordering",
+					"body": "Each supply carries a reorder level. Anything at or below it appears in \"Supplies to reorder\" on the dashboard home.\n\nSet the level to cover the time it really takes to get more, not to zero — an alert that fires the day you run out is not an alert."
+				},
+				{
+					"heading": "Adding stock",
+					"body": "Add Supply registers an item or a new purchase: name, type, quantity, unit cost, supplier and reorder level.\n\n• Supply types come from Admin Panel → Supply Types. The Supplies menu links straight to it because that is where it is used.\n• Damage and loss are recorded against the item, so shrinkage shows up in the stock report rather than hiding inside a quantity that quietly changed."
+				},
+				{
+					"heading": "The advanced filter",
+					"body": "Press Advanced filter for questions the filter menus cannot answer: \"available under 5\", \"reserved above zero\", \"type is cleaning and on hand is between 10 and 50\".\n\nChoose a field, an operator and a value, and add as many conditions as you need. It filters what is on screen and changes nothing stored."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Supplies and leases",
+					"href": "/dashboard/help#section-supplies"
+				}
+			]
+		},
+		"am": {
+			"title": "የክምችት ደረጃ",
+			"summary": "ድርጅቱ የያዘው፣ ቀድሞ የተያዘውና አሁንም ለሌላ ሰው ሊሰጡት የሚችሉት።",
+			"sections": [
+				{
+					"heading": "አራት አኃዞች፤ ሁለቱ ብቻ ይቀመጣሉ",
+					"body": "• በእጅ ያለ — በመጋዘን በአካል ያለው\n• የተያዘ — ጸድቆ ገና ላልወጣ ኪራይ የተመደበ። አሁንም በመደርደሪያ ላይ ነው፤ ግን ቀድሞ ተይዟል።\n• የተከራየ — አሁን በጣቢያ ላይ በአካል ያለ\n• ነፃ — ለአዲስ ሰው በእርግጥ ሊሰጡት የሚችሉት፦ በእጅ ካለው የተያዘው ሲቀነስ\n• ጠቅላላ ንብረት — ድርጅቱ የያዘው ሁሉ፣ የትም ይሁን የት\n\nየተያዘውና የተከራየው በየጊዜው ከኪራዮቹ ተሰልተው ይታያሉ እንጂ በዕቃው ላይ አይቀመጡም። ከኪራዮቹ ጋር ሊለያዩ የማይችሉትም ለዚህ ነው።"
+				},
+				{
+					"heading": "ዳግም ትዕዛዝ",
+					"body": "እያንዳንዱ ግብዓት የዳግም ትዕዛዝ ደረጃ አለው። ከዚያ ደረጃ ወይም በታች የሆነ ሁሉ በዳሽቦርዱ ላይ በ\"እንደገና መታዘዝ ያለባቸው ግብዓቶች\" ውስጥ ይታያል።\n\nደረጃውን አዲስ ዕቃ እስኪመጣ ባለው ጊዜ ልክ ያስቀምጡ እንጂ ዜሮ አያድርጉት — ዕቃው በሚያልቅበት ቀን የሚነሳ ማንቂያ ማንቂያ አይደለም።"
+				},
+				{
+					"heading": "ክምችት መጨመር",
+					"body": "Add Supply አዲስ ዕቃ ወይም አዲስ ግዢ ይመዘግባል፦ ስም፣ ዓይነት፣ መጠን፣ የአንዱ ዋጋ፣ አቅራቢና የዳግም ትዕዛዝ ደረጃ።\n\n• የግብዓት ዓይነቶች ከAdmin Panel → Supply Types ይመጣሉ። የግብዓቶች ማውጫ በቀጥታ ወደዚያ የሚያገናኘውም ጥቅም ላይ የሚውለው እዚህ ስለሆነ ነው።\n• ጉዳትና ብክነት በዕቃው ላይ ይመዘገባል፤ ስለዚህ በክምችት ሪፖርት ውስጥ ይታያል እንጂ በዝም ብሎ በተቀየረ መጠን ውስጥ አይሸሸግም።"
+				},
+				{
+					"heading": "የላቀ ማጣሪያ",
+					"body": "የማጣሪያ ምናሌዎች መመለስ የማይችሏቸውን ጥያቄዎች ለመጠየቅ Advanced filter ይጫኑ፦ \"ነፃው ከ5 በታች\"፣ \"የተያዘው ከዜሮ በላይ\"፣ \"ዓይነቱ ጽዳት ሆኖ በእጅ ያለው ከ10 እስከ 50\"።\n\nመስክ፣ ኦፕሬተርና እሴት ይምረጡ፤ የፈለጉትን ያህል ሁኔታ ይጨምሩ። በማያ ገጹ ላይ ያለውን ያጣራል እንጂ የተቀመጠውን አይለውጥም።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ግብዓቶችና ኪራዮች",
+					"href": "/dashboard/help#section-supplies"
+				}
+			]
+		}
+	}
+}

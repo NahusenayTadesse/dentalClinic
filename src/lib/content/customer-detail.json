@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/customers/",
+	"languages": {
+		"en": {
+			"title": "Customer Details",
+			"summary": "One customer, with every site and contract that belongs to them.",
+			"sections": [
+				{
+					"heading": "What is here",
+					"body": "• The customer's own details: name, TIN, phone, email and address\n• Their sites — every location you serve for them\n• The contracts across those sites\n• System information — who entered the customer, who approved them, and who changed the record last"
+				},
+				{
+					"heading": "What you can do",
+					"body": "• Edit the details. Take care with the TIN: it goes onto the invoices and the withholding paperwork.\n• Open any of their sites to reach its contracts and payment history.\n• Add another site under this customer from the Sites screen."
+				},
+				{
+					"heading": "If a site is under the wrong customer",
+					"body": "It has to be corrected rather than worked around — the billing and the commercial report both follow the customer the site sits under. The longer it stays wrong, the more invoices have to be explained, so raise it as soon as you spot it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Customers, sites and contracts",
+					"href": "/dashboard/help#section-commercial"
+				}
+			]
+		},
+		"am": {
+			"title": "የደንበኛ ዝርዝር",
+			"summary": "አንድ ደንበኛ ከጣቢያዎቹና ከኮንትራቶቹ ሁሉ ጋር።",
+			"sections": [
+				{
+					"heading": "እዚህ ያለው",
+					"body": "• የደንበኛው መረጃ፦ ስም፣ ቲን ቁጥር፣ ስልክ፣ ኢሜይልና አድራሻ\n• ጣቢያዎቻቸው — ለእነሱ የሚያገለግሉባቸው ቦታዎች ሁሉ\n• በእነዚያ ጣቢያዎች ላይ ያሉ ኮንትራቶች\n• የሲስተም መረጃ — ደንበኛውን ማን እንዳስገባ፣ ማን እንዳጸደቀና በመጨረሻ ማን እንደለወጠ"
+				},
+				{
+					"heading": "ምን ማድረግ ይችላሉ",
+					"body": "• መረጃውን ማስተካከል። በቲን ቁጥሩ ላይ ይጠንቀቁ፦ በደረሰኞችና በተቀናሽ ግብር ሰነዶች ላይ ይወጣል።\n• የማንኛውንም ጣቢያ ኮንትራትና የክፍያ ታሪክ ለማየት ጣቢያውን መክፈት።\n• በዚህ ደንበኛ ሥር ሌላ ጣቢያ ከጣቢያዎች ገጽ መጨመር።"
+				},
+				{
+					"heading": "አንድ ጣቢያ በተሳሳተ ደንበኛ ሥር ከሆነ",
+					"body": "መታረም አለበት እንጂ በዙሪያው መሥራት አይሠራም — ክፍያውም የንግድ ሪፖርቱም ጣቢያው የተቀመጠበትን ደንበኛ ይከተላሉ። በተሳሳተ ሁኔታ በቆየ ቁጥር ማብራሪያ የሚያስፈልጋቸው ደረሰኞች ይበዛሉ፤ ስለዚህ እንዳዩት ወዲያውኑ ያሳውቁ።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ደንበኞች፣ ጣቢያዎችና ኮንትራቶች",
+					"href": "/dashboard/help#section-commercial"
+				}
+			]
+		}
+	}
+}

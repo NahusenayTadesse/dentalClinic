@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/contracts/terminated",
+	"languages": {
+		"en": {
+			"title": "Terminated Contracts",
+			"summary": "Contracts ended deliberately, with the reason recorded on each one.",
+			"sections": [
+				{
+					"heading": "Terminated is not the same as inactive",
+					"body": "• Inactive means the contract lapsed — usually its end date passed.\n• Terminated means somebody ended it on purpose, before or at its end, and said why.\n\nThe reason is part of the permanent record, which is what lets somebody answer \"why did we stop serving them\" two years later."
+				},
+				{
+					"heading": "What stays",
+					"body": "Everything. The payments collected, the requests raised, the employees who worked the site and the supplies leased to it all keep pointing at the same records. Termination changes the contract's status; it does not remove its history."
+				},
+				{
+					"heading": "Starting again with the same customer",
+					"body": "Write a new contract rather than reopening this one. A terminated contract is a closed chapter with a reason attached, and reopening it would blur what actually happened."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Customers, sites and contracts",
+					"href": "/dashboard/help#section-commercial"
+				}
+			]
+		},
+		"am": {
+			"title": "የተቋረጡ ኮንትራቶች",
+			"summary": "ሆን ተብለው የተቋረጡ ኮንትራቶች፤ በእያንዳንዳቸው ላይ ምክንያቱ ተመዝግቦ።",
+			"sections": [
+				{
+					"heading": "መቋረጥና ንቁ አለመሆን አንድ አይደሉም",
+					"body": "• ንቁ አለመሆን ማለት ኮንትራቱ አልፏል — አብዛኛውን ጊዜ የመጨረሻ ቀኑ ስላለፈ።\n• መቋረጥ ማለት አንድ ሰው ሆን ብሎ አቋርጦታል፤ ከመጨረሻው በፊት ወይም ላይ፤ ምክንያቱንም ተናግሯል።\n\nምክንያቱ የቋሚ መዝገቡ አካል ነው፤ ከሁለት ዓመት በኋላ \"ለምን ማገልገል አቆምን\" ለሚለው መልስ የሚሰጠውም ይኸው ነው።"
+				},
+				{
+					"heading": "የሚቀረው",
+					"body": "ሁሉም። የተሰበሰቡት ክፍያዎች፣ የቀረቡት ጥያቄዎች፣ በጣቢያው የሠሩት ሠራተኞችና የተከራዩለት ግብዓቶች ሁሉ ወደ ተመሳሳይ መዝገቦች ማመልከታቸውን ይቀጥላሉ። መቋረጥ የኮንትራቱን ሁኔታ ይለውጣል እንጂ ታሪኩን አያጠፋም።"
+				},
+				{
+					"heading": "ከዚያው ደንበኛ ጋር እንደገና መጀመር",
+					"body": "ይህን ከመክፈት ይልቅ አዲስ ኮንትራት ይጻፉ። የተቋረጠ ኮንትራት ምክንያት ተያይዞት የተዘጋ ምዕራፍ ነው፤ መልሶ መክፈት የተከሰተውን ያደበዝዘዋል።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ደንበኞች፣ ጣቢያዎችና ኮንትራቶች",
+					"href": "/dashboard/help#section-commercial"
+				}
+			]
+		}
+	}
+}

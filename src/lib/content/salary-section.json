@@ -1,0 +1,61 @@
+{
+	"match": "/dashboard/salary",
+	"languages": {
+		"en": {
+			"title": "Finance and Payroll",
+			"summary": "Paying people, and the money movements around it.",
+			"sections": [
+				{
+					"heading": "The monthly cycle, in order",
+					"body": "1. Make sure the month's attendance is entered and every new hire has been approved.\n2. Enter overtime for the month (All OverTime).\n3. Enter deductions for the month (All Deductions).\n4. Open All UnPaid Salaries for the month, or UnPaid Salaries by Site if you pay site by site.\n5. Check the totals panel: gross, tax, pension, allowances, deductions, net.\n6. Choose the bank account, set the payment date, attach the transfer receipt.\n7. Run payroll. The run, every payslip and the bank transaction are written together.\n8. The run then waits in the Payroll Runs approval queue.\n\nThe whole run is one transaction: if anything fails, nothing is written. You will never find half a month paid."
+				},
+				{
+					"heading": "The screens",
+					"body": "• Paid Salaries — payslips already paid, month by month\n• All UnPaid Salaries / by Site — the payroll sheet for a month\n• All OverTime, All Deductions — the variable parts, entered before the run\n• Transactions — money in and money out, by date range\n• Bank History — every movement against every account\n\nPayroll screens are addressed by month in the Ethiopian calendar, and open on the current month by default. Change months from the selector at the top."
+				},
+				{
+					"heading": "If payroll looks short",
+					"body": "• Unapproved employees are refused, and the message names how many. Approve them in the Employees queue and run again for the remainder.\n• Anything entered after the run is not in it. Overtime and deductions belong before it.\n• For a month already paid, use Adjust on the payslip. An adjustment is a new record with its own approval, not an edit — the original payslip stays exactly as it was paid."
+				},
+				{
+					"heading": "Bank balances are calculated",
+					"body": "Every movement is a signed row — in is positive, out is negative — and an account's balance is their sum. There is nothing to type.\n\nIf a balance disagrees with the statement, a movement is missing, duplicated or dated wrongly. Filter Bank History to the period and compare row by row. Never try to force the balance to match: that only hides the movement you have not found yet."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Payroll and finance",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		},
+		"am": {
+			"title": "ፋይናንስና ደመወዝ",
+			"summary": "ሠራተኞችን መክፈልና በዙሪያው ያሉ የገንዘብ እንቅስቃሴዎች።",
+			"sections": [
+				{
+					"heading": "ወርሃዊ ዑደቱ በቅደም ተከተል",
+					"body": "1. የወሩ የመገኘት መዝገብ መግባቱንና አዲስ ተቀጣሪዎች ሁሉ መጽደቃቸውን ያረጋግጡ።\n2. የወሩን ትርፍ ሰዓት ያስገቡ።\n3. የወሩን ተቀናሾች ያስገቡ።\n4. የወሩን ያልተከፈሉ ደመወዞች ይክፈቱ፤ በጣቢያ የሚከፍሉ ከሆነም በጣቢያ ያለውን።\n5. የድምር ክፍሉን ይመልከቱ፦ ጠቅላላ፣ ግብር፣ ጡረታ፣ አበሎች፣ ተቀናሾች፣ የተጣራ።\n6. የባንክ ሒሳቡን ይምረጡ፣ የክፍያ ቀን ያስቀምጡ፣ የዝውውር ደረሰኝ ያያይዙ።\n7. ደመወዝ ያስኪዱ። ክፍያው፣ እያንዳንዱ የደመወዝ ወረቀትና የባንክ ግብይቱ በአንድ ላይ ይመዘገባሉ።\n8. ከዚያ በደመወዝ ማጽደቅ ወረፋ ውስጥ ይጠብቃል።\n\nሙሉው ሂደት አንድ ግብይት ነው፦ አንድ ነገር ቢሳሳት ምንም አይመዘገብም። ግማሽ የተከፈለ ወር አያገኙም።"
+				},
+				{
+					"heading": "ገጾቹ",
+					"body": "• የተከፈሉ ደመወዞች — አስቀድመው የተከፈሉ የደመወዝ ወረቀቶች በወር በወር\n• ያልተከፈሉ ደመወዞች / በጣቢያ — የወሩ የደመወዝ ሉህ\n• ትርፍ ሰዓት፣ ተቀናሾች — ከክፍያው በፊት የሚገቡ ተለዋዋጭ ክፍያዎች\n• ግብይቶች — ገቢና ወጪ በቀን ክልል\n• የባንክ ታሪክ — በሁሉም ሒሳቦች ላይ ያሉ እንቅስቃሴዎች\n\nየደመወዝ ገጾች በኢትዮጵያ ዘመን አቆጣጠር በወር ይለያሉ፤ በነባሪነትም የአሁኑን ወር ይከፍታሉ። ወር ለመቀየር ከላይ ያለውን መምረጫ ይጠቀሙ።"
+				},
+				{
+					"heading": "ደመወዝ ያነሰ ከመሰለ",
+					"body": "• ያልጸደቁ ሠራተኞች አይካተቱም፤ መልእክቱም ስንት እንደሆኑ ይነግርዎታል። በሠራተኞች ወረፋ ውስጥ አጽድቀው ለቀሪው እንደገና ያስኪዱ።\n• ከክፍያው በኋላ የገባ ማንኛውም ነገር አልተካተተም። ትርፍ ሰዓትና ተቀናሾች ከክፍያው በፊት መግባት አለባቸው።\n• አስቀድሞ ለተከፈለ ወር በደመወዝ ወረቀቱ ላይ Adjust ይጠቀሙ። ማስተካከያ የራሱ ማጽደቅ ያለው አዲስ መዝገብ እንጂ ማረም አይደለም — የመጀመሪያው ወረቀት እንደተከፈለ ይቀራል።"
+				},
+				{
+					"heading": "የባንክ ሒሳብ ቀሪ ይሰላል",
+					"body": "እያንዳንዱ እንቅስቃሴ ምልክት ያለው መስመር ነው — ገቢ አዎንታዊ፣ ወጪ አሉታዊ — የሒሳቡ ቀሪም ድምራቸው ነው። የሚተየብ ነገር የለም።\n\nቀሪው ከባንክ መግለጫ ጋር ካልተስማማ አንድ እንቅስቃሴ ጎድሏል፣ ተደግሟል ወይም ቀኑ ተሳስቷል። የባንክ ታሪክን በዚያ ጊዜ አጣርተው መስመር በመስመር ያመሳክሩ። ቀሪውን በኃይል ለማስማማት አይሞክሩ፤ ያ ገና ያላገኙትን እንቅስቃሴ መደበቅ ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ደመወዝና ፋይናንስ",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,61 @@
+{
+	"match": "/dashboard/employees/add-employee",
+	"languages": {
+		"en": {
+			"title": "Add New Employee",
+			"summary": "Register a new hire. The record is saved as pending and cannot be paid until somebody else approves it.",
+			"sections": [
+				{
+					"heading": "Identity and personal details",
+					"body": "• Name, Father Name, Grandfather Name — all three are required\n• Gender, Nationality, Blood Type, Birth Date, Marital Status\n• Phone and Email\n• TIN (10 digits), Government ID, Photo, Signature\n• Pension Card — tick if they already hold one, and attach the image or PDF\n\nThe photo is what the ID card maker prints later, so use a usable one now."
+				},
+				{
+					"heading": "If the system says this person already exists",
+					"body": "The form checks the identity you typed against the employees already registered. If it finds a match it stops and shows a \"View Existing Profile\" button.\n\n1. Open the existing profile and check whether it really is the same person.\n2. If it is, close this form — reinstate or edit the existing record instead of creating a second one.\n3. Only if it is genuinely a different person, tick \"Verify Employee's Identity\" and continue.\n\nDuplicate employees are painful to unpick once they have been paid, which is why this check is here."
+				},
+				{
+					"heading": "Address, employment and salary",
+					"body": "Address: Subcity, Street, Kebele, Building, Floor, House Number.\n\nEmployment: Department, Position, Employment Status, Site, Hire Date, Educational Level, and Office Commission with its percentage where it applies.\n\nSalary: Basic Salary plus Transport, Housing, Non-Tax and Positional allowances. The gross shown at the bottom is the sum of all of them, and it is what payroll will use.\n\nGet the hire date right — leave accrual and length-of-service entitlements are counted from it."
+				},
+				{
+					"heading": "After you save",
+					"body": "• The employee is saved as pending and appears in the Employees approval queue.\n• A pending employee cannot be paid. Payroll refuses to include them and reports how many it left out.\n• Somebody other than you has to approve it. You cannot release your own request.\n• Guarantor, bank account, family, qualifications and work experience are added afterwards from the employee's profile.\n• If a list you need is missing an option, add it in Admin Panel first — Departments, Positions, Employment Statuses, Educational Levels."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Employees",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		},
+		"am": {
+			"title": "አዲስ ሠራተኛ መጨመር",
+			"summary": "አዲስ ተቀጣሪ መመዝገቢያ። መዝገቡ በመጠባበቅ ላይ ሆኖ ይቀመጣል፤ ሌላ ሰው እስኪያጸድቀው ድረስ ክፍያ አይፈጸምለትም።",
+			"sections": [
+				{
+					"heading": "ማንነትና የግል መረጃ",
+					"body": "• ስም፣ የአባት ስም፣ የአያት ስም — ሦስቱም ያስፈልጋሉ\n• ጾታ፣ ዜግነት፣ የደም ዓይነት፣ የልደት ቀን፣ የጋብቻ ሁኔታ\n• ስልክና ኢሜይል\n• ቲን ቁጥር (10 አኃዝ)፣ የመንግሥት መታወቂያ፣ ፎቶ፣ ፊርማ\n• የጡረታ ካርድ — ካላቸው ምልክት ያድርጉና ምስሉን ወይም PDF ያያይዙ\n\nፎቶው በኋላ የመታወቂያ ካርድ ሲሠራ የሚታተመው ነው፤ ስለዚህ አሁን ጥሩ ፎቶ ይጠቀሙ።"
+				},
+				{
+					"heading": "ሲስተሙ \"ይህ ሰው አስቀድሞ አለ\" ካለ",
+					"body": "ቅጹ የጻፉትን ማንነት አስቀድመው ከተመዘገቡ ሠራተኞች ጋር ያመሳክራል። ተመሳሳይ ካገኘ ይቆምና \"View Existing Profile\" የሚል ቁልፍ ያሳያል።\n\n1. ያለውን መገለጫ ከፍተው በእርግጥ ያው ሰው መሆኑን ያረጋግጡ።\n2. ያው ሰው ከሆነ ይህን ቅጽ ይዝጉ — ሁለተኛ መዝገብ ከመፍጠር ይልቅ ያለውን ያስተካክሉ።\n3. በእርግጥ ሌላ ሰው ከሆነ ብቻ \"Verify Employee's Identity\" ላይ ምልክት አድርገው ይቀጥሉ።\n\nየተደገሙ ሠራተኞች ክፍያ ከተፈጸመ በኋላ ማስተካከል በጣም አድካሚ ነው፤ ይህ ማጣሪያ ያለውም ለዚህ ነው።"
+				},
+				{
+					"heading": "አድራሻ፣ ቅጥርና ደመወዝ",
+					"body": "አድራሻ፦ ክፍለ ከተማ፣ መንገድ፣ ቀበሌ፣ ሕንፃ፣ ፎቅ፣ የቤት ቁጥር።\n\nቅጥር፦ ክፍል፣ የሥራ መደብ፣ የቅጥር ሁኔታ፣ ጣቢያ፣ የቅጥር ቀን፣ የትምህርት ደረጃ፤ አስፈላጊ ሲሆንም የቢሮ ኮሚሽንና መቶኛው።\n\nደመወዝ፦ መሠረታዊ ደመወዝ ከትራንስፖርት፣ ከቤት፣ ከግብር ነፃ እና ከሥራ መደብ አበሎች ጋር። ከታች የሚታየው ጠቅላላ ድምር ነው፤ ደመወዝ ሲሰላም የሚያገለግለው ይኸው ነው።\n\nየቅጥር ቀኑን በትክክል ያስገቡ — የፈቃድ ክምችትና የአገልግሎት ዘመን መብቶች ከዚያ ይቆጠራሉ።"
+				},
+				{
+					"heading": "ካስቀመጡ በኋላ",
+					"body": "• ሠራተኛው በመጠባበቅ ላይ ሆኖ ይቀመጣል፤ በሠራተኞች የማጽደቅ ወረፋ ውስጥ ይታያል።\n• ያልጸደቀ ሠራተኛ ክፍያ አይፈጸምለትም። ደመወዝ ሲሰላ ስንቱን እንዳገለለ ይነግርዎታል።\n• ከእርስዎ ሌላ ሰው ማጽደቅ አለበት። የራስዎን ጥያቄ ማጽደቅ አይችሉም።\n• ዋስ፣ የባንክ ሒሳብ፣ ቤተሰብ፣ የትምህርት ማስረጃና የሥራ ልምድ በኋላ ከሠራተኛው መገለጫ ይጨመራሉ።\n• የሚፈልጉት አማራጭ በዝርዝሩ ውስጥ ከሌለ መጀመሪያ በAdmin Panel ውስጥ ይጨምሩት።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሠራተኞች",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		}
+	}
+}

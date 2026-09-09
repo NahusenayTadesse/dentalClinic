@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/reports/stock",
+	"languages": {
+		"en": {
+			"title": "Stock Report",
+			"summary": "What is held, what moved, and what was lost.",
+			"sections": [
+				{
+					"heading": "What it covers",
+					"body": "Ledgers: Stock, Supply Adjustments, Damaged Supplies.\n\nStock is the position as it stands; adjustments are the movements that got it there; damaged is the shrinkage."
+				},
+				{
+					"heading": "Using it",
+					"body": "Damage recorded against an item is what makes shrinkage visible here rather than hidden inside a quantity that quietly changed — so record it at the time, not at the count.\n\nThis report is also linked from the Supplies menu, because that is where you are standing when you want it.\n\nNeeds the reports.finance permission."
+				},
+				{
+					"heading": "Every report works the same way",
+					"body": "Set the date range and the filters at the top — both ends of the range are included, and the query follows you when you move to another report. Choose a section below the charts to load the rows behind them, then filter, print or export that table like any other in the system."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Reports",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		},
+		"am": {
+			"title": "የክምችት ሪፖርት",
+			"summary": "ያለው ክምችት፣ የተንቀሳቀሰውና የጠፋው።",
+			"sections": [
+				{
+					"heading": "የሚሸፍነው",
+					"body": "መዝገቦች፦ ክምችት፣ የግብዓት ማስተካከያዎች፣ የተበላሹ ግብዓቶች።\n\nክምችት አሁን ያለው ሁኔታ ነው፤ ማስተካከያዎች ወደዚያ ያደረሱት እንቅስቃሴዎች ናቸው፤ የተበላሹ ደግሞ ብክነቱ ናቸው።"
+				},
+				{
+					"heading": "አጠቃቀም",
+					"body": "በዕቃ ላይ የተመዘገበ ጉዳት ብክነቱ እዚህ እንዲታይ ያደርጋል እንጂ በዝም ብሎ በተቀየረ መጠን ውስጥ አይሸሸግም — ስለዚህ በተከሰተበት ጊዜ ይመዝግቡት እንጂ በቆጠራ ጊዜ አይደለም።\n\nይህ ሪፖርት ከግብዓቶች ማውጫም ይገኛል፤ ምክንያቱም ሲፈልጉት የሚገኙበት ቦታ ያ ነው።\n\nየreports.finance ፈቃድ ይፈልጋል።"
+				},
+				{
+					"heading": "ሁሉም ሪፖርቶች በአንድ መንገድ ይሠራሉ",
+					"body": "ከላይ የቀን ክልሉንና ማጣሪያዎቹን ያስቀምጡ — ሁለቱም ጫፎች ይካተታሉ፤ ወደ ሌላ ሪፖርት ሲሄዱም መጠይቁ አብሮ ይመጣል። ከገበታዎቹ በታች ያለውን ክፍል መርጠው ከበስተጀርባ ያሉትን መስመሮች ይጫኑ፤ ከዚያ እንደማንኛውም ሠንጠረዥ ያጣሩ፣ ያትሙ ወይም ወደ ውጭ ያውጡ።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሪፖርቶች",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/reports/money",
+	"languages": {
+		"en": {
+			"title": "Money Report",
+			"summary": "Money in, money out, and the bank underneath both.",
+			"sections": [
+				{
+					"heading": "What it covers",
+					"body": "Ledgers: Transactions, Expenses, Bank History, Services Rendered.\n\nTransactions are every movement; expenses are the company's own spending by category; bank history is the signed rows the balances are the sum of."
+				},
+				{
+					"heading": "Using it",
+					"body": "When a bank balance disagrees with a statement, filter Bank History to that period here and compare row by row — the balance is calculated, so the difference is always a movement that is missing, duplicated or dated wrongly.\n\nThe expenses ledger is only as useful as the categories underneath it, so categorise as you enter.\n\nNeeds the reports.finance permission."
+				},
+				{
+					"heading": "Every report works the same way",
+					"body": "Set the date range and the filters at the top — both ends of the range are included, and the query follows you when you move to another report. Choose a section below the charts to load the rows behind them, then filter, print or export that table like any other in the system."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Reports",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		},
+		"am": {
+			"title": "የገንዘብ ሪፖርት",
+			"summary": "ገቢ፣ ወጪ፣ እና ከሁለቱ በታች ያለው ባንክ።",
+			"sections": [
+				{
+					"heading": "የሚሸፍነው",
+					"body": "መዝገቦች፦ ግብይቶች፣ ወጪዎች፣ የባንክ ታሪክ፣ የተሰጡ አገልግሎቶች።\n\nግብይቶች እያንዳንዱ እንቅስቃሴ ናቸው፤ ወጪዎች የድርጅቱ ወጪ በምድብ ናቸው፤ የባንክ ታሪክ ደግሞ ቀሪ ሒሳቦች ድምራቸው የሆኑ ምልክት ያላቸው መስመሮች ናቸው።"
+				},
+				{
+					"heading": "አጠቃቀም",
+					"body": "የባንክ ቀሪ ሒሳብ ከመግለጫ ጋር ካልተስማማ የባንክ ታሪክን በዚያ ጊዜ አጣርተው መስመር በመስመር ያመሳክሩ — ቀሪው ስለሚሰላ ልዩነቱ ሁሌም የጎደለ፣ የተደገመ ወይም ቀኑ የተሳሳተ እንቅስቃሴ ነው።\n\nየወጪ መዝገብ ጠቀሜታው ከበስተጀርባው ባሉት ምድቦች ልክ ነው፤ ስለዚህ ሲያስገቡ ይመድቡ።\n\nየreports.finance ፈቃድ ይፈልጋል።"
+				},
+				{
+					"heading": "ሁሉም ሪፖርቶች በአንድ መንገድ ይሠራሉ",
+					"body": "ከላይ የቀን ክልሉንና ማጣሪያዎቹን ያስቀምጡ — ሁለቱም ጫፎች ይካተታሉ፤ ወደ ሌላ ሪፖርት ሲሄዱም መጠይቁ አብሮ ይመጣል። ከገበታዎቹ በታች ያለውን ክፍል መርጠው ከበስተጀርባ ያሉትን መስመሮች ይጫኑ፤ ከዚያ እንደማንኛውም ሠንጠረዥ ያጣሩ፣ ያትሙ ወይም ወደ ውጭ ያውጡ።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሪፖርቶች",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		}
+	}
+}

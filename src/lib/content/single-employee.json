@@ -1,0 +1,61 @@
+{
+	"match": "/dashboard/employees/single",
+	"languages": {
+		"en": {
+			"title": "Employee Profile",
+			"summary": "Everything held about one person, in sections you can edit one at a time.",
+			"sections": [
+				{
+					"heading": "The sections on this page",
+					"body": "• Identity — ID number, government ID, signature and pension card, each viewable\n• Contact Information, Address\n• Employment — site, department, position, status, hire date\n• Personal Details — birth date, gender, marital status, blood type, nationality\n• Bank Accounts — where the salary is paid\n• Guarantor — the reference person, with their own ID on file\n• Family Members, Schedule, Qualifications, Work Experiences\n• Office Commission — the percentage, where it applies\n• System Information — who entered the record, who approved it, and who changed it last\n\nEach section has its own edit button, so a correction never means retyping the whole record."
+				},
+				{
+					"heading": "Salary",
+					"body": "The Salary page holds the current package and its history, and is where the variable parts are entered for this person:\n\n• Change salary — a promotion or a raise. This is not a straight edit: it is submitted, waits in the Salary Changes approval queue, and only becomes the figure payroll uses once approved.\n• Add bonus, Add deduction, Add overtime — entered against a month, and picked up by that month's payroll run.\n• Salary history — every package this person has been on, and when."
+				},
+				{
+					"heading": "Leave and the ID card",
+					"body": "• Add leave — records a leave with a type, a start and an end date. Either boundary can be marked a half day: a one-day leave marked half costs 0.5 days, and the figure the form previews is exactly what the balance is charged.\n• Leave history — leaves taken, the balance and the entitlement.\n• ID maker — a printable identity card built from the photograph and details on file. Update the photo before printing; the card uses whatever is there."
+				},
+				{
+					"heading": "Leaving and returning",
+					"body": "• Terminate — ends the employment and records the reason and date. The person moves to the inactive list; nothing is deleted and the history stays intact.\n• Reinstate — brings a former employee back.\n\nIf a banner at the top says the record is pending or rejected, it is telling you the record is not in force yet. A pending employee cannot be paid."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Employees",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		},
+		"am": {
+			"title": "የሠራተኛ መገለጫ",
+			"summary": "ስለ አንድ ሰው የተያዘው መረጃ በሙሉ፤ በክፍል በክፍል ማስተካከል ይቻላል።",
+			"sections": [
+				{
+					"heading": "በዚህ ገጽ ላይ ያሉ ክፍሎች",
+					"body": "• ማንነት — መታወቂያ ቁጥር፣ የመንግሥት መታወቂያ፣ ፊርማና የጡረታ ካርድ፤ እያንዳንዱን ማየት ይቻላል\n• የመገናኛ መረጃ፣ አድራሻ\n• ቅጥር — ጣቢያ፣ ክፍል፣ የሥራ መደብ፣ ሁኔታ፣ የቅጥር ቀን\n• የግል መረጃ — የልደት ቀን፣ ጾታ፣ የጋብቻ ሁኔታ፣ የደም ዓይነት፣ ዜግነት\n• የባንክ ሒሳቦች — ደመወዙ የሚከፈልበት\n• ዋስ — ዋስትና ሰጪው ሰው ከመታወቂያው ጋር\n• የቤተሰብ አባላት፣ የሥራ መርሐግብር፣ የትምህርት ማስረጃ፣ የሥራ ልምድ\n• የቢሮ ኮሚሽን — አግባብ ሲኖረው መቶኛው\n• የሲስተም መረጃ — መዝገቡን ማን እንዳስገባ፣ ማን እንዳጸደቀውና በመጨረሻ ማን እንደለወጠው\n\nእያንዳንዱ ክፍል የራሱ የማስተካከያ ቁልፍ አለው፤ ስለዚህ አንድ ስህተት ለማረም ሙሉውን መዝገብ መድገም አያስፈልግም።"
+				},
+				{
+					"heading": "ደመወዝ",
+					"body": "የደመወዝ ገጹ አሁን ያለውን ጥቅልና ታሪኩን ይይዛል፤ ተለዋዋጭ ክፍያዎችም እዚህ ይገባሉ፦\n\n• ደመወዝ መቀየር — ዕድገት ወይም ጭማሪ። ይህ ቀጥተኛ ማስተካከያ አይደለም፤ ቀርቦ በደመወዝ ለውጥ የማጽደቅ ወረፋ ይጠብቃል፤ ከጸደቀ በኋላ ብቻ ደመወዝ ሲሰላ የሚያገለግል ይሆናል።\n• ጉርሻ፣ ተቀናሽ፣ ትርፍ ሰዓት መጨመር — በወር ተመዝግበው በዚያ ወር ደመወዝ ውስጥ ይካተታሉ።\n• የደመወዝ ታሪክ — ይህ ሰው ያለፈባቸው ጥቅሎችና ጊዜያቸው።"
+				},
+				{
+					"heading": "ፈቃድና የመታወቂያ ካርድ",
+					"body": "• ፈቃድ መጨመር — ዓይነት፣ የመጀመሪያና የመጨረሻ ቀን ያለው ፈቃድ ይመዘግባል። ማንኛውም ጫፍ ግማሽ ቀን ተብሎ ሊመዘገብ ይችላል፦ የአንድ ቀን ፈቃድ ግማሽ ከተባለ 0.5 ቀን ይቆጠራል፤ ቅጹ የሚያሳየው አኃዝ ከሒሳቡ የሚቀነሰው ልክ ነው።\n• የፈቃድ ታሪክ — የተወሰዱ ፈቃዶች፣ ቀሪ ሒሳብና መብት።\n• የመታወቂያ ካርድ — ከፎቶውና ከመረጃው የሚሠራ የሚታተም ካርድ። ከማተምዎ በፊት ፎቶውን ያዘምኑ፤ ካርዱ ያለውን ነው የሚጠቀመው።"
+				},
+				{
+					"heading": "መልቀቅና መመለስ",
+					"body": "• ማሰናበት — ቅጥሩን ያቆማል፤ ምክንያቱንና ቀኑን ይመዘግባል። ሰውየው ወደ ንቁ ያልሆኑት ዝርዝር ይሄዳል፤ ምንም አይሰረዝም፤ ታሪኩም እንዳለ ይቆያል።\n• መመለስ — የቀድሞ ሠራተኛን መልሶ ያስገባል።\n\nከላይ ያለ ማስታወቂያ መዝገቡ በመጠባበቅ ላይ ወይም ውድቅ መሆኑን ከገለጸ፣ መዝገቡ ገና ሥራ ላይ አልዋለም ማለት ነው። ያልጸደቀ ሠራተኛ ክፍያ አይፈጸምለትም።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሠራተኞች",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		}
+	}
+}

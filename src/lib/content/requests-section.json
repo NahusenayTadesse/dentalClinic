@@ -1,0 +1,61 @@
+{
+	"match": "/dashboard/requests",
+	"languages": {
+		"en": {
+			"title": "Payment Requests",
+			"summary": "The monthly bills you raise against your sites — one per site per month.",
+			"sections": [
+				{
+					"heading": "What a request is",
+					"body": "A payment request is the bill for one site for one month, built from that site's contract. It is not a staff request: leave, advances and expenses are handled elsewhere — leave on the employee's profile, expenses under Finance.\n\nRequests are what you are owed. Payments, in the next section of the menu, are what actually arrived."
+				},
+				{
+					"heading": "The tabs",
+					"body": "• Add New Request — raise this month's bill for a site\n• Pending Requests — raised, waiting to be checked and released\n• Approved Requests — released and out with the customer, browsable by date range\n• Cancelled Requests — withdrawn or refused, with the reason on the row\n• Special Requests — the ones outside the ordinary monthly cycle\n\nEach tab is a separate permission, so you may see some and not others."
+				},
+				{
+					"heading": "Raising one",
+					"body": "1. Open Add New Request and pick the site. The contract, service and monthly amount come with it.\n2. Pick the month and year the request covers — the month it belongs to, not the month you are typing in.\n3. Check the amount, add the reference or invoice number, attach the invoice.\n4. Save. The request goes out as pending and waits for somebody else to release it."
+				},
+				{
+					"heading": "\"A request already exists for this month\"",
+					"body": "One bill per site per month is enforced by the database, not just by the form, and the check counts deleted requests too — a deleted row still holds its slot for that month.\n\n1. Look for the existing request for that site and month, including in Cancelled.\n2. Correct that one rather than raising a second.\n3. If it was deleted, ask an administrator to sort it out; a new one will keep failing until it is."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Billing",
+					"href": "/dashboard/help#section-billing"
+				}
+			]
+		},
+		"am": {
+			"title": "የክፍያ ጥያቄዎች",
+			"summary": "ለጣቢያዎችዎ የሚያቀርቧቸው ወርሃዊ ክፍያ ጥያቄዎች — ለአንድ ጣቢያ በአንድ ወር አንድ።",
+			"sections": [
+				{
+					"heading": "የክፍያ ጥያቄ ምንድን ነው",
+					"body": "የክፍያ ጥያቄ ማለት ለአንድ ጣቢያ በአንድ ወር የሚቀርብ ክፍያ ሲሆን ከዚያ ጣቢያ ኮንትራት ይወሰዳል። የሠራተኛ ጥያቄ አይደለም፦ ፈቃድ፣ ቅድሚያ ክፍያና ወጪ በሌላ ቦታ ይያዛሉ — ፈቃድ በሠራተኛው መገለጫ፣ ወጪ በFinance ሥር።\n\nጥያቄዎች የሚገባዎት ገንዘብ ናቸው። በማውጫው ቀጣይ ክፍል ያሉት ክፍያዎች ደግሞ በትክክል የገባው ገንዘብ ናቸው።"
+				},
+				{
+					"heading": "ትሮቹ",
+					"body": "• አዲስ ጥያቄ መጨመር — ለአንድ ጣቢያ የዚህን ወር ክፍያ ማቅረብ\n• በመጠባበቅ ላይ ያሉ — ቀርበው ማረጋገጫ የሚጠብቁ\n• የጸደቁ — ተለቅቀው ከደንበኛው ጋር ያሉ፤ በቀን ክልል ማየት ይቻላል\n• የተሰረዙ — የተነሱ ወይም ውድቅ የተደረጉ፤ ምክንያቱ በመስመሩ ላይ\n• ልዩ ጥያቄዎች — ከመደበኛው ወርሃዊ ዑደት ውጪ ያሉ\n\nእያንዳንዱ ትር የራሱ ፈቃድ አለው፤ ስለዚህ አንዳንዶቹን አይተው ሌሎቹን ላያዩ ይችላሉ።"
+				},
+				{
+					"heading": "ጥያቄ ማቅረብ",
+					"body": "1. አዲስ ጥያቄ መጨመርን ከፍተው ጣቢያውን ይምረጡ። ኮንትራቱ፣ አገልግሎቱና ወርሃዊ መጠኑ አብረው ይመጣሉ።\n2. ጥያቄው የሚሸፍነውን ወርና ዓመት ይምረጡ — የሚተይቡበትን ወር ሳይሆን የሚመለከተውን ወር።\n3. መጠኑን ያረጋግጡ፣ የደረሰኝ ቁጥር ይጨምሩ፣ ደረሰኙን ያያይዙ።\n4. ያስቀምጡ። ጥያቄው በመጠባበቅ ላይ ሆኖ የሌላ ሰው ማጽደቅ ይጠብቃል።"
+				},
+				{
+					"heading": "\"ለዚህ ወር ጥያቄ አስቀድሞ አለ\" ሲል",
+					"body": "ለአንድ ጣቢያ በአንድ ወር አንድ ክፍያ ብቻ የሚለው ደንብ በቅጹ ብቻ ሳይሆን በመረጃ ቋቱ ራሱ የተጠበቀ ነው፤ ማጣሪያውም የተሰረዙትን ይቆጥራል — የተሰረዘ መስመር እንኳ የወሩን ቦታ ይይዛል።\n\n1. ለዚያ ጣቢያና ወር ያለውን ጥያቄ ይፈልጉ፤ በተሰረዙት ውስጥም ይመልከቱ።\n2. ሁለተኛ ከማቅረብ ይልቅ ያለውን ያስተካክሉ።\n3. የተሰረዘ ከሆነ አስተዳዳሪ እንዲያስተካክለው ይጠይቁ፤ እስከዚያ ድረስ አዲሱ ሁሌም አይሳካም።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ክፍያ",
+					"href": "/dashboard/help#section-billing"
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/employees/leaves",
+	"languages": {
+		"en": {
+			"title": "Leaves",
+			"summary": "Leave across the whole workforce: pending, approved and cancelled.",
+			"sections": [
+				{
+					"heading": "How leave moves",
+					"body": "1. A leave is recorded for a person, with a type, a start date and an end date. It is entered from that employee's profile.\n2. It sits in Pending until somebody settles it.\n3. Approved leave is deducted from the employee's balance and appears in Approved.\n4. Withdrawn or refused leave lands in Cancelled, with the reason.\n\nBalances only move on approved leave. A pending request does not reduce anyone's balance."
+				},
+				{
+					"heading": "Half days",
+					"body": "Either boundary of a leave can be marked a half day.\n\n• A single day marked half costs 0.5 — the two flags refer to the same day, so it is only ever docked once.\n• On a longer leave the two ends are independent: each half boundary takes 0.5 off the total.\n\nThe length is worked out once and stored on the leave, so the number you approved is the number that is spent. It is never silently recomputed later."
+				},
+				{
+					"heading": "Balances and entitlements",
+					"body": "The days a person is due come from Admin Panel → Annual Leave Entitlements, usually stepped by length of service, and are counted from their hire date.\n\nAccrual adds days over time and runs on a schedule of its own; the Leave Expiry Policy decides whether unused days carry over and for how long. After changing any of that, check the Time & Leave report to see what actually moved."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Employees",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		},
+		"am": {
+			"title": "ፈቃዶች",
+			"summary": "የሠራተኛው ኃይል ፈቃዶች በሙሉ፦ በመጠባበቅ ላይ ያሉ፣ የጸደቁና የተሰረዙ።",
+			"sections": [
+				{
+					"heading": "ፈቃድ እንዴት እንደሚንቀሳቀስ",
+					"body": "1. ለአንድ ሰው ዓይነት፣ የመጀመሪያና የመጨረሻ ቀን ያለው ፈቃድ ይመዘገባል። ከዚያ ሠራተኛ መገለጫ ውስጥ ይገባል።\n2. አንድ ሰው እስኪወስንበት ድረስ በመጠባበቅ ላይ ይቆያል።\n3. የጸደቀ ፈቃድ ከሠራተኛው ሒሳብ ተቀንሶ በጸደቁት ውስጥ ይታያል።\n4. የተነሳ ወይም ውድቅ የተደረገ ፈቃድ ከምክንያቱ ጋር በተሰረዙት ውስጥ ይቀመጣል።\n\nሒሳብ የሚቀነሰው በጸደቀ ፈቃድ ብቻ ነው። በመጠባበቅ ላይ ያለ ጥያቄ የማንንም ሒሳብ አይቀንስም።"
+				},
+				{
+					"heading": "ግማሽ ቀናት",
+					"body": "የፈቃዱ ማንኛውም ጫፍ ግማሽ ቀን ተብሎ ሊመዘገብ ይችላል።\n\n• ግማሽ የተባለ አንድ ቀን 0.5 ይሆናል — ሁለቱ ምልክቶች ያንኑ ቀን ስለሚያመለክቱ አንድ ጊዜ ብቻ ነው የሚቀነሰው።\n• ረዥም ፈቃድ ላይ ሁለቱ ጫፎች የተለያዩ ናቸው፦ እያንዳንዱ ግማሽ ጫፍ ከድምሩ 0.5 ይቀንሳል።\n\nርዝመቱ አንዴ ተሰልቶ በፈቃዱ ላይ ይቀመጣል፤ ስለዚህ ያጸደቁት ቁጥር የሚቀነሰው ቁጥር ነው። በኋላ በዝምታ አይሰላም።"
+				},
+				{
+					"heading": "ሒሳብና መብት",
+					"body": "ለአንድ ሰው የሚገባው ቀን ከAdmin Panel → ዓመታዊ የፈቃድ መብት ይመጣል፤ አብዛኛውን ጊዜም በአገልግሎት ዘመን ይለያያል፤ ከተቀጠሩበት ቀን ጀምሮም ይቆጠራል።\n\nክምችት በጊዜ ሂደት ቀኖችን ይጨምራል፤ በራሱ መርሐግብርም ይሠራል፤ የፈቃድ ማብቂያ ፖሊሲ ደግሞ ያልተጠቀሙበት ቀን ይተላለፍ አይተላለፍ ይወስናል። ከዚህ አንዱን ከቀየሩ በኋላ በትክክል ምን እንደተለወጠ ለማየት የጊዜና ፈቃድ ሪፖርቱን ይመልከቱ።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሠራተኞች",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		}
+	}
+}

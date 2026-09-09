@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/salary/transactions",
+	"languages": {
+		"en": {
+			"title": "Transactions and Expenses",
+			"summary": "Every movement of money that is not a customer collection, and the company's own spending.",
+			"sections": [
+				{
+					"heading": "The two screens",
+					"body": "• Transactions — money in and money out, browsable by date range.\n• Expenses — the company's own spending, by category. Add expense records one: category, amount, date, payment method, description and receipt. Categories manages the list the form chooses from.\n\nExpenses wait in the Expenses approval queue before they count."
+				},
+				{
+					"heading": "Do not enter payroll twice",
+					"body": "A payroll run writes its own transaction automatically, and so does an approved collection. If you find yourself typing one of those in by hand, it is already there — look for it before adding a second."
+				},
+				{
+					"heading": "Categorise as you go",
+					"body": "The money report is only as useful as the categories underneath it. A month of everything filed under \"other\" cannot be analysed afterwards, and re-categorising later is guesswork."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Payroll and finance",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		},
+		"am": {
+			"title": "ግብይቶችና ወጪዎች",
+			"summary": "ከደንበኛ ክፍያ ውጪ ያለ እያንዳንዱ የገንዘብ እንቅስቃሴ፣ እንዲሁም የድርጅቱ ራሱ ወጪ።",
+			"sections": [
+				{
+					"heading": "ሁለቱ ገጾች",
+					"body": "• ግብይቶች — ገቢና ወጪ በቀን ክልል ማየት ይቻላል።\n• ወጪዎች — የድርጅቱ ወጪ በምድብ። Add expense አንዱን ይመዘግባል፦ ምድብ፣ መጠን፣ ቀን፣ የክፍያ ዘዴ፣ መግለጫና ደረሰኝ። Categories ቅጹ የሚመርጥበትን ዝርዝር ያስተዳድራል።\n\nወጪዎች ከመቆጠራቸው በፊት በወጪ ማጽደቅ ወረፋ ውስጥ ይጠብቃሉ።"
+				},
+				{
+					"heading": "ደመወዝን ሁለት ጊዜ አያስገቡ",
+					"body": "የደመወዝ ክፍያ የራሱን ግብይት በራሱ ይመዘግባል፤ የጸደቀ የደንበኛ ክፍያም እንዲሁ። ከእነዚህ አንዱን በእጅ እየተየቡ ከሆነ አስቀድሞ ተመዝግቧል — ሁለተኛ ከመጨመርዎ በፊት ይፈልጉት።"
+				},
+				{
+					"heading": "ሲያስገቡ ይመድቡ",
+					"body": "የገንዘብ ሪፖርት ጠቀሜታው ከበስተጀርባው ባሉት ምድቦች ልክ ነው። ሁሉም በ\"ሌላ\" ሥር የተመዘገበበት ወር በኋላ ሊተነተን አይችልም፤ ዘግይቶ መመደብም ግምት ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ደመወዝና ፋይናንስ",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		}
+	}
+}

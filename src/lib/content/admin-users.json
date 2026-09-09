@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/admin-panel/users",
+	"languages": {
+		"en": {
+			"title": "Users",
+			"summary": "The accounts people sign in with, and what each one is allowed to do.",
+			"sections": [
+				{
+					"heading": "Creating an account",
+					"body": "1. Press Add user.\n2. Enter the name and username.\n3. Use the password generator rather than inventing one, and hand it over in person.\n4. Choose the role the account carries.\n5. Save.\n\nOne account per person, always. Every approval in this system names a person, and a shared login makes that name worthless."
+				},
+				{
+					"heading": "Roles and special permissions",
+					"body": "• The role is the bundle of permissions the account carries. Change the role and everything the person can reach changes with it.\n• A special permission is granted to one person on top of their role, for a responsibility that does not justify a whole new role.\n\nSomebody holding every permission in the system becomes a super admin by consequence — that is not a flag anyone sets. Grant a complete set only when you mean exactly that."
+				},
+				{
+					"heading": "When somebody leaves",
+					"body": "Remove their access here the same day. Their history stays: the records they entered and approved keep their names, which is the point."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Admin panel",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		},
+		"am": {
+			"title": "ተጠቃሚዎች",
+			"summary": "ሰዎች የሚገቡባቸው ሒሳቦችና እያንዳንዱ ምን ማድረግ እንደሚፈቀድለት።",
+			"sections": [
+				{
+					"heading": "ሒሳብ መፍጠር",
+					"body": "1. Add user ይጫኑ።\n2. ስምና የተጠቃሚ ስም ያስገቡ።\n3. የይለፍ ቃል ራስዎ ከመፍጠር ይልቅ አመንጪውን ይጠቀሙ፤ በአካልም ያስረክቡ።\n4. ሒሳቡ የሚይዘውን ሚና ይምረጡ።\n5. ያስቀምጡ።\n\nሁሌም ለአንድ ሰው አንድ ሒሳብ። በዚህ ሲስተም ውስጥ እያንዳንዱ ማጽደቅ ሰው ይሰይማል፤ የጋራ ሒሳብ ያንን ስም ዋጋ ቢስ ያደርገዋል።"
+				},
+				{
+					"heading": "ሚናዎችና ልዩ ፈቃዶች",
+					"body": "• ሚና ማለት ሒሳቡ የሚይዘው የፈቃዶች ጥምር ነው። ሚናውን ሲቀይሩ ሰውየው ሊደርስበት የሚችለው ሁሉ አብሮ ይቀየራል።\n• ልዩ ፈቃድ ደግሞ አዲስ ሚና ለማይጠይቅ ኃላፊነት ከሚናቸው በተጨማሪ ለአንድ ሰው የሚሰጥ ነው።\n\nበሲስተሙ ውስጥ ያሉትን ፈቃዶች ሁሉ የያዘ ሰው በዚያው ምክንያት ሱፐር አድሚን ይሆናል — ማንም የሚያስቀምጠው ምልክት አይደለም። ሙሉ ስብስብ የሚሰጡት በእርግጥ ያንን ሲያስቡ ብቻ ይሁን።"
+				},
+				{
+					"heading": "ሰው ሲለቅ",
+					"body": "መዳረሻውን በዚያኑ ቀን እዚህ ያንሱ። ታሪኩ ግን ይቀራል፦ ያስገባቸውና ያጸደቃቸው መዝገቦች ስሙን ይዘው ይቀጥላሉ፤ ዓላማውም ይኸው ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — የአስተዳደር ክፍል",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		}
+	}
+}

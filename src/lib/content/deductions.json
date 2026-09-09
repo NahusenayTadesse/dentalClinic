@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/salary/add-deductions",
+	"languages": {
+		"en": {
+			"title": "Deductions",
+			"summary": "Advances, penalties and anything else to be taken off a month's pay.",
+			"sections": [
+				{
+					"heading": "Entering it",
+					"body": "1. Pick the month at the top.\n2. Add the deduction against the employee, with its amount and reason.\n3. Save.\n\nIt is picked up by that month's payroll run and appears on the payslip."
+				},
+				{
+					"heading": "Timing",
+					"body": "Enter deductions before you run payroll for the month. Anything added afterwards is not in the run — it either waits for the next month or has to go through a payroll adjustment."
+				},
+				{
+					"heading": "Where to see them",
+					"body": "The Compensation report carries the deductions ledger for any range, filtered by site, department or person. That is the copy to take when somebody queries what came off their pay."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Payroll and finance",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		},
+		"am": {
+			"title": "ተቀናሾች",
+			"summary": "ቅድሚያ ክፍያ፣ ቅጣትና ከወሩ ደመወዝ የሚቀነስ ሌላ ማንኛውም ነገር።",
+			"sections": [
+				{
+					"heading": "እንዴት እንደሚገባ",
+					"body": "1. ከላይ ወሩን ይምረጡ።\n2. ተቀናሹን ከመጠኑና ከምክንያቱ ጋር በሠራተኛው ላይ ይጨምሩ።\n3. ያስቀምጡ።\n\nበዚያ ወር ደመወዝ ውስጥ ተካቶ በደመወዝ ወረቀቱ ላይ ይታያል።"
+				},
+				{
+					"heading": "ጊዜው",
+					"body": "ተቀናሾችን ለወሩ ደመወዝ ከማስኪያዎ በፊት ያስገቡ። ከዚያ በኋላ የተጨመረ በክፍያው ውስጥ አይካተትም — ወይ ቀጣዩን ወር ይጠብቃል ወይም በደመወዝ ማስተካከያ ማለፍ አለበት።"
+				},
+				{
+					"heading": "የት እንደሚታዩ",
+					"body": "የካሳ ሪፖርት የተቀናሾችን መዝገብ ለማንኛውም ክልል በጣቢያ፣ በክፍል ወይም በሰው ተጣርቶ ይይዛል። አንድ ሰው ከደመወዙ ስለተቀነሰው ሲጠይቅ የሚወሰደው ያ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ደመወዝና ፋይናንስ",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		}
+	}
+}

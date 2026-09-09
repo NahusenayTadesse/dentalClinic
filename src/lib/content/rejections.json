@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/rejections",
+	"languages": {
+		"en": {
+			"title": "Rejections",
+			"summary": "Records that were turned back, kept in their own queues so somebody can fix them or close them off.",
+			"sections": [
+				{
+					"heading": "Why this is a separate desk",
+					"body": "Rejected records do not vanish. Clearing them is its own job, usually held by different people from the ones who approve — which is why this sits apart from Approvals and behind its own permission."
+				},
+				{
+					"heading": "Working a rejection",
+					"body": "1. Open the queue for that kind of record.\n2. Read the rejection reason on the row. The reason is required at the moment of rejection, so there is always one.\n3. Correct the underlying record and resubmit it, or leave it closed if it should never have been entered.\n\nThe reason stays on the record itself, not only in this queue, so the history explains itself later."
+				},
+				{
+					"heading": "If you cannot find a record you entered",
+					"body": "Check three places before entering it again: the approval queue (still pending), this desk (turned back), and whether it was deleted.\n\nDo not re-enter it. A duplicate that then gets approved is far more work to unpick than a missing one is to find."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Approvals",
+					"href": "/dashboard/help#section-approvals"
+				}
+			]
+		},
+		"am": {
+			"title": "ውድቅ የተደረጉ",
+			"summary": "ተመልሰው የተሰጡ መዝገቦች፤ አንድ ሰው እንዲያስተካክላቸው ወይም እንዲዘጋቸው በራሳቸው ወረፋ ውስጥ ይቀመጣሉ።",
+			"sections": [
+				{
+					"heading": "ለምን የተለየ ክፍል ሆነ",
+					"body": "ውድቅ የተደረጉ መዝገቦች አይጠፉም። እነሱን ማጽዳት የራሱ ሥራ ነው፤ አብዛኛውን ጊዜም ከሚያጸድቁት ሰዎች የተለዩ ሰዎች ይይዙታል — ከማጽደቅ ተለይቶ በራሱ ፈቃድ ሥር የተቀመጠውም ለዚህ ነው።"
+				},
+				{
+					"heading": "ውድቅ የተደረገን መዝገብ መሥራት",
+					"body": "1. ለዚያ ዓይነት መዝገብ የተዘጋጀውን ወረፋ ይክፈቱ።\n2. በመስመሩ ላይ ያለውን ምክንያት ያንብቡ። ውድቅ በሚደረግበት ጊዜ ምክንያት ግዴታ ስለሆነ ሁሌም አለ።\n3. ከበስተጀርባ ያለውን መዝገብ አስተካክለው እንደገና ያቅርቡ፤ ወይም መግባት አልነበረበትም ከሆነ ተዘግቶ ይቅር።\n\nምክንያቱ በዚህ ወረፋ ብቻ ሳይሆን በመዝገቡ ላይም ይቀራል፤ ስለዚህ ታሪኩ ራሱን ያብራራል።"
+				},
+				{
+					"heading": "ያስገቡት መዝገብ ካልተገኘ",
+					"body": "እንደገና ከማስገባትዎ በፊት ሦስት ቦታ ይመልከቱ፦ የማጽደቅ ወረፋ (ገና በመጠባበቅ ላይ)፣ ይህ ክፍል (ተመልሶ የተሰጠ)፣ እና መሰረዙን።\n\nእንደገና አያስገቡ። የተደገመ መዝገብ ጸድቆ ከሆነ መፍታቱ የጠፋውን ከመፈለግ በእጅጉ ይከብዳል።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ማጽደቅ",
+					"href": "/dashboard/help#section-approvals"
+				}
+			]
+		}
+	}
+}

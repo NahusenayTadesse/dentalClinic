@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/supplies/",
+	"languages": {
+		"en": {
+			"title": "Supply Details",
+			"summary": "One item: where its quantity came from, what is out on lease, and what has been lost.",
+			"sections": [
+				{
+					"heading": "What is here",
+					"body": "• The item's name, type, description and reorder level\n• Its four figures: on hand, reserved, leased out and available\n• Its movement history over a date range\n• Damaged and lost records over a date range"
+				},
+				{
+					"heading": "The four figures again",
+					"body": "• On hand — physically in the store\n• Reserved — promised to an approved lease that has not been issued yet\n• Leased out — physically at a site\n• Available — on hand less reserved: what you can still promise somebody\n\nReserved and leased out are worked out from the leases each time, never stored here, so they cannot drift out of step with the leases themselves."
+				},
+				{
+					"heading": "Recording damage and loss",
+					"body": "Record it against the item when it happens, not at the next count. That is what makes the shrinkage visible in the stock report instead of hiding it inside a quantity that quietly changed — and a quantity that changes with no record behind it is the thing nobody can explain later."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Supplies and leases",
+					"href": "/dashboard/help#section-supplies"
+				}
+			]
+		},
+		"am": {
+			"title": "የግብዓት ዝርዝር",
+			"summary": "አንድ ዕቃ፦ መጠኑ ከየት እንደመጣ፣ በኪራይ ውጪ ያለውና የጠፋው።",
+			"sections": [
+				{
+					"heading": "እዚህ ያለው",
+					"body": "• የዕቃው ስም፣ ዓይነት፣ መግለጫና የዳግም ትዕዛዝ ደረጃ\n• አራቱ አኃዞቹ፦ በእጅ ያለ፣ የተያዘ፣ የተከራየና ነፃ\n• በቀን ክልል ውስጥ ያለው የእንቅስቃሴ ታሪክ\n• በቀን ክልል ውስጥ የተበላሹና የጠፉ መዝገቦች"
+				},
+				{
+					"heading": "አራቱ አኃዞች እንደገና",
+					"body": "• በእጅ ያለ — በመጋዘን በአካል ያለው\n• የተያዘ — ጸድቆ ገና ላልወጣ ኪራይ የተመደበ\n• የተከራየ — በጣቢያ ላይ በአካል ያለ\n• ነፃ — በእጅ ካለው የተያዘው ሲቀነስ፦ አሁንም ለሌላ ሰው ሊሰጡት የሚችሉት\n\nየተያዘውና የተከራየው በየጊዜው ከኪራዮች ይሰላሉ እንጂ እዚህ አይቀመጡም፤ ስለዚህ ከኪራዮቹ ጋር ሊለያዩ አይችሉም።"
+				},
+				{
+					"heading": "ጉዳትና ብክነት መመዝገብ",
+					"body": "በተከሰተበት ጊዜ በዕቃው ላይ ይመዝግቡት እንጂ በሚቀጥለው ቆጠራ አይሁን። ብክነቱ በክምችት ሪፖርት ውስጥ እንዲታይ የሚያደርገው ይህ ነው እንጂ በዝም ብሎ በተቀየረ መጠን ውስጥ አይሸሸግም — ከበስተጀርባው መዝገብ የሌለው መጠን ደግሞ በኋላ ማንም ሊያብራራው የማይችለው ነገር ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ግብዓቶችና ኪራዮች",
+					"href": "/dashboard/help#section-supplies"
+				}
+			]
+		}
+	}
+}
