@@ -62,7 +62,7 @@ any button, dialog, popover, or menu.
 | Delete action on a lookup page     | `lookupDeleteAction` — `server/lookupDelete.ts`                                             |
 | Authorization                      | `requireSuperAdmin` · `syncAdminRole` — `server/permissions.ts`                             |
 | Dropdown option lists              | `server/fastData.ts` (50 files)                                                             |
-| Saving an upload                   | `saveUploadedFile` — `server/upload.ts`                                                     |
+| Anything about stored files        | `server/files.ts` — `saveUploadedFile`, `resolveStoredFile`, `mimeFor`, `MAX_UPLOAD_BYTES`  |
 | Formatting money / Ethiopian dates | `formatETB`, `formatEthiopianDate` — `lib/global.svelte.ts`                                 |
 
 ### Add a row, not a route
@@ -275,6 +275,15 @@ Not style. These carry patient data.
   account-enumeration oracles.
 - **Soft delete, always.** `deletedAt` is the delete marker; `isActive`/`status` are business
   state that pages deliberately list. They are not interchangeable.
+- **Stored files go through `server/files.ts`.** It owns the directory, the accepted types, the
+  size limit and the safe path resolution. Never join a user-supplied name onto `FILES_DIR`
+  yourself — `path.normalize` resolves `..` rather than rejecting it, so `resolveStoredFile` does
+  the containment check that stops a name climbing out of the store.
+- **A file URL is not a permission.** `/dashboard/files/[name]` can only check that the caller is
+  signed in; the store is flat and a filename records nothing about what it is attached to. The
+  122-bit random name is what stands in for a check. That is adequate against guessing and
+  inadequate against a leaked URL, so do not treat these URLs as shareable secrets — and see
+  `fileAudit.ts` for why a `files` table is the next piece of work here.
 
 > Soft delete is the proof the approach works: `notDeleted()` in 118 files, `lookupDeleteAction`
 > in 19, and zero inline `deletedAt` writes anywhere in `src/routes`. When the helper exists and

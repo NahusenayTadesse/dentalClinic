@@ -159,11 +159,6 @@ export async function employees() {
 	return employees;
 }
 
-export const officeDepartmentIds = await db
-	.select({ id: department.id })
-	.from(department)
-	.where(and(eq(department.commission, true), notDeleted(department)));
-
 export async function officeEmployees() {
 	const employees = await db
 		.select({
@@ -182,9 +177,20 @@ export async function officeEmployees() {
 				eq(employee.isActive, true),
 				eq(employmentStatuses.removeFromLists, false),
 				isNull(employeeTermination.staffId),
+				/*
+				 * A correlated subquery rather than a list read at module load.
+				 *
+				 * This used to be a top-level `await` on the module: every cold start blocked on
+				 * it, the build imported this file and so needed a reachable database, and — the
+				 * part that actually bit — the answer was computed once per process, so an admin
+				 * turning commission on for a department saw nothing change until a restart.
+				 */
 				inArray(
 					employee.departmentId,
-					officeDepartmentIds.map((id) => id.id)
+					db
+						.select({ id: department.id })
+						.from(department)
+						.where(and(eq(department.commission, true), notDeleted(department)))
 				),
 				notDeleted(employee)
 			)

@@ -1,72 +1,67 @@
 import fs from 'node:fs';
-import path from 'node:path';
 import { Readable } from 'node:stream';
+import { error, redirect } from '@sveltejs/kit';
 
-import { env } from '$env/dynamic/private';
-import { redirect } from '@sveltejs/kit';
+import { mimeFor, resolveStoredFile } from '$lib/server/files';
+import type { RequestHandler } from './$types';
 
-const FILES_DIR = env.FILES_DIR ?? '.temp-files';
+/**
+ * Serves one stored file.
+ *
+ * **What guards this, and what does not.** The only check is that the caller is signed in — the
+ * store is flat and a filename carries no record of what it is attached to, so there is nothing
+ * here to check a permission *against*. What stands in for that is the name: 122 bits of
+ * randomness from `generateFileName`, which is why that function's comment says what it says.
+ *
+ * That is adequate against guessing and inadequate against a leaked URL, and it cannot become a
+ * real control until a file knows which record owns it. Recording that is the next piece of work
+ * on this subsystem; until then, do not treat these URLs as secrets that can be shared.
+ */
+export const GET: RequestHandler = async ({ params, request, locals }) => {
+	if (!locals.user) throw redirect(302, '/login');
 
-if (!fs.existsSync(FILES_DIR)) {
-	fs.mkdirSync(FILES_DIR, { recursive: true });
-}
+	// Rejects a name that resolves outside the store rather than resolving it and hoping.
+	const filePath = resolveStoredFile(params.name);
+	if (!filePath) throw error(404, 'Not found');
 
-/** @type {import('./$types').RequestHandler} */
-export async function GET({ params, request, locals }) {
-	if (!locals.user) {
-		throw redirect(302, '/login');
-	}
-
-	const file_path = path.normalize(path.join(FILES_DIR, params.name));
-
-	if (!fs.existsSync(file_path)) {
-		return new Response('not found', { status: 404 });
-	}
-
-	const stats = fs.statSync(file_path);
+	const stats = fs.statSync(filePath);
 	const etag = `W/"${stats.size}-${stats.mtime.getTime()}"`;
 
 	if (request.headers.get('if-none-match') === etag) {
 		return new Response(null, { status: 304 });
 	}
 
-	const headers = {
-		ETag: etag,
-		'Content-Type': mimes.lookup(file_path),
-		'Content-Length': stats.size,
-		'Cache-Control': 'max-age=600',
-		'Last-Modified': stats.mtime.toUTCString()
-	};
-
-	const nodejs_rstream = fs.createReadStream(file_path);
-
-	const web_rstream = Readable.toWeb(nodejs_rstream, {
-		// See: https://github.com/nodejs/node/issues/46347#issuecomment-1416310527
+	const stream = Readable.toWeb(fs.createReadStream(filePath), {
+		/*
+		 * Bounded queuing, because the server this runs on has 2GB of RAM and shares it.
+		 *
+		 * Without a strategy the web-stream wrapper will happily read ahead of a slow consumer,
+		 * and a handful of concurrent downloads on a slow connection is exactly the shape that
+		 * turns into resident memory. Node's own issue on this is nodejs/node#46347.
+		 */
 		strategy: new CountQueuingStrategy({ highWaterMark: 100 })
 	});
 
-	return new Response(web_rstream, { headers });
-}
-
-const mimes = {
-	// Text
-	txt: 'text/plain',
-	pdf: 'application/pdf',
-	// Images
-	webp: 'image/webp',
-	png: 'image/png',
-	jpg: 'image/jpeg',
-	jpeg: 'image/jpeg',
-	avif: 'image/avif',
-	// Audio
-	mp3: 'audio/mp3',
-	// Video
-	webm: 'video/webm',
-	mp4: 'video/mp4',
-
-	/** @param {string} string */
-	lookup(string) {
-		const ext = string.toLowerCase().split('.').at(-1);
-		return (ext && this[/** @type {keyof typeof mimes} */ ext]) ?? 'application/octet-stream';
-	}
+	return new Response(stream as unknown as ReadableStream, {
+		headers: {
+			ETag: etag,
+			'Content-Type': mimeFor(filePath),
+			'Content-Length': String(stats.size),
+			/*
+			 * `private` is the load-bearing word. These are identity documents and clinical
+			 * attachments; without it a shared proxy is entitled to keep a copy and hand it to
+			 * the next person who asks.
+			 *
+			 * `immutable`, and a year, because a stored file genuinely cannot change: the name is
+			 * 122 bits of randomness, and replacing an attachment writes a *new* name and points
+			 * the row at that. There is nothing at this URL to revalidate, so a conditional
+			 * request would spend a round trip being told what it already knows — which on the
+			 * connections this is used over is most of the cost of the request.
+			 */
+			'Cache-Control': 'private, max-age=31536000, immutable',
+			'Last-Modified': stats.mtime.toUTCString(),
+			// Nothing here is meant to be interpreted as markup by the browser.
+			'X-Content-Type-Options': 'nosniff'
+		}
+	});
 };
