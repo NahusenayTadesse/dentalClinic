@@ -5,9 +5,6 @@
 
 	import DataTable from '$lib/components/Table/data-table.svelte';
 
-
-
-
 	export const getEthiopianYear = (year: number): string => {
 		if (!year) return '';
 
@@ -21,20 +18,13 @@
 
 		return formatter.format(date);
 	};
-
-
-
-
 </script>
 
 <svelte:head>
 	<title>Salaries Adjustments</title>
 </svelte:head>
 
-
-
-
-			<div class="mb-4 flex flex-col">
-		<h4>Salary Adjustments</h4>
-		<DataTable data={data?.adjustments} columns={adjustmentColumns} fileName="Salary Adjustments" />
-	</div>
+<div class="mb-4 flex flex-col">
+	<h4>Salary Adjustments</h4>
+	<DataTable data={data?.adjustments} columns={adjustmentColumns} fileName="Salary Adjustments" />
+</div>

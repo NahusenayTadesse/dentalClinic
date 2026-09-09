@@ -1,12 +1,12 @@
-   <script> 
-    import { page } from '$app/state'
+<script>
+	import { page } from '$app/state';
 	import { Button } from '$lib/components/ui/button';
- </script>
-<div class="w-full h-full flex flex-col justify-center items-center">
- <h1 class="text-red-600 text-5xl">{page.status}</h1>
+</script>
 
- <h3 class="text-red-600 font-head text-2xl">{@html page.error?.message}</h3>
+<div class="flex h-full w-full flex-col items-center justify-center">
+	<h1 class="text-5xl text-red-600">{page.status}</h1>
 
- <Button href="/dashboard" >Back to Dashboard</Button>
+	<h3 class="font-head text-2xl text-red-600">{@html page.error?.message}</h3>
 
- </div>
+	<Button href="/dashboard">Back to Dashboard</Button>
+</div>

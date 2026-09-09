@@ -37,9 +37,8 @@ describe('data-table-links.svelte', () => {
 			}
 		});
 
-		await expect.element(page.getByRole('link', { name: 'Open' })).toHaveAttribute(
-			'target',
-			'_blank'
-		);
+		await expect
+			.element(page.getByRole('link', { name: 'Open' }))
+			.toHaveAttribute('target', '_blank');
 	});
 });

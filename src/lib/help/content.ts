@@ -369,251 +369,8 @@ export const HELP_SECTIONS: HelpSection[] = [
 	},
 
 	/* ------------------------------------------------------------------ */
-	{
-		id: 'commercial',
-		title: 'Customers, sites and contracts',
-		blurb:
-			'The commercial side: who you serve, the places you serve them, and the agreements that say what you are owed.',
-		topics: [
-			{
-				id: 'commercial-shape',
-				title: 'How customers, sites and contracts fit together — read this first',
-				summary:
-					'A customer owns one or more sites. A site holds one or more contracts. A contract is the thing that produces money every month.',
-				notes: [
-					'**Customer** — the organisation you signed with. Name, TIN, contacts, address.',
-					'**Site** — a physical location where the work happens. One customer can have many sites; a bank with twelve branches is one customer and twelve sites.',
-					'**Contract** — a service at a site for a period, at a monthly amount. One site can carry several contracts at once — cleaning and security are two contracts, not one.',
-					'Everything downstream hangs off the contract: the monthly invoice, the collection, the employees assigned to the site, the supplies leased to it.',
-					'Get this hierarchy right when you set a customer up. Fixing a site that was created under the wrong customer after a year of invoices is a great deal of work.'
-				],
-				keywords: [
-					'customer',
-					'site',
-					'contract',
-					'structure',
-					'hierarchy',
-					'model',
-					'relationship'
-				]
-			},
-			{
-				id: 'customers',
-				title: 'Customers',
-				summary: 'The organisations you have signed with, and everything of theirs in one place.',
-				where: 'Menu → **Customers** → `/dashboard/customers`',
-				permission: 'customers_sites_contracts.record',
-				steps: [
-					'**All Customers** lists every approved customer with their contact details and site count.',
-					'Click a customer to open their page: their sites, their contracts, and their history.',
-					'**Add Customer** creates a new one. Fill in the name, TIN, phone, email and address, then save.',
-					'A new customer is **pending** until it is approved, and cannot have contracts written against it before then.'
-				],
-				notes: [
-					'Enter the TIN carefully — it goes onto the invoices and the withholding paperwork, and correcting it afterwards means reissuing documents.',
-					'Region, city and subcity come from the admin panel lists. If the one you need is missing, add it under **Admin Panel → Regions / Cities / Subcities** first.'
-				],
-				keywords: ['customer', 'client', 'organisation', 'tin', 'add customer', 'contact']
-			},
-			{
-				id: 'sites',
-				title: 'Sites',
-				summary:
-					'The places the work is actually done, and the anchor for staffing, stock and billing.',
-				where: 'Menu → **Sites** → `/dashboard/sites`',
-				permission: 'customers_sites_contracts.record',
-				steps: [
-					'**All Sites** lists every site with its customer, its address and its services.',
-					'Click a site to see its contracts, its payment history and the people assigned to it.',
-					'**Add Site** creates a new one: pick the customer it belongs to, name it, give the address, and save.',
-					'From a site you can reach **Payments** for each of its contracts and drill into the payment history of any one of them.'
-				],
-				notes: [
-					'The site is the hinge of the whole system — attendance is taken per site, supplies are leased per site, and payroll can be run per site. A site entered under the wrong customer will mis-bill and mis-report until it is fixed.',
-					'Sites, like customers, wait for approval before contracts can be written against them.'
-				],
-				keywords: ['site', 'location', 'branch', 'premises', 'add site', 'address']
-			},
-			{
-				id: 'contracts',
-				title: 'Contracts — active, inactive and terminated',
-				summary:
-					'A contract says which service is delivered at which site, for how long, and for how much per month.',
-				where: 'Menu → **Contracts** → `/dashboard/contracts`',
-				permission:
-					'contracts.active.manage; the inactive and terminated lists each need their own permission',
-				steps: [
-					'**Active Contracts** is the working list — everything currently in force.',
-					'**Inactive Contract** holds the ones that have lapsed, including those the system expired automatically on their end date.',
-					'**Terminated Contract** holds the ones that were ended deliberately, with the reason recorded.',
-					'Click any contract to open it: the terms, the payment history, the renewal action and the contract file.',
-					'**Add Contract** writes a new one — pick the site, the service, the start and end dates, the monthly amount, the signing officer and whether commission applies.'
-				],
-				notes: [
-					'The list shows **expected payments** against **actual payments** and the gap between them, so a site quietly falling behind is visible without opening anything.',
-					'A contract still awaiting approval is not in force. It is not chased for renewal and it is not expired automatically — approval comes first.',
-					'When a contract passes its end date the system marks it inactive by itself, with the reason "Automatic Expiration of Contract By System". That is not a deletion; the history is untouched.',
-					'Attach the signed contract file to the record. It is the document everyone asks for when a dispute starts.'
-				],
-				keywords: [
-					'contract',
-					'agreement',
-					'monthly amount',
-					'expire',
-					'inactive',
-					'terminated',
-					'signing officer',
-					'commission'
-				]
-			},
-			{
-				id: 'renewals',
-				title: 'Expiring contracts and renewals',
-				summary:
-					'Contracts within 30 days of their end date are put in a red panel on the dashboard the moment you sign in.',
-				where: 'Dashboard home, and `/dashboard/contracts`',
-				steps: [
-					'Sign in and read the red **Urgent** panel — it is sorted with the most urgent first, and each card shows the days left.',
-					'Open the contract from the card.',
-					'Check the payment history before you commit to anything: renewing a site that has not paid for four months is a decision, not a formality.',
-					'Confirm the new dates and the new monthly amount, then renew.',
-					'The renewal is recorded, and the renewal count on the contract goes up.'
-				],
-				notes: [
-					'"Expired" on a card means the end date has already passed. The system will have marked it inactive; renewing it is still the right move if the customer is staying.',
-					'The 30-day window is the whole point: chase the renewal before it lapses and you never have a gap in cover or in billing.'
-				],
-				keywords: ['renew', 'renewal', 'expiring', 'urgent', '30 days', 'lapse', 'end date']
-			}
-		]
-	},
 
 	/* ------------------------------------------------------------------ */
-	{
-		id: 'billing',
-		title: 'Billing — requests in, collections in',
-		blurb:
-			'How money owed becomes money received: a monthly payment request against a site, approved, then collected and banked.',
-		topics: [
-			{
-				id: 'billing-shape',
-				title: 'Requests and Payments — the difference',
-				summary:
-					'A **request** is the monthly bill you raise against a site. A **payment** is the money that actually arrives against it.',
-				notes: [
-					"**Requests** (`/dashboard/requests`) are what you are owed. One per site per month, built from the contract's monthly amount.",
-					'**Payments** (`/dashboard/payments`) are what you received: the amount, the date, the method, the receipt, the VAT and the withholding.',
-					'Both pass through their own approval before they count. A request is checked before it goes out; a collection is checked before it is treated as banked.',
-					'Together they are what the contract list is comparing when it shows expected against actual payments.'
-				],
-				keywords: [
-					'request',
-					'payment',
-					'invoice',
-					'collection',
-					'difference',
-					'billing',
-					'receivable'
-				]
-			},
-			{
-				id: 'add-request',
-				title: 'Raising a payment request',
-				summary: 'One request per site per month — the system will not let you raise a second.',
-				where: 'Menu → **Requests → Add New Request** → `/dashboard/requests/add-request`',
-				permission: 'payment_requests.create',
-				steps: [
-					'Open **Add New Request**.',
-					'Pick the site. The contract, the service and the monthly amount come with it.',
-					'Pick the month and year the request covers.',
-					'Check the amount against the contract, adjust for anything agreed, and add the reference or invoice number.',
-					'Attach the invoice document if you have one, then save. The request goes out as **pending**.'
-				],
-				notes: [
-					'A month that already has a request for that site is refused — one bill per site per month is enforced by the database itself, not just by the form.',
-					'That check counts deleted requests too. If a rejected or deleted request is holding the month, it must be dealt with rather than worked around, or the new one will fail on save.',
-					'Raise the request for the month it belongs to, not the month you happen to be typing it in. The reports are built on the month on the record.'
-				],
-				keywords: ['request', 'invoice', 'bill', 'monthly', 'duplicate', 'one per month', 'raise']
-			},
-			{
-				id: 'request-queues',
-				title: 'Pending, approved, cancelled and special requests',
-				summary: 'Four lists, one for each stage a request can be in.',
-				where: 'Menu → **Requests**',
-				steps: [
-					'**Pending Approval** — raised and waiting for a check. Needs `payment_requests.approve`.',
-					'**Approved Payments** — checked and out with the customer. Browse them by date range. Needs `payment_requests.view_approved`.',
-					'**Cancelled Payments** — withdrawn or refused, with the reason on the row. Needs `payment_requests.edit_cancelled`.',
-					'**Special Payments** — the ones that fall outside the ordinary monthly cycle.'
-				],
-				notes: [
-					'Every one of these lists prints and exports like any other table — filter to a customer or a month first and you have the statement you were about to build by hand.',
-					'A request sitting in Pending for weeks is money you have not asked for yet. That list is worth reading every week.'
-				],
-				keywords: ['pending', 'approved', 'cancelled', 'special', 'requests', 'stage', 'status']
-			},
-			{
-				id: 'add-payment',
-				title: 'Recording a collection',
-				summary:
-					'Record the money that arrived: amount, date, method, receipt, and the tax figures that go with it.',
-				where: 'Menu → **Payments → Add Collection** → `/dashboard/payments/add-payment`',
-				permission: 'payments.create',
-				steps: [
-					'Open **Add Collection**.',
-					'Pick the site and the contract the money is against.',
-					'Enter the amount received and the date it was received.',
-					'Pick the payment method and the bank account it landed in.',
-					'Enter the VAT rate and, if the customer withheld tax, the withholding amount, its invoice number and its certificate.',
-					'Attach the receipt or the bank advice, then save. The collection goes out as **pending**.'
-				],
-				notes: [
-					'**VAT is stored as a rate, not an amount.** The percentage is what is kept on the row; the birr figure is worked out from the amount before VAT. Adding up a VAT column gives you a sum of percentages, which means nothing — take the VAT from the reports, which derive it correctly.',
-					'Withholding is the customer paying part of your tax on your behalf. Record the certificate number and attach the certificate — without it the amount cannot be claimed.',
-					'The date to record is the date the money arrived, not the date you are typing. Reports are cut by that date.'
-				],
-				keywords: [
-					'payment',
-					'collection',
-					'receive',
-					'vat',
-					'withholding',
-					'receipt',
-					'bank',
-					'method'
-				]
-			},
-			{
-				id: 'payment-queues',
-				title: 'Approving and tracking collections',
-				summary: 'Pending, approved and cancelled — the same three-stage shape as requests.',
-				where: 'Menu → **Payments**',
-				steps: [
-					'**Pending Approval** — recorded and waiting to be checked against the bank. Needs `payments.approve`.',
-					'Open a row, check the amount, the date and the attached receipt against the statement.',
-					'Approve it, or reject it with the reason.',
-					'**Approved Payments** and **Cancelled Payments** hold the settled ones.'
-				],
-				notes: [
-					'Approving a collection is a statement that the money is genuinely in the account. Approving from the paperwork alone is exactly the habit this queue exists to prevent.',
-					'Anything cancelled keeps its reason, so a customer query six months later can be answered from the record.'
-				],
-				keywords: ['approve', 'payment', 'verify', 'bank statement', 'reconcile', 'cancelled']
-			},
-			{
-				id: 'payment-history',
-				title: 'The payment history of a contract',
-				summary: 'Every request and every collection for one contract, in one place, in order.',
-				where: 'Open a contract → **Payment history**, or a site → **Payments** → the contract',
-				notes: [
-					'This is the screen for a customer query. It shows what was billed, what came in, when, and what is outstanding.',
-					'Print it straight from the table when a customer asks for a statement — no re-typing.'
-				],
-				keywords: ['history', 'statement', 'outstanding', 'arrears', 'ledger', 'contract']
-			}
-		]
-	},
 
 	/* ------------------------------------------------------------------ */
 	{
@@ -1476,21 +1233,21 @@ export const ROUTE_MAP: RouteEntry[] = [
 		path: '/dashboard/customers',
 		title: 'All customers',
 		purpose: 'Every approved customer, searchable and exportable.',
-		permission: 'customers_sites_contracts.record',
+		permission: 'customers_sites.record',
 		group: 'Customers'
 	},
 	{
 		path: '/dashboard/customers/add-customer',
 		title: 'Add customer',
 		purpose: 'Register a new customer; starts pending.',
-		permission: 'customers_sites_contracts.record',
+		permission: 'customers_sites.record',
 		group: 'Customers'
 	},
 	{
 		path: '/dashboard/customers/[id]',
 		title: 'Customer detail',
 		purpose: 'One customer: their sites, contracts and history.',
-		permission: 'customers_sites_contracts.record',
+		permission: 'customers_sites.record',
 		group: 'Customers'
 	},
 
@@ -1499,155 +1256,29 @@ export const ROUTE_MAP: RouteEntry[] = [
 		path: '/dashboard/sites',
 		title: 'All sites',
 		purpose: 'Every site with its customer, address and services.',
-		permission: 'customers_sites_contracts.record',
+		permission: 'customers_sites.record',
 		group: 'Sites'
 	},
 	{
 		path: '/dashboard/sites/add-site',
 		title: 'Add site',
 		purpose: 'Create a site under a customer; starts pending.',
-		permission: 'customers_sites_contracts.record',
+		permission: 'customers_sites.record',
 		group: 'Sites'
 	},
 	{
 		path: '/dashboard/sites/[id]',
 		title: 'Site detail',
 		purpose: 'One site: its contracts, staff and payment history.',
-		permission: 'customers_sites_contracts.record',
-		group: 'Sites'
-	},
-	{
-		path: '/dashboard/sites/[id]/payments',
-		title: 'Site payments',
-		purpose: 'Collections against this site, contract by contract.',
-		permission: 'customers_sites_contracts.record',
-		group: 'Sites'
-	},
-	{
-		path: '/dashboard/sites/[id]/payments/[contractId]/payment-history',
-		title: 'Site contract history',
-		purpose: 'Full billing and collection history for one contract at this site.',
-		permission: 'customers_sites_contracts.record',
+		permission: 'customers_sites.record',
 		group: 'Sites'
 	},
 
 	// Contracts
-	{
-		path: '/dashboard/contracts',
-		title: 'Active contracts',
-		purpose: 'In-force contracts, with expected against actual payments.',
-		permission: 'contracts.active.manage',
-		group: 'Contracts'
-	},
-	{
-		path: '/dashboard/contracts/add-contract',
-		title: 'Add contract',
-		purpose: 'New service agreement for a site: dates, monthly amount, signing officer.',
-		permission: 'contracts.active.manage',
-		group: 'Contracts'
-	},
-	{
-		path: '/dashboard/contracts/[contractId]',
-		title: 'Contract detail',
-		purpose: 'Terms, file, renewal and actions for one contract.',
-		permission: 'contracts.active.manage',
-		group: 'Contracts'
-	},
-	{
-		path: '/dashboard/contracts/[contractId]/payment-history',
-		title: 'Contract payment history',
-		purpose: 'Everything billed and collected against this contract.',
-		permission: 'contracts.active.manage',
-		group: 'Contracts'
-	},
-	{
-		path: '/dashboard/contracts/[contractId]/payment-request',
-		title: 'Request from a contract',
-		purpose: 'Raise the monthly payment request straight from the contract.',
-		permission: 'contracts.active.manage',
-		group: 'Contracts'
-	},
-	{
-		path: '/dashboard/contracts/inactive',
-		title: 'Inactive contracts',
-		purpose: 'Lapsed contracts, including those the system expired automatically.',
-		permission: 'contracts.inactive.manage',
-		group: 'Contracts'
-	},
-	{
-		path: '/dashboard/contracts/terminated',
-		title: 'Terminated contracts',
-		purpose: 'Contracts ended deliberately, with the reason recorded.',
-		permission: 'contracts.terminated.manage',
-		group: 'Contracts'
-	},
 
 	// Requests
-	{
-		path: '/dashboard/requests/add-request',
-		title: 'Add payment request',
-		purpose: 'Raise the monthly bill for a site. One per site per month.',
-		permission: 'payment_requests.create',
-		group: 'Requests'
-	},
-	{
-		path: '/dashboard/requests/pending',
-		title: 'Pending requests',
-		purpose: 'Requests waiting to be checked and released.',
-		permission: 'payment_requests.approve',
-		group: 'Requests'
-	},
-	{
-		path: '/dashboard/requests/approved',
-		title: 'Approved requests',
-		purpose: 'Released requests, browsable by date range.',
-		permission: 'payment_requests.view_approved',
-		group: 'Requests'
-	},
-	{
-		path: '/dashboard/requests/cancelled',
-		title: 'Cancelled requests',
-		purpose: 'Withdrawn or refused requests, with reasons.',
-		permission: 'payment_requests.edit_cancelled',
-		group: 'Requests'
-	},
-	{
-		path: '/dashboard/requests/special',
-		title: 'Special requests',
-		purpose: 'Requests outside the ordinary monthly cycle.',
-		permission: 'payment_requests.edit_cancelled',
-		group: 'Requests'
-	},
 
 	// Payments
-	{
-		path: '/dashboard/payments/add-payment',
-		title: 'Add collection',
-		purpose: 'Record money received: amount, date, method, VAT, withholding, receipt.',
-		permission: 'payments.create',
-		group: 'Payments'
-	},
-	{
-		path: '/dashboard/payments/pending',
-		title: 'Pending collections',
-		purpose: 'Collections waiting to be checked against the bank.',
-		permission: 'payments.approve',
-		group: 'Payments'
-	},
-	{
-		path: '/dashboard/payments/approved',
-		title: 'Approved collections',
-		purpose: 'Money confirmed as received.',
-		permission: 'payments.follow_up',
-		group: 'Payments'
-	},
-	{
-		path: '/dashboard/payments/cancelled',
-		title: 'Cancelled collections',
-		purpose: 'Rejected or withdrawn collections, with reasons.',
-		permission: 'payments.edit_cancelled',
-		group: 'Payments'
-	},
 
 	// Approvals & rejections
 	{
@@ -1903,27 +1534,6 @@ export const ROUTE_MAP: RouteEntry[] = [
 		group: 'Supplies'
 	},
 	{
-		path: '/dashboard/supplies/leases',
-		title: 'Site leases',
-		purpose: 'Every lease and its status, from pending to closed.',
-		permission: 'supplies_suppliers.manage',
-		group: 'Supplies'
-	},
-	{
-		path: '/dashboard/supplies/leases/add-lease',
-		title: 'Lease to a site',
-		purpose: 'Send items out to a site against available stock.',
-		permission: 'supplies_suppliers.manage',
-		group: 'Supplies'
-	},
-	{
-		path: '/dashboard/supplies/leases/[leaseId]',
-		title: 'Lease detail',
-		purpose: 'One lease: its items, its event log, issue and return.',
-		permission: 'supplies_suppliers.manage',
-		group: 'Supplies'
-	},
-	{
 		path: '/dashboard/supplies/suppliers',
 		title: 'Suppliers',
 		purpose: 'Who you buy from, and what from each.',
@@ -1986,13 +1596,6 @@ export const ROUTE_MAP: RouteEntry[] = [
 		title: 'Money report',
 		purpose: 'Transactions, expenses, bank history and services rendered.',
 		permission: 'reports.finance',
-		group: 'Reports'
-	},
-	{
-		path: '/dashboard/reports/commercial',
-		title: 'Commercial report',
-		purpose: 'Site payments, requests, contracts, renewals, penalties, customers and sites.',
-		permission: 'reports.customer_site',
 		group: 'Reports'
 	},
 	{

@@ -95,7 +95,9 @@ describe('data-table.svelte', () => {
 		// which overrides its implicit "button" role for accessibility queries.
 		await userEvent.click(page.getByRole('menuitem', { name: '10', exact: true }));
 
-		await expect.element(page.getByRole('cell', { name: 'Row 1', exact: true })).toBeInTheDocument();
+		await expect
+			.element(page.getByRole('cell', { name: 'Row 1', exact: true }))
+			.toBeInTheDocument();
 		await expect
 			.element(page.getByRole('cell', { name: 'Row 11', exact: true }))
 			.not.toBeInTheDocument();

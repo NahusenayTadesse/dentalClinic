@@ -22,6 +22,7 @@ import {
 	topN,
 	total
 } from '../scope.server';
+import { employeeFullName } from '$lib/server/employeeName';
 
 /**
  * What came into the store room and what went out.
@@ -151,7 +152,7 @@ export async function stockStats(
 
 		db
 			.select({
-				label: sql<string>`TRIM(CONCAT(COALESCE(${employee.name}, ''), ' ', COALESCE(${employee.fatherName}, '')))`,
+				label: employeeFullName,
 				value: count()
 			})
 			.from(suppliesAdjustments)

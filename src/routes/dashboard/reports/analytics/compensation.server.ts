@@ -1,13 +1,6 @@
 import { count, countDistinct, desc, eq, sql } from 'drizzle-orm';
 import { db } from '$lib/server/db';
-import {
-	bonuses,
-	commission,
-	deductions,
-	employee,
-	overTime,
-	overTimeType
-} from '$lib/server/db/schema';
+import { bonuses, deductions, employee, overTime, overTimeType } from '$lib/server/db/schema';
 import { notDeleted } from '$lib/server/softDelete';
 import type { ReportFilters } from '../filters';
 import type { ReportChartData, Stat } from '../types';
@@ -28,7 +21,10 @@ import {
 
 /**
  * Everything paid to staff outside the base salary: bonuses, overtime,
- * commission and the deductions taken back off them.
+ * and the deductions taken back off them.
+ *
+ * Commission used to sit alongside them; it was a share of client-contract value, and went with
+ * those tables.
  *
  * Absence and leave are their own report — see `time.server.ts` — so that
  * neither page pays for the other's queries.
@@ -56,14 +52,6 @@ export async function compensationStats(
 		...scope
 	]);
 
-	const commissionWhere = all([
-		notDeleted(commission),
-		notDeleted(employee),
-		inRange(commission.commissionDate, filters),
-		...amountScope(commission.amount, filters),
-		...scope
-	]);
-
 	const deductionWhere = all([
 		notDeleted(deductions),
 		notDeleted(employee),
@@ -75,11 +63,9 @@ export async function compensationStats(
 	const [
 		[bonusTotals],
 		[overtimeTotals],
-		[commissionTotals],
 		[deductionTotals],
 		bonusByMonth,
 		overtimeByMonth,
-		commissionByMonth,
 		deductionByMonth,
 		overtimeByType,
 		deductionByType,
@@ -110,16 +96,6 @@ export async function compensationStats(
 		db
 			.select({
 				total: count(),
-				amount: total(commission.amount),
-				staff: countDistinct(commission.staffId)
-			})
-			.from(commission)
-			.innerJoin(employee, eq(commission.staffId, employee.id))
-			.where(commissionWhere),
-
-		db
-			.select({
-				total: count(),
 				amount: total(deductions.amount),
 				staff: countDistinct(deductions.staffId),
 				warnings: countWhen(sql`${deductions.warningType} IS NOT NULL`)
@@ -144,13 +120,6 @@ export async function compensationStats(
 			.from(overTime)
 			.innerJoin(employee, eq(overTime.staffId, employee.id))
 			.where(overtimeWhere)
-			.groupBy(sql`1`),
-
-		db
-			.select({ bucket: monthOf(commission.commissionDate), value: total(commission.amount) })
-			.from(commission)
-			.innerJoin(employee, eq(commission.staffId, employee.id))
-			.where(commissionWhere)
 			.groupBy(sql`1`),
 
 		db
@@ -230,16 +199,6 @@ export async function compensationStats(
 			tone: 'warning'
 		},
 		{
-			key: 'commissions',
-			label: 'Commission Paid',
-			value: n(commissionTotals?.amount),
-			format: 'money',
-			group: 'Compensation',
-			hint: `${n(commissionTotals?.total)} entries`,
-			section: 'commissions',
-			tone: 'negative'
-		},
-		{
 			key: 'deductions',
 			label: 'Deductions',
 			value: n(deductionTotals?.amount),
@@ -255,7 +214,7 @@ export async function compensationStats(
 		{
 			key: 'extras-over-time',
 			title: 'Pay on Top of Salary',
-			description: 'Bonuses, overtime and commission month by month.',
+			description: 'Bonuses and overtime month by month.',
 			group: 'Compensation',
 			kind: 'bar',
 			labels: keys,
@@ -265,7 +224,6 @@ export async function compensationStats(
 			series: [
 				{ label: 'Bonuses', data: alignMonths(keys, bonusByMonth, (row) => n(row.value)) },
 				{ label: 'Overtime', data: alignMonths(keys, overtimeByMonth, (row) => n(row.value)) },
-				{ label: 'Commission', data: alignMonths(keys, commissionByMonth, (row) => n(row.value)) },
 				{
 					label: 'Deductions',
 					data: alignMonths(keys, deductionByMonth, (row) => -n(row.value))

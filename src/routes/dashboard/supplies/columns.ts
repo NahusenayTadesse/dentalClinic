@@ -1,10 +1,16 @@
+import type { ColumnDef } from '@tanstack/table-core';
+import type { PageData } from './$types';
+
+/** One row of the table this file describes, taken from the load so the two cannot drift. */
+type RowData = NonNullable<PageData['supplyList']>[number];
+
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import { Row } from '$lib/components/ui/table';
 
-export const columns = [
+export const columns: ColumnDef<RowData>[] = [
 	{
 		id: 'index',
 		header: '#',
@@ -22,7 +28,6 @@ export const columns = [
 				name: 'Name',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {
@@ -39,9 +44,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Type',
 				onclick: column.getToggleSortingHandler()
-			}),
-
-		sortable: true
+			})
 	},
 
 	{
@@ -52,7 +55,6 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 
-		sortable: true,
 		cell: (info) => `${info.getValue()} ${info.row.original.unitOfMeasure ?? ''}`.trim()
 	},
 
@@ -63,7 +65,6 @@ export const columns = [
 				name: 'Free to Lease',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		// In store minus whatever an approved lease has already claimed. Flagged
 		// when it has fallen to the reorder level.
 		cell: ({ row }) =>
@@ -85,7 +86,6 @@ export const columns = [
 				name: 'Out at Sites',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => (Number(info.getValue()) > 0 ? info.getValue() : '—')
 	},
 
@@ -95,8 +95,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Total Owned',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 
 	{

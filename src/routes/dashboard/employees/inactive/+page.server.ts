@@ -9,13 +9,14 @@ import {
 import { eq, and, sql, isNull } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
 import type { PageServerLoad } from '../$types';
+import { employeeFullName } from '$lib/server/employeeName';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	let staffList = await db
 		.select({
 			id: employee.id,
 			// Handling potential nulls for both name parts
-			name: sql<string>`TRIM(CONCAT(COALESCE(${employee.name}, ''), ' ', COALESCE(${employee.fatherName}, '')))`,
+			name: employeeFullName,
 			department: department.name,
 			education: educationalLevel.name,
 			status: employmentStatuses.name,

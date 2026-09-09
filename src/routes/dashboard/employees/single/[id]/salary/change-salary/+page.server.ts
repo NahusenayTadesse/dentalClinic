@@ -3,7 +3,7 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import { salaryChangeSchema as schema } from './schema';
 
 import { db } from '$lib/server/db';
-import { employee, officeWorkerCommission, salaries } from '$lib/server/db/schema';
+import { employee, salaries } from '$lib/server/db/schema';
 import { asRequested } from '$lib/server/approvals';
 import type { Actions, PageServerLoad } from './$types';
 import { setFlash } from 'sveltekit-flash-message/server';
@@ -113,46 +113,6 @@ export const actions: Actions = {
 						positionId: position
 					})
 					.where(eq(employee.id, Number(id)));
-
-				// if (officeCommission) {
-				// 	const [existingCom] = await db
-				// 		.select({ id: officeWorkerCommission.id })
-				// 		.from(officeWorkerCommission)
-				// 		.where(eq(officeWorkerCommission.staffId, Number(id)))
-				// 		.limit(1);
-
-				// 	if (existingCom)
-				// 		await tx
-				// 			.update(officeWorkerCommission)
-				// 			.set({
-				// 				percentage,
-				// 				createdBy: locals.user?.id
-				// 			})
-				// 			.where(eq(officeWorkerCommission.id, existingCom.id));
-				// 	else {
-				// 		await tx.insert(officeWorkerCommission).values({
-				// 			staffId: Number(id),
-				// 			percentage,
-				// 			createdBy: locals.user?.id
-				// 		});
-				// 	}
-				// }
-				//
-				if (officeCommission) {
-					await tx
-						.insert(officeWorkerCommission)
-						.values({
-							staffId: Number(id),
-							percentage,
-							createdBy: locals.user?.id
-						})
-						.onDuplicateKeyUpdate({
-							set: {
-								percentage,
-								updatedBy: locals.user?.id
-							}
-						});
-				}
 			});
 			if (errorMessage) return errorMessage;
 			setFlash({ type: 'success', message: 'New Salary Successuflly Changed' }, cookies);

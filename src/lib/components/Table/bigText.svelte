@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Popover, PopoverContent, PopoverTrigger } from '$lib/components/ui/popover';
 
-	const { text }: { text: string } = $props();
+	const { text }: { text: string | null | undefined } = $props();
 
 	/**
 	 * Truncate text to a maximum length

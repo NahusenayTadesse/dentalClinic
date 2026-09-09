@@ -1,3 +1,9 @@
+import type { ColumnDef } from '@tanstack/table-core';
+import type { PageData } from './$types';
+
+/** One row of the table this file describes, taken from the load so the two cannot drift. */
+type RowData = NonNullable<PageData['customerList']>[number];
+
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Copy from '$lib/Copy.svelte';
@@ -5,7 +11,7 @@ import DataTableActions from './data-table-actions.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import { formatEthiopianDate } from '$lib/global.svelte';
 
-export const columns = [
+export const columns: ColumnDef<RowData>[] = [
 	{
 		id: 'index',
 		header: '#',
@@ -22,7 +28,6 @@ export const columns = [
 				name: 'Name',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {
@@ -35,19 +40,16 @@ export const columns = [
 	{
 		accessorKey: 'phone',
 		header: 'Phone',
-		sortable: true,
 		cell: ({ row }) => renderComponent(Copy, { data: row.original.phone })
 	},
 	{
 		accessorKey: 'email',
 		header: 'Email',
-		sortable: true,
 		cell: ({ row }) => renderComponent(Copy, { data: row.original.email })
 	},
 	{
 		accessorKey: 'tinNo',
 		header: 'Tin Number',
-		sortable: true,
 		cell: ({ row }) => renderComponent(Copy, { data: row.original.tinNo })
 	},
 
@@ -58,7 +60,6 @@ export const columns = [
 				name: 'Sites',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => renderComponent(Copy, { data: row.original.noOfSites })
 	},
 
@@ -70,7 +71,6 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {
@@ -88,23 +88,9 @@ export const columns = [
 				name: 'Joined On',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => {
-			const n = info.getValue(); // number of days
+			const n = info.getValue<string>(); // number of days
 			return formatEthiopianDate(new Date(n));
-		}
-	},
-	{
-		accessorKey: 'noOfContracts',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'No. of Contracts',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-		cell: (info) => {
-			const n = info.getValue(); // number of days
-			return `${n} ${n === 1 ? 'Contract' : 'Contracts'}`;
 		}
 	},
 
@@ -114,12 +100,11 @@ export const columns = [
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableActions, {
-				id: row.original.extraSettings,
+				id: row.original.id,
 				phone: row.original.phone,
-				createdBy: row.original.createdBy,
-				createdById: row.original.bookedById,
-				customerName: row.original.customerName,
-				date: row.original.date
+				createdBy: row.original.addedBy,
+				createdById: row.original.addedById,
+				customerName: row.original.name
 			});
 		}
 	}

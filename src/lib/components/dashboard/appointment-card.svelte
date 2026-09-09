@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Card, CardContent } from "$lib/components/ui/card";
-	import { CalendarIcon } from "@lucide/svelte";
+	import { Card, CardContent } from '$lib/components/ui/card';
+	import { CalendarIcon } from '@lucide/svelte';
 
 	interface Props {
 		count: number;
@@ -9,9 +9,13 @@
 	const { count }: Props = $props();
 </script>
 
-<div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
-	<Card class="relative overflow-hidden border-0 bg-gradient-to-br from-primary/90 via-primary/70 to-primary/50 shadow-lg-lg shadow-lg-primary/20">
-		<div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.7),transparent_50%)]"></div>
+<div class="animate-in duration-500 fade-in slide-in-from-bottom-4">
+	<Card
+		class="shadow-lg-lg shadow-lg-primary/20 relative overflow-hidden border-0 bg-gradient-to-br from-primary/90 via-primary/70 to-primary/50"
+	>
+		<div
+			class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.7),transparent_50%)]"
+		></div>
 		<CardContent class="relative pt-6">
 			<div class="flex items-start justify-between">
 				<div class="flex flex-col gap-2">

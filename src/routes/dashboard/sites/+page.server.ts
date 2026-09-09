@@ -1,13 +1,5 @@
 import { db } from '$lib/server/db';
-import {
-	customers,
-	site,
-	user,
-	address,
-	subcity,
-	siteMonthlyPayments,
-	siteContracts
-} from '$lib/server/db/schema';
+import { customers, site, user, address, subcity } from '$lib/server/db/schema';
 import { isApproved } from '$lib/server/approvals';
 import { and, eq, or, like, sql, count } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
@@ -72,33 +64,15 @@ export const load: PageServerLoad = async ({ url }) => {
 				floor: address.floor,
 				houseNumber: address.houseNumber,
 				status: address.status
-			},
-
-			expectedPayments: sql<number>`
-				GREATEST(0, TIMESTAMPDIFF(MONTH, ${siteContracts.startDate}, CURRENT_DATE()) + 1)
-			`.as('expected'),
-
-			actualPayments: sql<number>`
-				(SELECT COUNT(*)
-				 FROM ${siteMonthlyPayments}
-				 WHERE ${siteMonthlyPayments.contractId} = ${siteContracts.id})
-			`.as('actual'),
-
-			missingPayments: sql<number>`
-				GREATEST(0,
-					(TIMESTAMPDIFF(MONTH, ${siteContracts.startDate}, CURRENT_DATE()) + 1) -
-					(SELECT COUNT(*) FROM ${siteMonthlyPayments} WHERE ${siteMonthlyPayments.contractId} = ${siteContracts.id})
-				)
-			`
+			}
 		})
 		.from(site)
-		.leftJoin(siteContracts, and(eq(siteContracts.siteId, site.id), notDeleted(siteContracts)))
 		.leftJoin(user, eq(site.createdBy, user.id))
 		.leftJoin(customers, and(eq(customers.id, site.customerId), notDeleted(customers)))
 		.leftJoin(address, and(eq(address.id, site.address), notDeleted(address)))
 		.leftJoin(subcity, and(eq(subcity.id, address.subcityId), notDeleted(subcity)))
 		.where(whereClause)
-		.groupBy(site.id, siteContracts.id)
+		.groupBy(site.id)
 		.limit(query.limit)
 		.offset(query.offset);
 

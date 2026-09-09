@@ -12,15 +12,12 @@ import {
 	overTime,
 	deductions,
 	bonuses,
-	commission,
 	employmentStatuses,
 	taxType,
 	penality,
 	payrollRuns,
 	payrollReceipts,
 	payrollEntries,
-	officeWorkerCommission,
-	siteContracts,
 	position,
 	bankInsertHistory,
 	bankAmount,
@@ -45,7 +42,6 @@ export const load: PageServerLoad = async ({ params }) => {
 
 	const [m, y] = range.split('_');
 
-	await addOfficeWorkerCommission(m, Number(y));
 	const monthNumber = getMonthNumber(m);
 	const year = Number(y);
 
@@ -86,16 +82,6 @@ export const load: PageServerLoad = async ({ params }) => {
 		.where(and(currentMonthFilter(bonuses.bonusDate, start, end), notDeleted(bonuses)))
 		.groupBy(bonuses.staffId)
 		.as('bonus_sub');
-
-	const commissionSub = db
-		.select({
-			staffId: commission.staffId,
-			total: sql<number>`COALESCE(SUM(${commission.amount}), 0)`.as('total_comm')
-		})
-		.from(commission)
-		.where(and(eq(commission.month, m), eq(commission.year, Number(y))))
-		.groupBy(commission.staffId)
-		.as('comm_sub');
 
 	const deductionSub = db
 		.select({
@@ -169,7 +155,6 @@ export const load: PageServerLoad = async ({ params }) => {
     COALESCE(${salarySub.proRatedAmount}, 0) +
     COALESCE(${otSub.total}, 0) +
     COALESCE(${bonusSub.total}, 0) +
-    COALESCE(${commissionSub.total}, 0) +
     COALESCE(${salarySub.proRatedHousing}, 0) +
     COALESCE(${salarySub.proRatedTransport}, 0) +
     COALESCE(${salarySub.proRatedPosition}, 0)
@@ -221,7 +206,6 @@ export const load: PageServerLoad = async ({ params }) => {
 			overtime: otSub.total,
 			bonus: bonusSub.total,
 			absent: missingSub.missedCount,
-			commission: commissionSub.total,
 			deductions: deductionSub.total,
 			site: site.name,
 			gross: grossExpression,
@@ -247,7 +231,6 @@ export const load: PageServerLoad = async ({ params }) => {
 		.leftJoin(paymentMethods, eq(staffAccounts.paymentMethodId, paymentMethods.id))
 		.leftJoin(otSub, eq(otSub.staffId, employee.id))
 		.leftJoin(bonusSub, eq(bonusSub.staffId, employee.id))
-		.leftJoin(commissionSub, eq(commissionSub.staffId, employee.id))
 		.leftJoin(deductionSub, eq(deductionSub.staffId, employee.id))
 		.leftJoin(missingSub, eq(missingSub.staffId, employee.id))
 		.leftJoin(
@@ -289,7 +272,6 @@ export const load: PageServerLoad = async ({ params }) => {
 			employmentStatuses.id,
 			otSub.total,
 			bonusSub.total,
-			commissionSub.total,
 			deductionSub.total,
 			missingSub.missedCount
 		);
@@ -453,7 +435,7 @@ export const actions: Actions = {
 					basicSalary: emp.basicSalary.toString(),
 					overtimeAmount: emp.overtime.toString(),
 					deductions: emp.deductions.toString(), // Matches schema key
-					commissionAmount: emp.commission.toString(),
+					commissionAmount: '0',
 					bonusAmount: emp.bonus.toString(),
 					allowances: '0',
 					transportAllowance: emp.transportAllowance.toString(),
@@ -497,92 +479,3 @@ export const actions: Actions = {
 		}
 	}
 };
-
-async function addOfficeWorkerCommission(currentMonth: string, currentYear: number) {
-	const existingCommissions = await db
-		.select({ id: commission.id })
-		.from(commission)
-		.where(and(eq(commission.month, currentMonth), eq(commission.year, currentYear)))
-		.limit(1);
-
-	if (existingCommissions.length > 0) {
-		return {
-			status: 'already_processed',
-			message: `Commissions for ${currentMonth} ${currentYear} already exist.`
-		};
-	}
-
-	try {
-		await db.transaction(async (tx) => {
-			const [contractData] = await tx
-				.select({
-					totalAmount: sql<number>`sum(${siteContracts.monthlyAmount})`
-				})
-				.from(siteContracts)
-				.where(
-					and(
-						eq(siteContracts.commissionConsidered, true),
-						eq(siteContracts.isActive, true),
-						notDeleted(siteContracts)
-					)
-				);
-
-			// Ensure totalAmount is a valid number
-			const totalAmount = Number(contractData?.totalAmount) || 0;
-			const totalPool = totalAmount * 0.03;
-
-			if (totalPool === 0 || isNaN(totalPool)) {
-				console.warn('Total pool is 0 or NaN, skipping commission generation');
-				return;
-			}
-
-			// Get all office workers and their percentages
-			const workers = await tx
-				.select()
-				.from(officeWorkerCommission)
-				.innerJoin(
-					employee,
-					and(eq(officeWorkerCommission.staffId, employee.id), eq(employee.isActive, true))
-				);
-
-			// Prepare the batch insert with proper number values
-			const commissionEntries = workers
-				.map((worker) => {
-					// Safely get percentage, default to 0 if invalid
-					const percentage = Number(worker.percentage) || 0;
-
-					// Calculate amount as a number (not string)
-					const amount = totalPool * percentage;
-
-					// Skip if amount is NaN or invalid
-					if (isNaN(amount) || !isFinite(amount)) {
-						console.warn(`Invalid amount for worker ${worker.staffId}: ${amount}`);
-						return null;
-					}
-
-					return {
-						staffId: worker.staffId,
-						amount: amount, // Store as number, not string
-						month: currentMonth,
-						year: currentYear,
-						reason: `Office Worker shared commission (3% pool)`,
-						commissionDate: new Date(),
-						createdAt: new Date(),
-						isActive: true
-					};
-				})
-				.filter((entry): entry is NonNullable<typeof entry> => entry !== null); // Remove null entries
-
-			if (commissionEntries.length > 0) {
-				await tx.insert(commission).values(commissionEntries);
-			} else {
-				console.warn('No valid commission entries to insert');
-			}
-		});
-
-		return { status: 'success', message: 'Commissions generated successfully.' };
-	} catch (error) {
-		console.error('Commission Error:', error);
-		return { status: 'error', message: 'Failed to generate commissions.' };
-	}
-}

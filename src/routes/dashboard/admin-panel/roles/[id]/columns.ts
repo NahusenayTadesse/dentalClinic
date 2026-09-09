@@ -1,12 +1,18 @@
+import type { ColumnDef } from '@tanstack/table-core';
+import type { PageData } from './$types';
+
+/** One row of the table this file describes, taken from the load so the two cannot drift. */
+type RowData = NonNullable<PageData['userList']>[number];
+
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
-export const columns = [
+export const columns: ColumnDef<RowData>[] = [
 	{
 		accessorKey: 'index',
 		header: '#',
 		cell: (info) => info.row.index + 1,
-		sortable: false
+		enableSorting: false
 	},
 
 	{
@@ -15,8 +21,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Name',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 
 	{
@@ -30,7 +35,7 @@ export const userColumns = [
 		accessorKey: 'index',
 		header: '#',
 		cell: (info) => info.row.index + 1,
-		sortable: false
+		enableSorting: false
 	},
 
 	{
@@ -40,7 +45,6 @@ export const userColumns = [
 				name: 'Name',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {
@@ -57,8 +61,7 @@ export const userColumns = [
 			renderComponent(DataTableSort, {
 				name: 'Email',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 
 	{
@@ -67,7 +70,6 @@ export const userColumns = [
 			renderComponent(DataTableSort, {
 				name: 'Active',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	}
 ];

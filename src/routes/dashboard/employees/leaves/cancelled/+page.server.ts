@@ -18,7 +18,10 @@ import {
 } from '$lib/server/leaveLedger';
 import { leaveAllowanceError } from '$lib/server/leaveAllowance';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { approveLeave, editLeave } from './schema';
+import { approveLeaveFor, editLeave } from '$lib/components/leaves/schema';
+
+/** This page lists 'rejected' leaves, so the bulk action offers the other two states. */
+const approveLeave = approveLeaveFor('rejected');
 
 export const load: PageServerLoad = async () => {
 	const form = await superValidate(zod4(approveLeave));
@@ -26,7 +29,7 @@ export const load: PageServerLoad = async () => {
 		.select({
 			id: leave.id,
 			staffId: leave.staffId,
-			name: sql<string>`TRIM(CONCAT(COALESCE(${employee.name}, ''), ' ', COALESCE(${employee.fatherName}, '')))`,
+			name: employeeFullName,
 			department: department.name,
 			siteName: site.name,
 			requestDate: leave.requestDate,
@@ -72,6 +75,7 @@ export const load: PageServerLoad = async () => {
 };
 
 import { saveUploadedFile } from '$lib/server/upload';
+import { employeeFullName } from '$lib/server/employeeName';
 
 export const actions: Actions = {
 	approve: async ({ request, locals, params }) => {

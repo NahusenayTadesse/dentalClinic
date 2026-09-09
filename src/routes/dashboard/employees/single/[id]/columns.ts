@@ -21,14 +21,12 @@ export const familyMembers = [
 			renderComponent(DataTableSort, {
 				name: 'Product',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 	{
 		// Corresponds to staffId from the query
 		accessorKey: 'amount',
-		header: 'Amount',
-		sortable: true
+		header: 'Amount'
 	},
 	{
 		// Corresponds to date
@@ -38,7 +36,6 @@ export const familyMembers = [
 				name: 'Date',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		// Optional: Custom cell rendering for date formatting
 		cell: (info) => {
 			// Assuming the date comes in a format that can be parsed by Date
@@ -54,7 +51,7 @@ export const commissionService = [
 		accessorKey: 'index',
 		header: '#',
 		cell: (info) => info.row.index + 1,
-		sortable: false
+		enableSorting: false
 	},
 
 	{
@@ -63,14 +60,12 @@ export const commissionService = [
 			renderComponent(DataTableSort, {
 				name: 'Service',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 	{
 		// Corresponds to staffId from the query
 		accessorKey: 'amount',
-		header: 'Amount',
-		sortable: true
+		header: 'Amount'
 	},
 	{
 		// Corresponds to date
@@ -80,7 +75,6 @@ export const commissionService = [
 				name: 'Date',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		// Optional: Custom cell rendering for date formatting
 		cell: (info) => {
 			// Assuming the date comes in a format that can be parsed by Date
@@ -96,15 +90,14 @@ export const overtime = [
 		accessorKey: 'index',
 		header: '#',
 		cell: (info) => info.row.index + 1,
-		sortable: false
+		enableSorting: false
 	},
 
-	{ accessorKey: 'description', header: 'Reason', sortable: false },
+	{ accessorKey: 'description', header: 'Reason', enableSorting: false },
 	{
 		// Corresponds to staffId from the query
 		accessorKey: 'amount',
-		header: 'Amount',
-		sortable: true
+		header: 'Amount'
 	},
 	{
 		// Corresponds to date
@@ -114,7 +107,6 @@ export const overtime = [
 				name: 'Date',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		// Optional: Custom cell rendering for date formatting
 		cell: (info) => {
 			// Assuming the date comes in a format that can be parsed by Date
@@ -130,16 +122,15 @@ export const deductions = [
 		accessorKey: 'index',
 		header: '#',
 		cell: (info) => info.row.index + 1,
-		sortable: false
+		enableSorting: false
 	},
 
-	{ accessorKey: 'description', header: 'Description', sortable: false },
+	{ accessorKey: 'description', header: 'Description', enableSorting: false },
 
 	{
 		// Corresponds to staffId from the query
 		accessorKey: 'amount',
-		header: 'Amount',
-		sortable: true
+		header: 'Amount'
 	},
 	{
 		// Corresponds to date
@@ -149,7 +140,6 @@ export const deductions = [
 				name: 'Date',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		// Optional: Custom cell rendering for date formatting
 		cell: (info) => {
 			// Assuming the date comes in a format that can be parsed by Date

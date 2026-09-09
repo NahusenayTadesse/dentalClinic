@@ -5,7 +5,7 @@ import { notDeleted } from '$lib/server/softDelete';
 import type { PageServerLoad, Actions } from '../$types';
 
 export const load: PageServerLoad = async () => {
-	let siteList = await db
+	const siteList = await db
 		.select({
 			id: site.id,
 			name: site.name,

@@ -107,11 +107,7 @@
 		{/snippet}
 	</QueryBuilder>
 
-	<FilterMenu
-		data={data?.siteList}
-		bind:filteredList
-		filterKeys={['customerName', 'expectedPayments', 'actualPayments', 'missingPayments']}
-	/>
+	<FilterMenu data={data?.siteList} bind:filteredList filterKeys={['customerName']} />
 	<DataTable data={filteredList} fileName="Site List" {columns} />
 
 	{#if data.pagination.total > data.pagination.pageSize}

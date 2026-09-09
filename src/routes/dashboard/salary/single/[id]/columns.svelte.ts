@@ -24,7 +24,6 @@ export const columns = [
 				name: 'Month',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return row.original.month;
 		}
@@ -37,7 +36,6 @@ export const columns = [
 				name: 'Year',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return row.original.year;
 		}
@@ -63,7 +61,6 @@ export const columns = [
 				name: 'Basic Salary',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return formatETB(row.original.basicSalary);
 		}
@@ -76,7 +73,6 @@ export const columns = [
 				name: 'Over Time',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return formatETB(row.original.overtime);
 		}
@@ -89,7 +85,6 @@ export const columns = [
 				name: 'Transport Allowance',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return formatETB(row.original.transportAllowance, true);
 		}
@@ -102,7 +97,6 @@ export const columns = [
 				name: 'Position Allowance',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return formatETB(row.original.positionAllowance, true);
 		}
@@ -115,7 +109,6 @@ export const columns = [
 				name: 'Housing Allowance',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return formatETB(row.original.housingAllowance, true);
 		}
@@ -128,7 +121,6 @@ export const columns = [
 				name: 'Non-Taxable',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return formatETB(row.original.nonTaxable, true);
 		}
@@ -141,7 +133,6 @@ export const columns = [
 				name: 'Gross Salary',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return formatETB(row.original.gross, true);
 		}
@@ -192,7 +183,6 @@ export const columns = [
 				name: 'Bank',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => info.getValue() || 'Account Not Found' // Default to UNPROCESSED if payroll entry is missing
 	}
 ];

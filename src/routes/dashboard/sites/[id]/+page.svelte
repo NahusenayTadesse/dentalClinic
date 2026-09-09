@@ -11,7 +11,6 @@
 	import EditDetail from './editDetail.svelte';
 	import EditAddress from './editAddress.svelte';
 	import Contacts from './contacts.svelte';
-	import Contracts from './contracts.svelte';
 	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 	import { systemInfoRows } from '$lib/systemInfo';
 	import { Settings } from '@lucide/svelte';
@@ -93,15 +92,6 @@
 				form={data?.editContactForm}
 				addForm={data?.addContactForm}
 				canDelete={data?.isSuperAdmin}
-			/>
-		</Section>
-
-		<Section title="Contracts" class="lg:col-span-2" IconComp={Phone} style="identityIcon">
-			<Contracts
-				data={data?.contracts}
-				form={data?.editContractForm}
-				addForm={data?.addContractForm}
-				serviceList={data?.serviceList}
 			/>
 		</Section>
 

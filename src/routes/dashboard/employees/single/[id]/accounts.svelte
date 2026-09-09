@@ -54,7 +54,6 @@
 					name: 'Bank',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {
@@ -76,13 +75,11 @@
 				renderComponent(DataTableSort, {
 					name: 'Account Detail',
 					onclick: column.getToggleSortingHandler()
-				}),
-			sortable: true
+				})
 		},
 		{
 			accessorKey: 'status',
 			header: 'Status',
-			sortable: true,
 			cell: ({ row }) => {
 				return renderComponent(Statuses, {
 					status: row.original.status ? 'Active' : 'InActive',
@@ -97,7 +94,6 @@
 		{
 			accessorKey: 'addedBy',
 			header: 'Added By',
-			sortable: true,
 			cell: ({ row }) => {
 				return renderComponent(DataTableLinks, {
 					id: row.original.addedById,
@@ -112,7 +108,6 @@
 		{
 			accessorKey: '',
 			header: 'Edit',
-			sortable: true,
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {

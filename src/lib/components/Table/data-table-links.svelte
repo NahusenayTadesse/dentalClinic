@@ -9,8 +9,13 @@
 		variant = 'ghost',
 		target = ''
 	}: {
-		id: string;
-		name: string;
+		/**
+		 * Appended to `link` to build the href. Numeric because most tables here are keyed by an
+		 * autoincrement `int` — only `user` uses a string id — and the value is interpolated into
+		 * a URL either way.
+		 */
+		id: string | number | null;
+		name: string | null;
 		link: string;
 		target?: string;
 		IconComp?: Component<IconProps>;
@@ -27,7 +32,7 @@
 		<Tooltip.Trigger class={buttonVariants({ variant: 'ghost' })}>
 			{#snippet child({ props })}
 				<Button
-					href="{link}/{id}"
+					href={id === null ? undefined : `${link}/${id}`}
 					{target}
 					{variant}
 					{...props}

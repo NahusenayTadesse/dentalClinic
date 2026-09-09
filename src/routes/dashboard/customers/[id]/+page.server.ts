@@ -9,8 +9,7 @@ import {
 	user,
 	address,
 	subcity,
-	customerContacts,
-	customerContracts
+	customerContacts
 } from '$lib/server/db/schema';
 import { asRequested } from '$lib/server/approvals';
 import { eq, and, desc, sql, count } from 'drizzle-orm';
@@ -117,7 +116,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.where(eq(customers.id, Number(id)))
 		.then((rows) => rows[0]);
 
-	let contacts = await db
+	const contacts = await db
 		.select({
 			id: customerContacts.id,
 			contactType: customerContacts.contactType,
@@ -130,21 +129,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.leftJoin(user, eq(customerContacts.createdBy, user.id))
 		.where(and(eq(customerContacts.customerId, Number(id)), notDeleted(customerContacts)));
 
-	let contracts = await db
-		.select({
-			id: customerContracts.id,
-			contractType: customerContracts.contractType,
-			contactAmount: customerContracts.contractAmount,
-			status: customerContracts.isActive,
-			addedBy: user.name,
-			addedById: user.id
-		})
-		.from(customerContracts)
-		.leftJoin(user, eq(customerContracts.createdBy, user.id))
-		.where(and(eq(customerContracts.customerId, Number(id)), notDeleted(customerContracts)))
-		.orderBy(desc(customerContracts.contractDate));
-
-	let sites = await db
+	const sites = await db
 		.select({
 			id: site.id,
 			name: site.name,
@@ -182,7 +167,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		addContractForm,
 		editContractForm,
 		contacts,
-		contracts,
 		serviceList,
 		sites,
 		editSiteForm,
@@ -442,7 +426,7 @@ export const actions: Actions = {
 
 		redirect(
 			'/dashboard/customers',
-			{ type: 'success', message: 'Customer, its sites and their contracts deleted.' },
+			{ type: 'success', message: 'Customer and their sites deleted.' },
 			cookies
 		);
 	},

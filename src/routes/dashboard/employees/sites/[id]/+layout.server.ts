@@ -7,7 +7,7 @@ import type { PageServerLoad, Actions } from '../$types';
 export const load: PageServerLoad = async ({ params }) => {
 	const { id } = params;
 
-	let siteName = await db
+	const siteName = await db
 		.select({
 			name: site.name
 		})

@@ -1,10 +1,15 @@
+import type { ColumnDef } from '@tanstack/table-core';
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Statuses from '$lib/components/Table/statuses.svelte';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+import type { PageData } from './$types';
 
-export const columns = [
+/** One row of the role list, taken straight from the load so the two cannot drift. */
+type Role = PageData['roleList'][number];
+
+export const columns: ColumnDef<Role>[] = [
 	{
 		id: 'index',
 		header: '#',
@@ -22,7 +27,6 @@ export const columns = [
 				name: 'Name',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {
@@ -39,7 +43,6 @@ export const columns = [
 				name: 'Status',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return renderComponent(Statuses, {
 				status: row.original.status ? 'Active' : 'Inactive'
@@ -54,7 +57,6 @@ export const columns = [
 				name: 'Permissions Count',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => `${info.getValue()} Permissions` // always “day”
 	},
 

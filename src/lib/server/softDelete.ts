@@ -9,15 +9,11 @@ import {
 	employee,
 	employeeGuarantor,
 	expenses,
-	officeWorkerCommission,
-	paymentRequest,
 	qualification,
 	rolePermissions,
 	roles,
 	session,
 	site,
-	siteContracts,
-	siteMonthlyPayments,
 	specialPermissions,
 	staffAccounts,
 	staffContacts,
@@ -25,10 +21,6 @@ import {
 	staffSchedule,
 	supplies,
 	suppliesAdjustments,
-	supplyLeaseEvents,
-	supplyLeaseItems,
-	supplyLeaseMovements,
-	supplyLeases,
 	supplySuppliers,
 	transactions,
 	user,
@@ -60,7 +52,7 @@ export type SoftDeletable = { deletedAt: AnyMySqlColumn };
  * drops the parent row too:
  *
  * ```ts
- * .leftJoin(site, and(eq(siteContracts.siteId, site.id), notDeleted(site)))
+ * .leftJoin(site, and(eq(employee.siteId, site.id), notDeleted(site)))
  * ```
  *
  * One deliberate exception: **attribution joins are not filtered.** A join on
@@ -110,29 +102,14 @@ async function softDeleteAddresses(tx: Tx, addressIds: (number | null)[], userId
 }
 
 /**
- * Deletes one contract. Payments and renewals hanging off it are left in place
- * — they are financial history, and every read of them already joins through
- * `siteContracts`, so they stop surfacing once the contract is gone.
- */
-export async function softDeleteContract(tx: Tx, contractId: number, userId?: string) {
-	await tx
-		.update(siteContracts)
-		.set(deletionStamp(userId))
-		.where(and(eq(siteContracts.id, contractId), notDeleted(siteContracts)));
-}
-
-/**
- * Deletes a site and every contract on it. The schema already cascades
- * `site_contracts` from `site` on a hard delete, so a soft delete that left the
- * contracts behind would contradict the model the FKs describe.
+ * Deletes a site and its address.
+ *
+ * Used to cascade `site_contracts` too; those tables were the facilities business's client
+ * billing and went with the prune. `site_contacts` is left alone deliberately — it cascades on
+ * a hard delete and carries nothing worth surfacing on its own.
  */
 export async function softDeleteSite(tx: Tx, siteId: number, userId?: string) {
 	const stamp = deletionStamp(userId);
-
-	await tx
-		.update(siteContracts)
-		.set(stamp)
-		.where(and(eq(siteContracts.siteId, siteId), notDeleted(siteContracts)));
 
 	const addressIds = await tx
 		.select({ address: site.address })
@@ -149,29 +126,19 @@ export async function softDeleteSite(tx: Tx, siteId: number, userId?: string) {
 }
 
 /**
- * Deletes a customer, their sites, and the contracts on those sites. Contracts
- * carry both `siteId` and `customerId`, so both routes to a contract are
- * covered — a contract pointing straight at the customer is caught even if its
- * site row somehow is not.
+ * Deletes a customer and their sites.
+ *
+ * The contract leg is gone with the billing tables it walked; a site is now just a location.
  */
 export async function softDeleteCustomer(tx: Tx, customerId: number, userId?: string) {
 	const stamp = deletionStamp(userId);
 
+	// Read the sites before stamping them: their addresses are deleted below, and once the rows
+	// are marked the query that finds them would have to look past its own filter.
 	const customerSites = await tx
-		.select({ id: site.id, address: site.address })
+		.select({ address: site.address })
 		.from(site)
 		.where(eq(site.customerId, customerId));
-
-	const siteIds = customerSites.map((row) => row.id);
-
-	const contractScope = siteIds.length
-		? or(eq(siteContracts.customerId, customerId), inArray(siteContracts.siteId, siteIds))
-		: eq(siteContracts.customerId, customerId);
-
-	await tx
-		.update(siteContracts)
-		.set(stamp)
-		.where(and(contractScope, notDeleted(siteContracts)));
 
 	await tx
 		.update(site)
@@ -211,8 +178,7 @@ export const staffOwnedTables = {
 	guarantor: employeeGuarantor,
 	schedule: staffSchedule,
 	contact: staffContacts,
-	account: staffAccounts,
-	commission: officeWorkerCommission
+	account: staffAccounts
 } satisfies Record<string, StaffOwned>;
 
 export type StaffOwnedKind = keyof typeof staffOwnedTables;
@@ -312,66 +278,6 @@ export async function softDeleteSupply(tx: Tx, supplyId: number, userId?: string
 }
 
 /**
- * Deletes a lease along with its item lines, movements and audit log.
- *
- * Refuses once anything has physically moved. A lease that reached `issued` has
- * goods sitting at a customer's site, and its issue rows are the only record of
- * why `supplies.quantity` went down; deleting it would either strand that stock
- * adjustment with nothing to explain it, or — if the quantity were added back —
- * claim units are in the store when they are at a site. Cancel it instead, and
- * book the goods back in through a return.
- *
- * Returns `false` when the lease is missing or has movements, so the caller can
- * say why rather than reporting a silent success.
- */
-export async function softDeleteLease(
-	tx: Tx,
-	leaseId: number,
-	userId?: string
-): Promise<{ ok: boolean; reason?: string }> {
-	const [lease] = await tx
-		.select({ id: supplyLeases.id, status: supplyLeases.status })
-		.from(supplyLeases)
-		.where(and(eq(supplyLeases.id, leaseId), notDeleted(supplyLeases)))
-		.limit(1);
-
-	if (!lease) return { ok: false, reason: 'That lease no longer exists.' };
-
-	const [{ moved }] = await tx
-		.select({ moved: count() })
-		.from(supplyLeaseMovements)
-		.innerJoin(supplyLeaseItems, eq(supplyLeaseItems.id, supplyLeaseMovements.leaseItemId))
-		.where(and(eq(supplyLeaseItems.leaseId, leaseId), notDeleted(supplyLeaseMovements)));
-
-	if (moved > 0) {
-		return {
-			ok: false,
-			reason:
-				'This lease has already moved stock. Return what is outstanding and close it instead of deleting it.'
-		};
-	}
-
-	const stamp = deletionStamp(userId);
-
-	await tx
-		.update(supplyLeaseEvents)
-		.set(stamp)
-		.where(and(eq(supplyLeaseEvents.leaseId, leaseId), notDeleted(supplyLeaseEvents)));
-
-	await tx
-		.update(supplyLeaseItems)
-		.set(stamp)
-		.where(and(eq(supplyLeaseItems.leaseId, leaseId), notDeleted(supplyLeaseItems)));
-
-	await tx
-		.update(supplyLeases)
-		.set(stamp)
-		.where(and(eq(supplyLeases.id, leaseId), notDeleted(supplyLeases)));
-
-	return { ok: true };
-}
-
-/**
  * Deletes one row from the adjustment ledger and reverses its effect on stock.
  *
  * `supplies.quantity` is a running total kept by `+=` on every adjustment, not
@@ -457,68 +363,6 @@ export async function softDeleteDamagedSupply(
 		.update(supplies)
 		.set({ quantity: sql`${supplies.quantity} + ${row.quantity}`, updatedBy: userId })
 		.where(eq(supplies.id, supplyId));
-
-	return true;
-}
-
-/** Deletes one payment request. Nothing hangs off it. */
-export async function softDeletePaymentRequest(
-	tx: Tx,
-	requestId: number,
-	userId?: string
-): Promise<boolean> {
-	const [row] = await tx
-		.select({ id: paymentRequest.id })
-		.from(paymentRequest)
-		.where(and(eq(paymentRequest.id, requestId), notDeleted(paymentRequest)))
-		.limit(1);
-
-	if (!row) return false;
-
-	await tx
-		.update(paymentRequest)
-		.set(deletionStamp(userId))
-		.where(eq(paymentRequest.id, requestId));
-	return true;
-}
-
-/**
- * Deletes a recorded payment and the transaction behind it.
- *
- * The transaction row exists only to carry this payment's money — the schema
- * cascades `site_monthly_payments` from it on a hard delete — so leaving it
- * behind would keep the amount visible on `/dashboard/salary/transactions`
- * after the payment itself is gone.
- */
-export async function softDeletePayment(
-	tx: Tx,
-	paymentId: number,
-	userId?: string
-): Promise<boolean> {
-	const [row] = await tx
-		.select({ id: siteMonthlyPayments.id, transactionId: siteMonthlyPayments.transactionId })
-		.from(siteMonthlyPayments)
-		.where(and(eq(siteMonthlyPayments.id, paymentId), notDeleted(siteMonthlyPayments)))
-		.limit(1);
-
-	if (!row) return false;
-
-	const stamp = deletionStamp(userId);
-
-	await tx.update(siteMonthlyPayments).set(stamp).where(eq(siteMonthlyPayments.id, paymentId));
-
-	if (row.transactionId) {
-		// An approved payment already added its money to a bank account; deleting
-		// it has to take that back out, or the balance keeps money for a payment
-		// that no longer exists. A pending payment posted nothing, and the
-		// reversal is a no-op for it.
-		await reverseBankPostings(tx, row.transactionId, 'Reversal: payment deleted', userId);
-
-		await tx
-			.update(transactions)
-			.set(stamp)
-			.where(and(eq(transactions.id, row.transactionId), notDeleted(transactions)));
-	}
 
 	return true;
 }

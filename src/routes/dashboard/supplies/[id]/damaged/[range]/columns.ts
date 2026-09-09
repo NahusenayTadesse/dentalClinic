@@ -23,9 +23,8 @@ export const makeColumns = (canDelete = false) => [
 				name: 'Changed At',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => {
-			const n = info.getValue(); // number of days
+			const n = info.getValue<string>(); // number of days
 			return formatEthiopianDate(new Date(n));
 		}
 	},
@@ -36,9 +35,7 @@ export const makeColumns = (canDelete = false) => [
 			renderComponent(DataTableSort, {
 				name: 'Changed Quantity',
 				onclick: column.getToggleSortingHandler()
-			}),
-
-		sortable: true
+			})
 	},
 
 	{
@@ -49,7 +46,6 @@ export const makeColumns = (canDelete = false) => [
 				onclick: column.getToggleSortingHandler()
 			}),
 
-		sortable: true,
 		cell: ({ row }) => {
 			return renderComponent(DataTableLinks, {
 				id: row.original.extraSettings,
@@ -63,7 +59,6 @@ export const makeColumns = (canDelete = false) => [
 	{
 		accessorKey: 'reciept',
 		header: 'Reciept',
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			//

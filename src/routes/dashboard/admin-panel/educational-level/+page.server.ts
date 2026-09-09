@@ -1,92 +1,29 @@
-import { setError, superValidate, message, fail } from 'sveltekit-superforms';
-import { zod4 } from 'sveltekit-superforms/adapters';
-import { and, eq } from 'drizzle-orm';
-import { notDeleted } from '$lib/server/softDelete';
-
-import { add, edit } from './schema';
-import { db } from '$lib/server/db';
-import { educationalLevel as department } from '$lib/server/db/schema/';
+import { contentCrud } from '$lib/server/crud';
+import { educationalLevel } from '$lib/server/db/schema/';
 import { lookupDeleteAction } from '$lib/server/lookupDelete';
-import type { Actions } from './$types';
-import type { PageServerLoad } from './$types.js';
+import { add, edit } from './schema';
 
-export const load: PageServerLoad = async () => {
-	const form = await superValidate(zod4(add));
-	const editForm = await superValidate(zod4(edit));
+/**
+ * A plain lookup table: list, add, edit, soft delete. Everything but the delete comes from
+ * `contentCrud`, which is why there is nothing here but the table and its schemas.
+ */
+const crud = contentCrud({
+	table: educationalLevel,
+	label: 'Educational Level',
+	addSchema: add,
+	editSchema: edit
+});
 
-	const allData = await db
-		.select({
-			id: department.id,
-			name: department.name,
-			description: department.description,
-			status: department.status
-		})
-		.from(department)
-		.where(notDeleted(department));
+/*
+ * Deliberately unannotated. Adding `: PageServerLoad` widens the return to the generic
+ * signature, and `PageData` then loses `addForm`/`editForm`/`rows` — every consumer in
+ * `+page.svelte` falls back to `{}`. Letting TypeScript infer keeps the page typed.
+ */
+export const load = crud.load;
 
-	return {
-		form,
-		editForm,
-		allData
-	};
-};
-
-export const actions: Actions = {
-	add: async ({ request }) => {
-		const form = await superValidate(request, zod4(add));
-
-		if (!form.valid) {
-			return message(form, { type: 'error', text: 'Please check the form for Errors' });
-		}
-
-		const { name, description, status } = form.data;
-
-		try {
-			await db.insert(department).values({
-				name,
-				description,
-				status: status
-			});
-
-			return message(form, { type: 'success', text: 'Educational Level Successfully Added' });
-		} catch (err: any) {
-			if (err.code === 'ER_DUP_ENTRY') setError(form, 'name', 'Educational Level already exists.');
-			return message(form, {
-				type: 'error',
-				text:
-					err.code === 'ER_DUP_ENTRY'
-						? 'Educational Level already exists. Please choose another one.'
-						: err.message
-			});
-		}
-	},
-	edit: async ({ request }) => {
-		const form = await superValidate(request, zod4(edit));
-		if (!form.valid) {
-			return fail(400, { form });
-		}
-
-		const { id, name, description, status } = form.data;
-
-		try {
-			await db
-				.update(department)
-				.set({ name, description, status })
-				.where(eq(department.id, Number(id)));
-			return message(form, { type: 'success', text: 'Educational Level Successfully Updated' });
-		} catch (err: any) {
-			if (err.code === 'ER_DUP_ENTRY') return;
-			setError(form, 'name', 'Educational Level name already exists.');
-			return message(form, {
-				type: 'error',
-				text:
-					err.code === 'ER_DUP_ENTRY'
-						? 'Educational Level name is already taken. Please choose another one.'
-						: err.message
-			});
-		}
-	},
-
+export const actions = {
+	add: crud.actions.add,
+	edit: crud.actions.edit,
 	/** Soft delete, super admin only. See `lookupDeleteAction`. */
-	delete: lookupDeleteAction(department, 'educational level')
+	delete: lookupDeleteAction(educationalLevel, 'educational level')
 };

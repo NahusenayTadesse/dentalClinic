@@ -99,62 +99,6 @@
 		},
 
 		{
-			title: 'Contracts',
-			url: '/dashboard/contracts',
-			icon: ScrollText,
-			items: [
-				{
-					title: 'Active Contracts',
-					url: '/dashboard/contracts',
-					icon: FileCheck
-				},
-				{
-					title: 'Inactive Contract',
-					url: '/dashboard/contracts/inactive',
-					icon: FileX
-				},
-				{
-					title: 'Terminated Contract',
-					url: '/dashboard/contracts/terminated',
-					icon: FileX
-				}
-			]
-		},
-
-		{
-			title: 'Requests',
-			url: '/dashboard/requests',
-			icon: Form,
-			items: [
-				{
-					title: 'Add New Request',
-					url: '/dashboard/requests/add-request',
-					icon: Plus
-				},
-				{
-					title: 'Pending Approval',
-					url: '/dashboard/requests/pending',
-					icon: Loader
-				},
-				{
-					title: 'Approved Payments',
-					url: '/dashboard/requests/approved',
-					icon: CircleCheckBig
-				},
-				{
-					title: 'Cancelled Payments',
-					url: '/dashboard/requests/cancelled',
-					icon: OctagonMinus
-				},
-				{
-					title: 'Special Payments',
-					url: '/dashboard/requests/special',
-					icon: OctagonMinus
-				}
-			]
-		},
-
-		{
 			title: 'Approvals',
 			url: '/dashboard/approvals',
 			icon: BadgeCheck,
@@ -182,11 +126,6 @@
 				{
 					title: 'Payroll Runs',
 					url: '/dashboard/approvals/payroll-runs',
-					icon: Loader
-				},
-				{
-					title: 'Site Contracts',
-					url: '/dashboard/approvals/site-contracts',
 					icon: Loader
 				}
 			]
@@ -221,39 +160,6 @@
 					title: 'Payroll Runs',
 					url: '/dashboard/rejections/payroll-runs',
 					icon: CircleX
-				},
-				{
-					title: 'Site Contracts',
-					url: '/dashboard/rejections/site-contracts',
-					icon: CircleX
-				}
-			]
-		},
-
-		{
-			title: 'Payments',
-			url: '/dashboard/payments',
-			icon: Banknote,
-			items: [
-				{
-					title: 'Add Collection',
-					url: '/dashboard/payments/add-payment',
-					icon: Plus
-				},
-				{
-					title: 'Pending Approval',
-					url: '/dashboard/payments/pending',
-					icon: Loader
-				},
-				{
-					title: 'Approved Payments',
-					url: '/dashboard/payments/approved',
-					icon: CircleCheckBig
-				},
-				{
-					title: 'Cancelled Payments',
-					url: '/dashboard/payments/cancelled',
-					icon: OctagonMinus
 				}
 			]
 		},
@@ -343,16 +249,6 @@
 					title: 'Add Supply',
 					url: '/dashboard/supplies/add-supplies',
 					icon: Plus
-				},
-				{
-					title: 'Site Leases',
-					url: '/dashboard/supplies/leases',
-					icon: Truck
-				},
-				{
-					title: 'Lease to a Site',
-					url: '/dashboard/supplies/leases/add-lease',
-					icon: PackagePlus
 				},
 				{
 					title: 'Suppliers',

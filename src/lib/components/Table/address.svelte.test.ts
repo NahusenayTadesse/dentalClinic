@@ -9,9 +9,7 @@ describe('Table/address.svelte', () => {
 
 		await userEvent.click(page.getByRole('button'));
 
-		await expect
-			.element(page.getByText('No address information available'))
-			.toBeInTheDocument();
+		await expect.element(page.getByText('No address information available')).toBeInTheDocument();
 	});
 
 	it('lists every populated address field once opened', async () => {
@@ -58,8 +56,6 @@ describe('Table/address.svelte', () => {
 		});
 
 		// truncate() cuts at 15 chars + '...': "A Very Long Sub" + "..."
-		await expect
-			.element(page.getByRole('button'))
-			.toHaveTextContent('A Very Long Sub...');
+		await expect.element(page.getByRole('button')).toHaveTextContent('A Very Long Sub...');
 	});
 });

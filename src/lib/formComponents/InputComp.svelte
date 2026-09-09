@@ -3,8 +3,8 @@
 	import { Textarea } from '$lib/components/ui/textarea/index';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import FileUpload from './FileUpload.svelte';
-	import DatePicker2 from './DatePicker2.svelte';
 	import DatePicker from './DatePicker.svelte';
+	import DateRangePicker from './DateRangePicker.svelte';
 	import SelectComp from './SelectComp.svelte';
 	import ComboboxComp from './ComboboxComp.svelte';
 	import CheckboxComp from './CheckboxComp.svelte';
@@ -43,10 +43,10 @@
 	{:else if type === 'select'}
 		<SelectComp {name} bind:value={$form[name]} {items} />
 	{:else if type === 'date'}
-		<DatePicker2 bind:data={$form[name]} {oldDays} {year} {futureDays} />
+		<DatePicker bind:data={$form[name]} {oldDays} {year} {futureDays} />
 		<input type="hidden" {name} bind:value={$form[name]} />
 	{:else if type === 'dateMultiple'}
-		<DatePicker bind:data={$form[name]} {oldDays} {year} {futureDays} />
+		<DateRangePicker bind:data={$form[name]} {oldDays} {year} {futureDays} />
 		<input type="hidden" {name} bind:value={$form[name]} />
 	{:else if type === 'combo'}
 		<ComboboxComp {name} bind:value={$form[name]} {items} {required} />

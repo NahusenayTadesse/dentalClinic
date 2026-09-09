@@ -2,6 +2,7 @@ import { and, eq, gte, lte, sql, type SQL } from 'drizzle-orm';
 import type { AnyMySqlColumn } from 'drizzle-orm/mysql-core';
 import { employee } from '$lib/server/db/schema';
 import type { ReportFilters } from './filters';
+import { employeeLegalName } from '$lib/server/employeeName';
 
 /**
  * Query fragments shared by every dataset on the report.
@@ -49,11 +50,8 @@ export function n(value: unknown): number {
 }
 
 /** The full name, built the same way every other listing in the app builds it. */
-export const staffName = sql<string>`TRIM(CONCAT(
-	COALESCE(${employee.name}, ''), ' ',
-	COALESCE(${employee.fatherName}, ''), ' ',
-	COALESCE(${employee.grandFatherName}, '')
-))`;
+/** Re-exported under the name the report modules already use. */
+export const staffName = employeeLegalName;
 
 /**
  * Conditions that narrow a dataset by *who* it belongs to. Every caller must

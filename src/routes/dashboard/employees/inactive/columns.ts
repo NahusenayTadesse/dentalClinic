@@ -1,3 +1,9 @@
+import type { ColumnDef } from '@tanstack/table-core';
+import type { PageData } from './$types';
+
+/** One row of the table this file describes, taken from the load so the two cannot drift. */
+type RowData = NonNullable<PageData['staffList']>[number];
+
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableActions from './data-table-actions.svelte';
@@ -5,7 +11,7 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import { formatEthiopianDate, minutesToHoursString } from '$lib/global.svelte';
 import Copy from '$lib/Copy.svelte';
 
-export const columns = [
+export const columns: ColumnDef<RowData>[] = [
 	{
 		id: 'index',
 		header: '#',
@@ -22,7 +28,6 @@ export const columns = [
 				name: 'Name',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {
@@ -39,8 +44,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Department',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 	{
 		accessorKey: 'education',
@@ -48,8 +52,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Educational Level',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 	{
 		accessorKey: 'terminationDate',
@@ -58,8 +61,7 @@ export const columns = [
 				name: 'Termination Date',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
-		cell: (info) => formatEthiopianDate(info.getValue()) || formatEthiopianDate(new Date())
+		cell: (info) => formatEthiopianDate(info.getValue<Date>()) || formatEthiopianDate(new Date())
 	},
 
 	// {
@@ -77,8 +79,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Status',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 
 	{
@@ -88,9 +89,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Years of Service',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-		filterVariant: 'range'
+			})
 	},
 
 	{

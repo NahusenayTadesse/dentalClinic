@@ -22,6 +22,7 @@ import { edit } from './schema';
 import type { PageServerLoad, Actions } from '../$types';
 import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
+import { employeeFullName } from '$lib/server/employeeName';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// --- Parse query params from QueryBuilder ---
@@ -74,7 +75,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	let staffList = await db
 		.select({
 			id: employee.id,
-			name: sql<string>`TRIM(CONCAT(COALESCE(${employee.name}, ''), ' ', COALESCE(${employee.fatherName}, '')))`,
+			name: employeeFullName,
 			department: department.name,
 			position: position.name,
 			site: site.name,

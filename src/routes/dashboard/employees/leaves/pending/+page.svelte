@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { makeColumns } from './columns';
+	import { makeColumns } from '$lib/components/leaves/columns';
 
 	let { data } = $props();
 
-	let columns = $derived(makeColumns(data?.isSuperAdmin));
+	let columns = $derived(makeColumns('pending', data?.isSuperAdmin));
 
 	import DataTable from '$lib/components/Table/data-table.svelte';
 

@@ -1,3 +1,9 @@
+import type { ColumnDef } from '@tanstack/table-core';
+import type { PageData } from './$types';
+
+/** One row of the table this file describes, taken from the load so the two cannot drift. */
+type RowData = NonNullable<PageData['userList']>[number];
+
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Copy from '$lib/Copy.svelte';
@@ -5,7 +11,7 @@ import DataTableActions from './data-table-actions.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import { formatEthiopianDate } from '$lib/global.svelte';
 
-export const columns = [
+export const columns: ColumnDef<RowData>[] = [
 	{
 		id: 'index',
 		header: '#',
@@ -23,7 +29,6 @@ export const columns = [
 				name: 'Name',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {
@@ -41,8 +46,7 @@ export const columns = [
 				name: 'Email',
 
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 	{
 		accessorKey: 'role',
@@ -52,7 +56,6 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {
@@ -69,7 +72,6 @@ export const columns = [
 				name: 'Status',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			const status = row.original.status;
 			return status ? 'Active' : 'Inactive';
@@ -83,7 +85,6 @@ export const columns = [
 				name: 'Permissions Count',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => `${info.getValue()} Permissions` // always “day”
 	},
 
@@ -94,8 +95,7 @@ export const columns = [
 				name: 'Added At',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
-		cell: (info) => formatEthiopianDate(new Date(info.getValue())) // always “day”
+		cell: (info) => formatEthiopianDate(new Date(info.getValue<string>())) // always “day”
 	},
 
 	{

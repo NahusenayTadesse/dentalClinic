@@ -108,7 +108,11 @@
 	{/if}
 
 	{#key data.rows}
-		<FilterMenu data={data.rows} bind:filteredList filterKeys={['requestedByName', 'rejectedByName']} />
+		<FilterMenu
+			data={data.rows}
+			bind:filteredList
+			filterKeys={['requestedByName', 'rejectedByName']}
+		/>
 		<DataTable
 			data={filteredList}
 			{columns}

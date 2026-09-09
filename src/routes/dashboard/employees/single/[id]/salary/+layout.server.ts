@@ -15,6 +15,7 @@ import {
 import { eq, isNull, sql, and, count } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
 import type { LayoutServerLoad } from './$types';
+import { employeeFullName } from '$lib/server/employeeName';
 export const load: LayoutServerLoad = async ({ params }) => {
 	const { id } = params;
 	const form = await superValidate(zod4(schema));
@@ -22,7 +23,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 	const salaryDetail = await db
 		.select({
 			id: employee.id,
-			name: sql<string>`TRIM(CONCAT(${employee.name}, ' ', COALESCE(${employee.fatherName}, '')))`,
+			name: employeeFullName,
 
 			// sum of all deductions for the staff
 			deductions: sql<number>`COALESCE(SUM(${deductions.amount}), 0)`,

@@ -138,7 +138,6 @@ export function makeColumns(
 					name: humanise(key),
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: links[key] ? linkCell(key, links[key]) : cellFor(key)
 		})),
 
@@ -149,7 +148,6 @@ export function makeColumns(
 					name: 'Requested By',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: links.requestedByName
 				? linkCell('requestedByName', links.requestedByName)
 				: (info: any) => info.getValue() ?? 'Unknown'
@@ -161,7 +159,6 @@ export function makeColumns(
 					name: 'Requested On',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: (info: any) => {
 				const v = info.getValue();
 				return v ? formatEthiopianDate(new Date(String(v))) : '—';
@@ -182,7 +179,6 @@ export function makeColumns(
 								name: 'Rejected By',
 								onclick: column.getToggleSortingHandler()
 							}),
-						sortable: true,
 						cell: (info: any) => info.getValue() ?? 'Unknown'
 					},
 					{
@@ -192,7 +188,6 @@ export function makeColumns(
 								name: 'Rejected On',
 								onclick: column.getToggleSortingHandler()
 							}),
-						sortable: true,
 						cell: (info: any) => {
 							const v = info.getValue();
 							return v ? formatEthiopianDate(new Date(String(v))) : '—';

@@ -5,8 +5,6 @@ import {
 	bankAmount,
 	bankInsertHistory,
 	bonuses,
-	commission,
-	contractRenewals,
 	customers,
 	damagedSupplies,
 	deductions,
@@ -24,7 +22,6 @@ import {
 	overTime,
 	overTimeType,
 	paymentMethods,
-	paymentRequest,
 	payrollAdjustments,
 	payrollEntries,
 	payrollReceipts,
@@ -33,9 +30,6 @@ import {
 	salaries,
 	services,
 	site,
-	siteContracts,
-	siteMonthlyPayments,
-	sitePenalties,
 	supplies,
 	suppliesAdjustments,
 	supplySuppliers,
@@ -96,7 +90,6 @@ const NUMERIC_KEYS: Record<string, string[]> = {
 	terminations: [],
 	bonuses: ['amount'],
 	overtime: ['hours', 'rate', 'amount'],
-	commissions: ['amount'],
 	deductions: ['amount'],
 	attendance: ['amount'],
 	leaves: ['days'],
@@ -114,7 +107,6 @@ const NUMERIC_KEYS: Record<string, string[]> = {
 	renewals: ['amount'],
 	'site-penalties': ['amount'],
 	customers: ['sites'],
-	sites: ['contracts', 'monthlyValue'],
 	'audit-log': []
 };
 
@@ -524,45 +516,6 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 						.select({ total: count() })
 						.from(overTime)
 						.innerJoin(employee, eq(overTime.staffId, employee.id))
-						.where(where)
-			);
-		}
-
-		case 'commissions': {
-			const where = all([
-				notDeleted(commission),
-				notDeleted(employee),
-				inRange(commission.commissionDate, filters),
-				...amountScope(commission.amount, filters),
-				...scope,
-				searchScope(search, [staffName, commission.reason])
-			]);
-
-			return run(
-				() =>
-					page(
-						db
-							.select({
-								id: commission.id,
-								date: day(commission.commissionDate),
-								employee: staffName,
-								department: department.name,
-								month: commission.month,
-								year: commission.year,
-								amount: commission.amount,
-								reason: commission.reason
-							})
-							.from(commission)
-							.innerJoin(employee, eq(commission.staffId, employee.id))
-							.leftJoin(department, eq(employee.departmentId, department.id))
-							.where(where)
-							.orderBy(desc(commission.commissionDate))
-					),
-				() =>
-					db
-						.select({ total: count() })
-						.from(commission)
-						.innerJoin(employee, eq(commission.staffId, employee.id))
 						.where(where)
 			);
 		}
@@ -1031,242 +984,6 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 			);
 		}
 
-		case 'site-payments': {
-			const where = all([
-				notDeleted(siteMonthlyPayments),
-				notDeleted(siteContracts),
-				inRange(siteMonthlyPayments.date, filters),
-				filters.siteId ? eq(siteContracts.siteId, filters.siteId) : undefined,
-				filters.customerId ? eq(siteContracts.customerId, filters.customerId) : undefined,
-				filters.approvalStatus
-					? sql`${siteMonthlyPayments.status} = ${filters.approvalStatus}`
-					: undefined,
-				...amountScope(siteMonthlyPayments.paymentAmount, filters),
-				searchScope(search, [
-					site.name,
-					customers.name,
-					siteMonthlyPayments.invoiceNumber,
-					siteMonthlyPayments.fsNumber
-				])
-			]);
-
-			return run(
-				() =>
-					page(
-						db
-							.select({
-								id: siteMonthlyPayments.id,
-								date: day(siteMonthlyPayments.date),
-								site: site.name,
-								customer: customers.name,
-								month: siteMonthlyPayments.month,
-								year: siteMonthlyPayments.year,
-								invoiceNumber: siteMonthlyPayments.invoiceNumber,
-								fsNumber: siteMonthlyPayments.fsNumber,
-								request: siteMonthlyPayments.requestAmount,
-								payment: siteMonthlyPayments.paymentAmount,
-								beforeVat: siteMonthlyPayments.beforeVat,
-								// The column holds the rate, not the money — see `vatAmount` in
-								// the commercial analytics for why this is a subtraction.
-								vatRate: siteMonthlyPayments.vat,
-								vat: sql<string>`${siteMonthlyPayments.paymentAmount} - ${siteMonthlyPayments.beforeVat}`,
-								withhold: siteMonthlyPayments.withholdAmount,
-								penalty: siteMonthlyPayments.penaltyAmount,
-								status: siteMonthlyPayments.status,
-								approvedBy: user.name
-							})
-							.from(siteMonthlyPayments)
-							.innerJoin(siteContracts, eq(siteMonthlyPayments.contractId, siteContracts.id))
-							.leftJoin(site, eq(siteContracts.siteId, site.id))
-							.leftJoin(customers, eq(siteContracts.customerId, customers.id))
-							.leftJoin(user, eq(siteMonthlyPayments.approvedBy, user.id))
-							.where(where)
-							.orderBy(desc(siteMonthlyPayments.date))
-					),
-				() =>
-					db
-						.select({ total: count() })
-						.from(siteMonthlyPayments)
-						.innerJoin(siteContracts, eq(siteMonthlyPayments.contractId, siteContracts.id))
-						.leftJoin(site, eq(siteContracts.siteId, site.id))
-						.leftJoin(customers, eq(siteContracts.customerId, customers.id))
-						.where(where)
-			);
-		}
-
-		case 'payment-requests': {
-			const where = all([
-				notDeleted(paymentRequest),
-				inRange(paymentRequest.requestDate, filters),
-				filters.siteId ? eq(paymentRequest.siteId, filters.siteId) : undefined,
-				filters.approvalStatus
-					? sql`${paymentRequest.status} = ${filters.approvalStatus}`
-					: undefined,
-				...amountScope(paymentRequest.amount, filters),
-				searchScope(search, [site.name, paymentRequest.invoiceNumber])
-			]);
-
-			return run(
-				() =>
-					page(
-						db
-							.select({
-								id: paymentRequest.id,
-								date: day(paymentRequest.requestDate),
-								site: site.name,
-								invoiceNumber: paymentRequest.invoiceNumber,
-								month: paymentRequest.month,
-								year: paymentRequest.year,
-								amount: paymentRequest.amount,
-								vat: paymentRequest.vat,
-								withholding: paymentRequest.withholding,
-								penalty: paymentRequest.penality,
-								status: paymentRequest.status,
-								rejectedReason: paymentRequest.rejectedReason
-							})
-							.from(paymentRequest)
-							.leftJoin(site, eq(paymentRequest.siteId, site.id))
-							.where(where)
-							.orderBy(desc(paymentRequest.requestDate))
-					),
-				() =>
-					db
-						.select({ total: count() })
-						.from(paymentRequest)
-						.leftJoin(site, eq(paymentRequest.siteId, site.id))
-						.where(where)
-			);
-		}
-
-		case 'contracts': {
-			const where = all([
-				notDeleted(siteContracts),
-				inRange(siteContracts.contractDate, filters),
-				filters.siteId ? eq(siteContracts.siteId, filters.siteId) : undefined,
-				filters.customerId ? eq(siteContracts.customerId, filters.customerId) : undefined,
-				filters.serviceId ? eq(siteContracts.serviceId, filters.serviceId) : undefined,
-				...amountScope(siteContracts.monthlyAmount, filters),
-				searchScope(search, [site.name, customers.name])
-			]);
-
-			return run(
-				() =>
-					page(
-						db
-							.select({
-								id: siteContracts.id,
-								site: site.name,
-								customer: customers.name,
-								service: services.name,
-								monthlyAmount: siteContracts.monthlyAmount,
-								contractYear: siteContracts.contractYear,
-								contractDate: day(siteContracts.contractDate),
-								startDate: day(siteContracts.startDate),
-								endDate: day(siteContracts.endDate),
-								terminated: sql<string>`IF(${siteContracts.terminated}, 'yes', 'no')`,
-								terminationDate: day(siteContracts.terminationDate),
-								terminationReason: siteContracts.terminationReason
-							})
-							.from(siteContracts)
-							.leftJoin(site, eq(siteContracts.siteId, site.id))
-							.leftJoin(customers, eq(siteContracts.customerId, customers.id))
-							.leftJoin(services, eq(siteContracts.serviceId, services.id))
-							.where(where)
-							.orderBy(desc(siteContracts.contractDate))
-					),
-				() =>
-					db
-						.select({ total: count() })
-						.from(siteContracts)
-						.leftJoin(site, eq(siteContracts.siteId, site.id))
-						.leftJoin(customers, eq(siteContracts.customerId, customers.id))
-						.where(where)
-			);
-		}
-
-		case 'renewals': {
-			const where = all([
-				notDeleted(contractRenewals),
-				notDeleted(siteContracts),
-				inRange(contractRenewals.renewalDate, filters),
-				filters.siteId ? eq(siteContracts.siteId, filters.siteId) : undefined,
-				filters.customerId ? eq(siteContracts.customerId, filters.customerId) : undefined,
-				searchScope(search, [site.name, customers.name])
-			]);
-
-			return run(
-				() =>
-					page(
-						db
-							.select({
-								id: contractRenewals.id,
-								renewalDate: day(contractRenewals.renewalDate),
-								site: site.name,
-								customer: customers.name,
-								amount: contractRenewals.renewalAmount,
-								startDate: day(contractRenewals.renewalStartDate),
-								endDate: day(contractRenewals.renewalEndDate)
-							})
-							.from(contractRenewals)
-							.innerJoin(siteContracts, eq(contractRenewals.contractId, siteContracts.id))
-							.leftJoin(site, eq(siteContracts.siteId, site.id))
-							.leftJoin(customers, eq(siteContracts.customerId, customers.id))
-							.where(where)
-							.orderBy(desc(contractRenewals.renewalDate))
-					),
-				() =>
-					db
-						.select({ total: count() })
-						.from(contractRenewals)
-						.innerJoin(siteContracts, eq(contractRenewals.contractId, siteContracts.id))
-						.leftJoin(site, eq(siteContracts.siteId, site.id))
-						.leftJoin(customers, eq(siteContracts.customerId, customers.id))
-						.where(where)
-			);
-		}
-
-		case 'site-penalties': {
-			const where = all([
-				notDeleted(sitePenalties),
-				notDeleted(siteContracts),
-				inRange(sitePenalties.penaltyDate, filters),
-				filters.siteId ? eq(siteContracts.siteId, filters.siteId) : undefined,
-				filters.customerId ? eq(siteContracts.customerId, filters.customerId) : undefined,
-				...amountScope(sitePenalties.penaltyAmount, filters),
-				searchScope(search, [site.name, sitePenalties.penaltyReason])
-			]);
-
-			return run(
-				() =>
-					page(
-						db
-							.select({
-								id: sitePenalties.id,
-								date: day(sitePenalties.penaltyDate),
-								site: site.name,
-								customer: customers.name,
-								month: sitePenalties.month,
-								year: sitePenalties.year,
-								amount: sitePenalties.penaltyAmount,
-								reason: sitePenalties.penaltyReason
-							})
-							.from(sitePenalties)
-							.innerJoin(siteContracts, eq(sitePenalties.contractId, siteContracts.id))
-							.leftJoin(site, eq(siteContracts.siteId, site.id))
-							.leftJoin(customers, eq(siteContracts.customerId, customers.id))
-							.where(where)
-							.orderBy(desc(sitePenalties.penaltyDate))
-					),
-				() =>
-					db
-						.select({ total: count() })
-						.from(sitePenalties)
-						.innerJoin(siteContracts, eq(sitePenalties.contractId, siteContracts.id))
-						.leftJoin(site, eq(siteContracts.siteId, site.id))
-						.where(where)
-			);
-		}
-
 		case 'customers': {
 			const where = all([
 				notDeleted(customers),
@@ -1314,9 +1031,7 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 								customer: customers.name,
 								phone: site.phone,
 								startDate: day(site.startDate),
-								isActive: sql<string>`IF(${site.isActive}, 'active', 'inactive')`,
-								contracts: sql<string>`(SELECT COUNT(*) FROM ${siteContracts} WHERE ${siteContracts.siteId} = ${site.id} AND ${siteContracts.deletedAt} IS NULL)`,
-								monthlyValue: sql<string>`(SELECT COALESCE(SUM(${siteContracts.monthlyAmount}), 0) FROM ${siteContracts} WHERE ${siteContracts.siteId} = ${site.id} AND ${siteContracts.terminated} = false AND ${siteContracts.deletedAt} IS NULL)`
+								isActive: sql<string>`IF(${site.isActive}, 'active', 'inactive')`
 							})
 							.from(site)
 							.leftJoin(customers, eq(site.customerId, customers.id))

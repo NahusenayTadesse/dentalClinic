@@ -1,10 +1,16 @@
+import type { ColumnDef } from '@tanstack/table-core';
+import type { PageData } from './$types';
+
+/** One row of the table this file describes, taken from the load so the two cannot drift. */
+type RowData = NonNullable<PageData['allTransactions']>[number];
+
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import { formatEthiopianDate } from '$lib/global.svelte';
 
-export const columns = [
+export const columns: ColumnDef<RowData>[] = [
 	{
 		accessorKey: 'index',
 		header: '#',
@@ -18,7 +24,6 @@ export const columns = [
 				name: 'Paid At',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return formatEthiopianDate(row.original.date);
 		}
@@ -30,9 +35,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Amount',
 				onclick: column.getToggleSortingHandler()
-			}),
-
-		sortable: true
+			})
 	},
 
 	{
@@ -41,9 +44,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Payment Method',
 				onclick: column.getToggleSortingHandler()
-			}),
-
-		sortable: true
+			})
 	},
 	{
 		accessorKey: 'description',
@@ -51,9 +52,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Description',
 				onclick: column.getToggleSortingHandler()
-			}),
-
-		sortable: true
+			})
 	},
 
 	{
@@ -64,7 +63,6 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 
-		sortable: true,
 		cell: ({ row }) => {
 			return renderComponent(DataTableLinks, {
 				id: row.original.recievedById,
@@ -110,13 +108,12 @@ export const columns = [
 	{
 		accessorKey: 'recieptLink',
 		header: 'Reciept',
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {
-				id: row.original.extraSettings,
+				id: row.original.recieptLink,
 				name: 'View Reciept',
-				link: `/dashboard/files/${row.original.recieptLink}`,
+				link: '/dashboard/files',
 				target: '_blank'
 			});
 		}

@@ -1,3 +1,9 @@
+import type { ColumnDef } from '@tanstack/table-core';
+import type { PageData } from './$types';
+
+/** One row of the table this file describes, taken from the load so the two cannot drift. */
+type RowData = NonNullable<PageData['siteList']>[number];
+
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Copy from '$lib/Copy.svelte';
@@ -7,7 +13,7 @@ import Address from '$lib/components/Table/address.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import { formatEthiopianDate } from '$lib/global.svelte';
 
-export const columns = [
+export const columns: ColumnDef<RowData>[] = [
 	{
 		id: 'index',
 		header: '#',
@@ -24,7 +30,6 @@ export const columns = [
 				name: 'Name',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {
@@ -41,7 +46,6 @@ export const columns = [
 				name: 'Customer Name',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {
@@ -54,13 +58,11 @@ export const columns = [
 	{
 		accessorKey: 'phone',
 		header: 'Phone',
-		sortable: true,
 		cell: ({ row }) => renderComponent(Copy, { data: row.original.phone })
 	},
 	{
 		accessorKey: '',
 		header: 'Address',
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(Address, {
@@ -74,33 +76,6 @@ export const columns = [
 		}
 	},
 	{
-		accessorKey: 'expectedPayments',
-		header: 'Expected Payments',
-		sortable: true,
-		cell: ({ row }) =>
-			renderComponent(Copy, {
-				data: row.original.expectedPayments ? row.original.expectedPayments : '0'
-			})
-	},
-	{
-		accessorKey: 'actualPayments',
-		header: 'Actual Payments',
-		sortable: true,
-		cell: ({ row }) =>
-			renderComponent(Copy, {
-				data: row.original.actualPayments ? row.original.actualPayments : '0'
-			})
-	},
-	{
-		accessorKey: 'missingPayments',
-		header: 'Missing Payments',
-		sortable: true,
-		cell: ({ row }) =>
-			renderComponent(Copy, {
-				data: row.original.missingPayments ? row.original.missingPayments : '0'
-			})
-	},
-	{
 		accessorKey: 'addedBy',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
@@ -108,7 +83,6 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {
@@ -126,9 +100,8 @@ export const columns = [
 				name: 'Joined On',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => {
-			const n = info.getValue(); // number of days
+			const n = info.getValue<string>(); // number of days
 			return formatEthiopianDate(new Date(n));
 		}
 	},
@@ -141,10 +114,9 @@ export const columns = [
 			return renderComponent(DataTableActions, {
 				id: row.original.customerId,
 				phone: row.original.phone,
-				createdBy: row.original.createdBy,
-				createdById: row.original.bookedById,
-				customerName: row.original.customerName,
-				date: row.original.date
+				createdBy: row.original.addedBy,
+				createdById: row.original.addedById,
+				customerName: row.original.customerName
 			});
 		}
 	}

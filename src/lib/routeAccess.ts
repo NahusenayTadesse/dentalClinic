@@ -23,26 +23,13 @@ export const routeRules: RouteRule[] = [
 	},
 
 	{
-		prefix: '/dashboard/contracts/inactive',
-		permission: 'contracts.inactive.manage'
-	},
-	{
-		prefix: '/dashboard/contracts/terminated',
-		permission: 'contracts.terminated.manage'
-	},
-	{
-		prefix: '/dashboard/contracts',
-		permission: 'contracts.active.manage'
-	},
-
-	{
 		prefix: '/dashboard/customers',
-		permission: 'customers_sites_contracts.record'
+		permission: 'customers_sites.record'
 	},
 
 	{
 		prefix: '/dashboard/sites',
-		permission: 'customers_sites_contracts.record'
+		permission: 'customers_sites.record'
 	},
 
 	{
@@ -102,48 +89,6 @@ export const routeRules: RouteRule[] = [
 		permission: 'supplies_suppliers.manage'
 	},
 
-	{
-		prefix: '/dashboard/requests/cancelled',
-		permission: 'payment_requests.edit_cancelled'
-	},
-	{
-		prefix: '/dashboard/requests/add-request',
-		permission: 'payment_requests.create'
-	},
-	{
-		prefix: '/dashboard/requests/approved',
-		permission: 'payment_requests.view_approved'
-	},
-	{
-		prefix: '/dashboard/requests/pending',
-		permission: 'payment_requests.approve'
-	},
-	{
-		prefix: '/dashboard/requests/special',
-		permission: 'payment_requests.edit_cancelled'
-	},
-
-	{
-		prefix: '/dashboard/payments/add',
-		permission: 'payments.create'
-	},
-	{
-		prefix: '/dashboard/payments/pending',
-		permission: 'payments.approve'
-	},
-	{
-		prefix: '/dashboard/payments/follow-up',
-		permission: 'payments.follow_up'
-	},
-	{
-		prefix: '/dashboard/payments/cancelled',
-		permission: 'payments.edit_cancelled'
-	},
-	{
-		prefix: '/dashboard/payments/approved',
-		permission: 'payments.follow_up'
-	},
-
 	// One rule per report page. The slugs are the real routes — the earlier `finance`, `hr` and
 	// `customers-sites` prefixes named pages that never existed, so every report was falling
 	// through to the catch-all and `reports.hr` bought nothing.
@@ -154,10 +99,6 @@ export const routeRules: RouteRule[] = [
 	{
 		prefix: '/dashboard/reports/leave',
 		permission: 'reports.hr'
-	},
-	{
-		prefix: '/dashboard/reports/commercial',
-		permission: 'reports.customer_site'
 	},
 	{
 		prefix: '/dashboard/reports/system',

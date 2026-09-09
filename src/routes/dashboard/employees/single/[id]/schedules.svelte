@@ -14,17 +14,6 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 
-	function getWeekdayName(dayIndex: number): string {
-		const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
-		// Optional: Handle numbers out of range
-		if (dayIndex < 0 || dayIndex > 6) {
-			throw new Error('Invalid day index. Please provide a number between 0 and 6.');
-		}
-
-		return days[dayIndex];
-	}
-
 	import { Plus } from '@lucide/svelte';
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 
@@ -78,7 +67,6 @@
 					name: 'Day',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {
@@ -100,7 +88,6 @@
 					name: 'Start Time',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return formatAMPM(row.original.startTime);
@@ -114,7 +101,6 @@
 					name: 'End Time',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return formatAMPM(row.original.endTime);
@@ -124,7 +110,6 @@
 		{
 			accessorKey: 'status',
 			header: 'Status',
-			sortable: true,
 			cell: ({ row }) => {
 				return renderComponent(Statuses, {
 					status: row.original.status ? 'Active' : 'Inactive'
@@ -134,7 +119,6 @@
 		{
 			accessorKey: 'addedBy',
 			header: 'Added By',
-			sortable: true,
 			cell: ({ row }) => {
 				return renderComponent(DataTableLinks, {
 					id: row.original.addedById,
@@ -149,7 +133,6 @@
 		{
 			accessorKey: '',
 			header: 'Edit',
-			sortable: true,
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {

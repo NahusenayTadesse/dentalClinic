@@ -1,3 +1,9 @@
+import type { ColumnDef } from '@tanstack/table-core';
+import type { PageData } from './$types';
+
+/** One row of the table this file describes, taken from the load so the two cannot drift. */
+type RowData = NonNullable<PageData['staffList']>[number];
+
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import { Checkbox } from '$lib/components/ui/checkbox/index.js';
@@ -14,7 +20,7 @@ import { edit, add, deleteOvertime } from './schema';
 import Edit from './edit.svelte';
 import Overtime from './overtime.svelte';
 
-export const columns = [
+export const columns: ColumnDef<RowData>[] = [
 	{
 		id: 'select',
 		accessorKey: 'id',
@@ -50,7 +56,6 @@ export const columns = [
 				name: 'Name',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {
@@ -67,8 +72,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Department',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 	{
 		accessorKey: 'position',
@@ -76,8 +80,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Position',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 	{
 		accessorKey: 'site',
@@ -85,8 +88,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Sites',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 	// {
 	// 	accessorKey: 'overtime',
@@ -105,7 +107,6 @@ export const columns = [
 				name: 'Overtime Details',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return renderComponent(Overtime, {
 				staffId: row.original.id,

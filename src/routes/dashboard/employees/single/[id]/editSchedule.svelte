@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { getWeekdayName } from '$lib/global.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import { SquarePen, Save } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
@@ -8,16 +9,6 @@
 	import { superForm } from 'sveltekit-superforms';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import { type EditSchedule } from './schema';
-	function getWeekdayName(dayIndex: number): string {
-		const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
-		// Optional: Handle numbers out of range
-		if (dayIndex < 0 || dayIndex > 6) {
-			throw new Error('Invalid day index. Please provide a number between 0 and 6.');
-		}
-
-		return days[dayIndex];
-	}
 	const weekDays = [
 		{ value: 0, name: 'Monday' },
 		{ value: 1, name: 'Tuesday' },

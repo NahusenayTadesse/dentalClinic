@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { Button } from "$lib/components/ui/button/index.js";
-	import { cn } from "$lib/utils.js";
-	import type { ComponentProps } from "svelte";
-	import { useSidebar } from "./context.svelte.js";
-	import { TextAlignJustify } from "@lucide/svelte";
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { cn } from '$lib/utils.js';
+	import type { ComponentProps } from 'svelte';
+	import { useSidebar } from './context.svelte.js';
+	import { TextAlignJustify } from '@lucide/svelte';
 
 	let {
 		ref = $bindable(null),
@@ -22,7 +22,7 @@
 	data-slot="sidebar-trigger"
 	variant="ghost"
 	size="icon"
-	class={cn("size-7", className)}
+	class={cn('size-7', className)}
 	type="button"
 	title="Toggle Sidebar"
 	onclick={(e) => {
@@ -31,6 +31,6 @@
 	}}
 	{...restProps}
 >
-<TextAlignJustify class="size-4" />	
-<span class="sr-only">Toggle Sidebar</span>
+	<TextAlignJustify class="size-4" />
+	<span class="sr-only">Toggle Sidebar</span>
 </Button>

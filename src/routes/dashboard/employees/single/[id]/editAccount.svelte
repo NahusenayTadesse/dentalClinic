@@ -80,11 +80,7 @@
 	disabled = paymentMethod === 8;
 </script>
 
-<DialogComp
-	title={icon ? 'Edit' : name}
-	variant="ghost"
-	IconComp={icon ? SquarePen : undefined}
->
+<DialogComp title={icon ? 'Edit' : name} variant="ghost" IconComp={icon ? SquarePen : undefined}>
 	<form
 		id="main"
 		action="?/editAccount"
@@ -104,11 +100,10 @@
 		/>
 		<InputComp
 			label="Account Detail"
-			name='accountDetail'
+			name="accountDetail"
 			type="text"
 			{form}
 			{errors}
-
 			required
 			placeholder="Enter Account Details"
 		/>

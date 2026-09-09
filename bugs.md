@@ -3,6 +3,7 @@
 Found via a manual audit cross-referenced with `svelte-check` (2,390 flagged diagnostics total, most of which are type-strictness noise from an aging Zod/Valibot-adjacent schema setup). Every bug below was verified by reading the actual source and, where relevant, confirmed against `git diff` to rule out anything introduced by the recent dialog-to-`DialogComp` refactor — none of these were.
 
 Severity legend:
+
 - 🔴 **Critical** — data loss/corruption, or a core feature is completely broken for every user
 - 🟠 **Urgent** — real functional bug, narrower blast radius or only hits on certain inputs
 - 🟡 **Semi-urgent** — correctness issue that hasn't bitten anyone yet, or blind spot in type safety
@@ -29,7 +30,7 @@ Items marked **✅ FIXED** below have been patched and re-verified with `svelte-
 Before touching any of these, checked whether each `delete` action actually has a corresponding form/button anywhere in the app (searched for `<Delete>` usage, raw `action="?/delete"` forms, and any per-row delete buttons in each route's columns/components). Result:
 
 - **`contracts/+page.server.ts`, `contracts/inactive/+page.server.ts`, `contracts/terminated/+page.server.ts`, `sites/[id]/+page.server.ts`, `customers/[id]/+page.server.ts`** — **no form anywhere calls any of these.** Not the shared `<Delete>` component, not a raw form, not a table row action — confirmed with a repo-wide search. These five `delete` actions were pure dead code (the wrong-table bug in #1 could never actually fire in production). **Removed all five actions entirely**, per instruction, rather than fixing logic nobody can reach. If contract/site/customer deletion is wanted later, it'll need to be built fresh (correct table, a real `<Delete>` button wired to the page, and no copy-pasted `form`/`err` references from elsewhere) rather than resurrecting this code.
-- **`supplies/[id]/+page.server.ts`** — this one *is* wired up (`<Delete redirect="/dashboard/supplies" />` renders on the page and posts to it), deletes from the correct `supplies` table, and doesn't have the `form`-not-defined crash. Its only real bug was #12 (`err?.message` referenced outside any `catch` block, in the `if (!id)` early-return). **Fixed**: replaced with a static error message since there's no error object in that branch. Also removed a dead, fully-commented-out duplicate of the same action sitting right below it in the file.
+- **`supplies/[id]/+page.server.ts`** — this one _is_ wired up (`<Delete redirect="/dashboard/supplies" />` renders on the page and posts to it), deletes from the correct `supplies` table, and doesn't have the `form`-not-defined crash. Its only real bug was #12 (`err?.message` referenced outside any `catch` block, in the `if (!id)` early-return). **Fixed**: replaced with a static error message since there's no error object in that branch. Also removed a dead, fully-commented-out duplicate of the same action sitting right below it in the file.
 - **Full sweep of every other `delete` action in the app** (`admin-panel/roles/[id]`, `salary/add-deductions/[range]`, `salary/add-overtime/[range]`, both `add-payroll/sites/[id]` variants, `salary/transactions/expenses/categories`) — all confirmed correlated to real, reachable delete buttons (either the shared `<Delete>` component or a per-row `DeleteForm` rendered from each route's `columns.ts`). None of these had the wrong-table or `form`-reference bugs, so nothing to change there.
 - **New bug found while checking correlation, not yet fixed:** `supplies/suppliers/[id]/+page.svelte` renders a `<Delete redirect="/dashboard/admin-panel/roles" />` button (plus a `userCount > 0` guard and "Cannot delete role with users" copy — this whole block was evidently copy-pasted from `admin-panel/roles/[id]/+page.svelte` and never adapted), but `supplies/suppliers/[id]/+page.server.ts` **has no `delete` action at all**. Clicking that button will fail with SvelteKit's "unknown action" error. This is the mirror-image problem (a form with no action, instead of an action with no form) and needs a real decision (should suppliers be deletable at all? what should `userCount` actually check?) rather than a mechanical fix, so it's left open — see new entry below.
 
@@ -41,7 +42,7 @@ One thing worth flagging up front: several of these turned out to look worse tha
 
 - **#3** (`building` vs `buildingNumber`) — fixed in both `supplies/suppliers/edit.svelte` and `supplies/suppliers/[id]/edit.svelte`: renamed the prop/type annotation to `buildingNumber` and fixed `$form.building = building` → `$form.buildingNumber = buildingNumber`. Confirmed against the real caller (`suppliers/columns.ts` already passes `buildingNumber`) and the schema (`suppliers/schema.ts` only has `buildingNumber`, never `building`).
 
-- **#7, #8, #11, and half of #14** (all in `supplies/[id]/`) — these were all downstream symptoms of one root cause: **`+layout.server.ts` was building the page's initial form from the wrong schema entirely.** It imported `editSupply` from the shared `$lib/ZodSchema` (fields: `supplyId`, `supplyName`, `quantity`, `unitOfMeasure`, `costPerUnit`, `supplier`...) while the actual template, client validators, and the `editSupply` server action all use the *local* `./schema.ts`'s `edit` (fields: `name`, `description`, `supplyType`, `unitOfMeasurement`, `otherUnitOfMeasurement`, `reorderLevel`). Two different schemas for the same form. Fixed by:
+- **#7, #8, #11, and half of #14** (all in `supplies/[id]/`) — these were all downstream symptoms of one root cause: **`+layout.server.ts` was building the page's initial form from the wrong schema entirely.** It imported `editSupply` from the shared `$lib/ZodSchema` (fields: `supplyId`, `supplyName`, `quantity`, `unitOfMeasure`, `costPerUnit`, `supplier`...) while the actual template, client validators, and the `editSupply` server action all use the _local_ `./schema.ts`'s `edit` (fields: `name`, `description`, `supplyType`, `unitOfMeasurement`, `otherUnitOfMeasurement`, `reorderLevel`). Two different schemas for the same form. Fixed by:
   - Pointing `+layout.server.ts`'s initial `superValidate` at the local `edit` schema instead of `editSupply`.
   - Removing the dead `{@render fe(...)}` call (#7) — it duplicated the very next `InputComp` field for no reason.
   - Rewriting the `$form` pre-fill block to use the real field names: `name`, `description`, `supplyType` (now sourced from a newly-added `supplyTypeId` column in the load query, coerced to a string), `unitOfMeasurement` (was wrongly `unitOfMeasure` — this was #11), `reorderLevel`. Dropped the assignments to `supplyId`, `costPerUnit`, `quantity`, `supplier` — none of these are real schema fields or have a matching input in this form, so they were dead weight (also part of #14's flagged errors).
@@ -61,7 +62,9 @@ All confirmed with `svelte-check` (zero errors remaining on every touched line) 
 ## 🔴 Critical
 
 ### 1. ✅ FIXED (by removal — dead code) — Delete actions mutate the wrong table (data corruption)
+
 **Files:**
+
 - `src/routes/dashboard/contracts/+page.server.ts:285`
 - `src/routes/dashboard/contracts/inactive/+page.server.ts:285`
 - `src/routes/dashboard/contracts/terminated/+page.server.ts:286`
@@ -87,12 +90,14 @@ delete: async ({ cookies, params }) => {
 ---
 
 ### 2. ✅ FIXED (by removal — dead code) — Delete actions crash after the (wrong) delete already succeeded
+
 **Files:** same four as #1, plus `src/routes/dashboard/customers/[id]/+page.server.ts:242` (here the table is correct, but the crash is the same).
 
 ```js
 await db.delete(customers).where(eq(customers.id, id));
 setFlash({ type: 'success', message: 'Customer Deleted Successfully!' }, cookies);
-return message(form, {          // <-- `form` was never declared in this action
+return message(form, {
+	// <-- `form` was never declared in this action
 	type: 'success',
 	text: 'Customer Deleted Successfully!'
 });
@@ -100,11 +105,12 @@ return message(form, {          // <-- `form` was never declared in this action
 
 **Impact:** Only `id` is destructured from `params` in this action — `form` doesn't exist. Every successful delete throws `ReferenceError: form is not defined` while building the response, so the request 500s even though the (correct or incorrect) row was already removed from the DB. Users see a failure for an action that already silently happened.
 
-**Resolution:** same as #1 — all five of these were unreachable dead code, so removed rather than patched. The one delete action that *is* real and reachable (`supplies/[id]/+page.server.ts`) never had this bug in the first place — it already omits the trailing `message(form, ...)` call.
+**Resolution:** same as #1 — all five of these were unreachable dead code, so removed rather than patched. The one delete action that _is_ real and reachable (`supplies/[id]/+page.server.ts`) never had this bug in the first place — it already omits the trailing `message(form, ...)` call.
 
 ---
 
 ### 3. ✅ FIXED — "Edit Supplier" dialog crashes immediately on open
+
 **Files:** `src/routes/dashboard/supplies/suppliers/edit.svelte:60`, `src/routes/dashboard/supplies/suppliers/[id]/edit.svelte:60`
 
 ```js
@@ -127,16 +133,17 @@ $form.building = building;      // <-- `building` was never declared anywhere
 ---
 
 ### 4. ✅ FIXED — "Edit Supplier" submit button crashes (even once #3 is fixed)
+
 **Files:** same two files, `edit.svelte:191` / `[id]/edit.svelte:191`
 
 ```svelte
-import { SquarePen, Plus } from '@lucide/svelte';   // `Save` never imported
-...
+import {(SquarePen, Plus)} from '@lucide/svelte'; // `Save` never imported ...
 <Button type="submit" class="mt-4" form="edit">
 	{#if $delayed}
 		<LoadingBtn name="Saving Changes" />
 	{:else}
-		<Save class="h-4 w-4" />     <!-- ReferenceError -->
+		<Save class="h-4 w-4" />
+		<!-- ReferenceError -->
 		Save Changes
 	{/if}
 </Button>
@@ -147,6 +154,7 @@ import { SquarePen, Plus } from '@lucide/svelte';   // `Save` never imported
 ---
 
 ### 5. ✅ FIXED — "Add Payment" page for a Site is unrenderable
+
 **File:** `src/routes/dashboard/sites/[id]/payments/add.svelte:201`
 
 ```svelte
@@ -164,6 +172,7 @@ import { SquarePen, Plus } from '@lucide/svelte';   // `Save` never imported
 ---
 
 ### 6. ✅ FIXED — "Add Payment" dialog on that same page also crashes on open
+
 **File:** `src/routes/dashboard/sites/[id]/payments/add.svelte:70`
 
 ```svelte
@@ -174,7 +183,10 @@ import { SquarePen, Plus } from '@lucide/svelte';   // `Save` never imported
 	{form}
 	{errors}
 	required
-	items={paymentMethods}   <-- never defined
+	items={paymentMethods}
+	<--
+	never
+	defined
 />
 ```
 
@@ -183,6 +195,7 @@ import { SquarePen, Plus } from '@lucide/svelte';   // `Save` never imported
 ---
 
 ### 7. ✅ FIXED — "Edit Supply" form crashes when opened
+
 **File:** `src/routes/dashboard/supplies/[id]/+page.svelte:95`
 
 ```svelte
@@ -199,6 +212,7 @@ import { SquarePen, Plus } from '@lucide/svelte';   // `Save` never imported
 ---
 
 ### 8. ✅ FIXED — Selecting "Other" unit of measurement crashes the Edit Supply form
+
 **File:** `src/routes/dashboard/supplies/[id]/+page.svelte:142-143`
 
 ```svelte
@@ -213,6 +227,7 @@ import { SquarePen, Plus } from '@lucide/svelte';   // `Save` never imported
 ---
 
 ### 9. ✅ FIXED — "Download All PDF" button is completely broken
+
 **File:** `src/routes/dashboard/requests/approved/[range]/+page.svelte:49-68` (bound via `onclick={downloadAllPDF}` at line 247)
 
 ```svelte
@@ -226,13 +241,14 @@ const downloadAllPDF = async () => {
 	const dataUrl = await toPng(el, { ... });     // ReferenceError
 ```
 
-**Impact:** Clicking "Download All PDF" throws immediately. Notably, a *different*, correctly-written function further down in the same file (single-invoice export) does this properly via dynamic `await import('jspdf')` / `await import('html-to-image')` — the batch-export version was evidently never finished/updated to match.
+**Impact:** Clicking "Download All PDF" throws immediately. Notably, a _different_, correctly-written function further down in the same file (single-invoice export) does this properly via dynamic `await import('jspdf')` / `await import('html-to-image')` — the batch-export version was evidently never finished/updated to match.
 
 **Fix applied:** `downloadAllPDF` now opens with `const { toPng } = await import('html-to-image'); const { default: jsPDF } = await import('jspdf');`, mirroring the working single-invoice function exactly. The dead commented-out static imports at the top of the file were removed too (was bug #20).
 
 ---
 
 ### 10. ✅ FIXED — "Add Contact" is broken on all Contracts pages
+
 **Files:** `contracts/+page.server.ts`, `contracts/inactive/+page.server.ts`, `contracts/terminated/+page.server.ts` — `addContact` action
 
 ```js
@@ -255,15 +271,17 @@ addContact: async ({ request, locals, params }) => {
 ## 🟠 Urgent
 
 ### 11. ✅ FIXED — Silent field-name mismatch on "Unit of Measurement"
+
 **File:** `src/routes/dashboard/supplies/[id]/+page.svelte`
 
-The form binds `$form.unitOfMeasurement`, but the actual DB column / returned data field is `unitOfMeasure` (confirmed via `svelte-check`: *"Property 'unitOfMeasurement' does not exist ... Did you mean 'unitOfMeasure'?"*). No crash, but the field almost certainly never loads the existing value or saves under the right key.
+The form binds `$form.unitOfMeasurement`, but the actual DB column / returned data field is `unitOfMeasure` (confirmed via `svelte-check`: _"Property 'unitOfMeasurement' does not exist ... Did you mean 'unitOfMeasure'?"_). No crash, but the field almost certainly never loads the existing value or saves under the right key.
 
-**Fix applied:** turned out `unitOfMeasurement` is the *correct* schema/form field name (it's what the actual `edit` schema and the visible `InputComp` both use) — the bug was on the other side: the pre-fill code was assigning `$form.unitOfMeasure = data.supply.unitOfMeasure` (wrong field, and also `unitOfMeasure` isn't even a form field). Fixed to `$form.unitOfMeasurement = data.supply?.unitOfMeasure` — mapping the real DB column (`unitOfMeasure`) onto the real form field (`unitOfMeasurement`). Part of the larger `supplies/[id]` schema-mismatch fix — see pass-3 summary above.
+**Fix applied:** turned out `unitOfMeasurement` is the _correct_ schema/form field name (it's what the actual `edit` schema and the visible `InputComp` both use) — the bug was on the other side: the pre-fill code was assigning `$form.unitOfMeasure = data.supply.unitOfMeasure` (wrong field, and also `unitOfMeasure` isn't even a form field). Fixed to `$form.unitOfMeasurement = data.supply?.unitOfMeasure` — mapping the real DB column (`unitOfMeasure`) onto the real form field (`unitOfMeasurement`). Part of the larger `supplies/[id]` schema-mismatch fix — see pass-3 summary above.
 
 ---
 
 ### 12. ✅ FIXED (partially by removal) — `err` referenced outside any catch block in delete actions
+
 **Files:** all four delete actions from #1, plus `customers/[id]/+page.server.ts` and `supplies/[id]/+page.server.ts`
 
 ```js
@@ -280,7 +298,9 @@ if (!id) {
 ---
 
 ### 13. ✅ FIXED — Type-only imports silently broken (no runtime crash, but zero type safety)
+
 **Files:**
+
 - `src/routes/dashboard/contracts/[contractId]/payment-history/editContract.svelte:35` — `EditContract` not found
 - `src/routes/dashboard/sites/[id]/editContract.svelte:32` — `EditContract` not found
 - `src/routes/dashboard/sites/[id]/payments/editContract.svelte:32` — `EditContract` not found
@@ -294,6 +314,7 @@ if (!id) {
 **Impact:** Because these are `import type` statements, TypeScript strips them and there's no runtime crash — but it means these forms currently have **no compile-time type checking at all** on their `$form` shape. A future schema change (renamed/removed field) would silently break these forms with no warning from the type checker.
 
 **Fix applied, per file:**
+
 - The 8 `EditContact` → `EditContract` typos: corrected to the real exported name.
 - `sites/[id]/editContract.svelte`, `editIdentity.svelte`, `editQualification.svelte`: the type genuinely exists in each file's own `./schema.ts` — it just had no import statement at all. Added `import type { EditContract/EditIdentity/EditQualification } from './schema';`.
 - `sites/[id]/payments/editContract.svelte`: this one was trickier — its own `./schema.ts` (the payments schema) has no contract-shaped export at all, only `AddPayment`/`EditPayment`. The `$form` fields this component actually uses (`contractDate`, `contractYear`, `service`, `monthlyAmount`, `commissionConsidered`, `signingOfficer`...) match the `EditContract` type one directory up, in `sites/[id]/schema.ts`. Changed the import to `from '../schema'` instead of `'./schema'`.
@@ -302,9 +323,11 @@ if (!id) {
 ---
 
 ### 14. 🟡 PARTIALLY FIXED — Supplier detail page references fields that don't exist on the loaded data
+
 **File:** `src/routes/dashboard/supplies/suppliers/[id]/+page.svelte`
 
 `svelte-check` flags:
+
 - `addressId` (line 66) — not on the address object shape returned by the load fn
 - `userCount` (line 95) — not on the supplier object
 - Several `string | null` / `number | null` values assigned into fields typed as non-nullable `string`/`number` (lines 69-77)
@@ -318,21 +341,26 @@ if (!id) {
 ---
 
 ### 15. ✅ FIXED — `service` can be `null` where a `number` is required
+
 **Files:** `contracts/[contractId]/payment-history/+page.svelte:303`, `sites/[id]/payments/[contractId]/payment-history/+page.svelte:264`
 
-`svelte-check`: *"Type 'number | null' is not assignable to type 'number'"* on the `service` field passed into the edit-contract component. Worth confirming what actually happens in the UI when a contract's `service` is null (blank combo box vs. a hard crash) — if `InputComp`'s `combo` type doesn't defensively handle `null`, this could be a hidden crash for any contract missing a service.
+`svelte-check`: _"Type 'number | null' is not assignable to type 'number'"_ on the `service` field passed into the edit-contract component. Worth confirming what actually happens in the UI when a contract's `service` is null (blank combo box vs. a hard crash) — if `InputComp`'s `combo` type doesn't defensively handle `null`, this could be a hidden crash for any contract missing a service.
 
 **Fix applied:** confirmed `siteContracts.serviceId` is a genuinely nullable foreign key in the schema — a contract can legitimately have no service assigned. This wasn't a wrong name, it was too-strict a type hiding a real state. Widened the `service` prop type from `number` to `number | null` in both `editContract.svelte` files that receive it.
 
 ---
 
 ### 23. Supplier detail page has a "Delete" button with no matching server action (new — found while auditing delete actions)
+
 **File:** `src/routes/dashboard/supplies/suppliers/[id]/+page.svelte:95-104`
 
 ```svelte
 {#if data.single?.userCount > 0}
-	<Button variant="destructive" onclick={() => toast.error('Cannot delete role with users')}
-		title="Cannot delete role with users"><Trash /> Delete</Button>
+	<Button
+		variant="destructive"
+		onclick={() => toast.error('Cannot delete role with users')}
+		title="Cannot delete role with users"><Trash /> Delete</Button
+	>
 {:else}
 	<Delete redirect="/dashboard/admin-panel/roles" />
 {/if}
@@ -349,12 +377,14 @@ if (!id) {
 Writing real browser tests (`vitest` + `vitest-browser-svelte`, real Chromium via Playwright) for `src/lib/formComponents/*` and `src/lib/components/Table/*` surfaced two more genuine bugs, on top of confirming `RadioComp.svelte`'s broken import (see the "no use for RadioComp" note — deferred, not fixed, since nothing renders it).
 
 ### 24. `InputComp.svelte` never associates its `<Label>` with the field it labels
+
 **File:** `src/lib/formComponents/InputComp.svelte`
 
 ```svelte
 <Label for={name} class="capitalize">{label}</Label>
 ...
-<Input {type} step="any" {name} bind:value={$form[name]} ... />   <!-- no id! -->
+<Input {type} step="any" {name} bind:value={$form[name]} ... />
+<!-- no id! -->
 ```
 
 **Impact:** `Label for={name}` expects an element with `id={name}` — but the underlying `Input`/`Textarea` is only ever given a `name`, never an `id`. Since `InputComp` is the single shared field component used by nearly every form in the app, this means **no form field anywhere has a properly associated label**: screen readers can't tell which label goes with which input, and clicking label text doesn't focus/activate the field (only works today because the label happens to sit visually next to the input for mouse users). Caught by a test asserting `getByLabelText('Name')` finds the field — it doesn't.
@@ -364,9 +394,10 @@ Writing real browser tests (`vitest` + `vitest-browser-svelte`, real Chromium vi
 ---
 
 ### 25. `Table/address.svelte` shows every address field, even ones that were never provided
+
 **File:** `src/lib/components/Table/address.svelte`
 
-The component computes a filtered `addressFields` array via `$derived` — only fields that actually have a value — and uses it solely to decide `hasAddress` (whether to show the panel at all or "No address information available"). But the actual list rendered inside the panel iterates the *different*, unfiltered `hierarchyItems` array, which always includes all six fields (Subcity, Street, Kebele, Building Number, Floor, House Number) regardless of whether they're empty.
+The component computes a filtered `addressFields` array via `$derived` — only fields that actually have a value — and uses it solely to decide `hasAddress` (whether to show the panel at all or "No address information available"). But the actual list rendered inside the panel iterates the _different_, unfiltered `hierarchyItems` array, which always includes all six fields (Subcity, Street, Kebele, Building Number, Floor, House Number) regardless of whether they're empty.
 
 **Impact:** a customer/site/employee address with only 2 of 6 fields filled in still shows all 6 rows in the popup, with 4 of them blank — `addressFields` is effectively dead code. Minor UX rather than a crash.
 
@@ -377,6 +408,7 @@ The component computes a filtered `addressFields` array via `$derived` — only 
 ## 🟡 Semi-urgent
 
 ### 16. Stale-value pattern across many edit dialogs
+
 **Files:** most `editX.svelte` dialog components (`editSites.svelte`, `editContract.svelte`, `editContacts.svelte`, `editFamily.svelte`, `editSchedule.svelte`, `editExperience.svelte`, `editQualification.svelte`, `suppliers/[id]/edit.svelte`, and others — flagged by Svelte's `state_referenced_locally` warning in ~15+ files)
 
 ```js
@@ -385,13 +417,14 @@ $form.name = name;
 // ...directly assigning prop values into the form state at component-init time
 ```
 
-**Impact:** These assignments only capture the *initial* value of each prop. If the same dialog component instance is ever reused with new props without a full remount (e.g., a parent re-renders a table row with updated data but Svelte reuses the existing component instance), the dialog will keep showing stale values. Not currently causing visible issues, but it's a landmine — the moment any of these components stop being freshly-keyed per row, edits will silently show/save wrong data.
+**Impact:** These assignments only capture the _initial_ value of each prop. If the same dialog component instance is ever reused with new props without a full remount (e.g., a parent re-renders a table row with updated data but Svelte reuses the existing component instance), the dialog will keep showing stale values. Not currently causing visible issues, but it's a landmine — the moment any of these components stop being freshly-keyed per row, edits will silently show/save wrong data.
 
 **Fix:** wrap these assignments in `$effect(() => { $form.id = id; ... })` or otherwise key the components so a fresh instance is always created per row.
 
 ---
 
 ### 17. Data tables with fully untyped (`any`) columns
+
 **Files:** `src/routes/dashboard/sites/[id]/contracts.svelte`, `src/routes/dashboard/sites/[id]/sites.svelte`, `src/routes/dashboard/supplies/+page.svelte`
 
 Column definitions, cell renderers, and row/column callback params are all implicitly `any`. This means none of these three (fairly central) data tables get any compiler protection if the underlying row type changes — regressions here would only surface at runtime.
@@ -401,19 +434,23 @@ Column definitions, cell renderers, and row/column callback params are all impli
 ## ⚪ Annoying, not harmful
 
 ### 18. ✅ FIXED (import) — `EditAppointment.svelte` is dead code with a broken import
+
 **File:** `src/lib/forms/EditAppointment.svelte:52` references `SelectComp`, which is never imported. Confirmed via repo-wide search that this component is not referenced anywhere else in the app — it's unreachable, so the missing import is harmless in practice. Should either be finished and wired up, or deleted.
 
 **Fix applied:** added `import SelectComp from '$lib/formComponents/SelectComp.svelte';` (the component already exists in `formComponents/`). The file is still unused dead code otherwise — that part is unchanged and still worth a decision (finish it or delete it).
 
 ### 19. ✅ FIXED (by removal) — Duplicate files
+
 `src/routes/dashboard/customers/[id]/editContacts.svelte` and `src/routes/dashboard/customers/[id]/editContract.svelte` are byte-for-byte identical (both implement contact-editing; the "editContract" one is presumably a stray copy-paste that was never repurposed). Confusing to maintain, not a functional bug.
 
 **Fix applied:** confirmed `editContract.svelte` was never imported anywhere in the app (only `editContacts.svelte` is, from `contracts.svelte`) and had its own extra bug on top (`$form.contractType` instead of `$form.contactType` — moot since nothing rendered it). Deleted it.
 
 ### 20. ✅ FIXED — Dead commented-out imports
+
 `requests/approved/[range]/+page.svelte` has `// import { toPng } from 'html-to-image';` and `// import jsPDF from 'jspdf';` sitting at the top of the file — remnants tied directly to bug #9. Removed as part of the #9 fix.
 
 ### 22. ✅ FIXED — Wrong icon on submit buttons (`Plus` instead of `Save`)
+
 **Files:** `src/routes/dashboard/admin-panel/pensions/edit.svelte`, `src/routes/dashboard/salary/transactions/expenses/categories/edit.svelte`, `src/lib/forms/EditAppointment.svelte`
 
 ```svelte
@@ -428,6 +465,7 @@ Column definitions, cell renderers, and row/column callback params are all impli
 **Fix applied:** swapped the icon to `<Save class="h-4 w-4" />` and updated each file's `@lucide/svelte` import from `Plus` to `Save` (it was otherwise unused in all three files).
 
 ### 21. Large volume of `svelte-check` narrowing noise
+
 The bulk of the 2,390 flagged diagnostics are `Did you mean X` / strict-nullability warnings on `+page.svelte` files across `sites/`, `supplies/`, and elsewhere, plus repeated `SuperValidated<...>` "does not satisfy constraint 'Schema'" errors that look like a systemic mismatch between the Zod/Valibot adapter version and `sveltekit-superforms`'s expected generic constraints. Not behavior-affecting on their own, but worth a dedicated pass at some point since they're currently drowning out the real signal above.
 
 ---

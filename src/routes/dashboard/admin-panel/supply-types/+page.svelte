@@ -38,7 +38,6 @@
 					name: 'Name',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: ({ row }) =>
 				renderComponent(Edit, {
 					id: row.original.id,
@@ -61,7 +60,6 @@
 					name: 'Items',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			// A type with no items behind it is the only kind that can be deleted.
 			cell: (info) => (Number(info.getValue()) === 0 ? 'None' : `${info.getValue()} item(s)`)
 		},
@@ -71,8 +69,7 @@
 				renderComponent(DataTableSort, {
 					name: 'Units In Store',
 					onclick: column.getToggleSortingHandler()
-				}),
-			sortable: true
+				})
 		},
 		{
 			accessorKey: '',

@@ -45,7 +45,6 @@
 					name: 'Years of Service',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: ({ row }) => renderComponent(Edit, editProps(row.original, false))
 		},
 
@@ -56,7 +55,6 @@
 					name: 'Leave Days Per Year',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: (info) => `${info.getValue()} days`
 		},
 
@@ -66,14 +64,12 @@
 				renderComponent(DataTableSort, {
 					name: 'Description',
 					onclick: column.getToggleSortingHandler()
-				}),
-			sortable: true
+				})
 		},
 
 		{
 			accessorKey: 'status',
 			header: 'Status',
-			sortable: true,
 			cell: ({ row }) => {
 				return renderComponent(Statuses, {
 					status: row.original.status ? 'Active' : 'Inactive'
@@ -84,7 +80,6 @@
 		{
 			accessorKey: '',
 			header: 'Edit',
-			sortable: true,
 			cell: ({ row }) => renderComponent(Edit, editProps(row.original, true))
 		},
 

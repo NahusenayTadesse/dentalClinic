@@ -103,9 +103,7 @@ describe('InputComp.svelte', () => {
 		render(InputComp, { label: 'Name', form, errors, type: 'text', name: 'name' });
 
 		await expect.element(page.getByText('Name is required')).toBeInTheDocument();
-		await expect
-			.element(page.getByText('Name must be at least 2 characters'))
-			.toBeInTheDocument();
+		await expect.element(page.getByText('Name must be at least 2 characters')).toBeInTheDocument();
 	});
 
 	it('shows no error message when there is none for the field', async () => {

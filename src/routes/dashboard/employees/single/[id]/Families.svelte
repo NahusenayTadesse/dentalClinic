@@ -70,7 +70,6 @@
 					name: 'Name',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {
@@ -96,7 +95,6 @@
 					name: 'Phone',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Copy, {
@@ -112,7 +110,6 @@
 					name: 'Email',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Copy, {
@@ -150,7 +147,6 @@
 					name: 'Emergency Contact',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: ({ row }) => {
 				return renderComponent(Statuses, {
 					status: row.original.emergencyContact ? 'Yes' : 'No'
@@ -161,7 +157,6 @@
 		{
 			accessorKey: 'status',
 			header: 'Status',
-			sortable: true,
 			cell: ({ row }) => {
 				return renderComponent(Statuses, {
 					status: row.original.status ? 'Active' : 'Inactive'
@@ -171,7 +166,6 @@
 		{
 			accessorKey: 'addedBy',
 			header: 'Added By',
-			sortable: true,
 			cell: ({ row }) => {
 				return renderComponent(DataTableLinks, {
 					id: row.original.addedById,
@@ -186,7 +180,6 @@
 		{
 			accessorKey: '',
 			header: 'Edit',
-			sortable: true,
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {

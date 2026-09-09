@@ -38,14 +38,27 @@ export default ts.config(
 		}
 	},
 	{
-		'svelte/no-navigation-without-resolve': [
-			'error',
-			{
-				ignoreGoto: false,
-				ignoreLinks: true,
-				ignorePushState: false,
-				ignoreReplaceState: false
-			}
-		]
+		// Was a bare top-level key rather than a `rules` entry, which is not a valid flat-config
+		// object — ESLint refused the whole config, so `npm run lint` failed before linting
+		// anything. The rule had never run.
+		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
+		rules: {
+			'svelte/no-navigation-without-resolve': [
+				'error',
+				{
+					ignoreGoto: false,
+					ignoreLinks: true,
+					ignorePushState: false,
+					ignoreReplaceState: false
+				}
+			]
+		}
+	},
+	{
+		rules: {
+			// Promoted from the `warn` that `ts.configs.recommended` sets. CLAUDE.md §3 forbids new
+			// explicit `any`; a warning nobody sees is not a rule.
+			'@typescript-eslint/no-explicit-any': 'error'
+		}
 	}
 );

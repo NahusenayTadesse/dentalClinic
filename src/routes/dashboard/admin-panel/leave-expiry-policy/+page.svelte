@@ -36,7 +36,6 @@
 					name: 'Policy',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: ({ row }) => renderComponent(Edit, editProps(row.original, false))
 		},
 
@@ -47,7 +46,6 @@
 					name: 'Expires After',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: (info) => `${info.getValue()} year${info.getValue() === 1 ? '' : 's'}`
 		},
 
@@ -57,14 +55,12 @@
 				renderComponent(DataTableSort, {
 					name: 'Description',
 					onclick: column.getToggleSortingHandler()
-				}),
-			sortable: true
+				})
 		},
 
 		{
 			accessorKey: 'status',
 			header: 'In Effect',
-			sortable: true,
 			cell: ({ row }) => {
 				return renderComponent(Statuses, {
 					status: row.original.status ? 'Active' : 'Inactive'
@@ -75,7 +71,6 @@
 		{
 			accessorKey: '',
 			header: 'Edit',
-			sortable: true,
 			cell: ({ row }) => renderComponent(Edit, editProps(row.original, true))
 		},
 

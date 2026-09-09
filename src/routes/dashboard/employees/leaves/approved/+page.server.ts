@@ -19,7 +19,10 @@ import {
 import { leaveAllowanceError } from '$lib/server/leaveAllowance';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { parseTableQuery, buildWhere, pagination, currentQuery } from '$lib/server/queryFilters';
-import { approveLeave, editLeave } from './schema';
+import { approveLeaveFor, editLeave } from '$lib/components/leaves/schema';
+
+/** This page lists 'approved' leaves, so the bulk action offers the other two states. */
+const approveLeave = approveLeaveFor('approved');
 
 /**
  * Approved leaves, most recent first.
@@ -82,7 +85,7 @@ export const load: PageServerLoad = async ({ url }) => {
 		.select({
 			id: leave.id,
 			staffId: leave.staffId,
-			name: sql<string>`TRIM(CONCAT(COALESCE(${employee.name}, ''), ' ', COALESCE(${employee.fatherName}, '')))`,
+			name: employeeFullName,
 			department: department.name,
 			siteName: site.name,
 			requestDate: leave.requestDate,
@@ -176,6 +179,7 @@ export const load: PageServerLoad = async ({ url }) => {
 };
 
 import { saveUploadedFile } from '$lib/server/upload';
+import { employeeFullName } from '$lib/server/employeeName';
 
 export const actions: Actions = {
 	approve: async ({ request, locals, params }) => {

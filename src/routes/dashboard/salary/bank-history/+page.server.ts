@@ -50,7 +50,7 @@ export const load: PageServerLoad = async ({ url }) => {
 		.where(whereClause);
 
 	// --- Main query ---
-	let allTransactions = await db
+	const allTransactions = await db
 		.select({
 			id: bankInsertHistory.id,
 			date: bankInsertHistory.createdAt,

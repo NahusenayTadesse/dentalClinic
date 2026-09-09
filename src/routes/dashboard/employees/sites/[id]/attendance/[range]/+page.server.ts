@@ -13,11 +13,12 @@ import {
 } from '$lib/server/db/schema';
 import { eq, and, sql, count, inArray } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
-import { edit } from './schema';
+import { edit } from '$lib/components/attendance/schema';
 import type { PageServerLoad, Actions } from '../$types';
 import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { getMonthNumber, ethiopianRange, currentMonthFilter } from '$lib/global.svelte';
+import { employeeLegalName } from '$lib/server/employeeName';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const { id, range } = params;
@@ -30,14 +31,10 @@ export const load: PageServerLoad = async ({ params }) => {
 	const start = `${startDate.year}-${startDate.month}-${startDate.day}`;
 	const end = `${endDate.year}-${endDate.month}-${endDate.day}`;
 
-	let staffList = await db
+	const staffList = await db
 		.select({
 			id: employee.id,
-			name: sql<string>`TRIM(CONCAT(
-    COALESCE(${employee.name}, ''), ' ',
-    COALESCE(${employee.fatherName}, ''), ' ',
-    COALESCE(${employee.grandFatherName}, '')
-))`,
+			name: employeeLegalName,
 			department: department.name,
 			status: employmentStatuses.name,
 			absent: count(missingDays.id),

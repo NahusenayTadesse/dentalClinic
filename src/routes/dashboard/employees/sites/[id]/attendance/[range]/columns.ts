@@ -1,3 +1,9 @@
+import type { ColumnDef } from '@tanstack/table-core';
+import type { PageData } from './$types';
+
+/** One row of the table this file describes, taken from the load so the two cannot drift. */
+type RowData = NonNullable<PageData['staffList']>[number];
+
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Stasuses from '$lib/components/Table/statuses.svelte';
@@ -8,11 +14,11 @@ const form = await superValidate(zod4(edit));
 
 import { minutesToHoursString } from '$lib/global.svelte';
 import Copy from '$lib/Copy.svelte';
-import { edit } from './schema';
-import Edit from './edit.svelte';
-import ReasonsDialog from './reasons-dialog.svelte';
+import { edit } from '$lib/components/attendance/schema';
+import Edit from '$lib/components/attendance/edit.svelte';
+import ReasonsDialog from '$lib/components/attendance/reasons-dialog.svelte';
 
-export const columns = [
+export const columns: ColumnDef<RowData>[] = [
 	{
 		id: 'index',
 		header: '#',
@@ -29,7 +35,6 @@ export const columns = [
 				name: 'Name',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {
@@ -46,8 +51,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Department',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 
 	{
@@ -57,7 +61,6 @@ export const columns = [
 				name: 'Absent Details',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return renderComponent(ReasonsDialog, {
 				staff: row.original
@@ -72,7 +75,6 @@ export const columns = [
 				name: 'Missing Days',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(Edit, {
@@ -91,7 +93,6 @@ export const columns = [
 				name: 'Deductable',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(Edit, {
@@ -111,7 +112,6 @@ export const columns = [
 				name: 'Non Deductable',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(Edit, {
@@ -131,7 +131,6 @@ export const columns = [
 				name: 'Missing Days',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(Edit, {
@@ -158,7 +157,6 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Status',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	}
 ];

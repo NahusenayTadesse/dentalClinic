@@ -1,3 +1,9 @@
+import type { ColumnDef } from '@tanstack/table-core';
+import type { PageData } from './$types';
+
+/** One row of the table this file describes, taken from the load so the two cannot drift. */
+type RowData = NonNullable<PageData['salaryHistory']>[number];
+
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 // Assuming a new actions component
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
@@ -6,7 +12,7 @@ import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import { User } from '@lucide/svelte';
 import Statuses from '$lib/components/Table/statuses.svelte';
 
-export const columns = [
+export const columns: ColumnDef<RowData>[] = [
 	// 1. Row Index
 	{
 		accessorKey: 'index',
@@ -22,8 +28,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Department',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 	{
 		accessorKey: 'position',
@@ -31,8 +36,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Position',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 
 	{
@@ -42,7 +46,6 @@ export const columns = [
 				name: 'Sites',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {
@@ -60,7 +63,6 @@ export const columns = [
 				name: 'Salary',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => {
 			return formatETB(info.getValue(), true);
 		}
@@ -72,7 +74,6 @@ export const columns = [
 				name: 'Housing Allowance',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => {
 			return formatETB(info.getValue(), true);
 		}
@@ -84,7 +85,6 @@ export const columns = [
 				name: 'Transportation Allowance',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => {
 			return formatETB(info.getValue(), true);
 		}
@@ -97,7 +97,6 @@ export const columns = [
 				name: 'Position Allowance',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => {
 			return formatETB(info.getValue(), true);
 		}
@@ -110,7 +109,6 @@ export const columns = [
 				name: 'Non Tax Allowance',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => {
 			return formatETB(info.getValue(), true);
 		}
@@ -123,7 +121,6 @@ export const columns = [
 				name: 'Office Commission',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => {
 			return renderComponent(Statuses, {
 				status: info.getValue() ? 'Yes' : 'No'
@@ -138,7 +135,6 @@ export const columns = [
 				name: 'Non Tax Allowance',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => {
 			return Number(info.getValue()) + '%';
 		}
@@ -152,7 +148,7 @@ export const columns = [
 			}),
 		// Show 'N/A' if the payroll entry is null
 		cell: (info) => formatEthiopianDate(info.getValue()) || 'Salary Not Entered',
-		sortable: false // Usually not sortable
+		enableSorting: false // Usually not sortable
 	},
 
 	{
@@ -164,7 +160,7 @@ export const columns = [
 			}),
 		// Show 'N/A' if the payroll entry is null
 		cell: (info) => formatEthiopianDate(info.getValue()) || 'Current Salary',
-		sortable: false // Usually not sortable
+		enableSorting: false // Usually not sortable
 	},
 
 	{

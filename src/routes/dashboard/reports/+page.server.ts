@@ -6,7 +6,6 @@ import { compensationStats } from './analytics/compensation.server';
 import { timeStats } from './analytics/time.server';
 import { stockStats } from './analytics/stock.server';
 import { moneyStats } from './analytics/money.server';
-import { commercialStats } from './analytics/commercial.server';
 import { systemStats } from './analytics/system.server';
 import type { Stat } from './types';
 
@@ -83,7 +82,6 @@ export const load: PageServerLoad = async ({ url }) => {
 		safe('time', () => timeStats(filters)),
 		safe('stock', () => stockStats(filters)),
 		safe('money', () => moneyStats(filters)),
-		safe('commercial', () => commercialStats(filters)),
 		safe('system', () => systemStats(filters))
 	]);
 

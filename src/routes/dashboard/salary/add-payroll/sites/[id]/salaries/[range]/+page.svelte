@@ -61,7 +61,6 @@
 					paymentMethodId: emp.paymentMethodId ?? null,
 					absent: emp.absent ?? 0,
 					attendancePenality: emp.attendancePenality ?? 0,
-					commission: emp.commission ?? 0,
 					deductions: emp.deductions ?? 0,
 					gross: emp.gross ?? 0,
 					taxable: emp.taxable ?? 0,

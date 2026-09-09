@@ -55,7 +55,6 @@ describe('route access', () => {
 		// The overview aggregates the finance figures, so HR alone does not open it.
 		expect(canVisit('/dashboard/reports', hr)).toBe(false);
 
-		expect(canVisit('/dashboard/reports/commercial', ['reports.customer_site'])).toBe(true);
 		expect(canVisit('/dashboard/reports/system', ['audit_logs.view'])).toBe(true);
 		expect(canVisit('/dashboard/reports/system', ['reports.finance'])).toBe(false);
 	});
@@ -76,10 +75,27 @@ describe('route access', () => {
 		expect(canVisit('/dashboard/salary/bank-history', ['bank_history.view'])).toBe(true);
 	});
 
-	it('covers the pages that had a sidebar permission but no gate at all', () => {
-		expect(canVisit('/dashboard/requests/pending', [])).toBe(false);
-		expect(canVisit('/dashboard/requests/special', [])).toBe(false);
-		expect(canVisit('/dashboard/payments/approved', [])).toBe(false);
-		expect(canVisit('/dashboard/payments/approved', ['payments.follow_up'])).toBe(true);
+	/*
+	 * Replaced a version that named four request/payment routes. Those pages went with the
+	 * client-billing prune, and a test that asserts about deleted routes passes for the wrong
+	 * reason. This checks the invariant they were really there to protect: every area holding
+	 * personal or financial data refuses a caller with no permissions at all.
+	 */
+	it('leaves no data-bearing area open to a caller with no permissions', () => {
+		const gated = [
+			'/dashboard/customers',
+			'/dashboard/employees',
+			'/dashboard/employees/leaves',
+			'/dashboard/salary',
+			'/dashboard/supplies',
+			'/dashboard/admin-panel',
+			'/dashboard/backup',
+			'/dashboard/approvals',
+			'/dashboard/rejections'
+		];
+
+		for (const path of gated) {
+			expect(canVisit(path, []), path).toBe(false);
+		}
 	});
 });

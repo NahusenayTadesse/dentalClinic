@@ -20,14 +20,16 @@
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
 		"test:unit": "vitest",
-		"test": "npm run test:unit -- --run",
-		"auth:schema": "auth generate --config src/lib/server/auth.ts --output src/lib/server/db/auth.schema.ts --yes"
+		"test": "npm run test:unit -- --run && npm run test:e2e",
+		"auth:schema": "auth generate --config src/lib/server/auth.ts --output src/lib/server/db/auth.schema.ts --yes",
+		"test:e2e": "playwright install && playwright test"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^2.1.0",
 		"@eslint/js": "^9.39.4",
 		"@internationalized/date": "^3.12.2",
 		"@lucide/svelte": "^0.562.0",
+		"@playwright/test": "^1.60.0",
 		"@prgm/sveltekit-progress-bar": "^3.0.2",
 		"@sveltejs/adapter-auto": "^7.0.1",
 		"@sveltejs/adapter-node": "^5.5.4",

@@ -1,11 +1,17 @@
 <script>
-	import { Frown } from "@lucide/svelte";
+	import { Frown } from '@lucide/svelte';
 
-    let { title=''} = $props();
-
+	let { title = '' } = $props();
 </script>
-<div class="flex items-center my-8 justify-center w-full h-64 dark:bg-black rounded-md shadow-sm p-6">
-	<h1 aria-live="assertive" class="text-5xl md:text-6xl font-extrabold uppercase text-center text-red-600 dark:text-red-400">
-	<Frown class="text-center justify-self-center w-32 h-32 animate-bounce"/>	No {title} with this id, It has been deleted or it has never existed.
+
+<div
+	class="my-8 flex h-64 w-full items-center justify-center rounded-md p-6 shadow-sm dark:bg-black"
+>
+	<h1
+		aria-live="assertive"
+		class="text-center text-5xl font-extrabold text-red-600 uppercase md:text-6xl dark:text-red-400"
+	>
+		<Frown class="h-32 w-32 animate-bounce justify-self-center text-center" /> No {title} with this id,
+		It has been deleted or it has never existed.
 	</h1>
 </div>

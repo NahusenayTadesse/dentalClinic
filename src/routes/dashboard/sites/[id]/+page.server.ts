@@ -10,9 +10,7 @@ import {
 	address,
 	subcity,
 	customerContacts,
-	customerContracts,
 	siteContacts,
-	siteContracts,
 	services
 } from '$lib/server/db/schema';
 import { eq, and, desc, sql, count } from 'drizzle-orm';
@@ -90,60 +88,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	if (!singleSite) {
 		error(404, 'Site with this id not found');
 	}
-
-	const customerAddress = await db
-		.select({
-			id: address.id,
-			street: address.street,
-			subcity: subcity.name,
-			subcityId: subcity.id,
-			kebele: address.kebele,
-			buildingNumber: address.buildingNumber,
-			floor: address.floor,
-			houseNumber: address.houseNumber,
-			status: address.status
-		})
-		.from(address)
-		.leftJoin(site, and(eq(site.address, address.id), notDeleted(site)))
-		.leftJoin(subcity, and(eq(address.subcityId, subcity.id), notDeleted(subcity)))
-		.where(eq(site.id, Number(id)))
-		.then((rows) => rows[0]);
-
-	let contacts = await db
-		.select({
-			id: siteContacts.id,
-			contactType: siteContacts.contactType,
-			contactDetail: siteContacts.contactDetail,
-			status: siteContacts.isActive,
-			addedBy: user.name,
-			addedById: user.id
-		})
-		.from(siteContacts)
-		.leftJoin(user, eq(siteContacts.createdBy, user.id))
-		.where(and(eq(siteContacts.siteId, Number(id)), notDeleted(siteContacts)));
-
-	let contracts = await db
-		.select({
-			id: siteContracts.id,
-			serviceName: services.name,
-			serviceId: siteContracts.serviceId,
-			startDate: siteContracts.startDate,
-			endDate: siteContracts.endDate,
-			monthlyAmount: siteContracts.monthlyAmount,
-			contractYear: siteContracts.contractYear,
-			signedDate: siteContracts.contractDate,
-			contractFile: siteContracts.contractFile,
-			officeCommission: siteContracts.commissionConsidered,
-			status: siteContracts.isActive,
-			signingOfficer: siteContracts.signingOfficer,
-			addedBy: user.name,
-			addedById: user.id
-		})
-		.from(siteContracts)
-		.leftJoin(services, and(eq(siteContracts.serviceId, services.id), notDeleted(services)))
-		.leftJoin(user, eq(siteContracts.createdBy, user.id))
-		.where(and(eq(siteContracts.siteId, Number(id)), notDeleted(siteContracts)))
-		.orderBy(desc(siteContracts.contractDate));
 
 	return {
 		customer: singleSite,
@@ -328,131 +272,6 @@ export const actions: Actions = {
 			return message(form, {
 				type: 'error',
 				text: `Updated failed: ${err instanceof Error ? err.message : 'Unknown error'}`
-			});
-		}
-	},
-	addContract: async ({ request, locals, params }) => {
-		const { id } = params;
-		const form = await superValidate(request, zod4(addContract));
-
-		if (!form.valid) {
-			return message(form, { type: 'error', text: `Error: check the form` });
-		}
-
-		const {
-			service,
-			contractDate,
-			contractYear,
-			startDate,
-			endDate,
-			contractFile,
-			monthlyAmount,
-			status,
-			commissionConsidered,
-			signingOfficer
-		} = form.data;
-
-		try {
-			await db.transaction(async (tx) => {
-				const contractFileName = await saveUploadedFile(contractFile);
-				await tx.insert(siteContracts).values({
-					siteId: Number(id),
-					serviceId: service,
-					contractDate,
-					contractYear,
-					startDate,
-					endDate,
-					contractFile: contractFileName,
-					monthlyAmount,
-					isActive: status,
-					commissionConsidered,
-					signingOfficer,
-					createdBy: locals?.user?.id
-				});
-
-				return message(form, {
-					type: 'success',
-					text: 'Contract Added Successfully!'
-				});
-			});
-		} catch (err) {
-			console.error(err?.message);
-			return message(form, {
-				type: 'error',
-				text: `Adding Site failed: ${err instanceof Error ? err.message : 'Unknown error'}`
-			});
-		}
-	},
-	editContract: async ({ request, locals, params }) => {
-		const form = await superValidate(request, zod4(editContract));
-
-		if (!form.valid) {
-			return message(form, { type: 'error', text: `Error: check the form` });
-		}
-
-		const {
-			id,
-			service,
-			contractDate,
-			contractYear,
-			startDate,
-			endDate,
-			contractFile,
-			monthlyAmount,
-			status,
-			commissionConsidered,
-			signingOfficer
-		} = form.data;
-
-		try {
-			await db.transaction(async (tx) => {
-				if (contractFile) {
-					const contractFileName = await saveUploadedFile(contractFile);
-
-					await tx
-						.update(siteContracts)
-						.set({
-							serviceId: service,
-							contractDate: new Date(contractDate),
-							contractYear,
-							startDate: new Date(startDate),
-							endDate: new Date(endDate),
-							contractFile: contractFileName,
-							monthlyAmount: String(monthlyAmount),
-							isActive: status,
-							commissionConsidered,
-							signingOfficer,
-							updatedBy: locals?.user?.id
-						})
-						.where(eq(siteContracts.id, id));
-				} else {
-					await tx
-						.update(siteContracts)
-						.set({
-							serviceId: service,
-							contractDate: new Date(contractDate),
-							contractYear,
-							startDate: new Date(startDate),
-							endDate: new Date(endDate),
-							monthlyAmount: String(monthlyAmount),
-							isActive: status,
-							commissionConsidered,
-							signingOfficer,
-							updatedBy: locals?.user?.id
-						})
-						.where(eq(siteContracts.id, id));
-				}
-
-				return message(form, {
-					type: 'success',
-					text: 'Contract Updated Successfully!'
-				});
-			});
-		} catch (err) {
-			console.error(err?.message);
-			return message(form, {
-				type: 'error',
-				text: `Updating Contract failed: ${err instanceof Error ? err.message : 'Unknown error'}`
 			});
 		}
 	},

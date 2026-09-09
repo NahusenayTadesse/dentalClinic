@@ -20,7 +20,6 @@ export type SectionKey =
 	// Compensation
 	| 'bonuses'
 	| 'overtime'
-	| 'commissions'
 	| 'deductions'
 	// Time
 	| 'attendance'
@@ -36,11 +35,6 @@ export type SectionKey =
 	| 'bank-history'
 	| 'services-rendered'
 	// Commercial
-	| 'site-payments'
-	| 'payment-requests'
-	| 'contracts'
-	| 'renewals'
-	| 'site-penalties'
 	| 'customers'
 	| 'sites'
 	// System
@@ -53,7 +47,6 @@ export type SectionGroup =
 	| 'Time & Leave'
 	| 'Stock'
 	| 'Money'
-	| 'Commercial'
 	| 'System';
 
 export type SectionMeta = {
@@ -140,13 +133,6 @@ export const SECTIONS: SectionMeta[] = [
 		filterKeys: ['employee', 'department', 'site', 'type']
 	},
 	{
-		key: 'commissions',
-		label: 'Commissions',
-		group: 'Compensation',
-		description: 'Office commission earned inside the range.',
-		filterKeys: ['employee', 'department', 'month', 'year']
-	},
-	{
 		key: 'deductions',
 		label: 'Deductions',
 		group: 'Compensation',
@@ -228,52 +214,20 @@ export const SECTIONS: SectionMeta[] = [
 	},
 
 	{
-		key: 'site-payments',
-		label: 'Site Payments',
-		group: 'Commercial',
-		description: 'Money collected from sites inside the range.',
-		filterKeys: ['site', 'customer', 'status', 'month', 'year']
-	},
-	{
-		key: 'payment-requests',
-		label: 'Payment Requests',
-		group: 'Commercial',
-		description: 'Invoices raised against sites inside the range.',
-		filterKeys: ['site', 'status', 'month', 'year']
-	},
-	{
-		key: 'contracts',
-		label: 'Contracts',
-		group: 'Commercial',
-		description: 'Contracts signed inside the range, and whether they still stand.',
-		filterKeys: ['site', 'customer', 'service', 'terminated', 'contractYear']
-	},
-	{
-		key: 'renewals',
-		label: 'Contract Renewals',
-		group: 'Commercial',
-		description: 'Renewals signed inside the range and what they changed.',
-		filterKeys: ['site', 'customer']
-	},
-	{
-		key: 'site-penalties',
-		label: 'Site Penalties',
-		group: 'Commercial',
-		description: 'Penalties charged against a site contract inside the range.',
-		filterKeys: ['site', 'customer', 'month', 'year']
-	},
-	{
 		key: 'customers',
 		label: 'Customers',
-		group: 'Commercial',
+		// Was 'Commercial'. That page was entirely client contracts and went with them; these two
+		// sections still carry real data, so they sit under People until patients and branches
+		// give them a page of their own.
+		group: 'People',
 		description: 'Customers on the books, and when they were added.',
 		filterKeys: ['status']
 	},
 	{
 		key: 'sites',
 		label: 'Sites',
-		group: 'Commercial',
-		description: 'Sites on the books, with contract count and value.',
+		group: 'People',
+		description: 'Sites on the books, and when they opened.',
 		filterKeys: ['customer', 'isActive']
 	},
 
@@ -293,7 +247,6 @@ export const SECTION_GROUPS: SectionGroup[] = [
 	'Time & Leave',
 	'Stock',
 	'Money',
-	'Commercial',
 	'System'
 ];
 
@@ -353,12 +306,6 @@ export const REPORT_PAGES: ReportPage[] = [
 		group: 'Money',
 		title: 'Money',
 		blurb: 'Transactions, expenses, bank movement and service revenue.'
-	},
-	{
-		slug: 'commercial',
-		group: 'Commercial',
-		title: 'Commercial',
-		blurb: 'Customers, sites, contracts, invoices and the revenue collected.'
 	},
 	{
 		slug: 'system',

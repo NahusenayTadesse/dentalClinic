@@ -59,6 +59,22 @@ export function generateFileName() {
 	return crypto.randomUUID();
 }
 
+/**
+ * Weekday name for a `staff_schedule.week_day` index.
+ *
+ * 0 is Monday, not Sunday — the schedule table stores a working week, and both schedule
+ * components already assumed that. Kept here because they had a byte-identical copy each.
+ */
+export function getWeekdayName(dayIndex: number): string {
+	const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+	if (dayIndex < 0 || dayIndex > 6) {
+		throw new Error('Invalid day index. Please provide a number between 0 and 6.');
+	}
+
+	return days[dayIndex];
+}
+
 export function extractUsername(email: string) {
 	if (typeof email !== 'string') {
 		throw new Error('Input must be a string');
@@ -319,7 +335,7 @@ export const getGregorianRangeFromEthiopian = (ethMonth: number, ethYear: number
 
 	const findGregorian = (eYear: number, eMonth: number, eDay: number) => {
 		// Start searching around the approximate Gregorian date
-		let date = new Date(approxGregYear, 0, 1);
+		const date = new Date(approxGregYear, 0, 1);
 
 		// Use a brute-force search within a small window or a known offset
 		// For simplicity and accuracy across environments:

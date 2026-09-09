@@ -23,7 +23,6 @@ export const makeColumns = (canDelete = false) => [
 				name: 'Paid At',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return renderComponent(DataTableLinks, {
 				id: row.original.id,
@@ -39,9 +38,7 @@ export const makeColumns = (canDelete = false) => [
 			renderComponent(DataTableSort, {
 				name: 'Expense Type',
 				onclick: column.getToggleSortingHandler()
-			}),
-
-		sortable: true
+			})
 	},
 
 	{
@@ -50,9 +47,7 @@ export const makeColumns = (canDelete = false) => [
 			renderComponent(DataTableSort, {
 				name: 'Amount',
 				onclick: column.getToggleSortingHandler()
-			}),
-
-		sortable: true
+			})
 	},
 
 	{
@@ -61,9 +56,7 @@ export const makeColumns = (canDelete = false) => [
 			renderComponent(DataTableSort, {
 				name: 'Payment Method',
 				onclick: column.getToggleSortingHandler()
-			}),
-
-		sortable: true
+			})
 	},
 
 	{
@@ -74,7 +67,6 @@ export const makeColumns = (canDelete = false) => [
 				onclick: column.getToggleSortingHandler()
 			}),
 
-		sortable: true,
 		cell: ({ row }) => {
 			return renderComponent(DataTableLinks, {
 				id: row.original.recievedById,
@@ -120,7 +112,6 @@ export const makeColumns = (canDelete = false) => [
 	{
 		accessorKey: 'recieptLink',
 		header: 'Reciept',
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {

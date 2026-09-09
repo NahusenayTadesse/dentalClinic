@@ -1,3 +1,9 @@
+import type { ColumnDef } from '@tanstack/table-core';
+import type { PageData } from './$types';
+
+/** One row of the table this file describes, taken from the load so the two cannot drift. */
+type RowData = NonNullable<PageData['payrollReciept']>[number];
+
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
@@ -5,7 +11,7 @@ import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
 import { Link } from '@lucide/svelte';
 
-export const columns = [
+export const columns: ColumnDef<RowData>[] = [
 	{
 		id: 'select',
 		accessorKey: 'id',
@@ -44,7 +50,6 @@ export const columns = [
 				name: 'Employee Name',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		// Using DataTableLinks to view staff profile
 		cell: ({ row }) => {
 			// Use staffId for the link, but ensure staffName is selected in the query
@@ -63,8 +68,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Department',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 	{
 		accessorKey: 'position',
@@ -72,8 +76,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Position',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 	{
 		accessorKey: 'site',
@@ -81,8 +84,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Site',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 
 	{
@@ -92,22 +94,8 @@ export const columns = [
 				name: 'Basic Salary',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return formatETB(row.original.basicSalary);
-		}
-	},
-
-	{
-		accessorKey: 'commission',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Commission',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-		cell: ({ row }) => {
-			return formatETB(row.original.commission);
 		}
 	},
 
@@ -118,7 +106,6 @@ export const columns = [
 				name: 'Over Time',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return formatETB(row.original.overtime);
 		}
@@ -131,7 +118,6 @@ export const columns = [
 				name: 'Transport Allowance',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return formatETB(row.original.transportAllowance, true);
 		}
@@ -144,7 +130,6 @@ export const columns = [
 				name: 'Position Allowance',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return formatETB(row.original.positionAllowance, true);
 		}
@@ -157,7 +142,6 @@ export const columns = [
 				name: 'Housing Allowance',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return formatETB(row.original.housingAllowance, true);
 		}
@@ -170,7 +154,6 @@ export const columns = [
 				name: 'Non-Taxable',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return formatETB(row.original.nonTaxable, true);
 		}
@@ -183,7 +166,6 @@ export const columns = [
 				name: 'Gross Salary',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return formatETB(row.original.gross, true);
 		}
@@ -289,7 +271,6 @@ export const columns = [
 				name: 'Bank',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => info.getValue() || 'Account Not Found' // Default to UNPROCESSED if payroll entry is missing
 	}
 ];
@@ -315,7 +296,6 @@ export const reciepts = [
 				name: 'No of Employees',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => info.getValue() + ' Employees'
 	},
 	{
@@ -325,7 +305,6 @@ export const reciepts = [
 				name: 'Amount',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => formatETB(info.getValue(), true)
 	},
 	{
@@ -335,7 +314,6 @@ export const reciepts = [
 				name: 'Amount',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => formatEthiopianDate(info.getValue())
 	},
 	{
@@ -345,7 +323,6 @@ export const reciepts = [
 				name: 'Start Date',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => formatEthiopianDate(info.getValue())
 	},
 	{
@@ -355,7 +332,6 @@ export const reciepts = [
 				name: 'End Date',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => formatEthiopianDate(info.getValue())
 	},
 	{
@@ -365,7 +341,6 @@ export const reciepts = [
 				name: 'Bank Statement',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		// Using DataTableLinks to view staff profile
 		cell: ({ row }) => {
 			// Use staffId for the link, but ensure staffName is selected in the query
@@ -384,7 +359,6 @@ export const reciepts = [
 				name: 'Paying Officer',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		// Using DataTableLinks to view staff profile
 		cell: ({ row }) => {
 			// Use staffId for the link, but ensure staffName is selected in the query
@@ -398,7 +372,6 @@ export const reciepts = [
 	}
 ];
 
-
 export const adjustmentColumns = [
 	{
 		id: 'index',
@@ -410,27 +383,25 @@ export const adjustmentColumns = [
 		enableSorting: false
 	},
 
-
 	{
-           accessorKey: 'seeDetails',
-		   header: 'Details',
-		   cell: ({ row }) => {
+		accessorKey: 'seeDetails',
+		header: 'Details',
+		cell: ({ row }) => {
 			return renderComponent(DataTableLinks, {
 				id: row.original.transactionId,
-				name: "View Details", 
+				name: 'View Details',
 				link: '/dashboard/salary/paid-salaries/adjust',
 				IconComp: Link
 			});
 		}
 	},
-		{
+	{
 		accessorKey: 'count',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
 				name: 'Number of Employees',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => info.getValue() + ' Employees'
 	},
 	{
@@ -439,8 +410,7 @@ export const adjustmentColumns = [
 			renderComponent(DataTableSort, {
 				name: 'Adjustment Type',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 	{
 		accessorKey: 'basicSalary',
@@ -449,7 +419,6 @@ export const adjustmentColumns = [
 				name: 'Basic Salary',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => formatETB(info.getValue(), true)
 	},
 	{
@@ -459,7 +428,6 @@ export const adjustmentColumns = [
 				name: 'Commission',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => formatETB(info.getValue(), true)
 	},
 	{
@@ -469,7 +437,6 @@ export const adjustmentColumns = [
 				name: 'Over Time',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => formatETB(info.getValue(), true)
 	},
 	{
@@ -479,7 +446,6 @@ export const adjustmentColumns = [
 				name: 'Bonus',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => formatETB(info.getValue(), true)
 	},
 	{
@@ -489,7 +455,6 @@ export const adjustmentColumns = [
 				name: 'Deduction',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => formatETB(info.getValue(), true)
 	},
 	{
@@ -499,7 +464,6 @@ export const adjustmentColumns = [
 				name: 'Allowances',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => formatETB(info.getValue(), true)
 	},
 	{
@@ -509,7 +473,6 @@ export const adjustmentColumns = [
 				name: 'Transport Allowance',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => formatETB(info.getValue(), true)
 	},
 	{
@@ -519,7 +482,6 @@ export const adjustmentColumns = [
 				name: 'Position Allowance',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => formatETB(info.getValue(), true)
 	},
 	{
@@ -529,7 +491,6 @@ export const adjustmentColumns = [
 				name: 'Housing Allowance',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => formatETB(info.getValue(), true)
 	},
 	{
@@ -539,7 +500,6 @@ export const adjustmentColumns = [
 				name: 'Non-Taxable',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => formatETB(info.getValue(), true)
 	},
 	{
@@ -549,7 +509,6 @@ export const adjustmentColumns = [
 				name: 'Gross Amount',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => formatETB(info.getValue(), true)
 	},
 	{
@@ -559,7 +518,6 @@ export const adjustmentColumns = [
 				name: 'Net Amount',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => formatETB(info.getValue(), true)
 	},
 	{
@@ -570,17 +528,15 @@ export const adjustmentColumns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 
-		sortable: true,
 		cell: (info) => formatETB(info.getValue(), true)
 	},
-		{
+	{
 		accessorKey: 'transaction',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
 				name: 'Full Transaction Link',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			// Use staffId for the link, but ensure staffName is selected in the query
 			return renderComponent(DataTableLinks, {
@@ -597,8 +553,7 @@ export const adjustmentColumns = [
 			renderComponent(DataTableSort, {
 				name: 'Reason',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 	{
 		accessorKey: 'recieptLink',
@@ -607,7 +562,6 @@ export const adjustmentColumns = [
 				name: 'Bank Statement',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			// Use staffId for the link, but ensure staffName is selected in the query
 			return renderComponent(DataTableLinks, {
@@ -626,7 +580,6 @@ export const adjustmentColumns = [
 				name: 'Created At',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => formatEthiopianDate(info.getValue())
 	},
 	{
@@ -636,7 +589,6 @@ export const adjustmentColumns = [
 				name: 'Created By',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			// Use staffId for the link, but ensure staffName is selected in the query
 			return renderComponent(DataTableLinks, {
@@ -647,6 +599,4 @@ export const adjustmentColumns = [
 			});
 		}
 	}
-];	
-		
-		
+];

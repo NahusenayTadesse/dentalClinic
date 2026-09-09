@@ -12,7 +12,7 @@
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { addLeavePayrollSchema as schema } from './schema';
 	import { fileProxy, superForm } from 'sveltekit-superforms/client';
-	import DatePicker2 from '$lib/formComponents/DatePicker2.svelte';
+	import DatePicker from '$lib/formComponents/DatePicker.svelte';
 	import ComboboxComp from '$lib/formComponents/ComboboxComp.svelte';
 	import MonthYear from '$lib/formComponents/MonthYear.svelte';
 	import FileUpload from '$lib/formComponents/FileUpload.svelte';
@@ -96,10 +96,6 @@
 		(($form.payPeriodStart = value.start.toString()), ($form.payPeriodEnd = value.end.toString()));
 	});
 
-	function formatDate(input: DateValue | string | null | undefined) {
-		if (!input || String(input).includes('Pick')) return 'Pick a date';
-	}
-
 	let contentRef = $state<HTMLElement | null>(null);
 	let open = $state(false);
 
@@ -169,7 +165,7 @@
 {#snippet date(name, title)}
 	<Label for={name} class="capitalize">{title}</Label>
 
-	<DatePicker2 bind:data={$form[name]} oldDays={true} />
+	<DatePicker bind:data={$form[name]} oldDays={true} />
 	<input type="hidden" {name} bind:value={$form[name]} />
 	{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
 {/snippet}

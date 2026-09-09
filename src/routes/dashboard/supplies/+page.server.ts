@@ -2,7 +2,6 @@ import { db } from '$lib/server/db';
 import { supplies, supplyTypes } from '$lib/server/db/schema';
 import { and, asc, eq, isNull, like, or } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
-import { stockBySupply, stockFor } from '$lib/server/supplyStock';
 import {
 	parseTableQuery,
 	buildWhere,
@@ -69,42 +68,32 @@ export const load: PageServerLoad = async ({ url }) => {
 		// Pagination needs a stable order or page 2 is undefined.
 		.orderBy(asc(supplies.name), asc(supplies.id));
 
-	// The company owns its stock whether it is in the store or at a site, so the
-	// list shows all four figures. Reserved and leased-out are summed from the
-	// lease rows rather than cached on `supplies` — see `supplyStock.ts`.
-	const stock = await stockBySupply(supplyList.map((row) => row.id));
-
 	const rows = supplyList.map((row) => {
-		const figures = stockFor(row.id, row.quantity, stock);
-
-		/**
-		 * Reorder warns on what is actually claimable, not the shelf count:
-		 * stock already promised to an approved lease cannot fill a new one.
-		 */
-		const belowReorder = row.reorderLevel != null && figures.available <= Number(row.reorderLevel);
+		// `supplies.quantity` is the whole story now. It used to be one of four figures, the
+		// other three derived from lease rows — those tables went with the prune.
+		const onHand = Number(row.quantity ?? 0);
+		const belowReorder = row.reorderLevel != null && onHand <= Number(row.reorderLevel);
 
 		return {
 			...row,
-			...figures,
+			onHand,
 			kind: row.returnable ? 'Returnable' : 'Consumable',
 			unitOfMeasure: row.unitOfMeasure ?? UNSPECIFIED_UNIT,
 			belowReorder,
-			stockStatus:
-				figures.available === 0 ? 'nothing-free' : belowReorder ? 'at-reorder' : 'in-stock',
-			placement: figures.leasedOut > 0 ? 'at-sites' : 'in-store'
+			stockStatus: onHand === 0 ? 'nothing-free' : belowReorder ? 'at-reorder' : 'in-stock'
 		};
 	});
 
 	/**
-	 * The last two filters read columns that only exist after the stock figures
-	 * are worked out in JS, so they narrow the rows here rather than in the
-	 * `WHERE`. `paginate` then slices what is left, keeping the shape a
+	 * `stockStatus` is worked out in JS from the reorder level, so it narrows the rows here
+	 * rather than in the `WHERE`. `paginate` then slices what is left, keeping the shape a
 	 * SQL-paginated page returns.
+	 *
+	 * There was a `placement` filter beside it — in-store versus out at a site — which only
+	 * meant anything while supplies could be leased.
 	 */
 	const narrowed = rows.filter(
-		(row) =>
-			(!query.filters.stockStatus || row.stockStatus === query.filters.stockStatus) &&
-			(!query.filters.placement || row.placement === query.filters.placement)
+		(row) => !query.filters.stockStatus || row.stockStatus === query.filters.stockStatus
 	);
 
 	const { rows: paged, total } = paginate(narrowed, query);

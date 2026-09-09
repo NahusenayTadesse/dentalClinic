@@ -1,9 +1,15 @@
+import type { ColumnDef } from '@tanstack/table-core';
+import type { PageData } from './$types';
+
+/** One row of the table this file describes, taken from the load so the two cannot drift. */
+type RowData = NonNullable<PageData['allTransactions']>[number];
+
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import { formatEthiopianDate } from '$lib/global.svelte';
 
-export const columns = [
+export const columns: ColumnDef<RowData>[] = [
 	{
 		accessorKey: 'index',
 		header: '#',
@@ -17,7 +23,6 @@ export const columns = [
 				name: 'Paid At',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: ({ row }) => {
 			return renderComponent(DataTableLinks, {
 				id: row.original.id,
@@ -33,9 +38,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Expense Type',
 				onclick: column.getToggleSortingHandler()
-			}),
-
-		sortable: true
+			})
 	},
 
 	{
@@ -44,9 +47,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Amount',
 				onclick: column.getToggleSortingHandler()
-			}),
-
-		sortable: true
+			})
 	},
 
 	{
@@ -55,9 +56,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Payment Method',
 				onclick: column.getToggleSortingHandler()
-			}),
-
-		sortable: true
+			})
 	},
 
 	{
@@ -68,7 +67,6 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 
-		sortable: true,
 		cell: ({ row }) => {
 			return renderComponent(DataTableLinks, {
 				id: row.original.recievedById,
@@ -114,7 +112,6 @@ export const columns = [
 	{
 		accessorKey: 'recieptLink',
 		header: 'Reciept',
-		sortable: true,
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {

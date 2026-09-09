@@ -4,13 +4,7 @@ import { fail } from '@sveltejs/kit';
 
 import { add } from './schema';
 import { db } from '$lib/server/db';
-import {
-	salaries,
-	employee,
-	staffContacts,
-	address,
-	officeWorkerCommission
-} from '$lib/server/db/schema/';
+import { salaries, employee, staffContacts, address } from '$lib/server/db/schema/';
 import { asRequested } from '$lib/server/approvals';
 import type { Actions } from './$types';
 import {
@@ -208,7 +202,7 @@ export const actions: Actions = {
 
 			// Insert salary
 			await tx.insert(salaries).values({
-					...asRequested(locals.user?.id),
+				...asRequested(locals.user?.id),
 				amount: salary,
 				positionAllowance,
 				transportAllowance,
@@ -231,14 +225,6 @@ export const actions: Actions = {
 				staffId: staffMember.id,
 				createdBy: locals.user?.id
 			});
-
-			if (officeCommission) {
-				await tx.insert(officeWorkerCommission).values({
-					staffId: staffMember.id,
-					percentage,
-					createdBy: locals.user?.id
-				});
-			}
 
 			delete form.data.govtId;
 			delete form.data.photo;

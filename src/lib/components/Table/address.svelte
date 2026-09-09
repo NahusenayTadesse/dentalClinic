@@ -16,18 +16,18 @@
 		subcity?: string | null;
 		street?: string | null;
 		kebele?: string | null;
-		buildingNumber?: string | null;
-		floor?: string | null;
-		houseNumber?: string | null;
+		buildingNumber?: string | number | null;
+		floor?: string | number | null;
+		houseNumber?: string | number | null;
 	};
 
 	interface Props {
 		subcity?: string | null;
 		street?: string | null;
 		kebele?: string | null;
-		buildingNumber?: string | null;
-		floor?: string | null;
-		houseNumber?: string | null;
+		buildingNumber?: string | number | null;
+		floor?: string | number | null;
+		houseNumber?: string | number | null;
 	}
 
 	const { subcity, street, kebele, buildingNumber, floor, houseNumber }: Props = $props();

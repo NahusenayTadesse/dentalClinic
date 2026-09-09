@@ -5,7 +5,7 @@
 
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import DatePicker2 from '$lib/formComponents/DatePicker2.svelte';
+	import DatePicker from '$lib/formComponents/DatePicker.svelte';
 
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Plus } from '@lucide/svelte';
@@ -87,7 +87,7 @@
 {#snippet date(name, title)}
 	<Label for={name} class="capitalize">{title}</Label>
 
-	<DatePicker2 bind:data={$form[name]} oldDays={true} />
+	<DatePicker bind:data={$form[name]} oldDays={true} />
 	<input type="hidden" {name} bind:value={$form[name]} />
 	{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
 {/snippet}

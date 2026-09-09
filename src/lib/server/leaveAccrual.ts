@@ -19,6 +19,7 @@ import {
 	employeeTermination,
 	leaveExpiryPolicy
 } from '$lib/server/db/schema';
+import { employeeFullName } from '$lib/server/employeeName';
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 type Db = typeof db | Tx;
@@ -136,7 +137,7 @@ export async function previewAccrual(asOf: Date = new Date()): Promise<{
 	const staff = await db
 		.select({
 			id: employee.id,
-			name: sql<string>`TRIM(CONCAT(COALESCE(${employee.name}, ''), ' ', COALESCE(${employee.fatherName}, '')))`,
+			name: employeeFullName,
 			hireDate: employee.hireDate
 		})
 		.from(employee)
@@ -223,7 +224,7 @@ export async function previewExpiry(asOf: Date = new Date()): Promise<PlannedExp
 		.select({
 			grantId: employeeLeaveGrant.id,
 			staffId: employeeLeaveGrant.staffId,
-			name: sql<string>`TRIM(CONCAT(COALESCE(${employee.name}, ''), ' ', COALESCE(${employee.fatherName}, '')))`,
+			name: employeeFullName,
 			serviceYear: employeeLeaveGrant.serviceYear,
 			grantDate: employeeLeaveGrant.grantDate,
 			expiryDate: employeeLeaveGrant.expiryDate,

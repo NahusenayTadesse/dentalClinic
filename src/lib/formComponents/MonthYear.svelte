@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { Popover, PopoverContent, PopoverTrigger } from '$lib/components/ui/popover';
-	import {
-
-		getEthiopianYearInt
-	} from '$lib/global.svelte';
+	import { getEthiopianYearInt } from '$lib/global.svelte';
 	import { ChevronLeftIcon, ChevronRightIcon } from '@lucide/svelte';
 
 	let { value = $bindable('') } = $props();

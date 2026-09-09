@@ -25,11 +25,7 @@
 	 */
 	let singleTable = $derived([
 		{ name: 'Name', value: data.supply?.name },
-		{ name: 'In Store', value: data.stock?.onHand },
-		{ name: 'Free to Lease', value: data.stock?.available },
-		{ name: 'Reserved for Approved Leases', value: data.stock?.reserved },
-		{ name: 'Out at Sites', value: data.stock?.leasedOut },
-		{ name: 'Total Owned', value: data.stock?.totalOwned },
+		{ name: 'In Store', value: data.supply?.quantity },
 		{ name: 'Kind', value: data.supply?.returnable ? 'Returnable' : 'Consumable' },
 		{ name: 'Unit of Measurement', value: data.supply?.unitOfMeasure },
 		{ name: 'Product Description', value: data.supply?.description },
@@ -81,7 +77,6 @@
 	import { getCurrentMonthRange } from '$lib/global.svelte.js';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import Damaged from '$lib/forms/Damaged.svelte';
-	import { leaseColumns } from './leaseColumns';
 	import { USER_PAGE } from '$lib/tableCells';
 
 	let edit = $state(false);
@@ -220,10 +215,3 @@
 </SingleView>
 
 <DataTable data={data?.suppliers} {columns} fileName="{data?.supply?.name} Suppliers List" />
-
-{#if data?.leasedTo?.length}
-	<div class="mt-8 w-full">
-		<h3 class="mb-2 text-lg">Leased to Sites</h3>
-		<DataTable data={data.leasedTo} columns={leaseColumns} fileName="{data?.supply?.name} Leases" />
-	</div>
-{/if}

@@ -105,7 +105,6 @@ function build(columns: Column[]) {
 					name: label,
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: cell(kind, link)
 		}))
 	];
@@ -266,16 +265,6 @@ const DEFINITIONS: Record<SectionKey, Column[]> = {
 		['reason', 'Reason', 'long']
 	],
 
-	commissions: [
-		['date', 'Date', 'date'],
-		['employee', 'Employee'],
-		['department', 'Department'],
-		['month', 'Month'],
-		['year', 'Year'],
-		['amount', 'Amount', 'money'],
-		['reason', 'Reason', 'long']
-	],
-
 	deductions: [
 		['date', 'Date', 'date'],
 		['employee', 'Employee'],
@@ -399,72 +388,6 @@ const DEFINITIONS: Record<SectionKey, Column[]> = {
 		['paymentStatus', 'Status', 'status']
 	],
 
-	'site-payments': [
-		['date', 'Date', 'date'],
-		['site', 'Site', 'link', SITE_LINK],
-		['customer', 'Customer'],
-		['month', 'Month'],
-		['year', 'Year'],
-		['invoiceNumber', 'Invoice'],
-		['fsNumber', 'FS No'],
-		['request', 'Requested', 'money'],
-		['payment', 'Paid', 'money'],
-		['beforeVat', 'Before VAT', 'money'],
-		['vatRate', 'VAT %', 'number'],
-		['vat', 'VAT', 'money'],
-		['withhold', 'Withheld', 'money'],
-		['penalty', 'Penalty', 'money'],
-		['status', 'Status', 'status'],
-		['approvedBy', 'Approved By']
-	],
-
-	'payment-requests': [
-		['date', 'Requested', 'date'],
-		['site', 'Site'],
-		['invoiceNumber', 'Invoice'],
-		['month', 'Month'],
-		['year', 'Year'],
-		['amount', 'Amount', 'money'],
-		['vat', 'VAT %', 'number'],
-		['withholding', 'Withholding %', 'number'],
-		['penalty', 'Penalty', 'money'],
-		['status', 'Status', 'status'],
-		['rejectedReason', 'Rejection Reason', 'long']
-	],
-
-	contracts: [
-		['site', 'Site'],
-		['customer', 'Customer'],
-		['service', 'Service'],
-		['monthlyAmount', 'Monthly Value', 'money'],
-		['contractYear', 'Contract Year'],
-		['contractDate', 'Signed', 'date'],
-		['startDate', 'From', 'date'],
-		['endDate', 'To', 'date'],
-		['terminated', 'Terminated', 'status'],
-		['terminationDate', 'Terminated On', 'date'],
-		['terminationReason', 'Reason', 'long']
-	],
-
-	renewals: [
-		['renewalDate', 'Renewed', 'date'],
-		['site', 'Site'],
-		['customer', 'Customer'],
-		['amount', 'Renewal Value', 'money'],
-		['startDate', 'From', 'date'],
-		['endDate', 'To', 'date']
-	],
-
-	'site-penalties': [
-		['date', 'Date', 'date'],
-		['site', 'Site'],
-		['customer', 'Customer'],
-		['month', 'Month'],
-		['year', 'Year'],
-		['amount', 'Amount', 'money'],
-		['reason', 'Reason', 'long']
-	],
-
 	customers: [
 		['customer', 'Customer'],
 		['status', 'Status', 'status'],
@@ -480,9 +403,7 @@ const DEFINITIONS: Record<SectionKey, Column[]> = {
 		['customer', 'Customer'],
 		['phone', 'Phone'],
 		['startDate', 'Started', 'date'],
-		['isActive', 'Status', 'status'],
-		['contracts', 'Contracts', 'number'],
-		['monthlyValue', 'Monthly Value', 'money']
+		['isActive', 'Status', 'status']
 	],
 
 	'audit-log': [

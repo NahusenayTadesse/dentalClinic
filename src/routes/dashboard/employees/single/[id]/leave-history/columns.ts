@@ -1,3 +1,9 @@
+import type { ColumnDef } from '@tanstack/table-core';
+import type { PageData } from './$types';
+
+/** One row of the table this file describes, taken from the load so the two cannot drift. */
+type RowData = NonNullable<PageData['salaryHistory']>[number];
+
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 // Assuming a new actions component
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
@@ -7,7 +13,7 @@ import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 // from the staff table to display them here!
 // e.g., staffName: staff.name, staffPosition: staff.category
 
-export const columns = [
+export const columns: ColumnDef<RowData>[] = [
 	// 1. Row Index
 	{
 		accessorKey: 'index',
@@ -25,7 +31,6 @@ export const columns = [
 				name: 'Request Date',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => {
 			return formatEthiopianDate(info.getValue());
 		}
@@ -40,7 +45,7 @@ export const columns = [
 			}),
 		// Show 'N/A' if the payroll entry is null
 		cell: (info) => formatEthiopianDate(info.getValue()) || 'Leave Not Entered',
-		sortable: false // Usually not sortable
+		enableSorting: false // Usually not sortable
 	},
 
 	{
@@ -52,7 +57,7 @@ export const columns = [
 			}),
 		// Show 'N/A' if the payroll entry is null
 		cell: (info) => formatEthiopianDate(info.getValue()) || 'Leave Not Entered',
-		sortable: false // Usually not sortable
+		enableSorting: false // Usually not sortable
 	},
 
 	{
@@ -64,7 +69,7 @@ export const columns = [
 			}),
 		// Show 'N/A' if the payroll entry is null
 		cell: (info) => info.getValue() + ' days',
-		sortable: false // Usually not sortable
+		enableSorting: false // Usually not sortable
 	},
 
 	{
@@ -74,7 +79,6 @@ export const columns = [
 				name: 'Leave Type',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => info.getValue() ?? 'Not Set'
 	},
 
@@ -85,7 +89,6 @@ export const columns = [
 				name: 'Reason',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => {
 			return info.getValue();
 		}
@@ -98,7 +101,6 @@ export const columns = [
 				name: 'Leave Letter',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true,
 		cell: (info) => {
 			return renderComponent(DataTableLinks, {
 				id: info.getValue(),

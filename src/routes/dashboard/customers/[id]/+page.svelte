@@ -115,14 +115,6 @@
 			{/key}
 		</Section>
 
-		<!-- <Section title="Contracts" class="lg:col-span-2" IconComp={Phone} style="identityIcon">
-			<Contacts
-				data={data?.contracts}
-				form={data?.editContractForm}
-				addForm={data?.addContractForm}
-			/>
-		</Section> -->
-
 		<Section title="System Information" IconComp={Settings} style="systemIcon">
 			<SingleTable singleTable={systemInformation} />
 		</Section>
@@ -132,7 +124,7 @@
 				<DeleteEntity
 					entity="Customer"
 					name={data?.customer?.name}
-					consequence="Its sites and their contracts are removed with it."
+					consequence="Its sites are removed with it."
 					canDelete={data?.isSuperAdmin}
 				/>
 			</div>

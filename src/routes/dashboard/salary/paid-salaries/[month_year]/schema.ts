@@ -21,10 +21,7 @@ export const adjustableFields = [
 
 export const adjust = z
 	.object({
-		id: z
-			.number('Something went wrong')
-			.array()
-			.nonempty('You need to select at least one record'),
+		id: z.number('Something went wrong').array().nonempty('You need to select at least one record'),
 		adjustmentType: z.enum(['bonus', 'deduction'], 'Adjustment type is required'),
 		amount: z.coerce.number().min(0).default(0),
 		basicSalary: z.coerce.number().min(0).default(0),

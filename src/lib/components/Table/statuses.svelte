@@ -4,7 +4,8 @@
 
 	/* ---------- public prop ---------- */
 	interface Props {
-		status: string;
+		/** Nullable: most status columns are, and an unknown value already falls back to grey. */
+		status: string | null | undefined;
 	}
 	let { status }: Props = $props();
 

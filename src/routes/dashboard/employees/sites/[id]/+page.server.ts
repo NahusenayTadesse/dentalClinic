@@ -18,6 +18,7 @@ import { edit } from './schema';
 import type { PageServerLoad, Actions } from '../$types';
 import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
+import { employeeFullName } from '$lib/server/employeeName';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const { id } = params;
@@ -26,7 +27,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		.select({
 			id: employee.id,
 			// Handling potential nulls for both name parts
-			name: sql<string>`TRIM(CONCAT(COALESCE(${employee.name}, ''), ' ', COALESCE(${employee.fatherName}, '')))`,
+			name: employeeFullName,
 			department: department.name,
 			position: position.name,
 			site: site.name,

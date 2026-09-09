@@ -19,9 +19,9 @@
 >
 	<CalendarPrimitive.YearSelect
 		bind:ref
-		class="absolute inset-0 overflow-auto bg-background text-foreground
+		class="absolute inset-0 [scrollbar-width:none] overflow-auto bg-background
+            text-foreground
             opacity-0
-            [scrollbar-width:none]
                            [&::-webkit-scrollbar]:hidden  "
 		{...restProps}
 	>

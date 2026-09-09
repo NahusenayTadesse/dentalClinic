@@ -8,7 +8,7 @@ export const columns = [
 		accessorKey: 'index',
 		header: '#',
 		cell: (info) => info.row.index + 1,
-		sortable: false
+		enableSorting: false
 	},
 	{
 		accessorKey: 'type',
@@ -16,8 +16,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Contract Type',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 
 	{
@@ -26,8 +25,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Service',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 	{
 		accessorKey: 'year',
@@ -35,8 +33,7 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Email',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 
 	{
@@ -45,14 +42,12 @@ export const columns = [
 			renderComponent(DataTableSort, {
 				name: 'Added By',
 				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true
+			})
 	},
 
 	{
 		accessorKey: 'status',
 		header: 'Status',
-		sortable: true,
 		cell: ({ row }) => {
 			return renderComponent(Statuses, {
 				status: row.original.status ? 'Active' : 'Inactive'

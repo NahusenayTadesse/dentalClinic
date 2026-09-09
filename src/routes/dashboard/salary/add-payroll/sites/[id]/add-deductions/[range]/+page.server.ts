@@ -10,6 +10,7 @@ import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 
 import { getMonthNumber, ethiopianRange, currentMonthFilter } from '$lib/global.svelte';
+import { employeeLegalName } from '$lib/server/employeeName';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const { range } = params;
@@ -34,11 +35,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	const employees = await db
 		.select({
 			id: employee.id,
-			name: sql<string>`TRIM(CONCAT(
-      COALESCE(${employee.name}, ''), ' ',
-      COALESCE(${employee.fatherName}, ''), ' ',
-      COALESCE(${employee.grandFatherName}, '')
-    ))`,
+			name: employeeLegalName,
 			department: department.name,
 			position: position.name,
 			site: site.name

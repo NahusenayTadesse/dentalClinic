@@ -23,9 +23,7 @@ describe('SingleTable.svelte', () => {
 			singleTable: [{ name: 'Phone', value: '0912345678' }]
 		});
 
-		await expect
-			.element(page.getByRole('button', { name: '0912345678' }))
-			.toBeInTheDocument();
+		await expect.element(page.getByRole('button', { name: '0912345678' })).toBeInTheDocument();
 	});
 
 	it('renders a status badge for a "Status" row', async () => {

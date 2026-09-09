@@ -51,7 +51,6 @@
 					name: 'Field',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {
@@ -74,8 +73,7 @@
 				renderComponent(DataTableSort, {
 					name: 'Educational Level',
 					onclick: column.getToggleSortingHandler()
-				}),
-			sortable: true
+				})
 		},
 
 		{
@@ -84,8 +82,7 @@
 				renderComponent(DataTableSort, {
 					name: 'School Name',
 					onclick: column.getToggleSortingHandler()
-				}),
-			sortable: true
+				})
 		},
 		{
 			accessorKey: 'graduationDate',
@@ -105,7 +102,6 @@
 					name: 'Certificate',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: ({ row }) => {
 				return row.original?.certificate
 					? renderComponent(DataTableLinks, {
@@ -121,7 +117,6 @@
 		{
 			accessorKey: 'addedBy',
 			header: 'Added By',
-			sortable: true,
 			cell: ({ row }) => {
 				return renderComponent(DataTableLinks, {
 					id: row.original.addedById,
@@ -136,7 +131,6 @@
 		{
 			accessorKey: '',
 			header: 'Edit',
-			sortable: true,
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {

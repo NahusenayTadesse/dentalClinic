@@ -21,7 +21,6 @@ import {
 	staffContacts,
 	staffAccounts,
 	paymentMethods,
-	officeWorkerCommission,
 	position
 } from '$lib/server/db/schema';
 import { eq, and, desc, sql } from 'drizzle-orm';
@@ -109,7 +108,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		throw error(404, 'Staff member not found');
 	}
 
-	let employeeAddress = await db
+	const employeeAddress = await db
 		.select({
 			id: address.id,
 			street: address.street,
@@ -127,7 +126,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.where(eq(address.id, Number(staffMember.address)))
 		.then((rows) => rows[0]);
 
-	let employeeFamily = await db
+	const employeeFamily = await db
 		.select({
 			id: staffFamilies.id,
 			name: staffFamilies.name,
@@ -146,7 +145,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.where(and(eq(staffFamilies.staffId, Number(id)), notDeleted(staffFamilies)))
 		.orderBy(desc(staffFamilies.emergencyContact));
 
-	let employeeQualification = await db
+	const employeeQualification = await db
 		.select({
 			id: qualification.id,
 			field: qualification.field,
@@ -166,7 +165,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		)
 		.where(and(eq(qualification.staffId, Number(id)), notDeleted(qualification)));
 
-	let employeeWorkExperience = await db
+	const employeeWorkExperience = await db
 		.select({
 			id: workExperience.id,
 			companyName: workExperience.companyName,
@@ -183,7 +182,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.where(and(eq(workExperience.staffId, Number(id)), notDeleted(workExperience)))
 		.orderBy(desc(workExperience.endDate));
 
-	let employeeGarantor = await db
+	const employeeGarantor = await db
 		.select({
 			id: eg.id,
 			name: eg.name,
@@ -219,7 +218,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.where(and(eq(eg.staffId, Number(id)), notDeleted(eg)))
 		.then((rows) => rows[0]);
 
-	let schedule = await db
+	const schedule = await db
 		.select({
 			id: staffSchedule.id,
 			day: staffSchedule.weekDay,
@@ -233,7 +232,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.leftJoin(user, eq(staffSchedule.createdBy, user.id))
 		.where(and(eq(staffSchedule.staffId, Number(id)), notDeleted(staffSchedule)));
 
-	let contacts = await db
+	const contacts = await db
 		.select({
 			id: staffContacts.id,
 			contactType: staffContacts.contactType,
@@ -246,7 +245,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.leftJoin(user, eq(staffContacts.createdBy, user.id))
 		.where(and(eq(staffContacts.staffId, Number(id)), notDeleted(staffContacts)));
 
-	let accounts = await db
+	const accounts = await db
 		.select({
 			id: staffAccounts.id,
 			paymentMethod: paymentMethods.name,
@@ -262,22 +261,6 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.where(and(eq(staffAccounts.staffId, Number(id)), notDeleted(staffAccounts)))
 		.orderBy(desc(staffAccounts.isActive));
 
-	const creator = alias(user, 'creator');
-	const updater = alias(user, 'updater');
-	const officeCommission = await db
-		.select({
-			id: officeWorkerCommission.id,
-			percentage: officeWorkerCommission.percentage,
-			status: officeWorkerCommission.isActive,
-			createdBy: creator.name,
-			updatedBy: updater.name
-		})
-		.from(officeWorkerCommission)
-		.leftJoin(creator, eq(officeWorkerCommission.createdBy, creator.id))
-		.leftJoin(updater, eq(officeWorkerCommission.updatedBy, updater.id))
-		.where(and(eq(officeWorkerCommission.staffId, Number(id)), notDeleted(officeWorkerCommission)))
-		.then((rows) => rows[0]);
-
 	// Pro-rata view of the year in progress; grants themselves still land whole on the anniversary.
 	const leaveProgress = await earnedToDate(Number(id));
 
@@ -292,7 +275,6 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		contacts,
 		schedule,
 		accounts,
-		form,
-		officeCommission
+		form
 	};
 };

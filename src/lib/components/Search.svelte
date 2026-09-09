@@ -23,21 +23,6 @@
 		{ label: 'Approved Leaves', path: '/dashboard/employees/leaves/approved' },
 		{ label: 'Cancelled Leaves', path: '/dashboard/employees/leaves/cancelled' },
 
-		{ label: 'Active Contracts', path: '/dashboard/contracts' },
-		{ label: 'Inactive Contracts', path: '/dashboard/contracts/inactive' },
-		{ label: 'Terminated Contracts', path: '/dashboard/contracts/terminated' },
-		{ label: 'Add New Contract', path: '/dashboard/requests/add-contract' },
-
-		{ label: 'Pending Requests', path: '/dashboard/requests' },
-		{ label: 'Approved Requests', path: '/dashboard/requests/approved' },
-		{ label: 'Cancelled Requests', path: '/dashboard/requests/cancelled' },
-		{ label: 'Add New Request', path: '/dashboard/requests/add-request' },
-
-		{ label: 'Pending Payments', path: '/dashboard/payments' },
-		{ label: 'Approved Payments', path: '/dashboard/payments/approved' },
-		{ label: 'Cancelled Payments', path: '/dashboard/payments/cancelled' },
-		{ label: 'Add New Payments', path: '/dashboard/payments/add-payment' },
-
 		// Inventory & Services
 		{ label: 'Services', path: '/dashboard/services' },
 		{ label: 'Supplies', path: '/dashboard/supplies' },

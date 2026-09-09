@@ -6,7 +6,6 @@ import { db } from '$lib/server/db';
 import {
 	employee,
 	employeeTermination,
-	officeWorkerCommission,
 	employmentStatuses,
 	address,
 	staffFamilies,
@@ -410,14 +409,7 @@ export const actions: Actions = {
 			// Stay on the same page and set a flash message
 			return message(form, { type: 'error', text: `Error: check the form` });
 		}
-		const {
-			leavesLeft,
-			educationalLevel,
-			employmentStatus,
-			hireDate,
-			officeCommission,
-			percentage
-		} = form.data;
+		const { leavesLeft, educationalLevel, employmentStatus, hireDate } = form.data;
 
 		try {
 			if (!id) {
@@ -438,14 +430,6 @@ export const actions: Actions = {
 						updatedBy: locals?.user?.id
 					})
 					.where(eq(employee.id, Number(id)));
-
-				if (officeCommission) {
-					await tx.insert(officeWorkerCommission).values({
-						staffId: Number(id),
-						percentage,
-						createdBy: locals.user?.id
-					});
-				}
 			});
 			return message(form, { type: 'success', text: 'Employment Details Updated Successfully!' });
 		} catch (err) {
@@ -1209,16 +1193,7 @@ export const actions: Actions = {
 		const { percentage, status } = form.data;
 
 		try {
-			await db.transaction(async (tx) => {
-				await tx
-					.update(officeWorkerCommission)
-					.set({
-						percentage: String(percentage),
-						isActive: status,
-						updatedBy: locals?.user?.id
-					})
-					.where(eq(officeWorkerCommission.staffId, Number(id)));
-			});
+			await db.transaction(async (tx) => {});
 			return message(form, {
 				type: 'success',
 				text: 'Commission Details Updated Successfully!'

@@ -11,7 +11,7 @@
 			accessorKey: 'index',
 			header: '#',
 			cell: (info) => info.row.index + 1,
-			sortable: false
+			enableSorting: false
 		},
 		{
 			accessorKey: 'name',
@@ -20,7 +20,6 @@
 					name: 'Name',
 					onclick: column.getToggleSortingHandler()
 				}),
-			sortable: true,
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {
@@ -36,8 +35,7 @@
 
 		{
 			accessorKey: 'description',
-			header: 'Description',
-			sortable: true,
+			header: 'Description'
 			// cell: ({ row }) => {
 			// 	return renderComponent(BigText, {
 			// 		text: row.original.description
@@ -48,7 +46,6 @@
 		{
 			accessorKey: '',
 			header: 'Edit',
-			sortable: true,
 			cell: ({ row }) => {
 				// You can pass whatever you need from `row.original` to the component
 				return renderComponent(Edit, {

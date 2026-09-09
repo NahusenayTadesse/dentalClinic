@@ -139,20 +139,6 @@ export const employee = mysqlTable(
 	]
 );
 
-export const officeWorkerCommission = mysqlTable(
-	'office_worker_commission',
-	{
-		id: int('id').primaryKey().autoincrement(),
-		staffId: int('staff_id')
-			.notNull()
-			.references(() => employee.id)
-			.unique(),
-		percentage: decimal('amount', { precision: 10, scale: 2 }).notNull(),
-		...secureFields
-	},
-	(table) => [index('percentage_idx').on(table.percentage)]
-);
-
 export const employeeGuarantor = mysqlTable('employee_guarantor', {
 	id: int('id').autoincrement().primaryKey(),
 	staffId: int('staff_id')
@@ -480,40 +466,6 @@ export const overTimeType = mysqlTable('over_time_type', {
 	maxhours: int('max_hours'),
 	...secureFields
 });
-
-export const commission = mysqlTable(
-	'commissions_services',
-	{
-		id: int('id').primaryKey().autoincrement(),
-
-		staffId: int('staff_id').references(() => employee.id, { onDelete: 'set null' }),
-		amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
-		month: mysqlEnum('month', [
-			'መስከረም', // Meskerem
-			'ጥቅምት', // Tikimt
-			'ህዳር', // Hidar
-			'ታህሳስ', // Tahsas
-			'ጥር', // Tir
-			'የካቲት', // Yekatit
-			'መጋቢት', // Megabit
-			'ሚያዝያ', // Miyazya
-			'ግንቦት', // Ginbot
-			'ሰኔ', // Sene
-			'ሐምሌ', // Hamle
-			'ነሐሴ' // Nehasse
-		]).notNull(),
-		year: year('year').notNull(),
-		reason: varchar('reason', { length: 255 }),
-		commissionDate: date('commission_date').notNull(),
-		...secureFields
-	},
-	(table) => [
-		index('staff_id_idx').on(table.staffId),
-		index('amount_idx').on(table.amount),
-		index('period_idx').on(table.year, table.month),
-		index('commission_date_idx').on(table.commissionDate)
-	]
-);
 
 export const staffServices = mysqlTable('staff_services', {
 	id: int('id').autoincrement().primaryKey(),

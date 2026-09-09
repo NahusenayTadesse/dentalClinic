@@ -9,16 +9,15 @@ import { and, eq, inArray, isNull, ne, sql, type AnyColumn, type SQL } from 'dri
 import { db } from '$lib/server/db';
 import { notDeleted } from '$lib/server/softDelete';
 import {
-	customerContracts,
 	customers,
 	employee,
 	expenses,
 	payrollAdjustments,
 	payrollRuns,
 	salaries,
-	site,
-	siteContracts
+	site
 } from '$lib/server/db/schema';
+import { employeeFullName } from '$lib/server/employeeName';
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 type Db = typeof db | Tx;
@@ -31,9 +30,7 @@ export type ApprovableTable =
 	| typeof payrollRuns
 	| typeof payrollAdjustments
 	| typeof customers
-	| typeof customerContracts
-	| typeof site
-	| typeof siteContracts;
+	| typeof site;
 
 /**
  * A column in the queue that names another record, and where that record lives.
@@ -100,7 +97,7 @@ export const APPROVAL_ENTITIES: ApprovalEntity[] = [
 		table: employee,
 		listHref: '/dashboard/employees',
 		summary: () => ({
-			name: sql<string>`TRIM(CONCAT(COALESCE(${employee.name}, ''), ' ', COALESCE(${employee.fatherName}, '')))`,
+			name: employeeFullName,
 			idNo: employee.idNo,
 			hireDate: employee.hireDate
 		}),
@@ -212,25 +209,6 @@ export const APPROVAL_ENTITIES: ApprovalEntity[] = [
 		links: { name: { idKey: 'id', href: HREF.customer } }
 	},
 	{
-		key: 'customer-contracts',
-		label: 'Customer contracts',
-		singular: 'customer contract',
-		table: customerContracts,
-		summary: () => ({
-			customer: sql<string>`(SELECT c.name FROM customers c WHERE c.id = ${customerContracts.customerId})`,
-			customerId: customerContracts.customerId,
-			signingOfficer: employeeName(customerContracts.signingOfficer),
-			signingOfficerId: customerContracts.signingOfficer,
-			contractAmount: customerContracts.contractAmount,
-			contractType: customerContracts.contractType,
-			contractDate: customerContracts.contractDate
-		}),
-		links: {
-			customer: { idKey: 'customerId', href: HREF.customer },
-			signingOfficer: { idKey: 'signingOfficerId', href: HREF.employee }
-		}
-	},
-	{
 		key: 'sites',
 		label: 'Sites',
 		singular: 'site',
@@ -245,26 +223,6 @@ export const APPROVAL_ENTITIES: ApprovalEntity[] = [
 		links: {
 			name: { idKey: 'id', href: HREF.site },
 			customer: { idKey: 'customerId', href: HREF.customer }
-		}
-	},
-	{
-		key: 'site-contracts',
-		label: 'Site contracts',
-		singular: 'site contract',
-		table: siteContracts,
-		listHref: '/dashboard/contracts',
-		summary: () => ({
-			site: sql<string>`(SELECT s.name FROM site s WHERE s.id = ${siteContracts.siteId})`,
-			siteId: siteContracts.siteId,
-			signingOfficer: employeeName(siteContracts.signingOfficer),
-			signingOfficerId: siteContracts.signingOfficer,
-			monthlyAmount: siteContracts.monthlyAmount,
-			startDate: siteContracts.startDate,
-			endDate: siteContracts.endDate
-		}),
-		links: {
-			site: { idKey: 'siteId', href: HREF.site },
-			signingOfficer: { idKey: 'signingOfficerId', href: HREF.employee }
 		}
 	}
 ];
