@@ -1,0 +1,180 @@
+// patients.ts - The people the clinic treats.
+import {
+	mysqlTable,
+	mysqlEnum,
+	varchar,
+	int,
+	date,
+	datetime,
+	boolean,
+	text,
+	index
+} from 'drizzle-orm/mysql-core';
+import { relations } from 'drizzle-orm';
+import { secureFields } from './secureFields';
+import { user } from './user';
+import { address } from './locations';
+import { branchRef } from './branches';
+import { customers } from './customers';
+
+/**
+ * A patient.
+ *
+ * Deliberately a new table rather than a rename of `customers`. The two coexist and mean
+ * different things: `customers` is a corporate billing party — an employer or insurer that
+ * settles an account — while a patient is a person who is treated. One patient may be billed
+ * through a customer, many are not billed through one at all, and a customer is never treated.
+ *
+ * Deliberately **not** carrying `approvalFields`, unlike `employee` and `customers`. Registering
+ * a patient is a front-desk act that happens with someone waiting at the window; putting it
+ * behind a maker-checker queue would mean nobody can be treated until a supervisor logs in.
+ * Clinical and financial records about the patient can be approved; the patient's existence
+ * cannot usefully be.
+ *
+ * Non-goals: this table says who someone is, not what was done to them. Appointments, treatment
+ * history, odontogram findings and payments are their own tables and point back here. The two
+ * clinical columns that *are* here — `allergies` and `medicalNotes` — are here because they must
+ * be readable without a join, on the screen a clinician sees before touching anyone.
+ */
+export const patient = mysqlTable(
+	'patient',
+	{
+		id: int('id').primaryKey().autoincrement(),
+
+		/**
+		 * The number the clinic says out loud and writes on the paper chart.
+		 *
+		 * Separate from `id` on purpose: `id` is ours and meaningless to staff, while this is
+		 * assigned by the clinic and may follow a scheme they already use on paper. Most clinics
+		 * here run paper and screen side by side for years, so the number has to survive the
+		 * trip between them. Unique, and nullable only so a walk-in can be registered before the
+		 * number is written.
+		 */
+		fileNo: varchar('file_no', { length: 32 }).unique(),
+
+		/**
+		 * Ethiopian names are given name + father's name + grandfather's name; there is no
+		 * family name, so none of these is a "surname" and they must not be collapsed into one
+		 * column. `grandFatherName` is nullable where `employee`'s is not: an employee fills in a
+		 * form at leisure, a patient is often in pain at the front desk, and refusing to register
+		 * someone over a third name is not a trade this app should make.
+		 */
+		name: varchar('name', { length: 50 }).notNull(),
+		fatherName: varchar('father_name', { length: 50 }).notNull(),
+		grandFatherName: varchar('grand_father_name', { length: 50 }),
+
+		/**
+		 * `sex`, not `gender` as on `employee`. This column exists for clinical reasons — drug
+		 * dosing, radiography and pregnancy questions all key off it — so it records the
+		 * clinical fact rather than how someone identifies.
+		 */
+		sex: mysqlEnum('sex', ['male', 'female']).notNull(),
+
+		/**
+		 * Nullable, with a flag, because a great many adult Ethiopians do not know their exact
+		 * date of birth — the honest answer is an approximate year.
+		 *
+		 * One column plus a flag rather than a second `age` column: age must always be derived
+		 * from one place, or the two drift and nobody knows which to trust. `birthDate` null and
+		 * `birthDateEstimated` false means nobody has asked yet; a date with the flag set means
+		 * the year is roughly right and the day is not. Clinically the difference matters most
+		 * for children, where dosing follows age closely.
+		 */
+		birthDate: date('birth_date'),
+		birthDateEstimated: boolean('birth_date_estimated').notNull().default(false),
+
+		/**
+		 * The main way the clinic reaches a patient, and the field the front desk searches by far
+		 * more often than by name — hence the index. Nullable and not unique on purpose: some
+		 * patients have no phone, and a household or a workplace commonly shares one number
+		 * across several patients.
+		 */
+		phone: varchar('phone', { length: 20 }),
+		altPhone: varchar('alt_phone', { length: 20 }),
+
+		bloodType: mysqlEnum('blood_type', ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
+
+		/**
+		 * Known allergies, in the patient's or the clinician's own words.
+		 *
+		 * Free text rather than a coded list, and the reason is the deployment: this competes
+		 * with a paper chart, and a picker that does not contain what the patient just said gets
+		 * filled in as "other" or skipped. A structured `patient_allergy` table can be added
+		 * later without moving this column, which stays as the at-a-glance line.
+		 *
+		 * **Null does not mean "no allergies."** Null means nobody has asked. `historyTakenAt`
+		 * below is what separates the two, and the difference is the whole point of recording it
+		 * — treating "not asked" as "none" is how someone gets given penicillin.
+		 */
+		allergies: text('allergies'),
+
+		/**
+		 * Conditions that change dental treatment: diabetes, hypertension, cardiac history,
+		 * bleeding disorders, hepatitis, HIV, pregnancy, current medication. Same reasoning as
+		 * `allergies` — one prose field a clinician reads in a glance, not a form to fill.
+		 */
+		medicalNotes: text('medical_notes'),
+
+		/**
+		 * When the medical history above was last taken or reviewed, and by whom.
+		 *
+		 * Set only when someone actually asks the questions. It is what makes an empty
+		 * `allergies` field mean "asked, nothing reported" instead of "unknown", and it is what
+		 * tells a clinician a year later that the history is stale and worth repeating.
+		 *
+		 * `datetime`, not `timestamp` — see CLAUDE.md §9.
+		 */
+		historyTakenAt: datetime('history_taken_at'),
+		historyTakenBy: varchar('history_taken_by', { length: 255 }).references(() => user.id, {
+			onDelete: 'set null'
+		}),
+
+		/**
+		 * Who to call if something goes wrong during treatment.
+		 *
+		 * Inline rather than a `patient_contacts` child table, unlike `customer_contacts`: there
+		 * is exactly one of these, it is needed on every patient screen, and a join for one row
+		 * that is always present is a join that is always paid. If a real need for several
+		 * contacts appears, that is a child table alongside these, not a replacement for them.
+		 */
+		emergencyName: varchar('emergency_name', { length: 100 }),
+		emergencyPhone: varchar('emergency_phone', { length: 20 }),
+		emergencyRelation: varchar('emergency_relation', { length: 50 }),
+
+		address: int('address').references(() => address.id, { onDelete: 'set null' }),
+
+		/** Stored through `server/files.ts`, like every other file. Rarely filled in. */
+		photo: varchar('photo', { length: 255 }),
+
+		/**
+		 * The corporate account that settles this patient's bills, when one does — an employer
+		 * or an insurer. Null is the common case: most patients pay cash at the desk.
+		 *
+		 * `set null` rather than `restrict` or `cascade`: a company ending its arrangement with
+		 * the clinic must not delete its employees' dental records, nor be blocked from being
+		 * removed because they exist.
+		 */
+		customerId: int('customer_id').references(() => customers.id, { onDelete: 'set null' }),
+
+		/**
+		 * The branch this patient is registered at. See `branchRef` — nullable and defaulting to
+		 * the main branch, so a single-branch clinic never sees the field. It records where the
+		 * patient's chart lives, not where they may be treated: a patient registered at one
+		 * branch can be seen at another.
+		 */
+		branchId: branchRef(),
+
+		...secureFields
+	},
+	(table) => [
+		// The three ways the front desk actually looks someone up, in order of how often.
+		index('patient_phone_idx').on(table.phone),
+		index('patient_name_idx').on(table.name, table.fatherName),
+		index('patient_branch_idx').on(table.branchId)
+	]
+);
+
+export const patientRelations = relations(patient, ({ one }) => ({
+	address: one(address, { fields: [patient.address], references: [address.id] }),
+	customer: one(customers, { fields: [patient.customerId], references: [customers.id] })
+}));
