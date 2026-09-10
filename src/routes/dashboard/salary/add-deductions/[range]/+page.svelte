@@ -173,7 +173,7 @@
 		<FilterMenu
 			data={data?.staffList}
 			bind:filteredList
-			filterKeys={['department', 'position', 'site']}
+			filterKeys={['department', 'position', 'branch']}
 		/>
 		<DataTable bind:selected data={filteredList} class="!" {columns} />
 	</div>

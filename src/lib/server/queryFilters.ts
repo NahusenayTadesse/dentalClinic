@@ -10,12 +10,12 @@
  *
  * A load now declares *what* its filters mean and leaves the mechanics here:
  *
- *   const query = parseTableQuery(url, ['siteId', 'departmentId']);
+ *   const query = parseTableQuery(url, ['branchId', 'departmentId']);
  *   const where = buildWhere(query, {
  *     base: [eq(employee.isActive, true), notDeleted(employee)],
  *     search: (term) => like(employee.name, `%${term}%`),
  *     filters: {
- *       siteId: (v) => eq(employee.siteId, Number(v)),
+ *       branchId: (v) => eq(employee.branchId, Number(v)),
  *       departmentId: (v) => eq(employee.departmentId, Number(v))
  *     }
  *   });
@@ -132,7 +132,7 @@ export function pagination(query: TableQuery, total: number | string) {
 
 /**
  * The `currentQuery` half — what the bar reads back to show its own state.
- * Flattened so a page can do `data.currentQuery.siteId` as before.
+ * Flattened so a page can do `data.currentQuery.branchId` as before.
  */
 export function currentQuery<F extends string>(query: TableQuery<F>) {
 	return {

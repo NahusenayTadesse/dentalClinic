@@ -102,7 +102,7 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'**Customers, Sites, Contracts** — who you serve, where, and under what agreement.',
 					'**Requests, Approvals, Rejections, Payments** — the money owed to you, and the checks it passes through.',
 					'**Employees** — people, attendance and leave.',
-					'**Finance** — salaries, overtime, deductions, transactions and the bank.',
+					'**Finance** — salaries, overtime, deductions, transactions and expenses.',
 					'**Supplies** — stock, suppliers and site leases.',
 					'**Reports** — every ledger in the system, filtered and exportable.',
 					'**Admin Panel** — users, roles and all the reference lists the forms choose from.'
@@ -539,7 +539,7 @@ export const HELP_SECTIONS: HelpSection[] = [
 		id: 'finance',
 		title: 'Payroll and finance',
 		blurb:
-			'Paying people, and the money movements around it: overtime, deductions, payroll runs, transactions, expenses and the bank.',
+			'Paying people, and the money movements around it: overtime, deductions, payroll runs, transactions and expenses.',
 		topics: [
 			{
 				id: 'payroll-cycle',
@@ -554,8 +554,8 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'Enter **deductions** for the month (`Finance → All Deductions`).',
 					'Open **All UnPaid Salaries** for the month — or **UnPaid Salaries by Site** if you pay site by site.',
 					'Check the totals panel: gross, tax, pension, allowances, deductions, net.',
-					'Choose the bank account the money leaves from, set the payment date and attach the transfer receipt.',
-					'Press **Run payroll**. The run is created, every payslip written, and the bank transaction recorded — all in one go.',
+					'Choose the payment method, set the payment date and attach the transfer receipt.',
+					'Press **Run payroll**. The run is created, every payslip written, and the transaction recorded — all in one go.',
 					'The run then waits in the **Payroll Runs** approval queue.'
 				],
 				notes: [
@@ -641,33 +641,6 @@ export const HELP_SECTIONS: HelpSection[] = [
 				]
 			},
 			{
-				id: 'bank',
-				title: 'Bank accounts and bank history',
-				summary:
-					"Balances are never typed. Every account's balance is the sum of its signed history rows.",
-				where: 'Menu → **Finance → Bank History**; accounts in **Admin Panel → Bank Amount**',
-				permission: 'bank_history.view for the history; settings.manage for the accounts',
-				steps: [
-					'**Admin Panel → Bank Amount** holds the accounts themselves and their payment methods.',
-					'**Bank History** shows every movement against them, browsable by date range.',
-					'Collections, payroll runs and expenses each write their own row here as they happen.'
-				],
-				notes: [
-					'**The balance is derived, not stored.** Each movement is a signed row — in is positive, out is negative — and the balance is their sum. Never try to "set" a balance to make it match; find the missing movement and record that instead.',
-					'A balance that disagrees with the bank statement means a movement is missing, duplicated or dated wrongly. The history, filtered to the date range, is where you find which.'
-				],
-				keywords: [
-					'bank',
-					'balance',
-					'account',
-					'history',
-					'ledger',
-					'reconcile',
-					'deposit',
-					'withdrawal'
-				]
-			},
-			{
 				id: 'tax-config',
 				title: 'Tax, pension, VAT and withholding settings',
 				summary: 'The rates payroll and billing apply, all set in one place.',
@@ -677,7 +650,7 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'**Tax Types** — the income tax bands payroll applies.',
 					'**Pension** — the employee and employer contribution rates.',
 					'**Vat and Withhold** — the VAT rate and the withholding rates used on collections.',
-					'**Payment Methods** — cash, transfer, cheque, and which bank account each maps to.',
+					'**Payment Methods** — cash, transfer, cheque.',
 					'**Overtime Types** — the overtime categories and their multipliers.'
 				],
 				notes: [
@@ -834,13 +807,13 @@ export const HELP_SECTIONS: HelpSection[] = [
 				title: 'What each report covers',
 				summary: 'Nine pages, grouped by the question you are asking.',
 				steps: [
-					'**Overview** (`/dashboard/reports`) — the company at a glance: payroll, revenue and bank together.',
+					'**Overview** (`/dashboard/reports`) — the company at a glance: payroll and revenue together.',
 					'**People** — headcount, hires, terminations, the workforce as it stands.',
 					'**Payroll** — runs, payslips, adjustments, receipts and salary changes.',
 					'**Compensation** — bonuses, overtime, commissions and deductions.',
 					'**Time & Leave** — attendance, leaves taken and leave granted.',
 					'**Stock** — stock levels, supply adjustments and damaged items.',
-					'**Money** — transactions, expenses, bank history and services rendered.',
+					'**Money** — transactions, expenses and services rendered.',
 					'**Commercial** — site payments, payment requests, contracts, renewals, penalties, customers and sites.',
 					'**System** — the audit log: who did what, and when.'
 				],
@@ -962,7 +935,7 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'**People** — Departments, Positions, Employment Statuses, Educational Levels.',
 					'**Work** — Services and their categories, Supply Types.',
 					'**Leave** — Leave Types, Annual Leave Entitlements, Leave Expiry Policy, Run Leave Accrual.',
-					'**Money** — Payment Methods, Tax Types, Overtime Types, Pension, Vat and Withhold, Bank Amount.'
+					'**Money** — Payment Methods, Tax Types, Overtime Types, Pension, Vat and Withhold.'
 				],
 				notes: [
 					'The places cascade, so add the region before the city and the city before the subcity, or the new value will have nothing to hang from.',
@@ -1100,21 +1073,6 @@ export const HELP_SECTIONS: HelpSection[] = [
 				keywords: ['vat', 'total', 'sum', 'rate', 'percentage', 'wrong', 'tax']
 			},
 			{
-				id: 'q-bank-mismatch',
-				title: 'A bank balance does not match the statement',
-				summary:
-					'The balance is the sum of the movements, so a mismatch means a movement is missing or wrong.',
-				steps: [
-					'Open **Bank History** and filter to the period in dispute.',
-					'Compare movement by movement against the statement.',
-					'Record the missing movement, or correct the one that is dated wrongly.'
-				],
-				notes: [
-					'Never try to force a balance to match. There is nothing to type — the number is calculated, and forcing it would only hide the movement you have not found yet.'
-				],
-				keywords: ['bank', 'balance', 'mismatch', 'reconcile', 'statement', 'wrong', 'ledger']
-			},
-			{
 				id: 'q-export',
 				title: 'How do I get this into Excel, or onto paper?',
 				summary: 'The download button above every table does both.',
@@ -1233,45 +1191,22 @@ export const ROUTE_MAP: RouteEntry[] = [
 		path: '/dashboard/customers',
 		title: 'All customers',
 		purpose: 'Every approved customer, searchable and exportable.',
-		permission: 'customers_sites.record',
+		permission: 'customers.record',
 		group: 'Customers'
 	},
 	{
 		path: '/dashboard/customers/add-customer',
 		title: 'Add customer',
 		purpose: 'Register a new customer; starts pending.',
-		permission: 'customers_sites.record',
+		permission: 'customers.record',
 		group: 'Customers'
 	},
 	{
 		path: '/dashboard/customers/[id]',
 		title: 'Customer detail',
-		purpose: 'One customer: their sites, contracts and history.',
-		permission: 'customers_sites.record',
+		purpose: 'One customer: their contacts, address and history.',
+		permission: 'customers.record',
 		group: 'Customers'
-	},
-
-	// Sites
-	{
-		path: '/dashboard/sites',
-		title: 'All sites',
-		purpose: 'Every site with its customer, address and services.',
-		permission: 'customers_sites.record',
-		group: 'Sites'
-	},
-	{
-		path: '/dashboard/sites/add-site',
-		title: 'Add site',
-		purpose: 'Create a site under a customer; starts pending.',
-		permission: 'customers_sites.record',
-		group: 'Sites'
-	},
-	{
-		path: '/dashboard/sites/[id]',
-		title: 'Site detail',
-		purpose: 'One site: its contracts, staff and payment history.',
-		permission: 'customers_sites.record',
-		group: 'Sites'
 	},
 
 	// Contracts
@@ -1331,27 +1266,6 @@ export const ROUTE_MAP: RouteEntry[] = [
 		title: 'Inactive employees',
 		purpose: 'People who have left, kept for history and reporting.',
 		permission: 'employees.create_followup',
-		group: 'Employees'
-	},
-	{
-		path: '/dashboard/employees/sites',
-		title: 'Employees by site',
-		purpose: 'The workforce grouped by where they work.',
-		permission: 'attendance.manage',
-		group: 'Employees'
-	},
-	{
-		path: '/dashboard/employees/sites/[id]',
-		title: 'Site roster',
-		purpose: 'Everyone assigned to one site.',
-		permission: 'attendance.manage',
-		group: 'Employees'
-	},
-	{
-		path: '/dashboard/employees/sites/[id]/attendance/[range]',
-		title: 'Site attendance',
-		purpose: 'Attendance for one site over a period.',
-		permission: 'attendance.manage',
 		group: 'Employees'
 	},
 	{
@@ -1422,14 +1336,7 @@ export const ROUTE_MAP: RouteEntry[] = [
 	{
 		path: '/dashboard/salary/add-payroll/[range]',
 		title: 'Unpaid salaries',
-		purpose: 'The payroll sheet for a month: check the totals, choose the bank, run it.',
-		permission: 'salary.manage',
-		group: 'Finance'
-	},
-	{
-		path: '/dashboard/salary/add-payroll/sites/[id]/salaries/[range]',
-		title: 'Unpaid salaries by site',
-		purpose: 'The same payroll sheet, one site at a time.',
+		purpose: 'The payroll sheet for a month: check the totals, choose the payment method, run it.',
 		permission: 'salary.manage',
 		group: 'Finance'
 	},
@@ -1496,13 +1403,6 @@ export const ROUTE_MAP: RouteEntry[] = [
 		permission: 'transactions.manage',
 		group: 'Finance'
 	},
-	{
-		path: '/dashboard/salary/bank-history',
-		title: 'Bank history',
-		purpose: 'Every signed movement against every account — the balances are their sum.',
-		permission: 'bank_history.view',
-		group: 'Finance'
-	},
 
 	// Supplies
 	{
@@ -1552,7 +1452,7 @@ export const ROUTE_MAP: RouteEntry[] = [
 	{
 		path: '/dashboard/reports',
 		title: 'Reports overview',
-		purpose: 'Payroll, revenue and bank together, for a chosen range.',
+		purpose: 'Payroll and revenue together, for a chosen range.',
 		permission: 'reports.finance',
 		group: 'Reports'
 	},
@@ -1594,7 +1494,7 @@ export const ROUTE_MAP: RouteEntry[] = [
 	{
 		path: '/dashboard/reports/money',
 		title: 'Money report',
-		purpose: 'Transactions, expenses, bank history and services rendered.',
+		purpose: 'Transactions, expenses and services rendered.',
 		permission: 'reports.finance',
 		group: 'Reports'
 	},
@@ -1627,6 +1527,13 @@ export const ROUTE_MAP: RouteEntry[] = [
 		purpose: 'Named bundles of permissions.',
 		permission: 'roles.manage',
 		group: 'Admin panel'
+	},
+	{
+		path: '/dashboard/admin-panel/branches',
+		title: 'Branches',
+		purpose: 'Clinic locations. Most clinics have one and never open this.',
+		permission: 'settings.manage',
+		group: 'Admin Panel'
 	},
 	{
 		path: '/dashboard/admin-panel/regions',
@@ -1751,13 +1658,6 @@ export const ROUTE_MAP: RouteEntry[] = [
 		path: '/dashboard/admin-panel/vat-withhold',
 		title: 'VAT and withholding',
 		purpose: 'The rates used on collections.',
-		permission: 'settings.manage',
-		group: 'Admin panel'
-	},
-	{
-		path: '/dashboard/admin-panel/bank-amounts',
-		title: 'Bank accounts',
-		purpose: 'The accounts money moves through. Balances are derived from the history.',
 		permission: 'settings.manage',
 		group: 'Admin panel'
 	},

@@ -3,13 +3,24 @@ import { message, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { redirect } from 'sveltekit-flash-message/server';
 
+import { count } from 'drizzle-orm';
+
 import { auth } from '$lib/server/auth';
+import { db } from '$lib/server/db';
+import { user } from '$lib/server/db/schema';
 import { loginSchema } from '$lib/ZodSchema';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
 		return redirect(302, '/dashboard');
+	}
+
+	// A fresh install has no accounts at all, so this form is a dead end: there is nothing to
+	// sign in with and no way to create anything. `/setup` closes itself once one user exists.
+	const [{ total }] = await db.select({ total: count() }).from(user);
+	if (total === 0) {
+		return redirect(302, '/setup');
 	}
 
 	return {

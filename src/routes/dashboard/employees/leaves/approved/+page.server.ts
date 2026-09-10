@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { leave, leaveType, employee, department, site, user } from '$lib/server/db/schema';
+import { leave, leaveType, employee, department, branch, user } from '$lib/server/db/schema';
 
 import { eq, and, or, like, gt, lte, desc, sql, inArray, count } from 'drizzle-orm';
 import { notDeleted, softDeleteLookup } from '$lib/server/softDelete';
@@ -36,7 +36,7 @@ const approveLeave = approveLeaveFor('approved');
 export const load: PageServerLoad = async ({ url }) => {
 	const query = parseTableQuery(
 		url,
-		['leaveTypeId', 'departmentId', 'siteId', 'approvedById', 'duration'],
+		['leaveTypeId', 'departmentId', 'branchId', 'approvedById', 'duration'],
 		20
 	);
 
@@ -46,7 +46,7 @@ export const load: PageServerLoad = async ({ url }) => {
 			or(
 				like(employee.name, `%${term}%`),
 				like(employee.fatherName, `%${term}%`),
-				like(site.name, `%${term}%`),
+				like(branch.name, `%${term}%`),
 				like(department.name, `%${term}%`),
 				like(leave.reason, `%${term}%`)
 			),
@@ -56,7 +56,7 @@ export const load: PageServerLoad = async ({ url }) => {
 		filters: {
 			leaveTypeId: (v) => eq(leave.leaveTypeId, Number(v)),
 			departmentId: (v) => eq(employee.departmentId, Number(v)),
-			siteId: (v) => eq(employee.siteId, Number(v)),
+			branchId: (v) => eq(employee.branchId, Number(v)),
 			approvedById: (v) => eq(leave.approvedBy, v),
 			// Buckets rather than a free number box: the bar offers real choices, and a
 			// long absence is what anyone scanning this page is actually looking for.
@@ -71,13 +71,13 @@ export const load: PageServerLoad = async ({ url }) => {
 		}
 	});
 
-	// Same joins as the row query, because the WHERE reaches into employee, site and department.
+	// Same joins as the row query, because the WHERE reaches into employee, branch and department.
 	const [{ total }] = await db
 		.select({ total: count() })
 		.from(leave)
 		.leftJoin(employee, and(eq(leave.staffId, employee.id), notDeleted(employee)))
 		.leftJoin(department, and(eq(employee.departmentId, department.id), notDeleted(department)))
-		.leftJoin(site, and(eq(employee.siteId, site.id), notDeleted(site)))
+		.leftJoin(branch, and(eq(employee.branchId, branch.id), notDeleted(branch)))
 		.where(whereClause);
 
 	const form = await superValidate(zod4(approveLeave));
@@ -87,7 +87,7 @@ export const load: PageServerLoad = async ({ url }) => {
 			staffId: leave.staffId,
 			name: employeeFullName,
 			department: department.name,
-			siteName: site.name,
+			branchName: branch.name,
 			requestDate: leave.requestDate,
 			startDate: leave.startDate,
 			endDate: leave.endDate,
@@ -110,7 +110,7 @@ export const load: PageServerLoad = async ({ url }) => {
 		.leftJoin(leaveType, and(eq(leave.leaveTypeId, leaveType.id), notDeleted(leaveType)))
 		.leftJoin(employee, and(eq(leave.staffId, employee.id), notDeleted(employee)))
 		.leftJoin(department, and(eq(employee.departmentId, department.id), notDeleted(department)))
-		.leftJoin(site, and(eq(employee.siteId, site.id), notDeleted(site)))
+		.leftJoin(branch, and(eq(employee.branchId, branch.id), notDeleted(branch)))
 		.leftJoin(user, eq(leave.approvedBy, user.id))
 		.where(whereClause)
 		// `leave` carries no decision timestamp, so the leave's own period is the sort:
@@ -125,7 +125,7 @@ export const load: PageServerLoad = async ({ url }) => {
 	// choice that returns an empty table.
 	const approvedOnly = and(eq(leave.status, 'approved'), notDeleted(leave));
 
-	const [leaveTypeOptions, departmentOptions, siteOptions, approverOptions] = await Promise.all([
+	const [leaveTypeOptions, departmentOptions, branchOptions, approverOptions] = await Promise.all([
 		db
 			.selectDistinct({ id: leaveType.id, name: leaveType.name })
 			.from(leave)
@@ -140,12 +140,12 @@ export const load: PageServerLoad = async ({ url }) => {
 			.where(approvedOnly)
 			.orderBy(department.name),
 		db
-			.selectDistinct({ id: site.id, name: site.name })
+			.selectDistinct({ id: branch.id, name: branch.name })
 			.from(leave)
 			.innerJoin(employee, and(eq(leave.staffId, employee.id), notDeleted(employee)))
-			.innerJoin(site, and(eq(employee.siteId, site.id), notDeleted(site)))
+			.innerJoin(branch, and(eq(employee.branchId, branch.id), notDeleted(branch)))
 			.where(approvedOnly)
-			.orderBy(site.name),
+			.orderBy(branch.name),
 		db
 			.selectDistinct({ id: user.id, name: user.name })
 			.from(leave)
@@ -172,7 +172,7 @@ export const load: PageServerLoad = async ({ url }) => {
 		filterOptions: {
 			leaveTypes: leaveTypeOptions,
 			departments: departmentOptions,
-			sites: siteOptions,
+			branches: branchOptions,
 			approvers: approverOptions
 		}
 	};

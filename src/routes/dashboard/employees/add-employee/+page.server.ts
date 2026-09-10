@@ -11,7 +11,7 @@ import {
 	departments,
 	empStatus,
 	eduLevel,
-	sites,
+	branches,
 	subcities,
 	positions
 } from '$lib/server/fastData';
@@ -26,7 +26,7 @@ export const load: PageServerLoad = async () => {
 	const positionList = await positions();
 	const empStatusList = await empStatus();
 	const eduLevelList = await eduLevel();
-	const siteList = await sites();
+	const branchList = await branches();
 	const subcityList = await subcities();
 
 	return {
@@ -35,7 +35,7 @@ export const load: PageServerLoad = async () => {
 		positionList,
 		empStatusList,
 		eduLevelList,
-		siteList,
+		branchList,
 		subcityList
 	};
 };
@@ -74,7 +74,7 @@ export const actions: Actions = {
 			nonTaxAllowance,
 			hireDate,
 			govtId,
-			site,
+			branch,
 			photo,
 			martialStatus,
 			employmentStatus,
@@ -150,7 +150,7 @@ export const actions: Actions = {
 					educationalLevel,
 					bloodType,
 					existingPensionCard,
-					siteId: site,
+					branchId: branch,
 					hireDate: new Date(hireDate).toLocaleDateString('en-CA'),
 					createdBy: locals.user?.id,
 					// Balance is derived from `employee_leave_grant`, and a new hire has earned nothing

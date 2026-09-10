@@ -361,12 +361,12 @@
 					required
 				/>
 				<Input
-					label="Site"
-					name="site"
+					label="Branch"
+					name="branch"
 					{form}
 					{errors}
 					type="combo"
-					items={data?.siteList}
+					items={data?.branchList}
 					required
 				/>
 				<Input

@@ -6,6 +6,7 @@ import { secureFields, lesserFields, deletionFields } from './secureFields';
 import { transactionSupplies } from './finance';
 import { employee } from './staff';
 import { address } from './locations';
+import { branchRef } from './branches';
 
 export const supplyTypes = mysqlTable('supply_types', {
 	id: int('id').primaryKey().autoincrement(),
@@ -23,11 +24,15 @@ export const supplies = mysqlTable('supplies', {
 	quantity: int('quantity').notNull().default(0),
 	unitOfMeasure: varchar('unit_of_measure', { length: 20 }),
 	reorderLevel: int('reorder_level'),
-	// Whether this item is expected back from a site once leased. Consumables
-	// (detergent, gloves) are false and are written off on issue; equipment is
-	// true and is chased for return. Leases snapshot this flag onto their line
-	// items so changing it later cannot rewrite what an open lease owes.
+	// Whether this item is expected back once issued out. Consumables (gloves,
+	// anaesthetic, impression material) are false and are written off on issue;
+	// instruments and equipment are true and are chased for return.
 	returnable: boolean('returnable').notNull().default(false),
+	/**
+	 * Where this stock physically sits. Quantity is per-row, so a second branch holding the same
+	 * item is a second row rather than a shared count. See `branchRef`.
+	 */
+	branchId: branchRef(),
 	...secureFields
 });
 

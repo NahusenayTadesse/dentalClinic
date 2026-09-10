@@ -50,7 +50,7 @@
 	let employment = $derived([
 		{ name: 'ID Number', value: data?.staffMember?.idNo },
 		{ name: 'Employment Status', value: data?.staffMember?.status },
-		{ name: 'Site', value: data?.staffMember?.site },
+		{ name: 'Branch', value: data?.staffMember?.branch },
 		{ name: 'Department', value: data?.staffMember?.department },
 		{ name: 'Position', value: data?.staffMember?.position },
 		{ name: 'Educational Level', value: data?.staffMember?.educationalLevel },

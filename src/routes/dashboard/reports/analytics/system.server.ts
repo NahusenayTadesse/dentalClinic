@@ -10,7 +10,7 @@ import { alignMonths, countWhen, inRange, monthKeys, monthOf, n, topN } from '..
  * scheduled jobs that keep leave accrual moving actually ran.
  *
  * `audit_log` and `job_run` carry no soft-delete column and belong to no
- * employee or site, so the staff and commercial filters do not apply here —
+ * employee or branch, so the staff and commercial filters do not apply here —
  * only the date range narrows this report.
  */
 export async function systemStats(

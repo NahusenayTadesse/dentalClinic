@@ -23,8 +23,8 @@ export type ReportFilters = {
 	educationalLevelId: number | null;
 	gender: string;
 
-	// Where — narrows sites, contracts, site payments, and staff posted to a site.
-	siteId: number | null;
+	// Where — narrows branches, contracts, branch payments, and staff posted to a branch.
+	branchId: number | null;
 	customerId: number | null;
 
 	// Money
@@ -94,7 +94,7 @@ export function parseFilters(url: URL): ReportFilters {
 		educationalLevelId: num(params.get('educationalLevelId')),
 		gender: params.get('gender') ?? '',
 
-		siteId: num(params.get('siteId')),
+		branchId: num(params.get('branchId')),
 		customerId: num(params.get('customerId')),
 
 		paymentMethodId: num(params.get('paymentMethodId')),
@@ -118,7 +118,7 @@ export function parseFilters(url: URL): ReportFilters {
 export const CUSTOM_FILTER_KEYS = [
 	'departmentId',
 	'positionId',
-	'siteId',
+	'branchId',
 	'customerId',
 	'employmentStatusId',
 	'educationalLevelId',

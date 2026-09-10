@@ -10,12 +10,14 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		redirect(302, '/login');
 	}
 
-	const [{ lastDownload }] = await db
-		.select({ lastDownload: backup.lastDownload })
-		.from(backup)
-		.limit(1);
+	/*
+	 * `[{ lastDownload }]` on an empty table destructures `undefined` and throws, which on a
+	 * fresh install took out every page under `/dashboard` — the layout runs on all of them.
+	 * A clinic that has never taken a backup is the normal state on day one, not an error.
+	 */
+	const [lastBackup] = await db.select({ lastDownload: backup.lastDownload }).from(backup).limit(1);
 
-	const backupInfo = lastDownload ? new Date(lastDownload) : null;
+	const backupInfo = lastBackup?.lastDownload ? new Date(lastBackup.lastDownload) : null;
 
 	const isGreater7 = backupInfo
 		? new Date().getTime() - backupInfo.getTime() > 7 * 24 * 60 * 60 * 1000

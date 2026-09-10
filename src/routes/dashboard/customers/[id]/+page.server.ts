@@ -1,18 +1,7 @@
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { editCustomer } from '$lib/ZodSchema';
 import { db } from '$lib/server/db';
-import {
-	customers,
-	paymentMethods,
-	transactions,
-	site,
-	user,
-	address,
-	subcity,
-	customerContacts
-} from '$lib/server/db/schema';
-import { asRequested } from '$lib/server/approvals';
-import { eq, and, desc, sql, count } from 'drizzle-orm';
+import { customers, user, address, subcity, customerContacts } from '$lib/server/db/schema';
+import { eq, and, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/mysql-core';
 import { notDeleted, softDeleteCustomer, softDeleteOwnedRecord } from '$lib/server/softDelete';
 import { requireSuperAdmin } from '$lib/server/permissions';
@@ -30,9 +19,7 @@ import {
 	addContact,
 	editContact,
 	addContract,
-	editContract,
-	addSites,
-	editSites
+	editContract
 } from './schema';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
@@ -44,8 +31,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const editContactForm = await superValidate(zod4(editContact));
 	const addContractForm = await superValidate(zod4(addContract));
 	const editContractForm = await superValidate(zod4(editContract));
-	const editSiteForm = await superValidate(zod4(editSites));
-	const addSiteForm = await superValidate(zod4(addSites));
 
 	const subcityList = await subcities();
 	const serviceList = await service();
@@ -63,7 +48,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			email: customers.email,
 			tinNo: customers.tinNo,
 			status: customers.isActive,
-			sites: count(site.id),
 			joinedOn: sql<string>`DATE_FORMAT(${customers.createdAt}, '%Y-%m-%d')`,
 			daysSinceJoined: sql<number>`DATEDIFF(CURRENT_DATE, ${customers.createdAt})`,
 			addedBy: user.name,
@@ -79,7 +63,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.leftJoin(requester, eq(customers.requestedBy, requester.id))
 		.leftJoin(approver, eq(customers.approvedBy, approver.id))
 		.leftJoin(updater, eq(customers.updatedBy, updater.id))
-		.leftJoin(site, and(eq(customers.id, site.customerId), notDeleted(site)))
 		.where(and(eq(customers.id, Number(id)), notDeleted(customers)))
 		.groupBy(
 			customers.id,
@@ -87,7 +70,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			requester.name,
 			approver.name,
 			updater.name,
-			site.id,
 			customers.createdAt,
 			customers.name,
 			customers.phone
@@ -129,33 +111,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.leftJoin(user, eq(customerContacts.createdBy, user.id))
 		.where(and(eq(customerContacts.customerId, Number(id)), notDeleted(customerContacts)));
 
-	const sites = await db
-		.select({
-			id: site.id,
-			name: site.name,
-			phone: site.phone,
-			startDate: site.startDate,
-			address: {
-				id: address.id,
-				street: address.street,
-				subcity: subcity.name,
-				subcityId: subcity.id,
-				kebele: address.kebele,
-				buildingNumber: address.buildingNumber,
-				floor: address.floor,
-				houseNumber: address.houseNumber,
-				status: address.status
-			},
-			status: site.isActive,
-			addedBy: user.name,
-			addedById: user.id
-		})
-		.from(site)
-		.leftJoin(user, eq(site.createdBy, user.id))
-		.leftJoin(address, and(eq(address.id, site.address), notDeleted(address)))
-		.leftJoin(subcity, and(eq(subcity.id, address.subcityId), notDeleted(subcity)))
-		.where(and(eq(site.customerId, Number(id)), notDeleted(site)));
-
 	return {
 		customer,
 		customerAddress,
@@ -167,10 +122,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		addContractForm,
 		editContractForm,
 		contacts,
-		serviceList,
-		sites,
-		editSiteForm,
-		addSiteForm
+		serviceList
 	};
 };
 
@@ -306,104 +258,6 @@ export const actions: Actions = {
 		}
 	},
 
-	editSite: async ({ request, locals }) => {
-		const form = await superValidate(request, zod4(editSites));
-
-		if (!form.valid) {
-			return message(form, { type: 'error', text: `Error: check the form` });
-		}
-
-		const { id, name, phone, startDate, status } = form.data;
-
-		try {
-			await db.transaction(async (tx) => {
-				await tx
-					.update(site)
-					.set({
-						name,
-						phone,
-						startDate: new Date(startDate),
-						isActive: status,
-						updatedBy: locals?.user?.id
-					})
-					.where(eq(site.id, id));
-
-				return message(form, {
-					type: 'success',
-					text: 'Site Details Updated Successfully!'
-				});
-			});
-		} catch (err) {
-			return message(form, {
-				type: 'error',
-				text: `Updated failed: ${err instanceof Error ? err.message : 'Unknown error'}`
-			});
-		}
-	},
-	addSite: async ({ request, locals, params }) => {
-		const { id } = params;
-		const form = await superValidate(request, zod4(addSites));
-
-		if (!form.valid) {
-			return message(form, { type: 'error', text: `Error: check the form` });
-		}
-
-		const {
-			name,
-			phone,
-			startDate,
-			status,
-			street,
-			subcity,
-			kebele,
-			buildingNumber,
-			floor,
-			houseNumber
-		} = form.data;
-
-		try {
-			await db.transaction(async (tx) => {
-				const [addressRes] = await tx
-					.insert(address)
-					.values({
-						subcityId: Number(subcity), // Handle potential NaN
-						street,
-						kebele,
-						buildingNumber,
-						floor,
-						houseNumber,
-						status: true
-					})
-					.$returningId();
-				await tx.insert(site).values({
-					...asRequested(locals?.user?.id),
-					name,
-					phone,
-					customerId: Number(id),
-					startDate: new Date(startDate).toISOString(),
-					isActive: status,
-					address: addressRes.id,
-					createdBy: locals?.user?.id
-				});
-
-				return message(form, {
-					type: 'success',
-					text: 'Site Added Successfully!'
-				});
-			});
-		} catch (err) {
-			console.error(err?.message);
-			return message(form, {
-				type: 'error',
-				text: `Adding Site failed: ${err instanceof Error ? err.message : 'Unknown error'}`
-			});
-		}
-	},
-
-	/**
-	 * Soft delete. Super admin only — `requireSuperAdmin` throws 403 rather than
-	 * failing quietly, because the hidden button is UX, not access control.
-	 */
 	delete: async ({ locals, params, cookies }) => {
 		requireSuperAdmin(locals);
 		const { id } = params;
@@ -424,11 +278,7 @@ export const actions: Actions = {
 			return fail(500);
 		}
 
-		redirect(
-			'/dashboard/customers',
-			{ type: 'success', message: 'Customer and their sites deleted.' },
-			cookies
-		);
+		redirect('/dashboard/customers', { type: 'success', message: 'Customer deleted.' }, cookies);
 	},
 	/**
 	 * Soft delete of one customer. Super admin only — `requireSuperAdmin` throws

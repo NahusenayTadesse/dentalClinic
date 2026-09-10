@@ -327,10 +327,9 @@ export const inventoryAdjustmentFormSchema = z.object({
 	 * Bank account the stock was paid from. Optional because removing stock costs
 	 * nothing; the action requires it whenever there is money to move.
 	 */
-	bank: z.coerce.number().int().positive().optional(),
+	paymentMethod: z.coerce.number().int().positive().optional(),
 
 	/** Set by the user when the purchase would take the account below zero. */
-	acknowledgeOverdraft: z.boolean().default(false),
 
 	// Move .optional() inside the field definition
 	reciept: z

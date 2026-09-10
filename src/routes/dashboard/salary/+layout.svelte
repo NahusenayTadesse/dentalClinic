@@ -7,7 +7,7 @@
 	// Transactions and bank history carry permissions of their own, so this menu now spans three
 	// of them — a salary user without `transactions.manage` is not offered that page.
 	const items: MenuItem[] = [
-		{ title: 'Site List', href: '/dashboard/salary/add-payroll/sites', IconComp: List },
+		{ title: 'Branch List', href: '/dashboard/salary/add-payroll/branches', IconComp: List },
 		{
 			title: 'Paid Salary History',
 			href: '/dashboard/salary',
@@ -19,7 +19,7 @@
 			title: 'Unpaid Salaries',
 			href: '/dashboard/salary/add-payroll',
 			IconComp: Sheet,
-			match: (path) => path.includes('/dashboard/salary/add-payroll') && !path.includes('sites')
+			match: (path) => path.includes('/dashboard/salary/add-payroll') && !path.includes('branches')
 		},
 		{
 			title: 'All Overtime',
@@ -37,12 +37,6 @@
 			title: 'Transactions',
 			href: '/dashboard/salary/transactions',
 			IconComp: Sheet,
-			match: 'prefix'
-		},
-		{
-			title: 'Bank History',
-			href: '/dashboard/salary/bank-history',
-			IconComp: Landmark,
 			match: 'prefix'
 		}
 	];

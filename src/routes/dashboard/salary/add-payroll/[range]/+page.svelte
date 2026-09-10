@@ -132,7 +132,7 @@
 			<h3 class="text-2xl font-semibold">No payroll records found</h3>
 
 			<p class="mt-2 max-w-md">
-				There are no salaries recorded for <strong>{data?.siteName}</strong> within the selected date
+				There are no salaries recorded for <strong>{data?.branchName}</strong> within the selected date
 				range. Please try selecting a different period.
 			</p>
 		</div>
@@ -205,8 +205,8 @@
 				<InputComp
 					label="Bank Processed With"
 					type="combo"
-					items={data?.banks}
-					name="bank"
+					items={data?.paymentMethods}
+					name="paymentMethod"
 					{form}
 					{errors}
 				/>
@@ -254,7 +254,7 @@
 			bind:filteredList
 			filterKeys={[
 				'employmentStatus',
-				'site',
+				'branch',
 				'absent',
 				'bank',
 				'department',

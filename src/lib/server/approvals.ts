@@ -14,8 +14,7 @@ import {
 	expenses,
 	payrollAdjustments,
 	payrollRuns,
-	salaries,
-	site
+	salaries
 } from '$lib/server/db/schema';
 import { employeeFullName } from '$lib/server/employeeName';
 
@@ -29,14 +28,13 @@ export type ApprovableTable =
 	| typeof expenses
 	| typeof payrollRuns
 	| typeof payrollAdjustments
-	| typeof customers
-	| typeof site;
+	| typeof customers;
 
 /**
  * A column in the queue that names another record, and where that record lives.
  *
  * A pending row is only half the story — approving a salary change means knowing
- * whose it is, and a site contract means little without the site. Declaring the
+ * whose it is, and an expense means little without who filed it. Declaring the
  * relation here rather than in the table component keeps the promise this file
  * opens with: adding a queue is one entry, links included.
  *
@@ -75,7 +73,6 @@ export type ApprovalEntity = {
 const HREF = {
 	employee: '/dashboard/employees/single',
 	customer: '/dashboard/customers',
-	site: '/dashboard/sites',
 	user: '/dashboard/admin-panel/users'
 } as const;
 
@@ -207,23 +204,6 @@ export const APPROVAL_ENTITIES: ApprovalEntity[] = [
 			email: customers.email
 		}),
 		links: { name: { idKey: 'id', href: HREF.customer } }
-	},
-	{
-		key: 'sites',
-		label: 'Sites',
-		singular: 'site',
-		table: site,
-		listHref: '/dashboard/sites',
-		summary: () => ({
-			name: site.name,
-			customer: sql<string>`(SELECT c.name FROM customers c WHERE c.id = ${site.customerId})`,
-			customerId: site.customerId,
-			phone: site.phone
-		}),
-		links: {
-			name: { idKey: 'id', href: HREF.site },
-			customer: { idKey: 'customerId', href: HREF.customer }
-		}
 	}
 ];
 

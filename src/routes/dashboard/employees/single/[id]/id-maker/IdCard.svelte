@@ -98,8 +98,8 @@
 					<span class="id-field-value">{staff?.position}</span>
 				</div>
 				<div class="id-field">
-					<span class="id-field-label">Site</span>
-					<span class="id-field-value">{staff?.site}</span>
+					<span class="id-field-label">Branch</span>
+					<span class="id-field-value">{staff?.branch}</span>
 				</div>
 				<div class="id-field">
 					<span class="id-field-label">Blood Type</span>

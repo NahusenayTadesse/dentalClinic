@@ -18,36 +18,12 @@ import { secureFields, approvalFields } from './secureFields';
 import { services } from './services';
 import { supplies } from '../schema';
 import { user } from './user';
+import { branchRef } from './branches';
 
 export const paymentMethods = mysqlTable('payment_methods', {
 	id: int('id').primaryKey().autoincrement(),
 	name: varchar('name', { length: 100 }).notNull().unique(),
 	description: varchar('description', { length: 255 }),
-	...secureFields
-});
-
-export const bankAmount = mysqlTable('bank_amount', {
-	id: int('id').primaryKey().autoincrement(),
-	paymentMethodId: int('payment_method_id')
-		.references(() => paymentMethods.id, {
-			onDelete: 'set null'
-		})
-		.unique(),
-	account: varchar('account', { length: 100 }).notNull().default('No Account Number'),
-	amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
-	...secureFields
-});
-
-export const bankInsertHistory = mysqlTable('bank_insert_history', {
-	id: int('id').primaryKey().autoincrement(),
-	bankAmountId: int('bank_amount_id').references(() => bankAmount.id, {
-		onDelete: 'set null'
-	}),
-	amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
-	transactionId: int('transaction_id')
-		.notNull()
-		.references(() => transactions.id, { onDelete: 'set null' }),
-	reason: varchar('reason', { length: 255 }),
 	...secureFields
 });
 
@@ -74,6 +50,8 @@ export const transactions = mysqlTable('transactions', {
 		onDelete: 'set null'
 	}),
 	recieptLink: varchar('reciept_link', { length: 255 }),
+	/** Where the money was taken. See `branchRef`. */
+	branchId: branchRef(),
 	...secureFields
 });
 
@@ -97,17 +75,8 @@ export const transactionServices = mysqlTable('transaction_services', {
 		.references(() => services.id),
 	price: decimal('price', { precision: 10, scale: 2 }).notNull(),
 	tip: decimal('tip', { precision: 10, scale: 2 }).notNull().default('0'),
-	discount: int('discount').references(() => discounts.id),
 	tax: decimal('tax', { precision: 10, scale: 2 }),
 	total: decimal('total', { precision: 10, scale: 2 }),
-	...secureFields
-});
-
-export const discounts = mysqlTable('discounts', {
-	id: int('id').primaryKey().autoincrement(),
-	amount: decimal('amount', { precision: 10, scale: 2 }),
-	name: varchar('name', { length: 50 }).notNull().unique(),
-	description: varchar('description', { length: 255 }),
 	...secureFields
 });
 
@@ -168,6 +137,8 @@ export const payrollRuns = mysqlTable(
 			onDelete: 'set null'
 		}),
 		finalizedAt: datetime('finalized_at'),
+		/** Which location this run covers. See `branchRef`. */
+		branchId: branchRef(),
 
 		...secureFields,
 		...approvalFields

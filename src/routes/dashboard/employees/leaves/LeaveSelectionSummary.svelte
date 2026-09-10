@@ -20,7 +20,7 @@
 		staffId: number;
 		name: string | null;
 		department: string | null;
-		siteName: string | null;
+		branchName: string | null;
 		requestDate: Date | string;
 		startDate: Date | string;
 		endDate: Date | string;
@@ -70,7 +70,7 @@
 
 		<div class="grid grid-cols-2 gap-x-6 gap-y-3 md:grid-cols-3">
 			{@render field('Department', leave.department)}
-			{@render field('Site', leave.siteName)}
+			{@render field('Branch', leave.branchName)}
 			{@render field('Requested', formatEthiopianDate(new Date(leave.requestDate)))}
 			{@render field('From', formatEthiopianDate(new Date(leave.startDate)))}
 			{@render field('To', formatEthiopianDate(new Date(leave.endDate)))}

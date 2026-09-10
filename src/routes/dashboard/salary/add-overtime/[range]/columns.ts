@@ -81,10 +81,10 @@ export const makeColumns = (canDelete = false) => [
 			})
 	},
 	{
-		accessorKey: 'site',
+		accessorKey: 'branch',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Sites',
+				name: 'Branches',
 				onclick: column.getToggleSortingHandler()
 			})
 	},
@@ -114,7 +114,7 @@ export const makeColumns = (canDelete = false) => [
 				overtimeTypes: row.original.overtimeTypes,
 				name: row.original.name,
 				department: row.original.department,
-				site: row.original.site,
+				branch: row.original.branch,
 				position: row.original.position,
 				overtimeDetails: row.original.overtimeDetails,
 				totalOvertimePay: row.original.totalOvertimePay,

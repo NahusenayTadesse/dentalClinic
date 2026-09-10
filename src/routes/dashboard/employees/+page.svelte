@@ -41,7 +41,7 @@
 		initialEnd={data.currentQuery.dateEnd ?? undefined}
 		initialPageSize={data.pagination.pageSize}
 		initialCustomFilters={{
-			siteId: data.currentQuery.siteId ?? '',
+			branchId: data.currentQuery.branchId ?? '',
 			departmentId: data.currentQuery.departmentId ?? '',
 			positionId: data.currentQuery.positionId ?? '',
 			educationId: data.currentQuery.educationId ?? '',
@@ -51,20 +51,20 @@
 	>
 		{#snippet children(filters, update)}
 			<div class="flex flex-col gap-2">
-				<Label class="text-sm font-medium">Site</Label>
+				<Label class="text-sm font-medium">Branch</Label>
 				<Select
 					type="single"
-					value={filters.siteId as string}
-					onValueChange={(v) => update('siteId', v as never)}
+					value={filters.branchId as string}
+					onValueChange={(v) => update('branchId', v as never)}
 				>
 					<SelectTrigger class="w-full">
-						{data.filterOptions.sites.find((s) => String(s.id) === filters.siteId)?.name ??
-							'All sites'}
+						{data.filterOptions.branches.find((s) => String(s.id) === filters.branchId)?.name ??
+							'All branches'}
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value="">All sites</SelectItem>
-						{#each data.filterOptions.sites as site (site.id)}
-							<SelectItem value={String(site.id)}>{site.name}</SelectItem>
+						<SelectItem value="">All branches</SelectItem>
+						{#each data.filterOptions.branches as branch (branch.id)}
+							<SelectItem value={String(branch.id)}>{branch.name}</SelectItem>
 						{/each}
 					</SelectContent>
 				</Select>
@@ -116,7 +116,7 @@
 		data={data?.staffList}
 		bind:filteredList
 		filterKeys={[
-			'site',
+			'branch',
 			'department',
 			'position',
 			'education',

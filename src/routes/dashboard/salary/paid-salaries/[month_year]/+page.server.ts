@@ -3,7 +3,7 @@ import {
 	paymentMethods,
 	employee,
 	department,
-	site,
+	branch,
 	position,
 	payrollEntries,
 	payrollReceipts,
@@ -24,7 +24,6 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import { adjust, adjustableFields, finalizePayroll } from './schema';
 import { saveUploadedFile } from '$lib/server/upload';
 import { contentCrud } from '$lib/server/crud';
-import { bankForPaymentMethod, postToBank } from '$lib/server/bankLedger';
 import { paymentMethods as bankList, officeEmployees as employeeList } from '$lib/server/fastData';
 
 /**
@@ -77,7 +76,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			id: employee.id,
 			payrollId: payrollEntries.id,
 			name: sql<string>`TRIM(CONCAT_WS(' ', ${employee.name}, ${employee.fatherName}, ${employee.grandFatherName}))`,
-			site: site.name,
+			branch: branch.name,
 			department: department.name,
 			position: position.name,
 			basicSalary: payrollEntries.basicSalary,
@@ -100,7 +99,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		})
 		.from(payrollEntries)
 		.leftJoin(employee, and(eq(payrollEntries.staffId, employee.id), notDeleted(employee)))
-		.leftJoin(site, and(eq(employee.siteId, site.id), notDeleted(site)))
+		.leftJoin(branch, and(eq(employee.branchId, branch.id), notDeleted(branch)))
 		.leftJoin(department, and(eq(department.id, employee.departmentId), notDeleted(department)))
 		.leftJoin(position, and(eq(position.id, employee.positionId), notDeleted(position)))
 		.leftJoin(paymentMethods, eq(payrollEntries.paymentMethodId, paymentMethods.id))
@@ -315,22 +314,6 @@ export const actions = {
 					.update(transactions)
 					.set({ amount: String(totalNetDelta) })
 					.where(eq(transactions.id, transaction.id));
-
-				// The adjustment changes what was actually paid out, so the bank has to
-				// move with it. A positive `totalNetDelta` means more money left the
-				// account, hence the negation; a clawback is negative and puts money
-				// back. This was previously recorded on the transaction but never
-				// reached the balance.
-				const bankId = await bankForPaymentMethod(tx, bank);
-				if (bankId) {
-					await postToBank(tx, {
-						bankAmountId: bankId,
-						transactionId: transaction.id,
-						amount: -totalNetDelta,
-						reason: 'Salary Adjustment ' + reason,
-						userId: locals?.user?.id
-					});
-				}
 			});
 
 			return message(form, {

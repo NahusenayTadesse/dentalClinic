@@ -8,12 +8,12 @@ import { asRequested } from '$lib/server/approvals';
 import type { Actions, PageServerLoad } from './$types';
 import { setFlash } from 'sveltekit-flash-message/server';
 import { and, eq, isNull } from 'drizzle-orm';
-import { sites, departments, positions } from '$lib/server/fastData';
+import { branches, departments, positions } from '$lib/server/fastData';
 export const load: PageServerLoad = async ({ parent }) => {
 	const { staffMember } = await parent();
 	const form = await superValidate(
 		{
-			site: staffMember?.siteId,
+			branch: staffMember?.branchId,
 			department: staffMember?.departmentId,
 			position: staffMember?.positionId
 		},
@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ parent }) => {
 
 	return {
 		form,
-		sites: await sites(),
+		branches: await branches(),
 		departments: await departments(),
 		positions: await positions()
 	};
@@ -42,7 +42,7 @@ export const actions: Actions = {
 		}
 
 		const {
-			site,
+			branch,
 			department,
 			position,
 			amount,
@@ -94,7 +94,7 @@ export const actions: Actions = {
 					departmentId: department,
 					officeCommission,
 					percentage,
-					siteId: site,
+					branchId: branch,
 					positionId: position,
 					amount,
 					transportationAllowance,
@@ -109,7 +109,7 @@ export const actions: Actions = {
 					.update(employee)
 					.set({
 						departmentId: department,
-						siteId: site,
+						branchId: branch,
 						positionId: position
 					})
 					.where(eq(employee.id, Number(id)));

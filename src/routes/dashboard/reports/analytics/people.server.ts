@@ -7,7 +7,7 @@ import {
 	employeeTermination,
 	employmentStatuses,
 	position,
-	site
+	branch
 } from '$lib/server/db/schema';
 import { notDeleted } from '$lib/server/softDelete';
 import type { ReportFilters } from '../filters';
@@ -46,7 +46,7 @@ export async function peopleStats(
 		byDepartment,
 		byGender,
 		byStatus,
-		bySite,
+		byBranch,
 		byEducation,
 		byMarital,
 		byPosition,
@@ -108,11 +108,11 @@ export async function peopleStats(
 			.groupBy(employmentStatuses.name),
 
 		db
-			.select({ label: site.name, value: count() })
+			.select({ label: branch.name, value: count() })
 			.from(employee)
-			.leftJoin(site, eq(employee.siteId, site.id))
+			.leftJoin(branch, eq(employee.branchId, branch.id))
 			.where(current)
-			.groupBy(site.name),
+			.groupBy(branch.name),
 
 		db
 			.select({ label: educationalLevel.name, value: count() })
@@ -300,12 +300,12 @@ export async function peopleStats(
 			series: [{ label: 'Employees', data: topN(byDepartment).map((row) => row.value) }]
 		},
 		{
-			key: 'staff-by-site',
-			title: 'Headcount by Site',
+			key: 'staff-by-branch',
+			title: 'Headcount by Branch',
 			group: 'People',
 			kind: 'bar',
-			labels: topN(bySite, 12).map((row) => row.label),
-			series: [{ label: 'Employees', data: topN(bySite, 12).map((row) => row.value) }]
+			labels: topN(byBranch, 12).map((row) => row.label),
+			series: [{ label: 'Employees', data: topN(byBranch, 12).map((row) => row.value) }]
 		},
 		{
 			key: 'staff-by-status',

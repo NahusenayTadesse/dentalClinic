@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { salaries, user, site, department, position } from '$lib/server/db/schema';
+import { salaries, user, branch, department, position } from '$lib/server/db/schema';
 
 import { eq, and, sql, desc } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
@@ -12,8 +12,8 @@ export const load: PageServerLoad = async ({ params }) => {
 		.select({
 			id: salaries.id,
 			amount: salaries.amount,
-			site: site.name,
-			siteId: site.id,
+			branch: branch.name,
+			branchId: branch.id,
 			officeCommission: salaries.officeCommission,
 			percentage: salaries.percentage,
 			department: department.name,
@@ -30,7 +30,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		})
 		.from(salaries)
 		.leftJoin(user, eq(salaries.createdBy, user.id))
-		.leftJoin(site, and(eq(salaries.siteId, site.id), notDeleted(site)))
+		.leftJoin(branch, and(eq(salaries.branchId, branch.id), notDeleted(branch)))
 		.leftJoin(department, and(eq(salaries.departmentId, department.id), notDeleted(department)))
 		.leftJoin(position, and(eq(salaries.positionId, position.id), notDeleted(position)))
 		.where(eq(salaries.staffId, Number(id)))

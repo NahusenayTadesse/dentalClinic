@@ -13,13 +13,12 @@ import {
 	supplyTypes,
 	supplySuppliers,
 	suppliesAdjustments,
-	site,
 	user
 } from '$lib/server/db/schema';
 import { and, desc, eq, sql } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
 import type { LayoutServerLoad } from './$types';
-import { banks, employees, supplyCategories } from '$lib/server/fastData';
+import { employees, paymentMethods, supplyCategories } from '$lib/server/fastData';
 
 export const load: LayoutServerLoad = async ({ params }) => {
 	const { id } = params;
@@ -51,7 +50,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 
 	const employeesList = await employees();
 	const typeList = await supplyCategories();
-	const bankList = await banks();
+	const paymentMethodList = await paymentMethods();
 
 	const suppliers = await db
 		.selectDistinct({
@@ -80,6 +79,6 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		employeesList,
 		suppliers,
 		typeList,
-		bankList
+		paymentMethods: paymentMethodList
 	};
 };

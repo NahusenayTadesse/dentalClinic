@@ -6,7 +6,7 @@ export const payrollSchema = z.object({
 	start: z.string(),
 	end: z.string(),
 	paymentDate: z.string('Payment Date is required'),
-	bank: z.number('Bank is required'),
+	paymentMethod: z.number('Payment method is required'),
 	employees: z.array(
 		z.object({
 			id: z.union([z.string(), z.number()]),

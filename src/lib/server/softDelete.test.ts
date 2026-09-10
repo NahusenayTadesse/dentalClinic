@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { getTableName } from 'drizzle-orm';
 
 import { notDeleted, softDeleteOwnedRecord, staffOwnedTables } from './softDelete';
-import { staffFamilies, employee, site } from './db/schema';
+import { staffFamilies, employee, branch } from './db/schema';
 
 /**
  * Owner scoping, which is the whole security property of a child table.
@@ -113,9 +113,9 @@ describe('notDeleted', () => {
 	});
 
 	it('combines several tables into one condition', () => {
-		const combined = notDeleted(employee, site);
+		const combined = notDeleted(employee, branch);
 		expect(combined).toBeDefined();
 		// Distinct tables, so the caller really is filtering both sides of a join.
-		expect(getTableName(employee)).not.toBe(getTableName(site));
+		expect(getTableName(employee)).not.toBe(getTableName(branch));
 	});
 });

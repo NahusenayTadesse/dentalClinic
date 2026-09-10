@@ -64,18 +64,18 @@ export const columns: ColumnDef<RowData>[] = [
 	},
 
 	{
-		accessorKey: 'site',
+		accessorKey: 'branch',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Sites',
+				name: 'Branches',
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component
 			return renderComponent(DataTableLinks, {
-				id: row.original.siteId,
-				name: row.original.site,
-				link: '/dashboard/sites'
+				id: row.original.branchId,
+				name: row.original.branch,
+				link: '/dashboard/branches'
 			});
 		}
 	},

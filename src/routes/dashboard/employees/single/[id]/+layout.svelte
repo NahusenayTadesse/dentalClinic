@@ -27,12 +27,12 @@
 	<Button
 		href="{startUrl}change-salary"
 		variant={page.url.pathname === `${startUrl}change-salary` ? 'default' : 'outline'}
-		><Pen /> Change Salary, Site, Department or Position</Button
+		><Pen /> Change Salary, Branch, Department or Position</Button
 	>
 	<Button
 		href="{startUrl}salary-history"
 		variant={page.url.pathname === `${startUrl}salary-history` ? 'default' : 'outline'}
-		><Sheet /> Salary, Site, Department & Position History</Button
+		><Sheet /> Salary, Branch, Department & Position History</Button
 	>
 </div>
 

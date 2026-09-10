@@ -2,6 +2,7 @@
 	import AdminNavCard from '$lib/components/AdminCard.svelte';
 	import { Button } from '$lib/components/ui/button';
 	let locations = [
+		{ name: 'Branches', href: '/dashboard/admin-panel/branches' },
 		{ name: 'Regions', href: '/dashboard/admin-panel/regions' },
 		{ name: 'Cities', href: '/dashboard/admin-panel/cities' },
 		{ name: 'Subcities', href: '/dashboard/admin-panel/subcities' }
@@ -28,8 +29,7 @@
 		{ name: 'Tax Types', href: '/dashboard/admin-panel/tax-types' },
 		{ name: 'Overtime Types', href: '/dashboard/admin-panel/overtime-types' },
 		{ name: 'Pensions', href: '/dashboard/admin-panel/pensions' },
-		{ name: 'Vat and Withhold', href: '/dashboard/admin-panel/vat-withhold' },
-		{ name: 'Bank Amount', href: '/dashboard/admin-panel/bank-amounts' }
+		{ name: 'Vat and Withhold', href: '/dashboard/admin-panel/vat-withhold' }
 	];
 </script>
 
@@ -55,7 +55,7 @@
 		<div class="grid gap-8 md:grid-cols-4">
 			<AdminNavCard
 				title="Locations"
-				description="Manage geographic regions, cities, and subcities"
+				description="Clinic branches, and the regions, cities and subcities addresses are built from"
 				icon="MapPin"
 				items={locations}
 				accentColor="from-emerald-500/15 to-emerald-500/5"

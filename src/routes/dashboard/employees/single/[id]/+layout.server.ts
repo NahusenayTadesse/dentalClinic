@@ -9,7 +9,7 @@ import {
 	employee,
 	user,
 	department,
-	site,
+	branch,
 	address,
 	subcity,
 	educationalLevel,
@@ -48,8 +48,8 @@ export const load: LayoutServerLoad = async ({ params }) => {
 			fatherName: employee.fatherName,
 			grandFatherName: employee.grandFatherName,
 			gender: employee.gender,
-			site: site.name,
-			siteId: site.id,
+			branch: branch.name,
+			branchId: branch.id,
 			nationality: employee.nationality,
 			bloodType: employee.bloodType,
 			tinNo: employee.tinNo,
@@ -88,7 +88,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.from(employee)
 		.leftJoin(department, and(eq(employee.departmentId, department.id), notDeleted(department)))
 		.leftJoin(position, and(eq(employee.positionId, position.id), notDeleted(position)))
-		.leftJoin(site, and(eq(employee.siteId, site.id), notDeleted(site)))
+		.leftJoin(branch, and(eq(employee.branchId, branch.id), notDeleted(branch)))
 		.leftJoin(
 			employmentStatuses,
 			and(eq(employee.employmentStatus, employmentStatuses.id), notDeleted(employmentStatuses))

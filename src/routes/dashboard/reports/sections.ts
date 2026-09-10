@@ -32,11 +32,10 @@ export type SectionKey =
 	// Money
 	| 'transactions'
 	| 'expenses'
-	| 'bank-history'
 	| 'services-rendered'
 	// Commercial
 	| 'customers'
-	| 'sites'
+	| 'branches'
 	// System
 	| 'audit-log';
 
@@ -72,7 +71,7 @@ export const SECTIONS: SectionMeta[] = [
 		label: 'Payslips',
 		group: 'Payroll',
 		description: 'Every individual payslip issued inside the range.',
-		filterKeys: ['month', 'year', 'department', 'site', 'status', 'paymentMethod']
+		filterKeys: ['month', 'year', 'department', 'branch', 'status', 'paymentMethod']
 	},
 	{
 		key: 'payroll-adjustments',
@@ -93,7 +92,7 @@ export const SECTIONS: SectionMeta[] = [
 		label: 'Salary Changes',
 		group: 'Payroll',
 		description: 'Every salary record that took effect inside the range.',
-		filterKeys: ['employee', 'department', 'position', 'site', 'changeReason']
+		filterKeys: ['employee', 'department', 'position', 'branch', 'changeReason']
 	},
 
 	{
@@ -101,21 +100,29 @@ export const SECTIONS: SectionMeta[] = [
 		label: 'Employee Roster',
 		group: 'People',
 		description: 'Everyone on the books, filtered by the query above.',
-		filterKeys: ['department', 'position', 'status', 'site', 'gender', 'education', 'maritalStatus']
+		filterKeys: [
+			'department',
+			'position',
+			'status',
+			'branch',
+			'gender',
+			'education',
+			'maritalStatus'
+		]
 	},
 	{
 		key: 'hires',
 		label: 'New Hires',
 		group: 'People',
 		description: 'Employees whose hire date falls inside the range.',
-		filterKeys: ['department', 'position', 'site', 'gender', 'status']
+		filterKeys: ['department', 'position', 'branch', 'gender', 'status']
 	},
 	{
 		key: 'terminations',
 		label: 'Terminations',
 		group: 'People',
 		description: 'Employees let go inside the range, with the recorded reason.',
-		filterKeys: ['department', 'site', 'gender', 'reason']
+		filterKeys: ['department', 'branch', 'gender', 'reason']
 	},
 
 	{
@@ -123,14 +130,14 @@ export const SECTIONS: SectionMeta[] = [
 		label: 'Bonuses',
 		group: 'Compensation',
 		description: 'Ad-hoc bonuses paid inside the range.',
-		filterKeys: ['employee', 'department', 'site', 'description']
+		filterKeys: ['employee', 'department', 'branch', 'description']
 	},
 	{
 		key: 'overtime',
 		label: 'Overtime',
 		group: 'Compensation',
 		description: 'Overtime logged inside the range, by type and hours.',
-		filterKeys: ['employee', 'department', 'site', 'type']
+		filterKeys: ['employee', 'department', 'branch', 'type']
 	},
 	{
 		key: 'deductions',
@@ -145,7 +152,7 @@ export const SECTIONS: SectionMeta[] = [
 		label: 'Attendance',
 		group: 'Time & Leave',
 		description: 'Every absence logged inside the range.',
-		filterKeys: ['employee', 'department', 'site', 'deductable', 'approval']
+		filterKeys: ['employee', 'department', 'branch', 'deductable', 'approval']
 	},
 	{
 		key: 'leaves',
@@ -199,18 +206,11 @@ export const SECTIONS: SectionMeta[] = [
 		filterKeys: ['type', 'paymentMethod']
 	},
 	{
-		key: 'bank-history',
-		label: 'Bank Movements',
-		group: 'Money',
-		description: 'Signed postings against each bank account inside the range.',
-		filterKeys: ['bank', 'direction', 'recordedBy']
-	},
-	{
 		key: 'services-rendered',
 		label: 'Services Rendered',
 		group: 'Money',
 		description: 'Services billed on a transaction inside the range.',
-		filterKeys: ['service', 'employee', 'discount']
+		filterKeys: ['service', 'employee']
 	},
 
 	{
@@ -224,11 +224,11 @@ export const SECTIONS: SectionMeta[] = [
 		filterKeys: ['status']
 	},
 	{
-		key: 'sites',
-		label: 'Sites',
+		key: 'branches',
+		label: 'Branches',
 		group: 'People',
-		description: 'Sites on the books, and when they opened.',
-		filterKeys: ['customer', 'isActive']
+		description: 'Clinic locations, and when they opened.',
+		filterKeys: ['isActive']
 	},
 
 	{
@@ -305,7 +305,7 @@ export const REPORT_PAGES: ReportPage[] = [
 		slug: 'money',
 		group: 'Money',
 		title: 'Money',
-		blurb: 'Transactions, expenses, bank movement and service revenue.'
+		blurb: 'Transactions, expenses and service revenue.'
 	},
 	{
 		slug: 'system',

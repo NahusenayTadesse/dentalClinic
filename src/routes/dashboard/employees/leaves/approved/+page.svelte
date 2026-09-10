@@ -86,7 +86,7 @@
 	description="Server-side search across every approved leave"
 	showDate
 	totalResults={data.pagination.total}
-	searchPlaceholder="Search employee, site, department or reason..."
+	searchPlaceholder="Search employee, branch, department or reason..."
 	initialSearch={data.currentQuery.search}
 	initialStart={data.currentQuery.dateStart ?? undefined}
 	initialEnd={data.currentQuery.dateEnd ?? undefined}
@@ -95,7 +95,7 @@
 	initialCustomFilters={{
 		leaveTypeId: data.currentQuery.leaveTypeId ?? '',
 		departmentId: data.currentQuery.departmentId ?? '',
-		siteId: data.currentQuery.siteId ?? '',
+		branchId: data.currentQuery.branchId ?? '',
 		approvedById: data.currentQuery.approvedById ?? '',
 		duration: data.currentQuery.duration ?? ''
 	}}

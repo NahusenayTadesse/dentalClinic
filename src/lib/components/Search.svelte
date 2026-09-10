@@ -7,14 +7,12 @@
 	let list = [
 		{ label: 'Dashboard', path: '/dashboard' },
 
-		// Customers & Sites
+		// Customers
+		{ label: 'Branches', path: '/dashboard/admin-panel/branches' },
 		{ label: 'Customers', path: '/dashboard/customers' },
-
-		{ label: 'Sites', path: '/dashboard/sites' },
 
 		// Employees
 		{ label: 'Active Employees', path: '/dashboard/employees' },
-		{ label: 'Employees Site List', path: '/dashboard/employees/sites' },
 
 		{ label: 'Add Employee', path: '/dashboard/employees/add-employee' },
 		{ label: 'Inactive Employees', path: '/dashboard/employees/inactive' },
@@ -35,7 +33,6 @@
 		{ label: 'Tax Types', path: '/dashboard/salary/tax-types' },
 		{ label: 'Transactions', path: '/dashboard/salary/transactions' },
 		{ label: 'Expenses', path: '/dashboard/salary/transactions/expenses' },
-		{ label: 'Bank History', path: '/dashboard/salary/bank-history' },
 
 		// Miscellaneous
 		{ label: 'Reports', path: '/dashboard/reports' },
@@ -60,8 +57,7 @@
 		{ label: 'Tax Types', path: '/dashboard/admin-panel/tax-types' },
 		{ label: 'Overtime Types', path: '/dashboard/admin-panel/overtime-types' },
 		{ label: 'Pensions', path: '/dashboard/admin-panel/pensions' },
-		{ label: 'Vat and Withhold Percentage', path: '/dashboard/admin-panel/vat-withhold' },
-		{ label: 'Bank Amounts', path: '/dashboard/admin-panel/bank-amounts' }
+		{ label: 'Vat and Withhold Percentage', path: '/dashboard/admin-panel/vat-withhold' }
 	];
 </script>
 

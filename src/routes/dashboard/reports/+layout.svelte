@@ -224,7 +224,14 @@
 					values,
 					update
 				)}
-				{@render pick('Site', 'siteId', data.filterOptions.sites, 'All sites', values, update)}
+				{@render pick(
+					'Branch',
+					'branchId',
+					data.filterOptions.branches,
+					'All branches',
+					values,
+					update
+				)}
 				{@render pick(
 					'Customer',
 					'customerId',

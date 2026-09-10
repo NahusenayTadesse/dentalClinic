@@ -1,5 +1,12 @@
 import { db } from '$lib/server/db';
-import { employee, department, site, deductions, position, salaries } from '$lib/server/db/schema';
+import {
+	employee,
+	department,
+	branch,
+	deductions,
+	position,
+	salaries
+} from '$lib/server/db/schema';
 import { eq, and, sql, between, inArray } from 'drizzle-orm';
 import { notDeleted, softDeleteLookup } from '$lib/server/softDelete';
 import { isApproved, unapprovedEmployeeIds } from '$lib/server/approvals';
@@ -37,12 +44,12 @@ export const load: PageServerLoad = async ({ params }) => {
 			name: employeeLegalName,
 			department: department.name,
 			position: position.name,
-			site: site.name
+			branch: branch.name
 		})
 		.from(employee)
 		.leftJoin(department, and(eq(department.id, employee.departmentId), notDeleted(department)))
 		.leftJoin(position, and(eq(position.id, employee.positionId), notDeleted(position)))
-		.leftJoin(site, and(eq(site.id, employee.siteId), notDeleted(site)))
+		.leftJoin(branch, and(eq(branch.id, employee.branchId), notDeleted(branch)))
 		// Unapproved employees are not paid, so they collect no adjustments either.
 		.where(and(eq(employee.isActive, true), isApproved(employee), notDeleted(employee)));
 

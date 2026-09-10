@@ -6,7 +6,7 @@ import {
 	educationalLevel,
 	employeeTermination,
 	missingDays,
-	site,
+	branch,
 	employeeGuarantor,
 	staffAccounts,
 	staffFamilies,
@@ -27,7 +27,7 @@ import { employeeFullName } from '$lib/server/employeeName';
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// --- Parse query params from QueryBuilder ---
 	const query = parseTableQuery(url, [
-		'siteId',
+		'branchId',
 		'departmentId',
 		'positionId',
 		'educationId',
@@ -47,7 +47,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		base: [eq(employee.isActive, activeOnly), isApproved(employee)!, notDeleted(employee)],
 		search: (term) => sql`${nameExpr} LIKE ${'%' + term + '%'}`,
 		filters: {
-			siteId: (v) => eq(employee.siteId, Number(v)),
+			branchId: (v) => eq(employee.branchId, Number(v)),
 			departmentId: (v) => eq(employee.departmentId, Number(v)),
 			positionId: (v) => eq(employee.positionId, Number(v)),
 			educationId: (v) => eq(employee.educationalLevel, Number(v)),
@@ -57,9 +57,9 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	});
 
 	// --- Filter option lists (independent of current filters, for the selects) ---
-	const [siteOptions, departmentOptions, positionOptions, educationOptions, statusOptions] =
+	const [branchOptions, departmentOptions, positionOptions, educationOptions, statusOptions] =
 		await Promise.all([
-			db.select({ id: site.id, name: site.name }).from(site).where(notDeleted(site)),
+			db.select({ id: branch.id, name: branch.name }).from(branch).where(notDeleted(branch)),
 			db.select({ id: department.id, name: department.name }).from(department),
 			db.select({ id: position.id, name: position.name }).from(position),
 			db.select({ id: educationalLevel.id, name: educationalLevel.name }).from(educationalLevel),
@@ -78,8 +78,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			name: employeeFullName,
 			department: department.name,
 			position: position.name,
-			site: site.name,
-			siteId: site.id,
+			branch: branch.name,
+			branchId: branch.id,
 			education: educationalLevel.name,
 			status: employmentStatuses.name,
 
@@ -91,7 +91,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			joined: sql<string>`DATE_FORMAT(${employee.hireDate}, '%Y-%m-%d')`
 		})
 		.from(employee)
-		.leftJoin(site, and(eq(site.id, employee.siteId), notDeleted(site)))
+		.leftJoin(branch, and(eq(branch.id, employee.branchId), notDeleted(branch)))
 		.leftJoin(department, and(eq(department.id, employee.departmentId), notDeleted(department)))
 		.leftJoin(position, and(eq(position.id, employee.positionId), notDeleted(position)))
 		.leftJoin(
@@ -116,7 +116,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			employee.fatherName,
 			department.name,
 			position.name,
-			site.name,
+			branch.name,
 			educationalLevel.name,
 			employmentStatuses.name,
 			employee.isActive,
@@ -131,7 +131,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		staffList,
 		pagination: pagination(query, total),
 		filterOptions: {
-			sites: siteOptions,
+			branches: branchOptions,
 			departments: departmentOptions,
 			positions: positionOptions,
 			educations: educationOptions,

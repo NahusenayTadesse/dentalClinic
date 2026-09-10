@@ -2,8 +2,6 @@ import { and, count, desc, eq, isNotNull, sql } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import {
 	auditLog,
-	bankAmount,
-	bankInsertHistory,
 	bonuses,
 	customers,
 	damagedSupplies,
@@ -29,7 +27,7 @@ import {
 	position,
 	salaries,
 	services,
-	site,
+	branch,
 	supplies,
 	suppliesAdjustments,
 	supplySuppliers,
@@ -99,14 +97,13 @@ const NUMERIC_KEYS: Record<string, string[]> = {
 	stock: ['quantity', 'reorderLevel'],
 	transactions: ['amount'],
 	expenses: ['amount'],
-	'bank-history': ['amount'],
 	'services-rendered': ['price', 'tip', 'tax', 'total'],
-	'site-payments': ['request', 'payment', 'beforeVat', 'vatRate', 'vat', 'withhold', 'penalty'],
+	'branch-payments': ['request', 'payment', 'beforeVat', 'vatRate', 'vat', 'withhold', 'penalty'],
 	'payment-requests': ['amount', 'penalty', 'vat', 'withholding'],
 	contracts: ['monthlyAmount'],
 	renewals: ['amount'],
-	'site-penalties': ['amount'],
-	customers: ['sites'],
+	'branch-penalties': ['amount'],
+	customers: ['branches'],
 	'audit-log': []
 };
 
@@ -181,7 +178,7 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 								id: payrollEntries.id,
 								employee: staffName,
 								department: department.name,
-								site: site.name,
+								branch: branch.name,
 								month: payrollEntries.month,
 								year: payrollEntries.year,
 								periodStart: day(payrollEntries.payPeriodStart),
@@ -209,7 +206,7 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 							.from(payrollEntries)
 							.innerJoin(employee, eq(payrollEntries.staffId, employee.id))
 							.leftJoin(department, eq(employee.departmentId, department.id))
-							.leftJoin(site, eq(employee.siteId, site.id))
+							.leftJoin(branch, eq(employee.branchId, branch.id))
 							.leftJoin(paymentMethods, eq(payrollEntries.paymentMethodId, paymentMethods.id))
 							.where(where)
 							.orderBy(desc(payrollEntries.payPeriodStart), desc(payrollEntries.id))
@@ -314,7 +311,7 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 								employee: staffName,
 								department: department.name,
 								position: position.name,
-								site: site.name,
+								branch: branch.name,
 								amount: salaries.amount,
 								transport: salaries.transportationAllowance,
 								housing: salaries.housingAllowance,
@@ -329,7 +326,7 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 							.innerJoin(employee, eq(salaries.staffId, employee.id))
 							.leftJoin(department, eq(salaries.departmentId, department.id))
 							.leftJoin(position, eq(salaries.positionId, position.id))
-							.leftJoin(site, eq(salaries.siteId, site.id))
+							.leftJoin(branch, eq(salaries.branchId, branch.id))
 							.where(where)
 							.orderBy(desc(salaries.startDate))
 					),
@@ -362,7 +359,7 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 								gender: employee.gender,
 								department: department.name,
 								position: position.name,
-								site: site.name,
+								branch: branch.name,
 								status: employmentStatuses.name,
 								education: educationalLevel.name,
 								maritalStatus: employee.martialStatus,
@@ -385,7 +382,7 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 							.from(employee)
 							.leftJoin(department, eq(employee.departmentId, department.id))
 							.leftJoin(position, eq(employee.positionId, position.id))
-							.leftJoin(site, eq(employee.siteId, site.id))
+							.leftJoin(branch, eq(employee.branchId, branch.id))
 							.leftJoin(employmentStatuses, eq(employee.employmentStatus, employmentStatuses.id))
 							.leftJoin(educationalLevel, eq(employee.educationalLevel, educationalLevel.id))
 							.where(where)
@@ -414,7 +411,7 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 								employee: staffName,
 								gender: employee.gender,
 								department: department.name,
-								site: site.name,
+								branch: branch.name,
 								hireDate: day(employee.hireDate),
 								terminationDate: day(employeeTermination.terminationDate),
 								tenureYears: sql<string>`ROUND(DATEDIFF(${employeeTermination.terminationDate}, ${employee.hireDate}) / 365.25, 1)`,
@@ -424,7 +421,7 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 							.from(employeeTermination)
 							.innerJoin(employee, eq(employeeTermination.staffId, employee.id))
 							.leftJoin(department, eq(employee.departmentId, department.id))
-							.leftJoin(site, eq(employee.siteId, site.id))
+							.leftJoin(branch, eq(employee.branchId, branch.id))
 							.where(where)
 							.orderBy(desc(employeeTermination.terminationDate))
 					),
@@ -456,14 +453,14 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 								date: day(bonuses.bonusDate),
 								employee: staffName,
 								department: department.name,
-								site: site.name,
+								branch: branch.name,
 								amount: bonuses.amount,
 								description: bonuses.description
 							})
 							.from(bonuses)
 							.innerJoin(employee, eq(bonuses.staffId, employee.id))
 							.leftJoin(department, eq(employee.departmentId, department.id))
-							.leftJoin(site, eq(employee.siteId, site.id))
+							.leftJoin(branch, eq(employee.branchId, branch.id))
 							.where(where)
 							.orderBy(desc(bonuses.bonusDate))
 					),
@@ -496,7 +493,7 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 								date: day(overTime.date),
 								employee: staffName,
 								department: department.name,
-								site: site.name,
+								branch: branch.name,
 								type: overTimeType.name,
 								hours: overTime.hours,
 								rate: overTime.amountPerHour,
@@ -506,7 +503,7 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 							.from(overTime)
 							.innerJoin(employee, eq(overTime.staffId, employee.id))
 							.leftJoin(department, eq(employee.departmentId, department.id))
-							.leftJoin(site, eq(employee.siteId, site.id))
+							.leftJoin(branch, eq(employee.branchId, branch.id))
 							.leftJoin(overTimeType, eq(overTime.overTimeTypeId, overTimeType.id))
 							.where(where)
 							.orderBy(desc(overTime.date))
@@ -581,7 +578,7 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 								date: day(missingDays.day),
 								employee: staffName,
 								department: department.name,
-								site: site.name,
+								branch: branch.name,
 								deductable: sql<string>`IF(${missingDays.deductable}, 'yes', 'no')`,
 								amount: missingDays.deductableAmount,
 								approval: missingDays.approval,
@@ -590,7 +587,7 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 							.from(missingDays)
 							.innerJoin(employee, eq(missingDays.staffId, employee.id))
 							.leftJoin(department, eq(employee.departmentId, department.id))
-							.leftJoin(site, eq(employee.siteId, site.id))
+							.leftJoin(branch, eq(employee.branchId, branch.id))
 							.where(where)
 							.orderBy(desc(missingDays.day))
 					),
@@ -890,52 +887,6 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 			);
 		}
 
-		case 'bank-history': {
-			const where = all([
-				notDeleted(bankInsertHistory),
-				inRange(bankInsertHistory.createdAt, filters),
-				filters.paymentMethodId
-					? eq(bankAmount.paymentMethodId, filters.paymentMethodId)
-					: undefined,
-				...amountScope(bankInsertHistory.amount, filters),
-				searchScope(search, [bankInsertHistory.reason, bankAmount.account])
-			]);
-
-			return run(
-				() =>
-					page(
-						db
-							.select({
-								id: bankInsertHistory.id,
-								date: day(bankInsertHistory.createdAt),
-								bank: paymentMethods.name,
-								account: bankAmount.account,
-								direction: sql<string>`IF(${bankInsertHistory.amount} >= 0, 'in', 'out')`,
-								amount: bankInsertHistory.amount,
-								reason: bankInsertHistory.reason,
-								recordedBy: user.name,
-								receipt: transactions.recieptLink
-							})
-							.from(bankInsertHistory)
-							.leftJoin(bankAmount, eq(bankInsertHistory.bankAmountId, bankAmount.id))
-							.leftJoin(paymentMethods, eq(bankAmount.paymentMethodId, paymentMethods.id))
-							.leftJoin(
-								transactions,
-								and(eq(bankInsertHistory.transactionId, transactions.id), notDeleted(transactions))
-							)
-							.leftJoin(user, eq(bankInsertHistory.createdBy, user.id))
-							.where(where)
-							.orderBy(desc(bankInsertHistory.createdAt))
-					),
-				() =>
-					db
-						.select({ total: count() })
-						.from(bankInsertHistory)
-						.leftJoin(bankAmount, eq(bankInsertHistory.bankAmountId, bankAmount.id))
-						.where(where)
-			);
-		}
-
 		case 'services-rendered': {
 			const where = all([
 				notDeleted(transactionServices),
@@ -1002,8 +953,7 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 								phone: customers.phone,
 								email: customers.email,
 								tinNo: customers.tinNo,
-								addedOn: day(customers.createdAt),
-								sites: sql<string>`(SELECT COUNT(*) FROM ${site} WHERE ${site.customerId} = ${customers.id} AND ${site.deletedAt} IS NULL)`
+								addedOn: day(customers.createdAt)
 							})
 							.from(customers)
 							.where(where)
@@ -1013,12 +963,11 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 			);
 		}
 
-		case 'sites': {
+		case 'branches': {
 			const where = all([
-				notDeleted(site),
-				filters.siteId ? eq(site.id, filters.siteId) : undefined,
-				filters.customerId ? eq(site.customerId, filters.customerId) : undefined,
-				searchScope(search, [site.name, customers.name, site.phone])
+				notDeleted(branch),
+				filters.branchId ? eq(branch.id, filters.branchId) : undefined,
+				searchScope(search, [branch.name, branch.phone])
 			]);
 
 			return run(
@@ -1026,24 +975,17 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 					page(
 						db
 							.select({
-								id: site.id,
-								site: site.name,
-								customer: customers.name,
-								phone: site.phone,
-								startDate: day(site.startDate),
-								isActive: sql<string>`IF(${site.isActive}, 'active', 'inactive')`
+								id: branch.id,
+								branch: branch.name,
+								phone: branch.phone,
+								openedOn: day(branch.openedOn),
+								isActive: sql<string>`IF(${branch.isActive}, 'active', 'inactive')`
 							})
-							.from(site)
-							.leftJoin(customers, eq(site.customerId, customers.id))
+							.from(branch)
 							.where(where)
-							.orderBy(desc(site.startDate))
+							.orderBy(desc(branch.openedOn))
 					),
-				() =>
-					db
-						.select({ total: count() })
-						.from(site)
-						.leftJoin(customers, eq(site.customerId, customers.id))
-						.where(where)
+				() => db.select({ total: count() }).from(branch).where(where)
 			);
 		}
 
@@ -1128,7 +1070,7 @@ export async function filterOptions() {
 	const [
 		departments,
 		positions,
-		sites,
+		branches,
 		customerList,
 		statuses,
 		educations,
@@ -1152,10 +1094,10 @@ export async function filterOptions() {
 			.where(notDeleted(position))
 			.orderBy(position.name),
 		db
-			.select({ id: site.id, name: site.name })
-			.from(site)
-			.where(notDeleted(site))
-			.orderBy(site.name),
+			.select({ id: branch.id, name: branch.name })
+			.from(branch)
+			.where(notDeleted(branch))
+			.orderBy(branch.name),
 		db
 			.select({ id: customers.id, name: customers.name })
 			.from(customers)
@@ -1217,7 +1159,7 @@ export async function filterOptions() {
 	return {
 		departments,
 		positions,
-		sites,
+		branches,
 		customers: customerList,
 		employmentStatuses: statuses,
 		educationalLevels: educations,

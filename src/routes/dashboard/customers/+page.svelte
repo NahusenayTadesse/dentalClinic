@@ -27,6 +27,6 @@
 {:else}
 	<h2 class="my-4 text-2xl">No of customers {data.customerList?.length}</h2>
 
-	<FilterMenu data={data?.customerList} bind:filteredList filterKeys={['noOfSites']} />
+	<FilterMenu data={data?.customerList} bind:filteredList />
 	<DataTable data={filteredList} {columns} />
 {/if}

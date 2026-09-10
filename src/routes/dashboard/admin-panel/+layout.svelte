@@ -17,6 +17,7 @@
 		list.filter((entry) => canVisit(entry.href, permList));
 
 	let locations = [
+		{ name: 'Branches', href: '/dashboard/admin-panel/branches' },
 		{ name: 'Regions', href: '/dashboard/admin-panel/regions' },
 		{ name: 'Cities', href: '/dashboard/admin-panel/cities' },
 		{ name: 'Subcities', href: '/dashboard/admin-panel/subcities' }
@@ -46,8 +47,7 @@
 		{ name: 'Tax Types', href: '/dashboard/admin-panel/tax-types' },
 		{ name: 'Overtime Types', href: '/dashboard/admin-panel/overtime-types' },
 		{ name: 'Pensions', href: '/dashboard/admin-panel/pensions' },
-		{ name: 'Vat and Withhold', href: '/dashboard/admin-panel/vat-withhold' },
-		{ name: 'Bank Amount', href: '/dashboard/admin-panel/bank-amounts' }
+		{ name: 'Vat and Withhold', href: '/dashboard/admin-panel/vat-withhold' }
 	];
 </script>
 

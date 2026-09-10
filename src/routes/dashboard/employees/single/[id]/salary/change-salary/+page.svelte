@@ -67,10 +67,10 @@
 </script>
 
 <svelte:head>
-	<title>Change Salary or Site</title>
+	<title>Change Salary or Branch</title>
 </svelte:head>
 
-<FormCard title="Change Salary, Site, Position or Department for {data.salaryDetail.name}">
+<FormCard title="Change Salary, Branch, Position or Department for {data.salaryDetail.name}">
 	<div class="flex flex-col gap-4">
 		<div class="flex flex-row gap-2">
 			<Button variant={byPercent ? 'default' : 'outline'} {onclick}
@@ -111,10 +111,10 @@
 			<InputComp
 				{form}
 				{errors}
-				name="site"
-				label="Site"
+				name="branch"
+				label="Branch"
 				type="combo"
-				items={data?.sites}
+				items={data?.branches}
 				placeholder="Enter the amount"
 				required
 			/>

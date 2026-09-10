@@ -6,6 +6,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { MySqlColumn, MySqlTable } from 'drizzle-orm/mysql-core';
 
 import { db } from '$lib/server/db';
+import { isDuplicateKey } from '$lib/server/dbErrors';
 import { saveUploadedFile } from '$lib/server/upload';
 import { notDeleted, softDeleteOwnedRecord } from '$lib/server/softDelete';
 
@@ -233,9 +234,4 @@ export function childCrud({
 			}
 		}
 	};
-}
-
-/** MySQL's unique-constraint violation. */
-function isDuplicateKey(err: unknown): boolean {
-	return (err as { code?: string })?.code === 'ER_DUP_ENTRY';
 }

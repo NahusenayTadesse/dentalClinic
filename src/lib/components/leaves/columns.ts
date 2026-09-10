@@ -23,7 +23,7 @@ export type LeaveRow = {
 	staffId: number;
 	name: string;
 	department: string | null;
-	siteName: string | null;
+	branchName: string | null;
 	requestDate: string | Date;
 	startDate: string | Date;
 	endDate: string | Date;
@@ -120,10 +120,10 @@ export const makeColumns = (status: LeaveStatus, canDelete = false): ColumnDef<L
 	},
 
 	{
-		accessorKey: 'siteName',
+		accessorKey: 'branchName',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Sites',
+				name: 'Branches',
 				onclick: column.getToggleSortingHandler()
 			})
 	},

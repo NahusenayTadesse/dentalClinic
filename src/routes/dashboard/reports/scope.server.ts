@@ -63,7 +63,7 @@ export function staffScope(filters: ReportFilters): SQL[] {
 	if (filters.staffId) conditions.push(eq(employee.id, filters.staffId));
 	if (filters.departmentId) conditions.push(eq(employee.departmentId, filters.departmentId));
 	if (filters.positionId) conditions.push(eq(employee.positionId, filters.positionId));
-	if (filters.siteId) conditions.push(eq(employee.siteId, filters.siteId));
+	if (filters.branchId) conditions.push(eq(employee.branchId, filters.branchId));
 	if (filters.gender) conditions.push(sql`${employee.gender} = ${filters.gender}`);
 	if (filters.employmentStatusId) {
 		conditions.push(eq(employee.employmentStatus, filters.employmentStatusId));

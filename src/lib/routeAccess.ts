@@ -24,12 +24,7 @@ export const routeRules: RouteRule[] = [
 
 	{
 		prefix: '/dashboard/customers',
-		permission: 'customers_sites.record'
-	},
-
-	{
-		prefix: '/dashboard/sites',
-		permission: 'customers_sites.record'
+		permission: 'customers.record'
 	},
 
 	{
@@ -62,10 +57,6 @@ export const routeRules: RouteRule[] = [
 		permission: 'attendance.manage'
 	},
 	{
-		prefix: '/dashboard/employees/sites',
-		permission: 'attendance.manage'
-	},
-	{
 		prefix: '/dashboard/employees',
 		permission: 'employees.create_followup'
 	},
@@ -74,10 +65,6 @@ export const routeRules: RouteRule[] = [
 	{
 		prefix: '/dashboard/salary/transactions',
 		permission: 'transactions.manage'
-	},
-	{
-		prefix: '/dashboard/salary/bank-history',
-		permission: 'bank_history.view'
 	},
 	{
 		prefix: '/dashboard/salary',
@@ -121,7 +108,7 @@ export const routeRules: RouteRule[] = [
 		permission: 'reports.finance'
 	},
 	// Last, so the three specific report prefixes above still win: `find` takes
-	// the first match. The company report reads payroll, revenue and bank
+	// the first match. The company report reads payroll and revenue
 	// balances, so it sits behind the same permission the sidebar link declares.
 	{
 		prefix: '/dashboard/reports',

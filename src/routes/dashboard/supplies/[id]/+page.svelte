@@ -108,7 +108,7 @@
 			data={data.adjustForm}
 			name={data.supply?.name}
 			employees={data.employeesList}
-			banks={data.bankList}
+			paymentMethods={data.paymentMethods}
 		/>
 		<Damaged data={data.damagedForm} name={data.supply?.name} employees={data.employeesList} />
 		<Button href="/dashboard/supplies/{data.supply.id}/ranges/{getCurrentMonthRange()}">

@@ -13,7 +13,7 @@ export const insertExpenseSchema = z.object({
 		.number('Expense Type is Required')
 		.int()
 		.positive({ message: 'Type ID must be positive.' }),
-	bank: z.coerce.number('Payment Method is Required').int().positive(),
+	paymentMethod: z.coerce.number('Payment Method is Required').int().positive(),
 
 	description: z
 		.string()
@@ -23,10 +23,9 @@ export const insertExpenseSchema = z.object({
 	total: z.coerce
 		.number('Amount is Required')
 		.positive({ message: 'Total must be a positive number.' }),
-	reciept: z.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.').max(10000000),
+	reciept: z.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.').max(10000000)
 
 	/** Set by the user when the expense would take the account below zero. */
-	acknowledgeOverdraft: z.boolean().default(false)
 });
 
 // To use this schema for a form, you might extract the type:

@@ -18,10 +18,9 @@ import {
 	services,
 	taxType,
 	leaveType,
-	site,
+	branch,
 	customers,
 	overTimeType,
-	bankAmount,
 	position
 } from '$lib/server/db/schema/';
 
@@ -69,22 +68,6 @@ export async function paymentMethods() {
 		})
 		.from(paymentMethod)
 		.where(and(eq(paymentMethod.isActive, true), notDeleted(paymentMethod)));
-
-	return paymentMethods;
-}
-
-export async function banks() {
-	const paymentMethods = await db
-		.select({
-			value: bankAmount.id,
-			name: paymentMethod.name,
-			paymentMethodId: paymentMethod.id,
-			// Carried so forms can warn before the server has to.
-			balance: bankAmount.amount
-		})
-		.from(bankAmount)
-		.leftJoin(paymentMethod, eq(paymentMethod.id, bankAmount.paymentMethodId))
-		.where(notDeleted(bankAmount));
 
 	return paymentMethods;
 }
@@ -312,16 +295,15 @@ export async function overtimeTypes() {
 	return overtimeTypes;
 }
 
-export async function sites() {
-	const sites = await db
+/** Clinic locations, for the branch picker. Single-branch clinics get exactly one row. */
+export async function branches() {
+	return await db
 		.select({
-			value: site.id,
-			name: site.name
+			value: branch.id,
+			name: branch.name
 		})
-		.from(site)
-		.where(and(eq(site.isActive, true), notDeleted(site)));
-
-	return sites;
+		.from(branch)
+		.where(notDeleted(branch));
 }
 
 export async function customerList() {

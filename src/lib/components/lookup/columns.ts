@@ -6,6 +6,7 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import Statuses from '$lib/components/Table/statuses.svelte';
 import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 import LookupEdit from './LookupEdit.svelte';
+import { formatEthiopianDate } from '$lib/global.svelte';
 import type { LookupConfig, LookupField, LookupOptions, LookupRow } from './types';
 
 /** The validated form a lookup route hands to its dialogs. */
@@ -82,6 +83,19 @@ export function lookupColumns(
 			.filter((field) => field.inTable !== false)
 			.map((field): ColumnDef<LookupRow> => {
 				const isFlag = field.type === 'boolean' || field.type === 'checkbox';
+
+				// Every other date on this app renders on the Ethiopian calendar, so these do too.
+				// An empty cell rather than "Invalid Date" when the column is null.
+				if (field.type === 'date') {
+					return {
+						accessorKey: field.name,
+						header: sortableHeader(field.label),
+						cell: ({ row }) => {
+							const value = row.original[field.name];
+							return value ? formatEthiopianDate(new Date(value as string | Date)) : '';
+						}
+					};
+				}
 
 				// A reference sorts and reads on the joined *name*, never the raw id.
 				if (field.type === 'reference') {

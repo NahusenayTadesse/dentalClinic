@@ -1,5 +1,11 @@
 import { db } from '$lib/server/db';
-import { employee, department, employmentStatuses, missingDays, site } from '$lib/server/db/schema';
+import {
+	employee,
+	department,
+	employmentStatuses,
+	missingDays,
+	branch
+} from '$lib/server/db/schema';
 import { eq, and, sql, count, inArray } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
 import { edit } from '$lib/components/attendance/schema';
@@ -26,7 +32,7 @@ export const load: PageServerLoad = async ({ params }) => {
 			name: employeeLegalName,
 			department: department.name,
 			status: employmentStatuses.name,
-			site: site.name,
+			branch: branch.name,
 			absent: count(missingDays.id),
 
 			deductable: sql<number>`SUM(CASE WHEN ${missingDays.deductable} = true THEN 1 ELSE 0 END)`,
@@ -56,7 +62,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		})
 		.from(employee)
 		.leftJoin(department, and(eq(department.id, employee.departmentId), notDeleted(department)))
-		.leftJoin(site, and(eq(site.id, employee.siteId), notDeleted(site)))
+		.leftJoin(branch, and(eq(branch.id, employee.branchId), notDeleted(branch)))
 		.leftJoin(
 			missingDays,
 			and(eq(missingDays.staffId, employee.id), currentMonthFilter(missingDays.day, start, end))

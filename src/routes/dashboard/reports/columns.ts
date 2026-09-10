@@ -111,7 +111,7 @@ function build(columns: Column[]) {
 }
 
 const EMPLOYEE_LINK = '/dashboard/employees';
-const SITE_LINK = '/dashboard/sites';
+const BRANCH_LINK = '/dashboard/admin-panel/branches';
 
 const DEFINITIONS: Record<SectionKey, Column[]> = {
 	'payroll-runs': [
@@ -137,7 +137,7 @@ const DEFINITIONS: Record<SectionKey, Column[]> = {
 	'payroll-entries': [
 		['employee', 'Employee'],
 		['department', 'Department'],
-		['site', 'Site'],
+		['branch', 'Branch'],
 		['month', 'Month'],
 		['year', 'Year'],
 		['periodStart', 'Period Start', 'date'],
@@ -190,7 +190,7 @@ const DEFINITIONS: Record<SectionKey, Column[]> = {
 		['employee', 'Employee'],
 		['department', 'Department'],
 		['position', 'Position'],
-		['site', 'Site'],
+		['branch', 'Branch'],
 		['amount', 'Salary', 'money'],
 		['transport', 'Transport', 'money'],
 		['housing', 'Housing', 'money'],
@@ -208,7 +208,7 @@ const DEFINITIONS: Record<SectionKey, Column[]> = {
 		['gender', 'Gender'],
 		['department', 'Department'],
 		['position', 'Position'],
-		['site', 'Site'],
+		['branch', 'Branch'],
 		['status', 'Status', 'status'],
 		['education', 'Education'],
 		['maritalStatus', 'Marital Status'],
@@ -225,7 +225,7 @@ const DEFINITIONS: Record<SectionKey, Column[]> = {
 		['gender', 'Gender'],
 		['department', 'Department'],
 		['position', 'Position'],
-		['site', 'Site'],
+		['branch', 'Branch'],
 		['status', 'Status', 'status'],
 		['education', 'Education'],
 		['salary', 'Starting Salary', 'money'],
@@ -236,7 +236,7 @@ const DEFINITIONS: Record<SectionKey, Column[]> = {
 		['employee', 'Employee'],
 		['gender', 'Gender'],
 		['department', 'Department'],
-		['site', 'Site'],
+		['branch', 'Branch'],
 		['hireDate', 'Hired', 'date'],
 		['terminationDate', 'Terminated', 'date'],
 		['tenureYears', 'Years Served', 'number'],
@@ -248,7 +248,7 @@ const DEFINITIONS: Record<SectionKey, Column[]> = {
 		['date', 'Date', 'date'],
 		['employee', 'Employee'],
 		['department', 'Department'],
-		['site', 'Site'],
+		['branch', 'Branch'],
 		['amount', 'Amount', 'money'],
 		['description', 'Description', 'long']
 	],
@@ -257,7 +257,7 @@ const DEFINITIONS: Record<SectionKey, Column[]> = {
 		['date', 'Date', 'date'],
 		['employee', 'Employee'],
 		['department', 'Department'],
-		['site', 'Site'],
+		['branch', 'Branch'],
 		['type', 'Type'],
 		['hours', 'Hours', 'number'],
 		['rate', 'Rate', 'money'],
@@ -280,7 +280,7 @@ const DEFINITIONS: Record<SectionKey, Column[]> = {
 		['date', 'Date', 'date'],
 		['employee', 'Employee'],
 		['department', 'Department'],
-		['site', 'Site'],
+		['branch', 'Branch'],
 		['deductable', 'Deductable', 'status'],
 		['amount', 'Docked', 'money'],
 		['approval', 'Approval', 'status'],
@@ -366,17 +366,6 @@ const DEFINITIONS: Record<SectionKey, Column[]> = {
 		['receipt', 'Receipt', 'long']
 	],
 
-	'bank-history': [
-		['date', 'Date', 'date'],
-		['bank', 'Bank'],
-		['account', 'Account'],
-		['direction', 'Direction'],
-		['amount', 'Amount', 'money'],
-		['reason', 'Reason', 'long'],
-		['recordedBy', 'Recorded By'],
-		['receipt', 'Receipt', 'long']
-	],
-
 	'services-rendered': [
 		['date', 'Date', 'date'],
 		['service', 'Service'],
@@ -394,15 +383,13 @@ const DEFINITIONS: Record<SectionKey, Column[]> = {
 		['phone', 'Phone'],
 		['email', 'Email'],
 		['tinNo', 'TIN'],
-		['sites', 'Sites', 'number'],
 		['addedOn', 'Added', 'date']
 	],
 
-	sites: [
-		['site', 'Site', 'link', SITE_LINK],
-		['customer', 'Customer'],
+	branches: [
+		['branch', 'Branch', 'link', BRANCH_LINK],
 		['phone', 'Phone'],
-		['startDate', 'Started', 'date'],
+		['openedOn', 'Opened', 'date'],
 		['isActive', 'Status', 'status']
 	],
 

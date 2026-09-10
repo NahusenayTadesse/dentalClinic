@@ -21,7 +21,7 @@ import { secureFields, lesserFields, approvalFields } from './secureFields';
 import { user } from './user';
 import { paymentMethods, transactionServices } from './finance';
 import { services } from './services';
-import { site } from './sites';
+import { branchRef } from './branches';
 import { address } from './locations';
 
 /**
@@ -120,7 +120,8 @@ export const employee = mysqlTable(
 			'divorced',
 			'other'
 		]).default('single'),
-		siteId: int('site_id').references(() => site.id),
+		/** Which location this employee works at. See `branchRef`. */
+		branchId: branchRef(),
 		existingPensionCard: boolean().default(false),
 		address: int('address').references(() => address.id),
 		leavesLeft: dayCount('leaves_left').notNull().default(0),
@@ -198,27 +199,6 @@ export const penality = mysqlTable(
 	},
 	(table) => [index('name_idx').on(table.name), index('rate_idx').on(table.rate)]
 );
-
-export const pensionType = mysqlTable('pension_type', {
-	id: int('id').autoincrement().primaryKey(),
-	name: varchar('name', { length: 255 }).notNull(),
-	rate: decimal('rate', { precision: 15, scale: 2 }).notNull(),
-	taxtype: int('tax_type')
-		.references(() => taxType.id)
-		.notNull(),
-	...lesserFields
-});
-
-export const pension = mysqlTable('pension', {
-	id: int('id').autoincrement().primaryKey(),
-	staffId: int('staff_id')
-		.references(() => employee.id)
-		.notNull(),
-	startDate: date('start_date').notNull(),
-	endDate: date('end_date').notNull(),
-	pensionAmount: decimal('pension_amount', { precision: 10, scale: 2 }).notNull(),
-	pensionType: varchar('pension_type', { length: 255 }).notNull()
-});
 
 export const leaveType = mysqlTable(
 	'leave_type',
@@ -382,7 +362,8 @@ export const salaries = mysqlTable(
 			.references(() => employee.id, { onDelete: 'cascade' }),
 
 		departmentId: int('department_id').references(() => department.id, { onDelete: 'set null' }),
-		siteId: int('site_id').references(() => site.id, { onDelete: 'set null' }),
+		/** The branch this salary was set for, kept as a snapshot. */
+		branchId: branchRef(),
 
 		positionId: int('position_id').references(() => position.id, { onDelete: 'set null' }),
 		officeCommission: boolean('office commision').default(false),

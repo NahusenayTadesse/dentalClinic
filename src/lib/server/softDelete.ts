@@ -1,7 +1,6 @@
 import { and, count, eq, inArray, isNull, or, sql, type SQL } from 'drizzle-orm';
 import type { AnyMySqlColumn, MySqlTable } from 'drizzle-orm/mysql-core';
 import { db } from '$lib/server/db';
-import { reverseBankPostings } from '$lib/server/bankLedger';
 import {
 	address,
 	customers,
@@ -13,7 +12,6 @@ import {
 	rolePermissions,
 	roles,
 	session,
-	site,
 	specialPermissions,
 	staffAccounts,
 	staffContacts,
@@ -44,7 +42,7 @@ export type SoftDeletable = { deletedAt: AnyMySqlColumn };
  * In a `where`, pass the table(s) the query reads from:
  *
  * ```ts
- * .where(and(eq(site.isActive, true), notDeleted(site)))
+ * .where(and(eq(branch.isActive, true), notDeleted(branch)))
  * ```
  *
  * In a join, put it in the `on` clause rather than the `where` — a left join
@@ -52,7 +50,7 @@ export type SoftDeletable = { deletedAt: AnyMySqlColumn };
  * drops the parent row too:
  *
  * ```ts
- * .leftJoin(site, and(eq(employee.siteId, site.id), notDeleted(site)))
+ * .leftJoin(branch, and(eq(employee.branchId, branch.id), notDeleted(branch)))
  * ```
  *
  * One deliberate exception: **attribution joins are not filtered.** A join on
@@ -102,48 +100,13 @@ async function softDeleteAddresses(tx: Tx, addressIds: (number | null)[], userId
 }
 
 /**
- * Deletes a site and its address.
+ * Deletes a customer and its address.
  *
- * Used to cascade `site_contracts` too; those tables were the facilities business's client
- * billing and went with the prune. `site_contacts` is left alone deliberately — it cascades on
- * a hard delete and carries nothing worth surfacing on its own.
- */
-export async function softDeleteSite(tx: Tx, siteId: number, userId?: string) {
-	const stamp = deletionStamp(userId);
-
-	const addressIds = await tx
-		.select({ address: site.address })
-		.from(site)
-		.where(eq(site.id, siteId))
-		.then((rows) => rows.map((row) => row.address));
-
-	await tx
-		.update(site)
-		.set(stamp)
-		.where(and(eq(site.id, siteId), notDeleted(site)));
-
-	await softDeleteAddresses(tx, addressIds, userId);
-}
-
-/**
- * Deletes a customer and their sites.
- *
- * The contract leg is gone with the billing tables it walked; a site is now just a location.
+ * Used to cascade `site_contracts` and the customer's sites; both went with the prune — a
+ * customer is now just a corporate billing party, so there is nothing left to walk.
  */
 export async function softDeleteCustomer(tx: Tx, customerId: number, userId?: string) {
 	const stamp = deletionStamp(userId);
-
-	// Read the sites before stamping them: their addresses are deleted below, and once the rows
-	// are marked the query that finds them would have to look past its own filter.
-	const customerSites = await tx
-		.select({ address: site.address })
-		.from(site)
-		.where(eq(site.customerId, customerId));
-
-	await tx
-		.update(site)
-		.set(stamp)
-		.where(and(eq(site.customerId, customerId), notDeleted(site)));
 
 	const [customerRow] = await tx
 		.select({ address: customers.address })
@@ -156,11 +119,7 @@ export async function softDeleteCustomer(tx: Tx, customerId: number, userId?: st
 		.set(stamp)
 		.where(and(eq(customers.id, customerId), notDeleted(customers)));
 
-	await softDeleteAddresses(
-		tx,
-		[customerRow?.address ?? null, ...customerSites.map((row) => row.address)],
-		userId
-	);
+	await softDeleteAddresses(tx, [customerRow?.address ?? null], userId);
 }
 
 /**
@@ -483,10 +442,8 @@ export async function softDeleteExpense(
 	await tx.update(expenses).set(stamp).where(eq(expenses.id, expenseId));
 
 	if (row.transactionId) {
-		// The expense took money out of a bank account, so deleting it puts the
-		// money back.
-		await reverseBankPostings(tx, row.transactionId, 'Reversal: expense deleted', userId);
-
+		// Used to reverse the bank posting too; bank balances were a Spotless feature and went
+		// with those tables. The transaction itself is still soft-deleted alongside the expense.
 		await tx
 			.update(transactions)
 			.set(stamp)

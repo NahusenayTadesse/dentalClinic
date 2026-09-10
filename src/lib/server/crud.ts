@@ -5,6 +5,7 @@ import { z } from 'zod/v4';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { MySqlColumn, MySqlTable } from 'drizzle-orm/mysql-core';
 import { db } from '$lib/server/db';
+import { isDuplicateKey } from '$lib/server/dbErrors';
 import { saveUploadedFile } from '$lib/server/upload';
 import { requireSuperAdmin } from '$lib/server/permissions';
 import { notDeleted } from '$lib/server/softDelete';
@@ -66,11 +67,6 @@ export interface CrudReference {
 	options: () => Promise<{ value: number; name: string }[]>;
 	/** Key in the returned load data for those options — `'regionList'`. */
 	optionsKey: string;
-}
-
-/** MySQL's unique-constraint violation. */
-function isDuplicateKey(err: unknown): boolean {
-	return (err as { code?: string })?.code === 'ER_DUP_ENTRY';
 }
 
 interface CrudOptions<T extends AnyTable> {

@@ -3,7 +3,6 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import { fail } from '@sveltejs/kit';
 import { sql, eq, and } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
-import { overdraftCheck, overdraftMessage, postToBank } from '$lib/server/bankLedger';
 import { insertExpenseSchema as schema } from './expenseSchema';
 import { db } from '$lib/server/db';
 import {
@@ -11,16 +10,17 @@ import {
 	expensesType,
 	transactions,
 	paymentMethods,
-	reports,
-	bankAmount,
-	bankInsertHistory
+	reports
 } from '$lib/server/db/schema/';
 import { asRequested } from '$lib/server/approvals';
 import type { Actions } from './$types';
-import type { PageServerLoad } from './$types.js';
 import { setFlash } from 'sveltekit-flash-message/server';
 
-export const load: PageServerLoad = async () => {
+/*
+ * Unannotated on purpose: `: PageServerLoad` widens the return to the generic signature and
+ * `PageData` loses the keys the page reads.
+ */
+export const load = async () => {
 	const form = await superValidate(zod4(schema));
 	const categories = await db
 		.select({
@@ -34,12 +34,12 @@ export const load: PageServerLoad = async () => {
 	return {
 		form,
 		categories,
-		banks: await banks()
+		paymentMethods: await paymentMethodList()
 	};
 };
 
 import { saveUploadedFile } from '$lib/server/upload';
-import { banks } from '$lib/server/fastData';
+import { paymentMethods as paymentMethodList } from '$lib/server/fastData';
 
 export const actions: Actions = {
 	addExpense: async ({ request, cookies, locals }) => {
@@ -53,29 +53,12 @@ export const actions: Actions = {
 			return fail(400, { form });
 		}
 
-		const { expenseDate, total, type, description, bank, reciept, acknowledgeOverdraft } =
-			form.data;
-
-		// Advisory, not a block: these balances are a bookkeeping aid rather than a
-		// live bank feed, so the app cannot actually know the money is missing. Warn,
-		// take the acknowledgement, then record it.
-		const check = await overdraftCheck(bank, -Math.abs(total));
-		if (check?.overdraws && !acknowledgeOverdraft) {
-			return message(form, { type: 'error', text: overdraftMessage(check) }, { status: 400 });
-		}
+		const { expenseDate, total, type, description, paymentMethod, reciept } = form.data;
 
 		try {
 			const imageName = await saveUploadedFile(reciept);
 
 			await db.transaction(async (tx) => {
-				const [paymentMethod] = await tx
-					.select({
-						id: bankAmount.paymentMethodId
-					})
-					.from(bankAmount)
-					.where(eq(bankAmount.id, bank))
-					.limit(1);
-
 				// `tx`, not `db`: these were running outside the surrounding transaction,
 				// so a failure in the bank update left the expense and its transaction
 				// behind with no matching money movement.
@@ -83,7 +66,7 @@ export const actions: Actions = {
 					.insert(transactions)
 					.values({
 						amount: String(-Math.abs(total)),
-						paymentMethodId: paymentMethod.id,
+						paymentMethodId: paymentMethod,
 						recieptLink: imageName,
 						description,
 						paymentStatus: 'paid',
@@ -93,31 +76,22 @@ export const actions: Actions = {
 
 				await tx.insert(expenses).values({
 					...asRequested(locals?.user?.id),
-					total,
+					// `decimal`, so Drizzle wants the string form — see CLAUDE.md §9 on money.
+					total: String(total),
 					transactionId: transaction.id,
 					type,
 					description,
-					expenseDate,
+					// The form posts a `YYYY-MM-DD` string; the column is a `date`.
+					expenseDate: new Date(expenseDate),
 					createdBy: locals.user?.id
-				});
-
-				await postToBank(tx, {
-					bankAmountId: bank,
-					transactionId: transaction.id,
-					amount: -Math.abs(total),
-					reason: 'Expense',
-					userId: locals?.user?.id
 				});
 			});
 
 			return message(form, { type: 'success', text: 'Expense Added Successfully' });
 		} catch (err) {
-			setFlash({ type: 'error', message: `Unexpected Error: ${err.message}` }, cookies);
-			return message(
-				form,
-				{ type: 'error', text: `Unexpected Error: ${err.message}` },
-				{ status: 500 }
-			);
+			const reason = err instanceof Error ? err.message : 'Unknown error';
+			setFlash({ type: 'error', message: `Unexpected Error: ${reason}` }, cookies);
+			return message(form, { type: 'error', text: `Unexpected Error: ${reason}` }, { status: 500 });
 		}
 	}
 };

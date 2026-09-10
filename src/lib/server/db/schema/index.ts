@@ -7,4 +7,4 @@ export * from './misc';
 export * from './services';
 export * from './staff';
 export * from './locations';
-export * from './sites';
+export * from './branches';

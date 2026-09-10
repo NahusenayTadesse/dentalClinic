@@ -70,9 +70,7 @@ describe('route access', () => {
 		const salary = ['salary.manage'];
 		expect(canVisit('/dashboard/salary/add-payroll', salary)).toBe(true);
 		expect(canVisit('/dashboard/salary/transactions', salary)).toBe(false);
-		expect(canVisit('/dashboard/salary/bank-history', salary)).toBe(false);
 		expect(canVisit('/dashboard/salary/transactions', ['transactions.manage'])).toBe(true);
-		expect(canVisit('/dashboard/salary/bank-history', ['bank_history.view'])).toBe(true);
 	});
 
 	/*

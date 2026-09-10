@@ -34,7 +34,7 @@
 		staffId,
 		department,
 		position,
-		site,
+		branch,
 		totalOvertimePay,
 		overtimeTypes,
 		canDelete = false
@@ -47,7 +47,7 @@
 		name: string;
 		department: string;
 		position: string;
-		site: string;
+		branch: string;
 		totalOvertimePay: number;
 		overtimeTypes: Item[];
 		/** Only a super admin gets the per-row delete button. */
@@ -103,7 +103,7 @@
 						<span class="text-muted-foreground/40">·</span>
 						<span class="text-xs text-muted-foreground">{department}</span>
 						<span class="text-muted-foreground/40">·</span>
-						<span class="text-xs text-muted-foreground">{site}</span>
+						<span class="text-xs text-muted-foreground">{branch}</span>
 					</div>
 				</Dialog.Description>
 				<div class="justify-self-end">

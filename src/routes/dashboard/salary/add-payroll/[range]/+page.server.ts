@@ -5,7 +5,7 @@ import {
 	paymentMethods,
 	salaries,
 	employee,
-	site,
+	branch,
 	department,
 	staffAccounts,
 	missingDays,
@@ -19,15 +19,12 @@ import {
 	payrollReceipts,
 	payrollEntries,
 	position,
-	transactions,
-	bankAmount,
-	bankInsertHistory
+	transactions
 } from '$lib/server/db/schema';
 import { asRequested, isApproved, unapprovedEmployeeIds } from '$lib/server/approvals';
 import { and, count, desc, or, lte, gte, asc, eq, isNull, sql } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
-import { postToBank } from '$lib/server/bankLedger';
-import { banks } from '$lib/server/fastData';
+import { paymentMethods as paymentMethodList } from '$lib/server/fastData';
 
 import { payrollSchema, type EmployeeFormType } from './schema';
 import type { PageServerLoad, Actions } from '../$types';
@@ -208,7 +205,7 @@ export const load: PageServerLoad = async ({ params }) => {
 			bonus: bonusSub.total,
 			absent: missingSub.missedCount,
 			deductions: deductionSub.total,
-			site: site.name,
+			branch: branch.name,
 			gross: grossExpression,
 			taxable: taxableIncomeExpression,
 			taxAmount: taxSql,
@@ -219,7 +216,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		.from(employee)
 		.leftJoin(department, and(eq(department.id, employee.departmentId), notDeleted(department)))
 		.leftJoin(position, and(eq(position.id, employee.positionId), notDeleted(position)))
-		.leftJoin(site, and(eq(site.id, employee.siteId), notDeleted(site)))
+		.leftJoin(branch, and(eq(branch.id, employee.branchId), notDeleted(branch)))
 		.leftJoin(salarySub, eq(salarySub.staffId, employee.id))
 		.leftJoin(
 			staffAccounts,
@@ -276,14 +273,14 @@ export const load: PageServerLoad = async ({ params }) => {
 			missingSub.missedCount
 		);
 
-	return { payrollData, start, end, form, banks: await banks() };
+	return { payrollData, start, end, form, paymentMethods: await paymentMethodList() };
 };
 
 import { saveUploadedFile } from '$lib/server/upload';
 export const actions: Actions = {
 	runPayroll: async ({ request, locals }) => {
 		const form = await superValidate(request, zod4(payrollSchema));
-		const { employees, bank, start, end, reciept, month, paymentDate } = form.data;
+		const { employees, paymentMethod, start, end, reciept, month, paymentDate } = form.data;
 
 		const [m, y] = month.split('_');
 
@@ -371,18 +368,10 @@ export const actions: Actions = {
 
 				// 2. Handle Receipt Upload
 
-				const [paymentMethod] = await tx
-					.select({
-						id: bankAmount.paymentMethodId
-					})
-					.from(bankAmount)
-					.where(eq(bankAmount.id, bank))
-					.limit(1);
-
 				const [transactionId] = await tx
 					.insert(transactions)
 					.values({
-						paymentMethodId: paymentMethod.id,
+						paymentMethodId: paymentMethod,
 						amount: String(calculateTotal(employees, 'netPay')),
 						recieptLink,
 						description: 'Emplyees Salary Payment',
@@ -400,14 +389,6 @@ export const actions: Actions = {
 					recieptLink,
 					transactionId: transactionId.id,
 					createdBy: locals?.user?.id
-				});
-
-				await postToBank(tx, {
-					bankAmountId: bank,
-					transactionId: transactionId.id,
-					amount: -Math.abs(calculateTotal(employees, 'netPay')),
-					reason: 'Emplyees Salary Payment',
-					userId: locals?.user?.id
 				});
 
 				// 3. Prepare and Insert Payroll Entries

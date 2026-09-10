@@ -5,7 +5,7 @@
 	let { children } = $props();
 
 	const items: MenuItem[] = [
-		{ title: 'Site List', href: '/dashboard/employees/sites', IconComp: List },
+		{ title: 'Branch List', href: '/dashboard/employees/branches', IconComp: List },
 		{ title: 'All Active Employees', href: '/dashboard/employees', IconComp: Sheet },
 		{
 			title: 'All Inactive Employees',

@@ -61,6 +61,8 @@ any button, dialog, popover, or menu.
 | Cascading delete                   | the `softDelete*` family — `server/softDelete.ts`                                           |
 | Delete action on a lookup page     | `lookupDeleteAction` — `server/lookupDelete.ts`                                             |
 | Authorization                      | `requireSuperAdmin` · `syncAdminRole` — `server/permissions.ts`                             |
+| Reading a MySQL error code         | `isDuplicateKey` · `mysqlErrorCode` — `server/dbErrors.ts`                                  |
+| The permission list and admin role | `seedPermissions` — `server/seedPermissions.ts`, run by `/setup`                            |
 | Dropdown option lists              | `server/fastData.ts` (50 files)                                                             |
 | Anything about stored files        | `server/files.ts` — `saveUploadedFile`, `resolveStoredFile`, `mimeFor`, `MAX_UPLOAD_BYTES`  |
 | Formatting money / Ethiopian dates | `formatETB`, `formatEthiopianDate` — `lib/global.svelte.ts`                                 |
@@ -312,7 +314,8 @@ in the repo and have no tests at all.
 ## Commands
 
 ```bash
-npm run dev          # dev server
+npm run dev          # dev server — a fresh install redirects /login to /setup
+npm run db:migrate   # apply the schema; /setup then seeds permissions and the first admin
 node scripts/check-budget.mjs   # what CI gates on — type and lint counts must not rise
 npm run check        # svelte-check — the real signal
 npm run lint         # prettier --check + eslint

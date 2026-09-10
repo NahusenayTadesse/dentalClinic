@@ -1,8 +1,6 @@
 import { count, countDistinct, desc, eq, sql } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import {
-	bankAmount,
-	bankInsertHistory,
 	employee,
 	expenses,
 	expensesType,
@@ -30,11 +28,10 @@ import {
 } from '../scope.server';
 
 /**
- * Cash: what was transacted, what was spent, and what moved through the banks.
+ * Cash: what was transacted, what was spent, and what services earned.
  *
  * Bank rows are signed — a deposit is positive, a payout negative — so the
  * balance is the sum of its history. Splitting the sign in SQL keeps inflow and
- * outflow honest without ever reading `bankAmount.amount` for a period figure.
  */
 export async function moneyStats(
 	filters: ReportFilters
@@ -59,12 +56,6 @@ export async function moneyStats(
 		...amountScope(expenses.total, filters)
 	]);
 
-	const bankWhere = all([
-		notDeleted(bankInsertHistory),
-		inRange(bankInsertHistory.createdAt, filters),
-		filters.paymentMethodId ? eq(bankAmount.paymentMethodId, filters.paymentMethodId) : undefined
-	]);
-
 	const serviceWhere = all([
 		notDeleted(transactionServices),
 		notDeleted(employee),
@@ -76,17 +67,13 @@ export async function moneyStats(
 	const [
 		[transactionTotals],
 		[expenseTotals],
-		[bankTotals],
 		[serviceTotals],
 		[supplySales],
-		balances,
 		transactionsByMonth,
 		transactionsByStatus,
 		transactionsByMethod,
 		expensesByMonth,
 		expensesByType,
-		bankByMonth,
-		bankByAccount,
 		servicesByMonth,
 		revenueByService,
 		revenueByStaff
@@ -113,17 +100,6 @@ export async function moneyStats(
 
 		db
 			.select({
-				postings: count(),
-				inflow: sql<string>`COALESCE(SUM(CASE WHEN ${bankInsertHistory.amount} > 0 THEN ${bankInsertHistory.amount} ELSE 0 END), 0)`,
-				outflow: sql<string>`COALESCE(SUM(CASE WHEN ${bankInsertHistory.amount} < 0 THEN -${bankInsertHistory.amount} ELSE 0 END), 0)`,
-				net: total(bankInsertHistory.amount)
-			})
-			.from(bankInsertHistory)
-			.leftJoin(bankAmount, eq(bankInsertHistory.bankAmountId, bankAmount.id))
-			.where(bankWhere),
-
-		db
-			.select({
 				total: count(),
 				revenue: total(transactionServices.price),
 				tips: total(transactionServices.tip),
@@ -146,15 +122,6 @@ export async function moneyStats(
 			.where(
 				all([notDeleted(transactionSupplies), inRange(transactionSupplies.createdAt, filters)])
 			),
-
-		db
-			.select({
-				label: sql<string>`COALESCE(${paymentMethods.name}, ${bankAmount.account})`,
-				value: sql<string>`${bankAmount.amount}`
-			})
-			.from(bankAmount)
-			.leftJoin(paymentMethods, eq(bankAmount.paymentMethodId, paymentMethods.id))
-			.where(notDeleted(bankAmount)),
 
 		db
 			.select({
@@ -202,29 +169,6 @@ export async function moneyStats(
 
 		db
 			.select({
-				bucket: monthOf(bankInsertHistory.createdAt),
-				inflow: sql<string>`COALESCE(SUM(CASE WHEN ${bankInsertHistory.amount} > 0 THEN ${bankInsertHistory.amount} ELSE 0 END), 0)`,
-				outflow: sql<string>`COALESCE(SUM(CASE WHEN ${bankInsertHistory.amount} < 0 THEN -${bankInsertHistory.amount} ELSE 0 END), 0)`
-			})
-			.from(bankInsertHistory)
-			.leftJoin(bankAmount, eq(bankInsertHistory.bankAmountId, bankAmount.id))
-			.where(bankWhere)
-			.groupBy(sql`1`),
-
-		db
-			.select({
-				label: sql<string>`COALESCE(${paymentMethods.name}, ${bankAmount.account})`,
-				inflow: sql<string>`COALESCE(SUM(CASE WHEN ${bankInsertHistory.amount} > 0 THEN ${bankInsertHistory.amount} ELSE 0 END), 0)`,
-				outflow: sql<string>`COALESCE(SUM(CASE WHEN ${bankInsertHistory.amount} < 0 THEN -${bankInsertHistory.amount} ELSE 0 END), 0)`
-			})
-			.from(bankInsertHistory)
-			.leftJoin(bankAmount, eq(bankInsertHistory.bankAmountId, bankAmount.id))
-			.leftJoin(paymentMethods, eq(bankAmount.paymentMethodId, paymentMethods.id))
-			.where(bankWhere)
-			.groupBy(sql`1`),
-
-		db
-			.select({
 				bucket: monthOf(transactionServices.createdAt),
 				value: total(transactionServices.price),
 				tips: total(transactionServices.tip),
@@ -252,8 +196,6 @@ export async function moneyStats(
 			.orderBy(desc(total(transactionServices.price)))
 			.limit(12)
 	]);
-
-	const bankBalance = balances.reduce((sum, row) => sum + n(row.value), 0);
 
 	const stats: Stat[] = [
 		{
@@ -297,45 +239,6 @@ export async function moneyStats(
 			tone: 'negative'
 		},
 		{
-			key: 'bank-inflow',
-			label: 'Money In',
-			value: n(bankTotals?.inflow),
-			format: 'money',
-			group: 'Money',
-			hint: 'Posted to bank accounts',
-			section: 'bank-history',
-			tone: 'positive'
-		},
-		{
-			key: 'bank-outflow',
-			label: 'Money Out',
-			value: n(bankTotals?.outflow),
-			format: 'money',
-			group: 'Money',
-			hint: 'Taken out of bank accounts',
-			section: 'bank-history',
-			tone: 'negative'
-		},
-		{
-			key: 'bank-net',
-			label: 'Net Movement',
-			value: n(bankTotals?.net),
-			format: 'money',
-			group: 'Money',
-			hint: `${n(bankTotals?.postings)} postings inside the range`,
-			section: 'bank-history',
-			tone: n(bankTotals?.net) >= 0 ? 'positive' : 'negative'
-		},
-		{
-			key: 'bank-balance',
-			label: 'Bank Balance',
-			value: bankBalance,
-			format: 'money',
-			group: 'Money',
-			hint: `Across ${balances.length} account${balances.length === 1 ? '' : 's'}, as of today`,
-			tone: bankBalance >= 0 ? 'positive' : 'negative'
-		},
-		{
 			key: 'service-revenue',
 			label: 'Service Revenue',
 			value: n(serviceTotals?.revenue),
@@ -367,25 +270,6 @@ export async function moneyStats(
 	];
 
 	const charts: ReportChartData[] = [
-		{
-			key: 'money-flow',
-			title: 'Money In and Out',
-			description: 'Bank postings against expenses, month by month.',
-			group: 'Money',
-			kind: 'bar',
-			labels: keys,
-			money: true,
-			wide: true,
-			series: [
-				{ label: 'In', data: alignMonths(keys, bankByMonth, (row) => n(row.inflow)) },
-				{ label: 'Out', data: alignMonths(keys, bankByMonth, (row) => -n(row.outflow)) },
-				{
-					label: 'Net',
-					data: alignMonths(keys, bankByMonth, (row) => n(row.inflow) - n(row.outflow)),
-					type: 'line'
-				}
-			]
-		},
 		{
 			key: 'transactions-month',
 			title: 'Transaction Value per Month',
@@ -459,28 +343,6 @@ export async function moneyStats(
 			series: [
 				{ label: 'Spent', data: topN(expensesByType.map(toBreakdown), 14).map((row) => row.value) }
 			]
-		},
-		{
-			key: 'bank-accounts',
-			title: 'Movement by Bank Account',
-			group: 'Money',
-			kind: 'bar',
-			money: true,
-			labels: bankByAccount.map((row) => row.label ?? 'Unknown'),
-			series: [
-				{ label: 'In', data: bankByAccount.map((row) => n(row.inflow)) },
-				{ label: 'Out', data: bankByAccount.map((row) => -n(row.outflow)) }
-			]
-		},
-		{
-			key: 'bank-balances',
-			title: 'Balance by Account',
-			description: 'What each account holds right now, outside the date range.',
-			group: 'Money',
-			kind: 'bar',
-			money: true,
-			labels: balances.map((row) => row.label ?? 'Unknown'),
-			series: [{ label: 'Balance', data: balances.map((row) => n(row.value)) }]
 		},
 		{
 			key: 'service-revenue-month',

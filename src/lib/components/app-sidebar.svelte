@@ -79,25 +79,6 @@
 				}
 			]
 		},
-
-		{
-			title: 'Sites',
-			url: '/dashboard/sites',
-			icon: Building2,
-			items: [
-				{
-					title: 'All Sites',
-					url: '/dashboard/sites',
-					icon: List
-				},
-				{
-					title: 'Add Site',
-					url: '/dashboard/sites/add-site',
-					icon: Plus
-				}
-			]
-		},
-
 		{
 			title: 'Approvals',
 			url: '/dashboard/approvals',
@@ -170,11 +151,6 @@
 			icon: IdCardLanyard,
 			items: [
 				{
-					title: 'Employees by Site',
-					url: '/dashboard/employees/sites',
-					icon: Building2
-				},
-				{
 					title: 'All Active Employees',
 					url: '/dashboard/employees',
 					icon: List
@@ -208,11 +184,6 @@
 					icon: BanknoteArrowUp
 				},
 				{
-					title: 'UnPaid Salaries by Site',
-					url: '/dashboard/salary/add-payroll/sites',
-					icon: BanknoteArrowUp
-				},
-				{
 					title: 'All OverTime',
 					url: '/dashboard/salary/add-overtime',
 					icon: BanknoteArrowUp
@@ -226,11 +197,6 @@
 					title: 'Transactions',
 					url: '/dashboard/salary/transactions',
 					icon: ScanLine
-				},
-				{
-					title: 'Bank History',
-					url: '/dashboard/salary/bank-history',
-					icon: Landmark
 				}
 			]
 		},
@@ -432,11 +398,6 @@
 					title: 'Vat and Withhold',
 					url: '/dashboard/admin-panel/vat-withhold',
 					icon: Coins
-				},
-				{
-					title: 'Bank Amount',
-					url: '/dashboard/admin-panel/bank-amounts',
-					icon: Landmark
 				}
 			]
 		},

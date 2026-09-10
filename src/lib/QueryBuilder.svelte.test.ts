@@ -143,7 +143,7 @@ describe('QueryBuilder.svelte', () => {
 		render(QueryBuilder, {
 			defaultOpen: true,
 			initialSearch: 'Addis',
-			initialCustomFilters: { siteId: '4' }
+			initialCustomFilters: { branchId: '4' }
 		});
 
 		await expect.element(page.getByText('2 active filters')).toBeInTheDocument();
@@ -162,7 +162,7 @@ describe('QueryBuilder.svelte', () => {
 			onQueryChange,
 			initialSearch: 'Addis',
 			initialPageSize: 50,
-			initialCustomFilters: { siteId: '4' }
+			initialCustomFilters: { branchId: '4' }
 		});
 
 		await userEvent.click(page.getByRole('button', { name: /Clear all/i }));
@@ -170,7 +170,7 @@ describe('QueryBuilder.svelte', () => {
 		expect(onQueryChange.mock.calls[0][0]).toMatchObject({
 			search: '',
 			pageSize: 20,
-			customFilters: { siteId: '' }
+			customFilters: { branchId: '' }
 		});
 		await expect.element(page.getByText('active filter')).not.toBeInTheDocument();
 	});
@@ -208,7 +208,7 @@ describe('QueryBuilder.svelte', () => {
 			defaultOpen: true,
 			initialSearch: 'Addis',
 			initialPageSize: 20,
-			initialCustomFilters: { siteId: '4' }
+			initialCustomFilters: { branchId: '4' }
 		});
 
 		await expect.element(page.getByPlaceholder('Search rows...')).toHaveValue('Addis');
@@ -217,7 +217,7 @@ describe('QueryBuilder.svelte', () => {
 		await rerender({
 			initialSearch: 'Bahir Dar',
 			initialPageSize: 50,
-			initialCustomFilters: { siteId: '9' }
+			initialCustomFilters: { branchId: '9' }
 		});
 
 		await expect.element(page.getByPlaceholder('Search rows...')).toHaveValue('Bahir Dar');

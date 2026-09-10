@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { leave, leaveType, employee, department, site, user } from '$lib/server/db/schema';
+import { leave, leaveType, employee, department, branch, user } from '$lib/server/db/schema';
 
 import { eq, and, desc, sql, inArray } from 'drizzle-orm';
 import { notDeleted, softDeleteLookup } from '$lib/server/softDelete';
@@ -31,7 +31,7 @@ export const load: PageServerLoad = async () => {
 			staffId: leave.staffId,
 			name: employeeFullName,
 			department: department.name,
-			siteName: site.name,
+			branchName: branch.name,
 			requestDate: leave.requestDate,
 			startDate: leave.startDate,
 			endDate: leave.endDate,
@@ -52,7 +52,7 @@ export const load: PageServerLoad = async () => {
 		.leftJoin(leaveType, and(eq(leave.leaveTypeId, leaveType.id), notDeleted(leaveType)))
 		.leftJoin(employee, and(eq(leave.staffId, employee.id), notDeleted(employee)))
 		.leftJoin(department, and(eq(employee.departmentId, department.id), notDeleted(department)))
-		.leftJoin(site, and(eq(employee.siteId, site.id), notDeleted(site)))
+		.leftJoin(branch, and(eq(employee.branchId, branch.id), notDeleted(branch)))
 		.leftJoin(user, eq(leave.approvedBy, user.id))
 		.where(and(eq(leave.status, 'rejected'), notDeleted(leave)));
 

@@ -70,39 +70,3 @@ export const editContract = z.object({
 });
 
 export type EditContract = z.infer<typeof editContract>;
-
-export const addSites = z.object({
-	name: z
-		.string('Name is Required')
-		.min(2, 'Name must be at least 2 characters')
-		.max(100, 'Name must be at most 100 characters'),
-	phone: z
-		.string('Phone Number is Required')
-		.min(2, 'Phone must be at least 2 characters')
-		.max(100, 'Phone must be at most 100 characters'),
-	status: z.boolean('Status is Required').default(true),
-	startDate: z.string('Start Date is required'),
-	subcity: z.number('Subsity is required'),
-	street: z.string('Street is required'),
-	kebele: z.string('Kebele is required'),
-	buildingNumber: z.string().optional(),
-	floor: z.string().optional(),
-	houseNumber: z.string('House Number is Required')
-});
-export type AddSites = z.infer<typeof addSites>;
-
-export const editSites = z.object({
-	id: z.number('Schedule not found'),
-	name: z
-		.string('Name is Required')
-		.min(2, 'Name must be at least 2 characters')
-		.max(100, 'Name must be at most 100 characters'),
-	phone: z
-		.string('Phone Number is Required')
-		.min(2, 'Phone must be at least 2 characters')
-		.max(100, 'Phone must be at most 100 characters'),
-	status: z.boolean('Status is Required').default(true),
-	startDate: z.string('Start Date is required')
-});
-
-export type EditSites = z.infer<typeof editSites>;

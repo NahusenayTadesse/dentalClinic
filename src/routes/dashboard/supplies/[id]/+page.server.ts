@@ -18,12 +18,6 @@ import {
 } from '$lib/server/db/schema';
 import { eq, sql, and, isNotNull, desc } from 'drizzle-orm';
 import { notDeleted, softDeleteSupply } from '$lib/server/softDelete';
-import {
-	overdraftCheck,
-	overdraftMessage,
-	paymentMethodForBank,
-	postToBank
-} from '$lib/server/bankLedger';
 import { requireSuperAdmin } from '$lib/server/permissions';
 import type { Actions } from './$types';
 import { fail } from 'sveltekit-superforms';
@@ -134,8 +128,7 @@ export const actions: Actions = {
 			return message(form, { type: 'error', text: 'Please check the form for errors' });
 		}
 
-		const { intent, quantity, costPerItem, reason, reciept, bank, acknowledgeOverdraft } =
-			form.data;
+		const { intent, quantity, costPerItem, reason, reciept, paymentMethod } = form.data;
 
 		if (!id) {
 			return message(form, { type: 'error', text: 'Unexpected Error: Supply ID not provided' });
@@ -146,32 +139,22 @@ export const actions: Actions = {
 
 		// Buying stock spends money, so it has to come out of a named account.
 		// Removing stock costs nothing, which is why this is only required here.
-		if (total > 0 && !bank) {
-			return setError(form, 'bank', 'Choose the account this was paid from');
-		}
-
-		if (total > 0 && bank) {
-			const check = await overdraftCheck(bank, -total);
-			if (!check) {
-				return setError(form, 'bank', 'That account no longer exists');
-			}
-			if (check.overdraws && !acknowledgeOverdraft) {
-				return message(form, { type: 'error', text: overdraftMessage(check) }, { status: 400 });
-			}
+		if (total > 0 && !paymentMethod) {
+			return setError(form, 'paymentMethod', 'Choose how this was paid');
 		}
 
 		try {
 			await db.transaction(async (tx) => {
 				let transactionId: number | null = null;
 
-				if (total > 0 && bank) {
+				if (total > 0 && paymentMethod) {
 					const recieptLink = reciept ? await saveUploadedFile(reciept) : null;
 
 					const [created] = await tx
 						.insert(transactions)
 						.values({
 							amount: String(-Math.abs(total)),
-							paymentMethodId: await paymentMethodForBank(tx, bank),
+							paymentMethodId: paymentMethod,
 							recieptLink,
 							description: `Stock purchase${reason ? ': ' + reason : ''}`,
 							paymentStatus: 'paid',
@@ -186,14 +169,6 @@ export const actions: Actions = {
 						supplyId: id,
 						quantity: String(adjustment),
 						unitPrice: String(costPerItem ?? 0)
-					});
-
-					await postToBank(tx, {
-						bankAmountId: bank,
-						transactionId: created.id,
-						amount: -Math.abs(total),
-						reason: 'Stock purchase',
-						userId: locals.user?.id
 					});
 				}
 

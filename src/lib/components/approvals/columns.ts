@@ -12,7 +12,7 @@ type Link = { idKey: string; href: string };
 const ICONS: Record<string, typeof UserRound> = {
 	'/dashboard/employees/single': UserRound,
 	'/dashboard/customers': Users,
-	'/dashboard/sites': Building2,
+	'/dashboard/branches': Building2,
 	'/dashboard/admin-panel/users': CircleUser
 };
 
@@ -97,7 +97,7 @@ export function makeColumns(
 	rejected = false
 ) {
 	// The id a link travels on is not a column of its own — nobody reads a queue
-	// to find out that a site contract points at site 47.
+	// to find out that a branch contract points at branch 47.
 	const linkIdKeys = new Set(Object.values(links).map((l) => l.idKey));
 
 	const summaryKeys = Object.keys(sample ?? {}).filter(

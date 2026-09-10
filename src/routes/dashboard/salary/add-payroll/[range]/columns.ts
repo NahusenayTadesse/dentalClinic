@@ -133,10 +133,10 @@ export const columns = [
 	},
 
 	{
-		accessorKey: 'site',
+		accessorKey: 'branch',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Site',
+				name: 'Branch',
 				onclick: column.getToggleSortingHandler()
 			})
 	},

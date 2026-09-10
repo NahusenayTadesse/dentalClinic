@@ -33,7 +33,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.then((rows) => rows[0]);
 
 	/*
-	 * The headline panel here used to be expiring site contracts, plus a write that auto-expired
+	 * The headline panel here used to be expiring branch contracts, plus a write that auto-expired
 	 * any that had run out. Both went with the client-billing tables; the home page needs a new
 	 * headline built from clinic data.
 	 */

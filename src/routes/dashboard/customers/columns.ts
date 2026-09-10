@@ -54,16 +54,6 @@ export const columns: ColumnDef<RowData>[] = [
 	},
 
 	{
-		accessorKey: 'sites',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Sites',
-				onclick: column.getToggleSortingHandler()
-			}),
-		cell: ({ row }) => renderComponent(Copy, { data: row.original.noOfSites })
-	},
-
-	{
 		accessorKey: 'addedBy',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {

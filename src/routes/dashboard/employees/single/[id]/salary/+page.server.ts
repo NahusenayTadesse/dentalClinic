@@ -67,7 +67,6 @@ export const actions: Actions = {
 				notes,
 				recieptLink,
 				createdBy: locals.user?.id,
-				branchId: locals.user?.branch,
 				status: 'paid'
 			});
 

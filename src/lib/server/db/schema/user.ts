@@ -11,6 +11,10 @@ import {
 	type AnyMySqlColumn
 } from 'drizzle-orm/mysql-core';
 import { relations, sql } from 'drizzle-orm';
+import { branch } from './branches';
+// From the leaf module, not `./branches`: `.default()` runs at module load and this file sits
+// in an import cycle with that one. See `mainBranch.ts`.
+import { MAIN_BRANCH_ID } from './mainBranch';
 
 /**
  * Identity is owned by better-auth; `user`, `session`, `account` and `verification` carry the
@@ -83,6 +87,17 @@ export const user = mysqlTable(
 		roleId: int('role_id')
 			.references((): AnyMySqlColumn => roles.id, { onDelete: 'restrict' })
 			.notNull(),
+
+		/**
+		 * Which location this account works at. Declared inline rather than spread from
+		 * `branchRef()`, and annotated `AnyMySqlColumn` for the same reason `roleId` above is:
+		 * `branch` carries `secureFields`, which references this table, so the two types are
+		 * mutually recursive. The annotation cuts that — without it TypeScript gives up and
+		 * infers `any` for the whole `branch` table.
+		 */
+		branchId: int('branch_id')
+			.default(MAIN_BRANCH_ID)
+			.references((): AnyMySqlColumn => branch.id, { onDelete: 'set null' }),
 
 		createdAt: timestamp('created_at', { fsp: 3 }).defaultNow().notNull(),
 		updatedAt: timestamp('updated_at')

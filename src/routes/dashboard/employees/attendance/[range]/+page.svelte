@@ -50,7 +50,7 @@
 	<FilterMenu
 		data={data?.staffList}
 		bind:filteredList
-		filterKeys={['department', 'site', 'status', 'absent', 'deductable', 'nonDeductable']}
+		filterKeys={['department', 'branch', 'status', 'absent', 'deductable', 'nonDeductable']}
 	/>
 	<DataTable data={filteredList} class="!" {columns} />
 {/if}

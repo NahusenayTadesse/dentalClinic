@@ -33,6 +33,12 @@ export type LookupFieldType =
 	/** A true/false choice shown as a single checkbox, and as a status badge in the table. */
 	| 'checkbox'
 	/**
+	 * A calendar date. The form needs nothing special — `InputComp` already has a `date` type —
+	 * but the table cell does: a raw `Date` would print as a Gregorian string, and every other
+	 * date in this app is shown on the Ethiopian calendar.
+	 */
+	| 'date'
+	/**
 	 * A foreign key. Entered through a picker of real options, and shown in the table as the
 	 * referenced row's name rather than its id. Requires `options` and `display`.
 	 */

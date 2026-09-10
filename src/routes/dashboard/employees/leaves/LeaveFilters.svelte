@@ -15,7 +15,7 @@
 	type Options = {
 		leaveTypes: Option[];
 		departments: Option[];
-		sites: Option[];
+		branches: Option[];
 		approvers: Option[];
 	};
 
@@ -75,15 +75,19 @@
 </div>
 
 <div class="flex flex-col gap-2">
-	<Label class="text-sm font-medium">Site</Label>
-	<Select type="single" value={filters.siteId as string} onValueChange={(v) => set('siteId', v)}>
+	<Label class="text-sm font-medium">Branch</Label>
+	<Select
+		type="single"
+		value={filters.branchId as string}
+		onValueChange={(v) => set('branchId', v)}
+	>
 		<SelectTrigger class="w-full">
-			{nameOf(filterOptions.sites, filters.siteId) ?? 'All sites'}
+			{nameOf(filterOptions.branches, filters.branchId) ?? 'All branches'}
 		</SelectTrigger>
 		<SelectContent>
-			<SelectItem value="">All sites</SelectItem>
-			{#each filterOptions.sites as site (site.id)}
-				<SelectItem value={String(site.id)}>{site.name}</SelectItem>
+			<SelectItem value="">All branches</SelectItem>
+			{#each filterOptions.branches as branch (branch.id)}
+				<SelectItem value={String(branch.id)}>{branch.name}</SelectItem>
 			{/each}
 		</SelectContent>
 	</Select>

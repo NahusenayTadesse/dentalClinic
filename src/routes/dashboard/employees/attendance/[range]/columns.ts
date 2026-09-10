@@ -54,10 +54,10 @@ export const columns: ColumnDef<RowData>[] = [
 			})
 	},
 	{
-		accessorKey: 'site',
+		accessorKey: 'branch',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Sites',
+				name: 'Branches',
 				onclick: column.getToggleSortingHandler()
 			})
 	},

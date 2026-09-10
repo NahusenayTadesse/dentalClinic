@@ -9,7 +9,7 @@ import {
 	payrollReceipts,
 	payrollRuns,
 	salaries,
-	site
+	branch
 } from '$lib/server/db/schema';
 import { notDeleted } from '$lib/server/softDelete';
 import type { ReportFilters } from '../filters';
@@ -78,7 +78,7 @@ export async function payrollStats(
 		[salaryChanges],
 		byMonth,
 		byDepartment,
-		bySite,
+		byBranch,
 		byMethod,
 		byStatus,
 		byPeriod,
@@ -184,12 +184,12 @@ export async function payrollStats(
 			.groupBy(department.name),
 
 		db
-			.select({ label: site.name, value: total(payrollEntries.netAmount) })
+			.select({ label: branch.name, value: total(payrollEntries.netAmount) })
 			.from(payrollEntries)
 			.innerJoin(employee, eq(payrollEntries.staffId, employee.id))
-			.leftJoin(site, eq(employee.siteId, site.id))
+			.leftJoin(branch, eq(employee.branchId, branch.id))
 			.where(entryWhere)
-			.groupBy(site.name),
+			.groupBy(branch.name),
 
 		db
 			.select({ label: paymentMethods.name, value: total(payrollEntries.netAmount) })
@@ -466,14 +466,14 @@ export async function payrollStats(
 			]
 		},
 		{
-			key: 'payroll-by-site',
-			title: 'Net Pay by Site',
+			key: 'payroll-by-branch',
+			title: 'Net Pay by Branch',
 			group: 'Payroll',
 			kind: 'bar',
 			money: true,
-			labels: topN(bySite.map(toBreakdown), 12).map((row) => row.label),
+			labels: topN(byBranch.map(toBreakdown), 12).map((row) => row.label),
 			series: [
-				{ label: 'Net pay', data: topN(bySite.map(toBreakdown), 12).map((row) => row.value) }
+				{ label: 'Net pay', data: topN(byBranch.map(toBreakdown), 12).map((row) => row.value) }
 			]
 		},
 		{

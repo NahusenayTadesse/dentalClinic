@@ -1,7 +1,7 @@
 import { z } from 'zod/v4';
 
 export const salaryChangeSchema = z.object({
-	site: z.number('Site is Required').positive('Site is Required'),
+	branch: z.number('Branch is Required').positive('Branch is Required'),
 	department: z.number('Department is Required').positive('Department is Required'),
 	position: z.number('Position is Required').positive('Position is Required'),
 	changeReason: z.string().optional(),
