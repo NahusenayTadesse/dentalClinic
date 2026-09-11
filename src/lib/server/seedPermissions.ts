@@ -265,9 +265,14 @@ export async function seedClinicBasics() {
 /**
  * The clinician cadres a dental clinic starts with.
  *
- * The general dentist and the specialties a referral would name, plus the two non-dentist cadres
- * that treat patients here. Ethiopian licences use their own wording, so this is a starting
- * point to be edited rather than a fixed list — which is why it is a table.
+ * Not only dentists. A provider row exists for anyone whose licence the clinic must track or
+ * whose work it must attribute, so the list covers the whole floor: the dentist specialties a
+ * referral would name, the therapists and hygienists who treat without prescribing, the
+ * radiographer whose images are billable procedures in their own right, and the nurses and
+ * assistants who are licensed here even when they are never booked directly.
+ *
+ * Ethiopian licences use their own cadre wording, so this is a starting point to be edited
+ * rather than a fixed list — which is the reason it is a table and not an enum.
  */
 export async function seedSpecialties() {
 	const [existing] = await db.select({ id: providerSpecialty.id }).from(providerSpecialty).limit(1);
@@ -283,6 +288,13 @@ export async function seedSpecialties() {
 		{ name: 'Periodontist', sortOrder: 12 },
 		{ name: 'Endodontist', sortOrder: 13 },
 		{ name: 'Prosthodontist', sortOrder: 14 },
-		{ name: 'Paediatric Dentist', sortOrder: 15 }
+		{ name: 'Paediatric Dentist', sortOrder: 15 },
+		{ name: 'Oral and Maxillofacial Radiologist', sortOrder: 16 },
+
+		// Cadres that are licensed and attributable without being booked directly.
+		{ name: 'Dental Radiographer', sortOrder: 20 },
+		{ name: 'Dental Nurse', sortOrder: 21 },
+		{ name: 'Dental Assistant', sortOrder: 22 },
+		{ name: 'Anaesthetist', sortOrder: 23 }
 	]);
 }

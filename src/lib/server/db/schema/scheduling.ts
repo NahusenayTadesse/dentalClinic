@@ -82,9 +82,12 @@ export const appointment = mysqlTable(
 		providerId: int('provider_id').references(() => provider.id, { onDelete: 'set null' }),
 
 		/**
-		 * Nurse or assistant, where a clinic tracks one. Still an `employee`, deliberately: an
-		 * assistant does not need a licence to hold an instrument, and requiring a provider record
-		 * would mean inventing one for every nurse.
+		 * Nurse or assistant, where a clinic tracks one. An `employee`, deliberately, and not a
+		 * `provider`: this column asks who assisted, which is orthogonal to whether that person
+		 * holds a licence. A nurse whose licence the clinic must track gets a provider row of
+		 * their own — nothing here prevents it, and the expiry report picks them up either way —
+		 * but an assistant trained on the job has no licence to record, and pointing this column
+		 * at `provider` would force a hollow row for them.
 		 */
 		assistantId: int('assistant_id').references(() => employee.id, { onDelete: 'set null' }),
 

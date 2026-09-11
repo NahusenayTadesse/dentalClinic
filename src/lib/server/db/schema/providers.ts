@@ -26,7 +26,15 @@ export const providerSpecialty = mysqlTable('provider_specialty', {
 });
 
 /**
- * An employee who treats patients.
+ * An employee who treats patients — of any cadre, not only dentists.
+ *
+ * Nothing in this table is dental: `specialty` is a foreign key into an editable lookup, and the
+ * licence columns, the diary columns and the two authority flags mean the same thing for a
+ * nurse, a radiographer or an anaesthetist as for an oral surgeon. A clinic gives a provider row
+ * to anyone whose licence it must track or whose work it must attribute, and switches off the
+ * parts that do not apply: a radiographer is `canPrescribe: false` but still attributable on the
+ * `procedures` row for the radiograph they took; a nurse is usually also `isBookable: false`,
+ * since patients book the dentist, not the nurse who assists.
  *
  * **Why this is not more columns on `employee`.** That table is HR: it is already 26 columns and
  * is joined by leave, payroll, pension, guarantors and terminations. The fields below are null
@@ -100,11 +108,16 @@ export const provider = mysqlTable(
 		defaultAppointmentMinutes: int('default_appointment_minutes').notNull().default(30),
 
 		/**
-		 * Whether this person may prescribe. Not every clinician can: a dental therapist or
-		 * hygienist treats without prescribing authority, and the distinction is the regulator's,
-		 * not the clinic's.
+		 * Whether this person may prescribe. Not every clinician can: therapists, hygienists,
+		 * nurses and radiographers treat or image without prescribing authority, and the
+		 * distinction is the regulator's rather than the clinic's.
+		 *
+		 * **Defaults to false**, unlike the other flags here, because it grants an authority
+		 * rather than describing a preference. A dentist row that nobody ticked fails safe — the
+		 * first prescription is refused and someone fixes the record — where a nurse row that
+		 * nobody unticked fails the other way, and the record would say a nurse prescribed.
 		 */
-		canPrescribe: boolean('can_prescribe').notNull().default(true),
+		canPrescribe: boolean('can_prescribe').notNull().default(false),
 
 		/** "Mondays and Thursdays only", "no surgical lists after 4pm". Prose, for the front desk. */
 		scheduleNote: varchar('schedule_note', { length: 255 }),

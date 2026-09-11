@@ -50,6 +50,13 @@
       "when": 1789118016367,
       "tag": "0006_neat_snowbird",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1789118673178,
+      "tag": "0007_closed_revanche",
+      "breakpoints": true
     }
   ]
 }

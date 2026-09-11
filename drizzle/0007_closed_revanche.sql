@@ -1,0 +1,1 @@
+ALTER TABLE `provider` MODIFY COLUMN `can_prescribe` boolean NOT NULL DEFAULT false;
