@@ -20,6 +20,7 @@ import { customers } from './customers';
 import { provider } from './providers';
 import { tooth } from './teeth';
 import { procedures } from './procedures';
+import { appointment } from './scheduling';
 import { transactions } from './finance';
 
 /**
@@ -57,6 +58,24 @@ export const invoice = mysqlTable(
 
 		/** The clinician the work is attributed to. Null for a bill covering several. */
 		providerId: int('provider_id').references(() => provider.id, { onDelete: 'set null' }),
+
+		/**
+		 * The visit this bill was raised from.
+		 *
+		 * An invoice is generated from an appointment by gathering that appointment's procedures
+		 * and writing each one out as a snapshotted line — which is why the link is here and not on
+		 * `invoice_line`. Going through the visit rather than straight to the procedures means the
+		 * bill has an obvious origin a receptionist can point at, and "has this visit been billed"
+		 * is a single lookup rather than a search through lines.
+		 *
+		 * Nullable and `set null`, because not every bill comes from one visit: a course of
+		 * treatment billed together spans several, and a standalone charge — a missed-appointment
+		 * fee, a replacement retainer — comes from none. Nothing renders through it, for the same
+		 * reason nothing renders through `procedureId`.
+		 */
+		appointmentId: int('appointment_id').references(() => appointment.id, {
+			onDelete: 'set null'
+		}),
 
 		/** The clinic's own sequence. Unique: two invoices may not share a number. */
 		invoiceNumber: varchar('invoice_number', { length: 50 }).unique(),
@@ -99,7 +118,9 @@ export const invoice = mysqlTable(
 		// "What does this patient owe" — the balance query, newest first.
 		index('invoice_patient_status_idx').on(table.patientId, table.status),
 		index('invoice_branch_issued_idx').on(table.branchId, table.issuedOn),
-		index('invoice_customer_idx').on(table.customerId)
+		index('invoice_customer_idx').on(table.customerId),
+		// "Has this visit been billed yet?"
+		index('invoice_appointment_idx').on(table.appointmentId)
 	]
 );
 
@@ -205,6 +226,10 @@ export const invoiceRelations = relations(invoice, ({ one, many }) => ({
 	patient: one(patient, { fields: [invoice.patientId], references: [patient.id] }),
 	customer: one(customers, { fields: [invoice.customerId], references: [customers.id] }),
 	provider: one(provider, { fields: [invoice.providerId], references: [provider.id] }),
+	appointment: one(appointment, {
+		fields: [invoice.appointmentId],
+		references: [appointment.id]
+	}),
 	lines: many(invoiceLine),
 	payments: many(invoicePayment)
 }));

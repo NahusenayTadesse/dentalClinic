@@ -18,11 +18,12 @@ import {
 import { employee } from './staff';
 import { secureFields, approvalFields } from './secureFields';
 import { services } from './services';
-import { supplies } from '../schema';
+import { supplies, supplySuppliers } from '../schema';
 import { user } from './user';
 import { branchRef } from './branches';
 import { patient } from './patients';
 import { customers } from './customers';
+import { cashSession } from './cashSessions';
 
 export const paymentMethods = mysqlTable('payment_methods', {
 	id: int('id').primaryKey().autoincrement(),
@@ -198,6 +199,22 @@ export const transactions = mysqlTable('transactions', {
 		{ onDelete: 'set null' }
 	),
 
+	/**
+	 * The shift this was taken during, for cash reconciliation.
+	 *
+	 * Tagged on the transaction rather than worked out afterwards from the branch and the clock.
+	 * Deriving it would look equivalent and is not: a payment entered late, or backdated to
+	 * yesterday, would fall into whichever session happened to span that timestamp rather than the
+	 * one whose drawer the money actually went into — and the count would come out wrong for two
+	 * days at once, one of them already closed.
+	 *
+	 * Null for everything that never touches the drawer: a bank transfer, a gateway payment, a
+	 * salary paid out. `set null` so closing out an old session cannot erase the payments.
+	 */
+	cashSessionId: int('cash_session_id').references(() => cashSession.id, {
+		onDelete: 'set null'
+	}),
+
 	/** Where the money was taken. See `branchRef`. */
 	branchId: branchRef(),
 	...secureFields
@@ -250,6 +267,24 @@ export const expenses = mysqlTable('expenses', {
 	transactionId: int('transaction_id')
 		.notNull()
 		.references(() => transactions.id, { onDelete: 'cascade' }),
+
+	/**
+	 * Who was paid. An expense that cannot say this is a number without a counterparty, which is
+	 * the one thing every accounting standard agrees an expense record must carry.
+	 *
+	 * Two fields because the payees split in two. A regular vendor is a row in `supply_suppliers`
+	 * — generic enough despite its name: name, phone, email, address — and worth linking so the
+	 * phone number is not retyped every month. A landlord, a utility or a one-off repair is a
+	 * name and nothing more, and forcing those through a vendor table would fill it with rows
+	 * nobody maintains. Set whichever fits; `payeeName` also carries the label when the supplier
+	 * link is present but the clinic wants to say something more specific.
+	 */
+	supplierId: int('supplier_id').references(() => supplySuppliers.id, { onDelete: 'set null' }),
+	payeeName: varchar('payee_name', { length: 150 }),
+
+	/** Invoice or receipt number the vendor gave us, for matching against their statement. */
+	vendorReference: varchar('vendor_reference', { length: 100 }),
+
 	...secureFields,
 	...approvalFields
 });
