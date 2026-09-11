@@ -215,6 +215,17 @@ export const transactions = mysqlTable('transactions', {
 		onDelete: 'set null'
 	}),
 
+	/**
+	 * Maker-checker, defaulting to `approved` for the same reason as on `invoice`: a queue holding
+	 * every payment a clinic takes is a queue nobody reads.
+	 *
+	 * A **refund** is what flips it to `pending` — a transaction with `reversesTransactionId` set
+	 * is money going back out over the counter, and it is the one movement a single person should
+	 * not be able to complete alone. An ordinary payment, an expense and a salary are all recorded
+	 * as approved.
+	 */
+	...approvalFields,
+
 	/** Where the money was taken. See `branchRef`. */
 	branchId: branchRef(),
 	...secureFields

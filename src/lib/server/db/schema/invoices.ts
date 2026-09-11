@@ -13,7 +13,7 @@ import {
 	index
 } from 'drizzle-orm/mysql-core';
 import { relations } from 'drizzle-orm';
-import { secureFields } from './secureFields';
+import { approvalFields, secureFields } from './secureFields';
 import { branchRef } from './branches';
 import { patient } from './patients';
 import { customers } from './customers';
@@ -112,6 +112,24 @@ export const invoice = mysqlTable(
 		voidReason: varchar('void_reason', { length: 255 }),
 
 		note: text('note'),
+
+		/**
+		 * Maker-checker, and the default is the unusual part: **`approvalStatus` is set to
+		 * `approved` when an invoice is raised normally.** Almost every bill needs no second pair
+		 * of eyes, and a queue holding every invoice a clinic issues is a queue nobody reads.
+		 *
+		 * Two things flip it to `pending`, and both are the reason this is here rather than on the
+		 * clinical tables: **a discount, and a void.** In a cash practice those are where money
+		 * leaves without anyone noticing — a receptionist who can quietly halve a bill or cancel
+		 * one after taking payment needs no other opportunity. Payroll is already checked; this was
+		 * the side that was not.
+		 *
+		 * Which discounts require approval is a threshold the clinic sets, so it is the write
+		 * path's judgement rather than a constraint. The queue, the helpers and the
+		 * `APPROVAL_ENTITIES` entry are all reused — this is one more row in a registry, not a
+		 * second mechanism.
+		 */
+		...approvalFields,
 
 		...secureFields
 	},

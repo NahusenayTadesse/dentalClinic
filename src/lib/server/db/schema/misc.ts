@@ -21,7 +21,17 @@ export const auditLog = mysqlTable('audit_log', {
 	oldValues: json('old_values'),
 	newValues: json('new_values'),
 	timestamp: timestamp('timestamp').defaultNow().notNull(),
-	ipAddress: varchar('ip_address', { length: 45 })
+	ipAddress: varchar('ip_address', { length: 45 }),
+
+	/**
+	 * Which branch the action happened at.
+	 *
+	 * Not `branchRef()`: an audit row records where something *was done*, which is a fact about the
+	 * event and not a default anybody should inherit. A row written before branches existed, or by
+	 * a job belonging to no branch, is honestly null rather than silently attributed to the main
+	 * one.
+	 */
+	branchId: int('branch_id')
 });
 
 export const backup = mysqlTable('backup', {

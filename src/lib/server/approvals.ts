@@ -12,9 +12,11 @@ import {
 	customers,
 	employee,
 	expenses,
+	invoice,
 	payrollAdjustments,
 	payrollRuns,
-	salaries
+	salaries,
+	transactions
 } from '$lib/server/db/schema';
 import { employeeFullName } from '$lib/server/employeeName';
 
@@ -28,7 +30,9 @@ export type ApprovableTable =
 	| typeof expenses
 	| typeof payrollRuns
 	| typeof payrollAdjustments
-	| typeof customers;
+	| typeof customers
+	| typeof invoice
+	| typeof transactions;
 
 /**
  * A column in the queue that names another record, and where that record lives.
@@ -73,8 +77,15 @@ export type ApprovalEntity = {
 const HREF = {
 	employee: '/dashboard/employees/single',
 	customer: '/dashboard/customers',
+	patient: '/dashboard/patients',
 	user: '/dashboard/admin-panel/users'
 } as const;
+
+/** The full name of the patient a foreign key points at, as one correlated subquery. */
+function patientName(idColumn: SQL | AnyColumn) {
+	return sql<string>`(SELECT TRIM(CONCAT(COALESCE(p.name, ''), ' ', COALESCE(p.father_name, '')))
+		FROM patient p WHERE p.id = ${idColumn})`;
+}
 
 /** The full name of the employee a foreign key points at, as one correlated subquery. */
 function employeeName(idColumn: SQL | AnyColumn) {
@@ -204,6 +215,47 @@ export const APPROVAL_ENTITIES: ApprovalEntity[] = [
 			email: customers.email
 		}),
 		links: { name: { idKey: 'id', href: HREF.customer } }
+	},
+
+	/*
+	 * The two money-side queues. Unlike every entry above them, these tables default to
+	 * `approved` — a queue holding every invoice and every payment a clinic issues is a queue
+	 * nobody reads. Only the exceptions arrive here: a discounted or voided bill, and a refund.
+	 */
+	{
+		key: 'invoices',
+		label: 'Discounts and Voids',
+		singular: 'invoice',
+		table: invoice,
+		listHref: '/dashboard/invoices',
+		summary: () => ({
+			number: invoice.invoiceNumber,
+			patient: patientName(invoice.patientId),
+			patientId: invoice.patientId,
+			total: invoice.total,
+			discount: invoice.discount,
+			status: invoice.status
+		}),
+		links: {
+			patient: { idKey: 'patientId', href: HREF.patient }
+		}
+	},
+	{
+		key: 'refunds',
+		label: 'Refunds',
+		singular: 'refund',
+		table: transactions,
+		listHref: '/dashboard/salary/transactions',
+		summary: () => ({
+			description: transactions.description,
+			patient: patientName(transactions.patientId),
+			patientId: transactions.patientId,
+			amount: transactions.amount,
+			reverses: transactions.reversesTransactionId
+		}),
+		links: {
+			patient: { idKey: 'patientId', href: HREF.patient }
+		}
 	}
 ];
 
