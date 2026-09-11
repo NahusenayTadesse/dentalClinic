@@ -21,3 +21,4 @@ export * from './prescriptions';
 export * from './recalls';
 export * from './labCases';
 export * from './closures';
+export * from './invoices';
