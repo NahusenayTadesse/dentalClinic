@@ -74,7 +74,10 @@ const DESCRIPTIONS: Record<string, string> = {
 
 /** Every permission the system recognises, in a stable order. */
 export function permissionNames(): string[] {
-	const fromRoutes = routeRules.map((rule) => rule.permission);
+	// `null` means "any signed-in user" and is not a permission anybody can be granted.
+	const fromRoutes = routeRules
+		.map((rule) => rule.permission)
+		.filter((name): name is string => name !== null);
 	return [...new Set([...fromRoutes, ...CODE_ONLY_PERMISSIONS])].sort();
 }
 

@@ -259,7 +259,17 @@ Not style. These carry patient data.
 
 - **Server-side authorization is the only authorization.** Hiding a button is UX; the check on
   the form action is the control, because the action is reachable by anyone who can POST to it.
-  Every route gets a `routeRules` entry; every delete action calls `requireSuperAdmin`.
+  Every delete action calls `requireSuperAdmin`.
+- **`/dashboard` is closed by default.** A path no `routeRules` entry claims is refused, with a
+  message that says _no rule is defined_ rather than _you lack the permission_ — the two failures
+  have different audiences, and only the first tells you the rule was never written. This used to
+  be default-allow, and with 96 pages against 22 rules that meant a new clinical route was
+  readable by every account until somebody remembered to gate it, with nothing reporting the
+  omission. A page that genuinely needs no permission declares `permission: null` and says why;
+  four do. `routeAccess.test.ts` walks `src/routes/dashboard` and fails on the first page without
+  a rule, so the omission is caught by whoever adds the page rather than by whoever clicks it.
+  Form actions are POSTs to the same path, so the page's rule gates its writes too — but one
+  prefix means one permission, so it cannot yet separate reading a record from changing it.
 - **Never trust a client-submitted privileged field.** Anything the server must decide —
   `createdBy`, `approvedBy`, a status, a price — is set server-side. That is what `contentCrud`'s
   `transform` hook exists for.

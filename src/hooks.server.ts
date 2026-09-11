@@ -17,7 +17,7 @@ import {
 } from '$lib/server/db/schema/';
 import { notDeleted } from '$lib/server/softDelete';
 import { computeIsSuperAdmin } from '$lib/server/permissions';
-import { routeRules } from '$lib/routeAccess';
+import { PROTECTED_ROOT, ruleForPath } from '$lib/routeAccess';
 
 /**
  * Blocks the public sign-up endpoint.
@@ -79,12 +79,30 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 		event.locals.permList = specialPerms.length ? mappedSpecialPerms : mappedRolePerms;
 		event.locals.isSuperAdmin = await computeIsSuperAdmin(event.locals.permList);
 
-		const match = routeRules.find((route) => event.url.pathname.startsWith(route.prefix));
+		/*
+		 * Closed by default under `/dashboard`.
+		 *
+		 * This used to refuse only what a rule claimed, so a path no rule matched was open to
+		 * every account. With 96 pages against 22 rules that is not a theoretical gap: a new
+		 * clinical route is readable by the whole clinic until somebody remembers to gate it, and
+		 * nothing anywhere reports the omission. Refusing the unclaimed path turns forgetting a
+		 * rule into a 403 on the first click.
+		 *
+		 * The two refusals say different things on purpose. "You lack the permission" is for the
+		 * user and their admin; "no permission is defined" is for whoever built the page, and it
+		 * is the only signal that the rule was never written.
+		 */
+		if (event.url.pathname.startsWith(PROTECTED_ROOT)) {
+			const match = ruleForPath(event.url.pathname);
 
-		if (match) {
-			const hasPermission = event.locals.permList.includes(match.permission);
+			if (!match) {
+				error(
+					403,
+					'No permission is defined for this page, so it is closed. An administrator must add a rule for it.'
+				);
+			}
 
-			if (!hasPermission) {
+			if (match.permission !== null && !event.locals.permList.includes(match.permission)) {
 				error(
 					403,
 					'You are Not allowed to view this page, talk to an admin to change your permissions'

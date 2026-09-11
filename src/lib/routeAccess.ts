@@ -6,9 +6,49 @@
  * same list to decide what to render, so a button never leads somewhere the click would 403.
  * Order matters: the first matching prefix wins, so specific paths come before general ones.
  */
-export type RouteRule = { prefix: string; permission: string };
+/**
+ * The area that is closed by default. A path under here with no rule is refused (see
+ * `ruleForPath`); a path outside it — `/login`, `/setup`, `/forgot-password` — is not this
+ * module's business.
+ */
+export const PROTECTED_ROOT = '/dashboard';
+
+export type RouteRule = {
+	prefix: string;
+
+	/**
+	 * The permission the prefix sits behind, or `null` for "any signed-in user is enough".
+	 *
+	 * `null` is a decision on the record, not an absence of one. Because unmatched paths are
+	 * refused, the only way a page becomes reachable without a permission is for somebody to
+	 * write `null` here and mean it.
+	 */
+	permission: string | null;
+
+	/**
+	 * Match the path exactly rather than as a prefix.
+	 *
+	 * Only `/dashboard` itself needs this, and it needs it badly: as a prefix rule it would match
+	 * every page in the app and hand default-deny back to default-allow in one line.
+	 */
+	exact?: boolean;
+};
 
 export const routeRules: RouteRule[] = [
+	/*
+	 * Reachable by anyone with an account, on purpose.
+	 *
+	 * Everything below carries a permission; these four do not, because refusing them would be
+	 * refusing people the things an account *is*: the page it lands on, the ability to change
+	 * your own password, the manual, and the attachments already on records you can open.
+	 */
+	{ prefix: '/dashboard', permission: null, exact: true },
+	{ prefix: '/dashboard/change-password', permission: null },
+	{ prefix: '/dashboard/help', permission: null },
+	// The store is flat and a filename records nothing about what it is attached to, so there is
+	// nothing here to check a permission against — see the note on the route itself.
+	{ prefix: '/dashboard/files/', permission: null },
+
 	{
 		prefix: '/dashboard/admin-panel/users',
 		permission: 'users.manage'
@@ -116,17 +156,40 @@ export const routeRules: RouteRule[] = [
 	}
 ];
 
-/** The permission `pathname` sits behind, or undefined when the path is open to any user. */
+/**
+ * The rule governing `pathname`, or `undefined` when no rule claims it.
+ *
+ * First match wins, so specific prefixes must come before general ones — that ordering is load
+ * bearing and the array says so where it matters.
+ */
+export function ruleForPath(pathname: string): RouteRule | undefined {
+	return routeRules.find((rule) =>
+		rule.exact
+			? pathname === rule.prefix || pathname === rule.prefix + '/'
+			: pathname.startsWith(rule.prefix)
+	);
+}
+
+/** The permission `pathname` sits behind, or undefined when it needs none (or has no rule). */
 export function permissionForPath(pathname: string): string | undefined {
-	return routeRules.find((rule) => pathname.startsWith(rule.prefix))?.permission;
+	return ruleForPath(pathname)?.permission ?? undefined;
 }
 
 /**
  * Whether this user may open `pathname`. Menus call this rather than naming a permission of
  * their own — a link and the gate in front of it cannot then drift apart.
+ *
+ * **Closed by default.** A path under `/dashboard` that no rule claims returns `false`, which is
+ * the whole point: the app grew 96 pages against 22 rules, so a new clinical route was readable
+ * by every account until somebody remembered to gate it. Forgetting is now a 403 on the first
+ * click instead of a hole nobody sees. Paths outside `/dashboard` are not gated here.
  */
 export function canVisit(pathname: string, permList: string[] | undefined | null): boolean {
-	const permission = permissionForPath(pathname);
-	if (!permission) return true;
-	return (permList ?? []).includes(permission);
+	if (!pathname.startsWith(PROTECTED_ROOT)) return true;
+
+	const rule = ruleForPath(pathname);
+	if (!rule) return false;
+	if (rule.permission === null) return true;
+
+	return (permList ?? []).includes(rule.permission);
 }
