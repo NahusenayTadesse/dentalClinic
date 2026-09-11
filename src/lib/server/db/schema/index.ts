@@ -11,6 +11,7 @@ export * from './branches';
 export * from './patients';
 export * from './contacts';
 export * from './allergies';
+export * from './conditions';
 export * from './teeth';
 export * from './providers';
 export * from './scheduling';

@@ -13,6 +13,7 @@ import {
 	seedAppointmentTypes,
 	seedClinicBasics,
 	seedClinicClosures,
+	seedConditions,
 	seedContactTypes,
 	seedMainBranch,
 	seedMedicines,
@@ -79,6 +80,7 @@ export const actions: Actions = {
 			await seedAppointmentTypes();
 			await seedMedicines();
 			await seedClinicClosures();
+			await seedConditions();
 
 			const [role] = await db
 				.select({ id: roles.id })

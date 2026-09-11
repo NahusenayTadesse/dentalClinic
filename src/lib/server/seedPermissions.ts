@@ -6,6 +6,7 @@ import {
 	appointmentType,
 	branch,
 	clinicClosure,
+	condition,
 	contactTypes,
 	medicine,
 	operatory,
@@ -539,4 +540,86 @@ export async function seedClinicClosures() {
 			};
 		})
 	);
+}
+
+/**
+ * The conditions a dental clinic records, split into what a dentist diagnoses and what they
+ * merely need to know.
+ *
+ * **Names only — `hmisCode` and `icdCode` are deliberately left null.** The Ministry's National
+ * Classification of Diseases is theirs and is not something to reconstruct from memory: a wrong
+ * serial number files a wrong statutory return silently, where a null one is visibly unfinished
+ * and gets filled. The names below are unambiguous and useful immediately; the codes come from
+ * the Ministry's list, or from the planned sync, and `source: 'seed'` marks these rows as safe
+ * for that sync to update.
+ *
+ * The dental group is what a dentist diagnoses themselves. The systemic group is everything that
+ * changes how they treat — diabetes, bleeding disorders, hepatitis, pregnancy — recorded by the
+ * clinic but diagnosed elsewhere, which is what `isDentalRelated: false` says.
+ */
+export async function seedConditions() {
+	const [existing] = await db.select({ id: condition.id }).from(condition).limit(1);
+
+	if (existing) return;
+
+	const dental: [string, string][] = [
+		['Dental caries', 'Hard tissue'],
+		['Pulpitis', 'Hard tissue'],
+		['Periapical abscess', 'Infection'],
+		['Dry socket (alveolar osteitis)', 'Post-operative'],
+		['Gingivitis', 'Periodontal'],
+		['Periodontitis', 'Periodontal'],
+		['Impacted tooth', 'Developmental'],
+		['Malocclusion', 'Developmental'],
+		['Edentulism (tooth loss)', 'Developmental'],
+		['Dentine hypersensitivity', 'Hard tissue'],
+		['Bruxism', 'Functional'],
+		['Temporomandibular joint disorder', 'Functional'],
+		['Oral candidiasis', 'Mucosal'],
+		['Oral ulceration', 'Mucosal'],
+		['Leukoplakia', 'Mucosal'],
+		['Dental trauma', 'Trauma'],
+		['Dentofacial anomaly', 'Developmental']
+	];
+
+	const systemic: [string, string][] = [
+		['Diabetes mellitus, type 1', 'Endocrine'],
+		['Diabetes mellitus, type 2', 'Endocrine'],
+		['Hypertension', 'Cardiovascular'],
+		['Ischaemic heart disease', 'Cardiovascular'],
+		['Rheumatic heart disease', 'Cardiovascular'],
+		['Stroke', 'Cardiovascular'],
+		['Bleeding disorder', 'Haematological'],
+		['Anaemia', 'Haematological'],
+		['Sickle cell disease', 'Haematological'],
+		['Asthma', 'Respiratory'],
+		['Tuberculosis', 'Infectious'],
+		['Hepatitis B', 'Infectious'],
+		['Hepatitis C', 'Infectious'],
+		['HIV', 'Infectious'],
+		['Epilepsy', 'Neurological'],
+		['Chronic kidney disease', 'Renal'],
+		['Thyroid disorder', 'Endocrine'],
+		['Osteoporosis', 'Musculoskeletal'],
+		['Malignancy', 'Oncological'],
+		['Immunosuppression', 'Immunological'],
+		['Pregnancy', 'Obstetric']
+	];
+
+	await db.insert(condition).values([
+		...dental.map(([name, category], i) => ({
+			name,
+			category,
+			isDentalRelated: true,
+			source: 'seed' as const,
+			sortOrder: i + 1
+		})),
+		...systemic.map(([name, category], i) => ({
+			name,
+			category,
+			isDentalRelated: false,
+			source: 'seed' as const,
+			sortOrder: 100 + i
+		}))
+	]);
 }

@@ -35,10 +35,10 @@ import { customers } from './customers';
  * Non-goals: this table says who someone is, not what was done to them. Appointments, treatment
  * history, odontogram findings and payments are their own tables and point back here.
  *
- * Allergies were briefly a `text` column here and are now `patient_allergies` — coded, so that
- * "who reacts to penicillin" is a join rather than a `LIKE`. `medicalNotes` below stays prose
- * deliberately, and the same argument applies to it: the day someone needs to list every
- * diabetic patient, conditions earn their own table too.
+ * Allergies were briefly a `text` column here and are now `patient_allergies`; conditions
+ * followed them into `patient_conditions` once it became clear the clinic must report patient
+ * counts per condition. Both for the same reason: a count cannot be taken from prose.
+ * `medicalNotes` below is what is left over — see the note on it.
  *
  * Ways to reach the patient live in `patient_contacts`, and emergency contacts in
  * `patient_emergency_contacts` — both in `contacts.ts`. An earlier version of this table
@@ -105,13 +105,17 @@ export const patient = mysqlTable(
 		bloodType: mysqlEnum('blood_type', ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
 
 		/**
-		 * Conditions that change dental treatment: diabetes, hypertension, cardiac history,
-		 * bleeding disorders, hepatitis, HIV, pregnancy, current medication.
+		 * What is left over once conditions became rows.
 		 *
-		 * Still prose, unlike allergies, and the difference is what gets asked of it. Allergies
-		 * are queried across patients — a recall, a checked afternoon list — so the substance had
-		 * to become a row. Conditions are read one patient at a time, by the clinician about to
-		 * treat them. When that stops being true, this becomes a table the same way.
+		 * Conditions themselves moved to `patient_conditions` — a clinic has to report how many
+		 * patients it saw with each one, and a count cannot be taken from a text box. What stays
+		 * here is the residue that is not a diagnosis, and one part of that residue matters more
+		 * than the rest: **medicines the patient is already taking from somewhere else.**
+		 *
+		 * That is not a condition and it is not one of our prescriptions, so neither table holds
+		 * it, yet it is exactly what changes dental treatment. A patient on warfarin bleeds; one on
+		 * bisphosphonates risks osteonecrosis after an extraction. Until `patient_medications`
+		 * exists, this field is where that lives, and it is worth reading before any surgery.
 		 */
 		medicalNotes: text('medical_notes'),
 
