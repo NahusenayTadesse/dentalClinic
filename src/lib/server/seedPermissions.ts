@@ -1,7 +1,7 @@
 import { eq, inArray } from 'drizzle-orm';
 
 import { db } from '$lib/server/db';
-import { branch, permissions, rolePermissions, roles } from '$lib/server/db/schema';
+import { branch, contactTypes, permissions, rolePermissions, roles } from '$lib/server/db/schema';
 import { MAIN_BRANCH_ID } from '$lib/server/db/schema/branches';
 import { routeRules } from '$lib/routeAccess';
 
@@ -169,4 +169,28 @@ export async function seedMainBranch(name = 'Main Branch') {
 	if (existing) return;
 
 	await db.insert(branch).values({ id: MAIN_BRANCH_ID, name });
+}
+
+/**
+ * The contact channels a clinic starts with.
+ *
+ * Seeded rather than left to the admin panel because an empty picker on the first patient is a
+ * dead end — the front desk has no reason to guess that Telegram is something they must create
+ * before they can record it. These four are what people here actually use; anything else is a
+ * row they add themselves, which is the point of the table.
+ *
+ * Inserted only when the table is completely empty, not row by row. A clinic that deliberately
+ * deletes Telegram should not find it back after the next restart.
+ */
+export async function seedContactTypes() {
+	const [existing] = await db.select({ id: contactTypes.id }).from(contactTypes).limit(1);
+
+	if (existing) return;
+
+	await db.insert(contactTypes).values([
+		{ name: 'Phone', kind: 'phone', sortOrder: 1 },
+		{ name: 'Email', kind: 'email', sortOrder: 2 },
+		{ name: 'Telegram', kind: 'username', linkPrefix: 'https://t.me/', sortOrder: 3 },
+		{ name: 'WhatsApp', kind: 'phone', linkPrefix: 'https://wa.me/', sortOrder: 4 }
+	]);
 }

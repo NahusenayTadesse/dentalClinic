@@ -84,6 +84,20 @@ export function lookupColumns(
 			.map((field): ColumnDef<LookupRow> => {
 				const isFlag = field.type === 'boolean' || field.type === 'checkbox';
 
+				// Show the label, not the stored value: the column holds `username`, the reader
+				// wants "Username". Falls back to the raw value so an unknown one is visible
+				// rather than blank — that state means the choices and the data have drifted.
+				if (field.type === 'select') {
+					return {
+						accessorKey: field.name,
+						header: sortableHeader(field.label),
+						cell: ({ row }) => {
+							const value = row.original[field.name];
+							return field.choices?.find((c) => c.value === value)?.name ?? String(value ?? '');
+						}
+					};
+				}
+
 				// Every other date on this app renders on the Ethiopian calendar, so these do too.
 				// An empty cell rather than "Invalid Date" when the column is null.
 				if (field.type === 'date') {

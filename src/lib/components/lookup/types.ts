@@ -42,7 +42,17 @@ export type LookupFieldType =
 	 * A foreign key. Entered through a picker of real options, and shown in the table as the
 	 * referenced row's name rather than its id. Requires `options` and `display`.
 	 */
-	| 'reference';
+	| 'reference'
+	/**
+	 * A fixed set of choices that lives in the code rather than in a table — a column typed
+	 * `mysqlEnum`, usually. Requires `choices`.
+	 *
+	 * Distinct from `reference`, and the line between them is where the set is allowed to
+	 * change: a `reference` picker is filled from rows a clinic can add, while these choices
+	 * change only when the schema does. Using `reference` for an enum would promise the admin
+	 * panel can extend it, which it cannot.
+	 */
+	| 'select';
 
 export type LookupField = {
 	/** The column on the table and the key in the form. */
@@ -85,6 +95,14 @@ export type LookupField = {
 	 * what the longer lists (cities, departments) already used.
 	 */
 	picker?: 'combo' | 'select';
+
+	// ── `select` fields only ───────────────────────────────────────────────────────────────────
+
+	/**
+	 * The fixed choices, as `{ value, name }`. The `value` is what is stored, the `name` is what
+	 * the form and the table cell show — so renaming a label never rewrites stored data.
+	 */
+	choices?: { value: string; name: string }[];
 };
 
 export type LookupConfig = {

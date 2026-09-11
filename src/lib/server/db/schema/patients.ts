@@ -35,6 +35,12 @@ import { customers } from './customers';
  * history, odontogram findings and payments are their own tables and point back here. The two
  * clinical columns that *are* here — `allergies` and `medicalNotes` — are here because they must
  * be readable without a join, on the screen a clinician sees before touching anyone.
+ *
+ * Ways to reach the patient live in `patient_contacts`, and emergency contacts in
+ * `patient_emergency_contacts` — both in `contacts.ts`. An earlier version of this table
+ * carried one emergency contact inline on the argument that there is only ever one. There is
+ * not: a child has two parents, and the first number often does not answer. `phone` below
+ * stays here regardless, because it is the index the front desk searches.
  */
 export const patient = mysqlTable(
 	'patient',
@@ -128,18 +134,6 @@ export const patient = mysqlTable(
 		historyTakenBy: varchar('history_taken_by', { length: 255 }).references(() => user.id, {
 			onDelete: 'set null'
 		}),
-
-		/**
-		 * Who to call if something goes wrong during treatment.
-		 *
-		 * Inline rather than a `patient_contacts` child table, unlike `customer_contacts`: there
-		 * is exactly one of these, it is needed on every patient screen, and a join for one row
-		 * that is always present is a join that is always paid. If a real need for several
-		 * contacts appears, that is a child table alongside these, not a replacement for them.
-		 */
-		emergencyName: varchar('emergency_name', { length: 100 }),
-		emergencyPhone: varchar('emergency_phone', { length: 20 }),
-		emergencyRelation: varchar('emergency_relation', { length: 50 }),
 
 		address: int('address').references(() => address.id, { onDelete: 'set null' }),
 

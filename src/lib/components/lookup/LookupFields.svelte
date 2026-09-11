@@ -55,6 +55,16 @@
 			items={optionsFor(field)}
 			required={field.required ?? true}
 		/>
+	{:else if field.type === 'select'}
+		<InputComp
+			{form}
+			{errors}
+			label={field.label}
+			name={field.name}
+			type="select"
+			items={field.choices ?? []}
+			required={field.required ?? true}
+		/>
 	{:else if field.type === 'boolean'}
 		<InputComp
 			{form}

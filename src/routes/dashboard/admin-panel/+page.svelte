@@ -25,6 +25,7 @@
 		{ name: 'Roles', href: '/dashboard/admin-panel/roles' }
 	];
 	let finance = [
+		{ name: 'Contact Types', href: '/dashboard/admin-panel/contact-types' },
 		{ name: 'Payment Methods', href: '/dashboard/admin-panel/payment-methods' },
 		{ name: 'Tax Types', href: '/dashboard/admin-panel/tax-types' },
 		{ name: 'Overtime Types', href: '/dashboard/admin-panel/overtime-types' },

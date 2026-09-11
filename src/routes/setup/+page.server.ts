@@ -7,7 +7,12 @@ import { redirect } from 'sveltekit-flash-message/server';
 import { auth } from '$lib/server/auth';
 import { db } from '$lib/server/db';
 import { roles, user } from '$lib/server/db/schema';
-import { SUPER_ADMIN_ROLE, seedMainBranch, seedPermissions } from '$lib/server/seedPermissions';
+import {
+	SUPER_ADMIN_ROLE,
+	seedContactTypes,
+	seedMainBranch,
+	seedPermissions
+} from '$lib/server/seedPermissions';
 import { setupSchema } from './schema';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -61,6 +66,7 @@ export const actions: Actions = {
 			// must exist too or the foreign key rejects the insert.
 			await seedPermissions();
 			await seedMainBranch();
+			await seedContactTypes();
 
 			const [role] = await db
 				.select({ id: roles.id })
