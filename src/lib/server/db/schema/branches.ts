@@ -89,6 +89,19 @@ export { MAIN_BRANCH_ID };
  *
  * `restrict` would be the alternative, but a clinic closing a location should be able to without
  * first reassigning years of history.
+ *
+ * **The one way this bites, and it only bites through manual SQL.** Hard-deleting a branch row
+ * nulls every `branch_id` pointing at it — that is the `set null` working as intended — but if
+ * the row deleted was the *main* branch, every later insert then fails with
+ * `ER_NO_REFERENCED_ROW_2`, because the column default is still `1` and there is no longer a
+ * branch 1 to point at. The clinic's app stops being able to register a patient.
+ *
+ * The app never does this: branch deletion goes through `lookupDeleteAction`, which soft-deletes,
+ * so the row survives and the foreign key still resolves. The risk is a hand-run
+ * `DELETE FROM branch` in phpMyAdmin. Recovery is two statements:
+ *
+ *     INSERT INTO branch (id, name) VALUES (1, 'Main Branch');
+ *     UPDATE <each branch-aware table> SET branch_id = 1 WHERE branch_id IS NULL;
  */
 export const branchRef = () =>
 	int('branch_id')

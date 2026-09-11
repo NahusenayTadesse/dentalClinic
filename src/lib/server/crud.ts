@@ -153,6 +153,21 @@ export function contentCrud<T extends AnyTable>({
 	const toRow = async (data: Record<string, any>) => {
 		const { id, ...values } = data;
 
+		/*
+		 * Every lookup form calls the active flag `status`, but only `lesserFields` tables have a
+		 * column by that name — `secureFields` tables call it `isActive`. Drizzle silently drops
+		 * keys that do not match a column, so on a `secureFields` table the toggle did nothing at
+		 * all: the row saved, the screen said success, and `is_active` kept its default of true.
+		 * Seven screens shipped that way, and it was only visible by reading the row back.
+		 *
+		 * Renamed here rather than in each config, so a route keeps saying `status` and neither
+		 * mixin has to leak into the descriptor.
+		 */
+		if ('status' in values && !('status' in table) && 'isActive' in table) {
+			values.isActive = values.status;
+			delete values.status;
+		}
+
 		for (const field of fileFields) {
 			const file = values[field];
 			// No new upload means "keep whatever is already stored".

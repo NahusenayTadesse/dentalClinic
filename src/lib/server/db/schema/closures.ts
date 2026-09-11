@@ -22,6 +22,19 @@ import { branch } from './branches';
  * "is this date inside a closure", and that has to be a plain indexed range check, not a
  * calendar conversion per row.
  *
+ * **`isActive` is the "do we observe this" switch, and every diary query must honour it.** A
+ * closure row means the clinic *could* be shut; `isActive` says whether it actually is. That
+ * distinction matters more here than the seeded list suggests: a public holiday is a government
+ * rule, not a clinic's, and plenty of small practices work straight through one. Several of these
+ * are religious — Genna and Timkat are Orthodox, Eid is Muslim — and a clinic staffed by one
+ * family observes the ones that family keeps and opens on the rest. Turning a row off keeps it in
+ * the list, dated and named, ready to be turned back on next year, where deleting it means
+ * retyping it.
+ *
+ *     WHERE ? BETWEEN starts_on AND ends_on
+ *       AND is_active = true AND deleted_at IS NULL
+ *       AND (branch_id IS NULL OR branch_id = ?)
+ *
  * Non-goal: half days. A clinic that shuts at noon on New Year's Eve is better served by the
  * per-weekday hours in `staff_schedule` than by a second, overlapping notion of partial time
  * here.

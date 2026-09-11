@@ -491,9 +491,15 @@ export async function seedMedicines() {
  * Gregorian so the diary's overlap check stays a plain indexed range test. The Ethiopian month
  * and day ride along so next year's rows can be generated from these.
  *
- * Seeded, not assumed: a clinic that works through Adwa deletes the row. National holidays are
- * the right default because most businesses close, and a diary that offers slots on Ethiopian
- * Christmas is wrong in the more expensive direction.
+ * Seeded active, but nothing here is assumed. A public holiday is a government rule rather than
+ * a clinic's, and plenty of practices work straight through one — so a clinic that opens on Adwa
+ * switches that row off rather than deleting it, and it stays in the list, dated and named, for
+ * the year they change their mind. Several are religious besides: Genna and Timkat are Orthodox,
+ * Eid is Muslim, and a practice staffed by one family keeps the ones that family keeps.
+ *
+ * Active is the default anyway because the two errors are not equal in cost. A clinic that is
+ * open on a day marked closed loses some bookings it could have taken; a clinic that is closed on
+ * a day marked open sends patients to a locked door.
  */
 export async function seedClinicClosures() {
 	const [existing] = await db.select({ id: clinicClosure.id }).from(clinicClosure).limit(1);
@@ -529,7 +535,7 @@ export async function seedClinicClosures() {
 				ethiopianDay,
 				// Null branch: a public holiday closes every branch. See `clinic_closure`.
 				branchId: null,
-				note: 'Public holiday. Delete this if the clinic works that day.'
+				note: 'Public holiday. Switch off if the clinic works that day.'
 			};
 		})
 	);
