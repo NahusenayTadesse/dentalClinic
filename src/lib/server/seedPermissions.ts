@@ -72,6 +72,18 @@ const DESCRIPTIONS: Record<string, string> = {
 	'users.manage': 'Create and manage user accounts'
 };
 
+/**
+ * Permissions named by a route rule that have no wording here.
+ *
+ * `seedPermissions` falls back to the permission's own name as its description, so a new
+ * permission ships silently and shows up in the admin panel as `patients.record` — technically
+ * present, useless to the administrator deciding whether to grant it. A test asserts this is
+ * empty, which turns the silent fallback into a failure at the moment the permission is added.
+ */
+export function permissionsMissingDescriptions(): string[] {
+	return permissionNames().filter((name) => !DESCRIPTIONS[name]);
+}
+
 /** Every permission the system recognises, in a stable order. */
 export function permissionNames(): string[] {
 	// `null` means "any signed-in user" and is not a permission anybody can be granted.

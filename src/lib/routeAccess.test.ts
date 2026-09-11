@@ -2,6 +2,7 @@ import { readdirSync } from 'node:fs';
 import { join, sep } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { canVisit, permissionForPath, ruleForPath, routeRules } from './routeAccess';
+import { permissionNames, permissionsMissingDescriptions } from './server/seedPermissions';
 
 describe('route access', () => {
 	it('takes the first matching prefix, so a specific rule beats the general one', () => {
@@ -32,10 +33,12 @@ describe('route access', () => {
 	 * by any account, and nothing reported it.
 	 */
 	it('refuses a dashboard path that no rule claims', () => {
-		expect(ruleForPath('/dashboard/patients')).toBeUndefined();
-		expect(canVisit('/dashboard/patients', [])).toBe(false);
+		const unclaimed = '/dashboard/__no-rule-claims-this__';
+
+		expect(ruleForPath(unclaimed)).toBeUndefined();
+		expect(canVisit(unclaimed, [])).toBe(false);
 		// Not even a super-admin's worth of permissions opens a page with no rule.
-		expect(canVisit('/dashboard/patients', ['settings.manage', 'users.manage'])).toBe(false);
+		expect(canVisit(unclaimed, ['settings.manage', 'users.manage'])).toBe(false);
 	});
 
 	it('keeps the /dashboard rule exact, or it would reopen everything', () => {
@@ -117,6 +120,27 @@ describe('route access', () => {
 		const uncovered = [...new Set(pagePaths(root))].filter((path) => !ruleForPath(path));
 
 		expect(uncovered, `add a routeRules entry for:\n  ${uncovered.join('\n  ')}`).toEqual([]);
+	});
+
+	/*
+	 * A permission with no wording seeds with its own name as the description, so the admin panel
+	 * offers "patients.record" and the person deciding whether to grant it has to guess. The
+	 * fallback is silent, so this is the only thing that reports it.
+	 */
+	it('gives every permission a description an administrator can read', () => {
+		const missing = permissionsMissingDescriptions();
+
+		expect(
+			missing,
+			`add DESCRIPTIONS entries in seedPermissions.ts for:\n  ${missing.join('\n  ')}`
+		).toEqual([]);
+	});
+
+	it('never offers a null as a grantable permission', () => {
+		// `permission: null` means "any signed-in user"; it is not a row anybody can hold.
+		expect(permissionNames().every((name) => typeof name === 'string' && name.length > 0)).toBe(
+			true
+		);
 	});
 
 	it('gives each report page the permission its content answers to', () => {

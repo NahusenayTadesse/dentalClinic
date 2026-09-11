@@ -2,6 +2,7 @@ import { fail, message, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { db } from '$lib/server/db';
 import { approvalLinks, findEntity, pendingRows, settleApprovals } from '$lib/server/approvals';
+import { hasPermission } from '$lib/server/permissions';
 import { settleSchema } from '../schema';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -39,8 +40,7 @@ export const actions: Actions = {
 
 		// A super admin holds every permission, so this is true for them by construction — which
 		// is the intended "root can do anything", not an accident.
-		const canOverride =
-			locals.isSuperAdmin || (locals.permList ?? []).includes('approvals.override');
+		const canOverride = hasPermission(locals, 'approvals.override');
 
 		const { ids, decision, reason } = form.data;
 

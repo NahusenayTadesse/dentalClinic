@@ -6,6 +6,7 @@ import { error } from '@sveltejs/kit';
 import { and, eq } from 'drizzle-orm';
 
 import { auth } from '$lib/server/auth';
+import { seedPermissions } from '$lib/server/seedPermissions';
 import { leaveJobIsOverdue, runLeaveJob } from '$lib/server/leaveJob';
 import { db } from '$lib/server/db';
 import {
@@ -27,6 +28,42 @@ import { PROTECTED_ROOT, ruleForPath } from '$lib/routeAccess';
  * without this, `POST /api/auth/sign-up/email` is an open registration form on a system holding
  * patient data.
  */
+/**
+ * Brings the `permissions` table up to date with the code, once per boot.
+ *
+ * `seedPermissions` used to run only at `/setup`, which is unreachable the moment an account
+ * exists. So a permission added with a new route reached a fresh install and no other: on every
+ * clinic already running, the row was never created, nobody could be granted it, and the route it
+ * gated returned 403 to everyone — the super admin included, because holding "every permission"
+ * cannot include one that has no row. Default-deny (§9) makes that failure total rather than
+ * partial, which is why this has to exist alongside it.
+ *
+ * Idempotent and additive: it inserts the permissions that are missing and grants them to the
+ * Super Admin role, which is what that role means. It removes nothing and renames nothing.
+ *
+ * Failure is logged and swallowed. A clinic whose permission sync failed should still be able to
+ * open the app and be told what is wrong; refusing to boot would turn a missing row into an
+ * outage.
+ */
+let permissionSyncStarted = false;
+
+async function syncPermissionsOnce() {
+	if (permissionSyncStarted || building) return;
+	permissionSyncStarted = true;
+
+	try {
+		const result = await seedPermissions();
+
+		if (result.permissionsCreated) {
+			console.log(`[permissions] seeded ${result.permissionsCreated} new permission(s)`);
+		}
+	} catch (err) {
+		console.error(
+			`[permissions] sync failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+		);
+	}
+}
+
 const handleBlockPublicSignup: Handle = async ({ event, resolve }) => {
 	if (event.request.method === 'POST' && event.url.pathname.startsWith('/api/auth/sign-up')) {
 		return new Response('Not found', { status: 404 });
@@ -42,6 +79,10 @@ const handleBlockPublicSignup: Handle = async ({ event, resolve }) => {
  * `user.id`, so anything that reads `locals.permList` is meaningless until the session is known.
  */
 const handleAuth: Handle = async ({ event, resolve }) => {
+	// First request after a boot brings the permission table in step with the code. Awaited, and
+	// only once, so the request that triggers it cannot read a half-seeded table.
+	await syncPermissionsOnce();
+
 	const result = await auth.api.getSession({ headers: event.request.headers });
 
 	event.locals.user = result?.user ?? null;

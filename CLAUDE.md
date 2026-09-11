@@ -61,6 +61,7 @@ any button, dialog, popover, or menu.
 | Cascading delete                   | the `softDelete*` family — `server/softDelete.ts`                                           |
 | Delete action on a lookup page     | `lookupDeleteAction` — `server/lookupDelete.ts`                                             |
 | Authorization                      | `requireSuperAdmin` · `syncAdminRole` — `server/permissions.ts`                             |
+| Permission check in an action      | `requirePermission` · `hasPermission` — `server/permissions.ts`                             |
 | Reading a MySQL error code         | `isDuplicateKey` · `mysqlErrorCode` — `server/dbErrors.ts`                                  |
 | The permission list and admin role | `seedPermissions` — `server/seedPermissions.ts`, run by `/setup`                            |
 | Dropdown option lists              | `server/fastData.ts` (50 files)                                                             |
@@ -270,6 +271,20 @@ Not style. These carry patient data.
   a rule, so the omission is caught by whoever adds the page rather than by whoever clicks it.
   Form actions are POSTs to the same path, so the page's rule gates its writes too — but one
   prefix means one permission, so it cannot yet separate reading a record from changing it.
+- **A new gated route brings its permission with it.** If no existing permission fits, the route
+  is not finished until the permission exists: a `routeRules` entry (which is what
+  `permissionNames()` derives from, so the row seeds itself) _and_ a `DESCRIPTIONS` entry in
+  `seedPermissions.ts`, because without one the admin panel offers `patients.record` to the person
+  deciding whether to grant it. Both are guarded by tests that name what is missing. Never invent
+  a permission string anywhere else — §9 already says they live only in `lib/routeAccess.ts`, and
+  a string that is not in that file is a gate nobody can open.
+- **Enforce on the action, not only on the load.** The route gate matches on path and nothing
+  else, which makes it the floor: it stops someone reaching the page at all. Any action that does
+  more than the page it sits on — settling an approval on a page anyone may read, voiding an
+  invoice, changing a price — calls `requirePermission(locals, '…')` or `requireSuperAdmin` in the
+  action body. A hidden button is not a check; the action is reachable by anyone who can POST to
+  the path. `hasPermission` is the same test when you need a boolean to decide something rather
+  than to refuse.
 - **Never trust a client-submitted privileged field.** Anything the server must decide —
   `createdBy`, `approvedBy`, a status, a price — is set server-side. That is what `contentCrud`'s
   `transform` hook exists for.

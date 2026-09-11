@@ -2,6 +2,7 @@ import { fail, message, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { db } from '$lib/server/db';
 import { approvalLinks, findEntity, rejectedRows, reopenApprovals } from '$lib/server/approvals';
+import { hasPermission } from '$lib/server/permissions';
 import { reopenSchema } from '../schema';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -37,7 +38,7 @@ export const actions: Actions = {
 		// Rejections are a separate desk from approvals: whoever clears them holds
 		// `rejections.reopen`, which says nothing about being allowed to approve anything.
 		// A super admin holds it by construction.
-		const canReopen = locals.isSuperAdmin || (locals.permList ?? []).includes('rejections.reopen');
+		const canReopen = hasPermission(locals, 'rejections.reopen');
 		if (!canReopen) {
 			return message(
 				form,
