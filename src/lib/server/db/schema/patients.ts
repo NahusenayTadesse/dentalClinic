@@ -105,17 +105,18 @@ export const patient = mysqlTable(
 		bloodType: mysqlEnum('blood_type', ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
 
 		/**
-		 * What is left over once conditions became rows.
+		 * Free-text medical history, and by now genuinely the residue.
 		 *
-		 * Conditions themselves moved to `patient_conditions` — a clinic has to report how many
-		 * patients it saw with each one, and a count cannot be taken from a text box. What stays
-		 * here is the residue that is not a diagnosis, and one part of that residue matters more
-		 * than the rest: **medicines the patient is already taking from somewhere else.**
+		 * The three things that used to live here have each become a table, in the order their
+		 * absence started to hurt: allergies to `patient_allergies`, diagnoses to
+		 * `patient_conditions` once a count had to be reported, and current medicines to
+		 * `patient_medications` once it became clear a dentist needs to know about warfarin and
+		 * bisphosphonates regardless of what conditions are recorded.
 		 *
-		 * That is not a condition and it is not one of our prescriptions, so neither table holds
-		 * it, yet it is exactly what changes dental treatment. A patient on warfarin bleeds; one on
-		 * bisphosphonates risks osteonecrosis after an extraction. Until `patient_medications`
-		 * exists, this field is where that lives, and it is worth reading before any surgery.
+		 * What is left is narrative that belongs to none of them — a family history, a surgery in
+		 * 2019, something the patient mentioned that has no code. Worth keeping, and worth *not*
+		 * filling with anything the three tables can hold, because prose cannot be counted,
+		 * filtered, or shown as a warning at the chair.
 		 */
 		medicalNotes: text('medical_notes'),
 

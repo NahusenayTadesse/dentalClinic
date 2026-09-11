@@ -63,6 +63,37 @@ export const medicine = mysqlTable(
 		/** Counted, so a clinic can measure its own prescribing. See the note above. */
 		isAntibiotic: boolean('is_antibiotic').notNull().default(false),
 
+		/**
+		 * Whether this clinic prescribes it.
+		 *
+		 * False for everything that only ever appears in a patient's existing medication list —
+		 * warfarin, metformin, alendronate. A dental clinic does not prescribe those, but it has to
+		 * be able to *record* them, and the catalogue serves both jobs. Without the flag the
+		 * prescribing picker slowly fills with cardiology drugs and a tired clinician eventually
+		 * picks one.
+		 */
+		isPrescribable: boolean('is_prescribable').notNull().default(true),
+
+		/**
+		 * The three properties of a drug that change what a dentist does, each mapping to a
+		 * distinct action rather than a general warning.
+		 *
+		 *   `bleedingRisk`      — anticoagulants and antiplatelets. Check before extracting; local
+		 *                         measures, and do not stop the drug without the prescriber.
+		 *   `osteonecrosisRisk` — bisphosphonates and denosumab. An extraction can cause
+		 *                         medication-related osteonecrosis of the jaw, which is why this is
+		 *                         its own flag and not lumped with the others.
+		 *   `immunosuppression` — steroids, methotrexate, chemotherapy. Healing and infection.
+		 *
+		 * Flags on the medicine rather than on the patient's row, because they are facts about the
+		 * drug. Three booleans rather than a drug-class table: the list of classes a dentist acts
+		 * on is short, closed and stable, and a lookup would add two tables and a join to a query
+		 * that runs on every chairside screen.
+		 */
+		bleedingRisk: boolean('bleeding_risk').notNull().default(false),
+		osteonecrosisRisk: boolean('osteonecrosis_risk').notNull().default(false),
+		immunosuppression: boolean('immunosuppression').notNull().default(false),
+
 		/** Whether it appears on the Ethiopian Essential Medicines List. */
 		isOnEml: boolean('is_on_eml').notNull().default(true),
 
@@ -73,7 +104,11 @@ export const medicine = mysqlTable(
 
 		...secureFields
 	},
-	(table) => [index('medicine_antibiotic_idx').on(table.isAntibiotic)]
+	(table) => [
+		index('medicine_antibiotic_idx').on(table.isAntibiotic),
+		// The prescribing picker, which must not offer drugs this clinic never writes.
+		index('medicine_prescribable_idx').on(table.isPrescribable, table.sortOrder)
+	]
 );
 
 /**

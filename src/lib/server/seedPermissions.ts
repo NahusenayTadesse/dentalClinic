@@ -365,6 +365,14 @@ export async function seedAppointmentTypes() {
  *
  * A starting formulary, not a fixed one: strengths and forms vary by what is in the shops, so
  * this is seeded once and then owned by the clinic.
+ *
+ * Two halves. The first fifteen are what the clinic writes. The rest it never prescribes but must
+ * record, because patients arrive on them — and three of those carry flags that change what a
+ * dentist may safely do. See `isPrescribable` on `medicine`.
+ *
+ * The list has two halves. The first fifteen are what the clinic writes. The rest are drugs it
+ * never prescribes but must record, because patients arrive on them — and three of those carry
+ * flags that change what a dentist may safely do. See `isPrescribable` on `medicine`.
  */
 export async function seedMedicines() {
 	const [existing] = await db.select({ id: medicine.id }).from(medicine).limit(1);
@@ -474,6 +482,146 @@ export async function seedMedicines() {
 			form: 'injection',
 			notes: 'Post-surgical swelling',
 			sortOrder: 42
+		},
+
+		/*
+		 * Below here: drugs this clinic never prescribes but must be able to *record*, because
+		 * patients arrive already taking them. `isPrescribable: false` keeps them out of the
+		 * prescribing picker while leaving them available to `patient_medications`.
+		 *
+		 * The flags are the point. Each changes what a dentist does at the chair, and none of it
+		 * is visible from a condition list — a patient on warfarin may have no condition recorded
+		 * here at all, because the cardiologist who started it is not this clinic.
+		 */
+		{
+			genericName: 'Warfarin',
+			strength: '5mg',
+			form: 'tablet',
+			isPrescribable: false,
+			bleedingRisk: true,
+			notes: 'Check INR before extraction; do not stop without the prescriber',
+			sortOrder: 100
+		},
+		{
+			genericName: 'Aspirin (low dose)',
+			strength: '75mg',
+			form: 'tablet',
+			isPrescribable: false,
+			bleedingRisk: true,
+			notes: 'Antiplatelet — usually continued; use local measures',
+			sortOrder: 101
+		},
+		{
+			genericName: 'Clopidogrel',
+			strength: '75mg',
+			form: 'tablet',
+			isPrescribable: false,
+			bleedingRisk: true,
+			sortOrder: 102
+		},
+		{
+			genericName: 'Enoxaparin',
+			strength: '40mg',
+			form: 'injection',
+			isPrescribable: false,
+			bleedingRisk: true,
+			sortOrder: 103
+		},
+		{
+			genericName: 'Alendronate',
+			strength: '70mg',
+			form: 'tablet',
+			isPrescribable: false,
+			osteonecrosisRisk: true,
+			notes: 'MRONJ risk — avoid extraction, consider referral',
+			sortOrder: 110
+		},
+		{
+			genericName: 'Zoledronic acid',
+			strength: '4mg',
+			form: 'injection',
+			isPrescribable: false,
+			osteonecrosisRisk: true,
+			notes: 'MRONJ risk — higher with IV; refer',
+			sortOrder: 111
+		},
+		{
+			genericName: 'Prednisolone',
+			strength: '5mg',
+			form: 'tablet',
+			isPrescribable: false,
+			immunosuppression: true,
+			notes: 'Long-term steroid — healing, infection, adrenal suppression',
+			sortOrder: 120
+		},
+		{
+			genericName: 'Methotrexate',
+			strength: '2.5mg',
+			form: 'tablet',
+			isPrescribable: false,
+			immunosuppression: true,
+			sortOrder: 121
+		},
+		{
+			genericName: 'Antiretroviral therapy',
+			form: 'tablet',
+			isPrescribable: false,
+			immunosuppression: true,
+			notes: 'Record the regimen in the note',
+			sortOrder: 122
+		},
+
+		// Common and unremarkable for dentistry, but worth being codeable so a history is not a
+		// page of free text.
+		{
+			genericName: 'Metformin',
+			strength: '500mg',
+			form: 'tablet',
+			isPrescribable: false,
+			sortOrder: 130
+		},
+		{
+			genericName: 'Insulin',
+			form: 'injection',
+			isPrescribable: false,
+			notes: 'Ask when the last dose was before a long appointment',
+			sortOrder: 131
+		},
+		{
+			genericName: 'Amlodipine',
+			strength: '5mg',
+			form: 'tablet',
+			isPrescribable: false,
+			sortOrder: 132
+		},
+		{
+			genericName: 'Enalapril',
+			strength: '5mg',
+			form: 'tablet',
+			isPrescribable: false,
+			sortOrder: 133
+		},
+		{
+			genericName: 'Atenolol',
+			strength: '50mg',
+			form: 'tablet',
+			isPrescribable: false,
+			sortOrder: 134
+		},
+		{
+			genericName: 'Salbutamol inhaler',
+			form: 'other',
+			isPrescribable: false,
+			notes: 'Ask the patient to bring it to appointments',
+			sortOrder: 135
+		},
+		{
+			genericName: 'Phenytoin',
+			strength: '100mg',
+			form: 'capsule',
+			isPrescribable: false,
+			notes: 'Gingival overgrowth',
+			sortOrder: 136
 		}
 	]);
 }
