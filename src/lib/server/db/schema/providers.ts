@@ -49,10 +49,19 @@ export const providerSpecialty = mysqlTable('provider_specialty', {
  * One row per employee, enforced below. This is a role an employee holds, not a second identity:
  * name, phone, address, photo, salary and leave all stay on `employee` and are not repeated.
  *
- * Non-goals: qualifications and education already have `qualification`, which carries the field,
- * level, school, graduation date and the certificate file. Which treatments someone performs
- * already has `staff_services`. Neither is duplicated here — this table is the licence and the
- * diary.
+ * Non-goals, each already owned by something else and deliberately not repeated here:
+ *
+ *   qualifications and education  `qualification` — field, level, school, graduation, certificate
+ *   which treatments they perform `staff_services`
+ *   which days and hours they work `staff_schedule` — weekday, start and end time, already
+ *                                 CHECK-constrained to real days. A provider's bookable hours are
+ *                                 their working hours; a second availability table would be the
+ *                                 same fact in two places.
+ *   commission and pay            `salaries.officeCommission` and `salaries.percentage`, with the
+ *                                 computed figures on `payroll_entries`. A rate here would be a
+ *                                 third home for one number.
+ *
+ * This table is the licence and the diary, and nothing that another table already knows.
  */
 export const provider = mysqlTable(
 	'provider',
@@ -83,6 +92,22 @@ export const provider = mysqlTable(
 		licenceExpiresOn: date('licence_expires_on'),
 		/** Which body issued it — "FMOH", "Oromia Regional Health Bureau". */
 		licenceBody: varchar('licence_body', { length: 100 }),
+
+		/**
+		 * How this person is addressed on anything the clinic prints — a prescription, a
+		 * certificate, a referral letter.
+		 *
+		 * A stored value rather than "Dr." hardcoded at the point of printing, because it is not
+		 * true of everyone in this table: a hygienist, a therapist, a radiographer and a nurse are
+		 * not doctors, and printing them as one on a document that leaves the building is a
+		 * misrepresentation of a licensed cadre. Deriving it from `specialty` was the alternative
+		 * and is worse — it puts a presentation rule inside clinical reference data and still
+		 * needs an override the first time a clinic disagrees.
+		 *
+		 * Separate from `abbreviation` below: that is a label squeezed into a column heading,
+		 * this is part of a name on a printed page.
+		 */
+		title: varchar('title', { length: 10 }),
 
 		/**
 		 * Initials for the appointment grid — "Dr M.T.". A day view is dense enough that a full
@@ -121,6 +146,17 @@ export const provider = mysqlTable(
 
 		/** "Mondays and Thursdays only", "no surgical lists after 4pm". Prose, for the front desk. */
 		scheduleNote: varchar('schedule_note', { length: 255 }),
+
+		/**
+		 * A scan of the practising licence, stored through `server/files.ts` like every other file
+		 * and named here by the same `varchar(255)` convention as `employee.photo`,
+		 * `employee.govtId` and `qualification.certificate`.
+		 *
+		 * Not the same document as `qualification.certificate`, which is the degree: one says
+		 * where they trained, this says they may practise today. An inspector asks for the second
+		 * one, and `licenceExpiresOn` above is only as trustworthy as the paper behind it.
+		 */
+		licenceDocument: varchar('licence_document', { length: 255 }),
 
 		/**
 		 * One live provider row per employee, enforced in the database. Same generated-column
