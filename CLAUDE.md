@@ -293,7 +293,40 @@ Not style. These carry patient data.
 
 ---
 
-## 10. Definition of done
+## 10. Portability
+
+The app must install on cPanel/MariaDB (today, and most deployments), on an old computer or VPS
+running **SQLite in WAL mode**, and on Vercel against **Postgres** (Supabase/Neon). Drizzle was
+chosen for this. It makes portability possible; it does not deliver it on its own.
+
+**The rule: anything Drizzle does not spell the same way on all three engines lives behind a
+function in `src/lib/server/db/`, and routes call the function.** Age is the worked example —
+`ageYears(patient.birthDate)` is four lines to change on a port; `TIMESTAMPDIFF(...)` written
+inline at every call site is a sweep where the one you miss returns wrong ages instead of an
+error. Same rule for dates, date formatting, string concatenation, `GROUP_CONCAT`, and getting
+an id back from an insert (`$returningId()` is MySQL-only).
+
+**Same rule for stored files.** `server/files.ts` is the only module that may touch `fs` or build
+a path into the store — already required by §9 for safety, and it is what makes a move to
+Cloudinary or Supabase Storage a rewrite of one file instead of a search. Treat the stored name
+as opaque: never parse it, never join it onto a directory.
+
+**Where the seam cannot be built** — a query whose _shape_ differs, not just its function names —
+write it inline and **record it in `src/lib/server/PORTABILITY.md`**, which carries the rule in
+full, the seam inventory, the behaviour differences that no function can hide (collation and
+therefore search is the sharp one), and the ledger of what currently leaks.
+
+The schema is exempt: a dialect change rewrites it by definition. `mysqlEnum`, `datetime`, the
+`live_key` generated columns and the `REGEXP` check constraint are documented in PORTABILITY.md
+rather than treated as debt.
+
+**The existing violations stay.** Seventeen route files and fourteen `$returningId()` call sites
+predate this rule and are listed in the ledger. They get cleaned up when their feature is next
+touched. The rule binds new code.
+
+---
+
+## 11. Definition of done
 
 - `npm run check` clean **for the files you touched**
 - `npm run lint` clean for the files you touched
