@@ -32,9 +32,17 @@ export const paymentMethods = mysqlTable('payment_methods', {
 	...secureFields
 });
 
+/**
+ * The tax rates in force. One row, in practice.
+ *
+ * The primary key is not decoration: without one there is no way to address a row, so a second
+ * one inserted by accident cannot be told from the first and nothing can say which is current.
+ * InnoDB invents a hidden key anyway; this makes it a key the application can use.
+ */
 export const vatAndWithHold = mysqlTable('vat_and_withhold', {
-	vat: decimal('vat', { precision: 10, scale: 2 }).notNull(),
-	withHold: decimal('with_hold', { precision: 10, scale: 2 }).notNull()
+	id: int('id').primaryKey().autoincrement(),
+	vat: decimal('vat', { precision: 10, scale: 2, mode: 'number' }).notNull(),
+	withHold: decimal('with_hold', { precision: 10, scale: 2, mode: 'number' }).notNull()
 });
 
 /**

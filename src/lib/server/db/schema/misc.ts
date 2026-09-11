@@ -32,7 +32,10 @@ export const auditLog = mysqlTable('audit_log', {
 	branchId: int('branch_id')
 });
 
+/** When the database was last downloaded. One row; see the note on `vat_and_withhold` for why it
+ * still has a key. */
 export const backup = mysqlTable('backup', {
+	id: int('id').primaryKey().autoincrement(),
 	lastDownload: timestamp('last_download').defaultNow().notNull()
 });
 

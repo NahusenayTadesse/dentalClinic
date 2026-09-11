@@ -3,7 +3,7 @@
 import { mysqlTable, mysqlEnum, varchar, int, decimal, boolean } from 'drizzle-orm/mysql-core';
 import { secureFields, lesserFields, deletionFields } from './secureFields';
 
-import { transactionSupplies } from './finance';
+import { transactions } from './finance';
 import { employee } from './staff';
 import { address } from './locations';
 import { medicine, prescription } from './prescriptions';
@@ -132,7 +132,17 @@ export const suppliesAdjustments = mysqlTable('supplies_adjustments', {
 	reason: varchar('reason', { length: 255 }),
 	costPerItem: decimal('cost_per_item', { precision: 10, scale: 2 }),
 	total: decimal('total', { precision: 10, scale: 2 }),
-	transactionId: int('transaction_id').references(() => transactionSupplies.id, {
+	/**
+	 * The payment this movement was part of, for a purchase.
+	 *
+	 * Points at `transactions`, which is what the write path has always stored here. It used to
+	 * reference `transaction_supplies` — the line item rather than the payment — while the adjust
+	 * action wrote a `transactions.id` into it. Two auto-increment sequences starting at 1 overlap
+	 * for a long time, so the foreign key accepted the wrong id silently and the change-history
+	 * page joined through to whichever receipt happened to share the number. It would have
+	 * started failing outright once the two tables drifted apart.
+	 */
+	transactionId: int('transaction_id').references(() => transactions.id, {
 		onDelete: 'set null'
 	}), //if the adjustment is caused by new stuff coming in
 	/**

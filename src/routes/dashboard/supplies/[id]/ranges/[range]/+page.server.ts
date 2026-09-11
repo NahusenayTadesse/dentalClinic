@@ -1,7 +1,6 @@
 import { db } from '$lib/server/db';
 import {
 	transactions,
-	transactionSupplies,
 	user,
 	suppliesAdjustments
 } from '$lib/server/db/schema';
@@ -35,16 +34,12 @@ export const load: PageServerLoad = async ({ params }) => {
 			reciept: transactions.recieptLink
 		})
 		.from(suppliesAdjustments)
-		.leftJoin(
-			transactionSupplies,
-			and(
-				eq(transactionSupplies.id, suppliesAdjustments.transactionId),
-				notDeleted(transactionSupplies)
-			)
-		)
+		// One hop, not two. `transactionId` is a payment, so the receipt comes straight off it —
+		// the old route through `transaction_supplies` relied on the same mismatched id the
+		// foreign key did.
 		.leftJoin(
 			transactions,
-			and(eq(transactions.id, transactionSupplies.transactionId), notDeleted(transactions))
+			and(eq(transactions.id, suppliesAdjustments.transactionId), notDeleted(transactions))
 		)
 		.leftJoin(user, eq(suppliesAdjustments.createdBy, user.id))
 		.where(
