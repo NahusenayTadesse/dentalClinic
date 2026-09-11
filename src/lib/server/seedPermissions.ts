@@ -12,6 +12,7 @@ import {
 	operatory,
 	permissions,
 	providerSpecialty,
+	supplyTypes,
 	rolePermissions,
 	roles,
 	tooth
@@ -623,6 +624,32 @@ export async function seedMedicines() {
 			notes: 'Gingival overgrowth',
 			sortOrder: 136
 		}
+	]);
+}
+
+/**
+ * The categories a dental clinic sorts its store into.
+ *
+ * Seeded because `supplies` requires a type and an empty picker stops the first item being added
+ * at all. `Pharmacy` is deliberately separate from `Materials`: it is the group that carries
+ * `medicineId` and `tracksBatches`, and keeping it distinct is what lets a stock report answer
+ * "what medicines are expiring" without guessing from names.
+ */
+export async function seedSupplyTypes() {
+	const [existing] = await db.select({ id: supplyTypes.id }).from(supplyTypes).limit(1);
+
+	if (existing) return;
+
+	await db.insert(supplyTypes).values([
+		{ name: 'Pharmacy', description: 'Medicines dispensed or administered. Batch tracked.' },
+		{ name: 'Anaesthetics', description: 'Local anaesthetic and related. Batch tracked.' },
+		{ name: 'Restorative materials', description: 'Composite, cements, liners. Batch tracked.' },
+		{ name: 'Impression materials', description: 'Alginate, silicone. Batch tracked.' },
+		{ name: 'Consumables', description: 'Gloves, masks, bibs, suction tips.' },
+		{ name: 'Instruments', description: 'Hand instruments, burs, files.' },
+		{ name: 'Equipment', description: 'Chairs, compressors, autoclaves, X-ray units.' },
+		{ name: 'Laboratory', description: 'Items sent out with or returned from lab work.' },
+		{ name: 'Office and cleaning', description: 'Paper, stationery, cleaning supplies.' }
 	]);
 }
 

@@ -13,6 +13,7 @@ export * from './contacts';
 export * from './allergies';
 export * from './conditions';
 export * from './medications';
+export * from './batches';
 export * from './teeth';
 export * from './providers';
 export * from './scheduling';

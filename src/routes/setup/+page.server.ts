@@ -18,7 +18,8 @@ import {
 	seedMainBranch,
 	seedMedicines,
 	seedPermissions,
-	seedSpecialties
+	seedSpecialties,
+	seedSupplyTypes
 } from '$lib/server/seedPermissions';
 import { setupSchema } from './schema';
 import type { Actions, PageServerLoad } from './$types';
@@ -81,6 +82,7 @@ export const actions: Actions = {
 			await seedMedicines();
 			await seedClinicClosures();
 			await seedConditions();
+			await seedSupplyTypes();
 
 			const [role] = await db
 				.select({ id: roles.id })

@@ -20,6 +20,7 @@ import { customers } from './customers';
 import { provider } from './providers';
 import { tooth } from './teeth';
 import { procedures } from './procedures';
+import { supplies } from './inventory';
 import { appointment } from './scheduling';
 import { transactions } from './finance';
 
@@ -154,6 +155,17 @@ export const invoiceLine = mysqlTable(
 		/** Traceability only. Never read to render the line — see above. */
 		procedureId: int('procedure_id').references(() => procedures.id, { onDelete: 'set null' }),
 
+		/**
+		 * The stock item this line billed, when it was goods rather than treatment — a dispensed
+		 * medicine, a sold toothbrush, a mouthguard.
+		 *
+		 * Symmetric with `procedureId` and used the same way: traceability only, never read to
+		 * render the line, `set null` so tidying the catalogue cannot orphan a document. A line
+		 * has one or the other, or neither for a charge that is neither — a missed-appointment
+		 * fee.
+		 */
+		supplyId: int('supply_id').references(() => supplies.id, { onDelete: 'set null' }),
+
 		/** Snapshot. What the patient sees, in the words used when it was issued. */
 		description: varchar('description', { length: 255 }).notNull(),
 
@@ -172,7 +184,8 @@ export const invoiceLine = mysqlTable(
 	},
 	(table) => [
 		index('invoice_line_invoice_idx').on(table.invoiceId),
-		index('invoice_line_procedure_idx').on(table.procedureId)
+		index('invoice_line_procedure_idx').on(table.procedureId),
+		index('invoice_line_supply_idx').on(table.supplyId)
 	]
 );
 

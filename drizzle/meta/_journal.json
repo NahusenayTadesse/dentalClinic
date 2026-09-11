@@ -120,6 +120,13 @@
       "when": 1789140849378,
       "tag": "0016_rich_red_ghost",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "5",
+      "when": 1789150102234,
+      "tag": "0017_ancient_khan",
+      "breakpoints": true
     }
   ]
 }
