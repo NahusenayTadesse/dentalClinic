@@ -372,7 +372,8 @@ export const actions: Actions = {
 					.insert(transactions)
 					.values({
 						paymentMethodId: paymentMethod,
-						amount: String(calculateTotal(employees, 'netPay')),
+						amount: calculateTotal(employees, 'netPay'),
+						direction: 'out',
 						recieptLink,
 						description: 'Emplyees Salary Payment',
 						createdBy: locals?.user?.id

@@ -250,7 +250,8 @@ export const actions = {
 					.insert(transactions)
 					.values({
 						description: 'Salary Adjustment ' + reason,
-						amount: '0',
+						amount: 0,
+						direction: 'out',
 						paymentMethodId: bank,
 						recieptLink,
 						paymentStatus: 'paid'
@@ -312,7 +313,10 @@ export const actions = {
 
 				await tx
 					.update(transactions)
-					.set({ amount: String(totalNetDelta) })
+					// Signed: a negative delta is a reduction in what was paid out. The sign is the
+					// legacy convention and `direction` is now the authoritative one — they agree here,
+					// and the duplication goes when these payroll flows are reworked.
+					.set({ amount: totalNetDelta })
 					.where(eq(transactions.id, transaction.id));
 			});
 

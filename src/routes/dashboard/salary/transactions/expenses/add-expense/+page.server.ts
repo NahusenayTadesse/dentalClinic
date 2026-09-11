@@ -65,7 +65,8 @@ export const actions: Actions = {
 				const [transaction] = await tx
 					.insert(transactions)
 					.values({
-						amount: String(-Math.abs(total)),
+						amount: -Math.abs(total),
+						direction: 'out',
 						paymentMethodId: paymentMethod,
 						recieptLink: imageName,
 						description,
