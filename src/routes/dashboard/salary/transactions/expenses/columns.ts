@@ -71,7 +71,7 @@ export const makeColumns = (canDelete = false) => [
 			return renderComponent(DataTableLinks, {
 				id: row.original.recievedById,
 				name: row.original.recievedBy,
-				link: '/dashboard/users'
+				entity: 'user'
 			});
 		}
 	},

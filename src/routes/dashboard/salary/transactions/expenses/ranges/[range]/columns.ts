@@ -71,7 +71,7 @@ export const columns: ColumnDef<RowData>[] = [
 			return renderComponent(DataTableLinks, {
 				id: row.original.recievedById,
 				name: row.original.recievedBy,
-				link: '/dashboard/users'
+				entity: 'user'
 			});
 		}
 	},

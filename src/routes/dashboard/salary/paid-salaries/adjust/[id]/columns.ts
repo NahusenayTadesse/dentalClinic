@@ -221,7 +221,7 @@ export const adjustmentColumns = [
 			return renderComponent(DataTableLinks, {
 				id: row.original.createdById,
 				name: row.original.addedBy, // Fallback for safety
-				link: '/dashboard/admin-panel/user',
+				entity: 'user',
 				target: '_blank'
 			});
 		}

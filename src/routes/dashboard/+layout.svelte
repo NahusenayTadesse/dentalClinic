@@ -8,8 +8,14 @@
 	import { CloudDownload } from '@lucide/svelte';
 	import HelpButton from '$lib/components/HelpButton.svelte';
 	import { canVisit } from '$lib/routeAccess';
+	import { setViewer } from '$lib/viewer.svelte';
 
 	let { children, data } = $props();
+
+	// Set once, here, so any mention of a record anywhere below can decide whether to be a link
+	// without the permission list being threaded through every columns.ts. Passed as a getter so
+	// it tracks rather than freezing the list captured at mount.
+	setViewer(() => data?.permList);
 
 	// A backup is the whole database in one file. The route is gated on the server; this keeps
 	// the button from offering something the click would refuse.

@@ -49,7 +49,7 @@
 				return renderComponent(DataTableLinks, {
 					id: row.original.createdById,
 					name: row.original.createdBy,
-					link: '/dashboard/users'
+					entity: 'user'
 				});
 			}
 		},

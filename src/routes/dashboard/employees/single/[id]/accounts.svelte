@@ -84,7 +84,7 @@
 				return renderComponent(Statuses, {
 					status: row.original.status ? 'Active' : 'InActive',
 					name: row.original.addedBy,
-					link: '/dashboard/admin-panel/users',
+					entity: 'user',
 
 					target: '_blank'
 				});
@@ -98,7 +98,7 @@
 				return renderComponent(DataTableLinks, {
 					id: row.original.addedById,
 					name: row.original.addedBy,
-					link: '/dashboard/admin-panel/users',
+					entity: 'user',
 
 					target: '_blank'
 				});

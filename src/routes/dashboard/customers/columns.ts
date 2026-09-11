@@ -33,7 +33,7 @@ export const columns: ColumnDef<RowData>[] = [
 			return renderComponent(DataTableLinks, {
 				id: row.original.id,
 				name: row.original.name,
-				link: '/dashboard/customers'
+				entity: 'customer'
 			});
 		}
 	},
@@ -66,7 +66,7 @@ export const columns: ColumnDef<RowData>[] = [
 			return renderComponent(DataTableLinks, {
 				id: row.original.addedById,
 				name: row.original.addedBy,
-				link: '/dashboard/admin-panel/users'
+				entity: 'user'
 			});
 		}
 	},

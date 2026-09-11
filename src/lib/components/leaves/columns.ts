@@ -105,7 +105,7 @@ export const makeColumns = (status: LeaveStatus, canDelete = false): ColumnDef<L
 			return renderComponent(DataTableLinks, {
 				id: row.original.staffId,
 				name: row.original.name,
-				link: '/dashboard/employees/single'
+				entity: 'employee'
 			});
 		}
 	},
@@ -237,7 +237,7 @@ export const makeColumns = (status: LeaveStatus, canDelete = false): ColumnDef<L
 			return renderComponent(DataTableLinks, {
 				id: (status === 'pending' ? row.original.addedById : row.original.approvedById) ?? null,
 				name: (status === 'pending' ? row.original.addedBy : row.original.approvedBy) ?? null,
-				link: '/dashboard/admin-panel/users',
+				entity: 'user',
 				target: '_blank'
 			});
 		}

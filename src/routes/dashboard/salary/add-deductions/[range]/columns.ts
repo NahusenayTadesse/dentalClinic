@@ -59,7 +59,7 @@ export const makeColumns = (canDelete = false) => [
 			return renderComponent(DataTableLinks, {
 				id: row.original.id,
 				name: row.original.name,
-				link: '/dashboard/employees/single'
+				entity: 'employee'
 			});
 		}
 	},

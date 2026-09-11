@@ -28,7 +28,7 @@
 		renderComponent(DataTableLinks, {
 			id: row.original.staffId,
 			name: row.original.name,
-			link: '/dashboard/employees/single'
+			entity: 'employee'
 		});
 
 	const grantColumns = [

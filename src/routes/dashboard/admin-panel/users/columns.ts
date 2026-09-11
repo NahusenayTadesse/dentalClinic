@@ -34,7 +34,7 @@ export const columns: ColumnDef<RowData>[] = [
 			return renderComponent(DataTableLinks, {
 				id: row.original.id,
 				name: row.original.name,
-				link: '/dashboard/users'
+				entity: 'user'
 			});
 		}
 	},

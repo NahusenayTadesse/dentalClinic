@@ -23,25 +23,26 @@ thing, give it a new optional prop — do not fork it and leave the old one behi
 
 ### Catalog — client
 
-| Need                                | Use                                                          | Current users |
-| ----------------------------------- | ------------------------------------------------------------ | ------------- |
-| A table                             | `components/Table/data-table.svelte`                         | 85            |
-| Server-driven filter bar            | `$lib/QueryBuilder.svelte` + `$lib/queryFilters.ts`          | 17            |
-| Client-side facets over loaded rows | `components/Table/FilterMenu.svelte`                         | 41            |
-| Sortable header                     | `Table/data-table-sort.svelte`                               | 89            |
-| Link cell                           | `Table/data-table-links.svelte`                              | 71            |
-| Status badge                        | `Table/statuses.svelte`                                      | 56            |
-| Long text cell                      | `Table/bigText.svelte` · address cell `Table/address.svelte` | 8 · 4         |
-| Any form field                      | `formComponents/InputComp.svelte`                            | 153           |
-| Modal                               | `formComponents/DialogComp.svelte`                           | 135           |
-| Form error summary                  | `formComponents/Errors.svelte`                               | 133           |
-| Submit spinner                      | `formComponents/LoadingBtn.svelte`                           | 169           |
-| Form shell · flash line             | `FormCard.svelte` · `Messages.svelte`                        | 22 · 12       |
-| Ethiopian month/year picker         | `formComponents/MonthYear.svelte`                            | 26            |
-| Delete confirmation                 | `components/DeleteEntity.svelte`                             | 48            |
-| Detail page shell · key/value table | `SingleView.svelte` · `SingleTable.svelte`                   | 8 · 8         |
-| A whole admin-panel lookup screen   | `components/lookup/LookupPage.svelte`                        | 13            |
-| One child table on a detail page    | `components/lookup/LookupSection.svelte`                     | new           |
+| Need                                | Use                                                                   | Current users |
+| ----------------------------------- | --------------------------------------------------------------------- | ------------- |
+| A table                             | `components/Table/data-table.svelte`                                  | 85            |
+| Server-driven filter bar            | `$lib/QueryBuilder.svelte` + `$lib/queryFilters.ts`                   | 17            |
+| Client-side facets over loaded rows | `components/Table/FilterMenu.svelte`                                  | 41            |
+| Sortable header                     | `Table/data-table-sort.svelte`                                        | 89            |
+| Link cell                           | `Table/data-table-links.svelte`                                       | 71            |
+| Mention of a record (auto-linked)   | `Table/data-table-links.svelte` with `entity` + `$lib/entityLinks.ts` |
+| Status badge                        | `Table/statuses.svelte`                                               | 56            |
+| Long text cell                      | `Table/bigText.svelte` · address cell `Table/address.svelte`          | 8 · 4         |
+| Any form field                      | `formComponents/InputComp.svelte`                                     | 153           |
+| Modal                               | `formComponents/DialogComp.svelte`                                    | 135           |
+| Form error summary                  | `formComponents/Errors.svelte`                                        | 133           |
+| Submit spinner                      | `formComponents/LoadingBtn.svelte`                                    | 169           |
+| Form shell · flash line             | `FormCard.svelte` · `Messages.svelte`                                 | 22 · 12       |
+| Ethiopian month/year picker         | `formComponents/MonthYear.svelte`                                     | 26            |
+| Delete confirmation                 | `components/DeleteEntity.svelte`                                      | 48            |
+| Detail page shell · key/value table | `SingleView.svelte` · `SingleTable.svelte`                            | 8 · 8         |
+| A whole admin-panel lookup screen   | `components/lookup/LookupPage.svelte`                                 | 13            |
+| One child table on a detail page    | `components/lookup/LookupSection.svelte`                              | new           |
 
 `InputComp` dispatches on `type` to file, select, date, combo, checkbox and password variants.
 **Most fields need nothing but `InputComp`** — reach for `SelectComp`/`ComboboxComp`/
@@ -391,7 +392,45 @@ redaction list, and why the table has one index rather than five.
 
 ---
 
-## 12. Definition of done
+## 12. The app reflects the database
+
+**A record named on screen is a way to get to that record.** A provider on a chart, a supplier on
+a delivery, an employee on a payroll line — each of those is a foreign key, and a foreign key the
+reader cannot follow is a dead end they navigate around by hand. If the thing named has a page of
+its own, the name links to it.
+
+**Unless the viewer may not open it, in which case it is plain text.** A link nobody can follow is
+worse than no link: it lands on a 403 (§9 — `/dashboard` is closed by default) and it advertises a
+page the viewer was not meant to know exists. A receptionist reading a payroll line should see the
+employee's name, not a door marked _salary_.
+
+**One registry, one check — not a permission test at every mention.**
+
+- `$lib/entityLinks.ts` says where each kind of record lives. Adding a kind is one line.
+- `Table/data-table-links.svelte` renders the mention: pass `entity` and `id` and it resolves the
+  path, checks access, and falls back to plain text. `display: 'inline'` for mentions outside a
+  table.
+- The check is `canVisit`, which is already the single source of truth for route access (§9).
+  **This introduces no second opinion about who may see what**, which is the only reason one
+  registry is safe.
+
+So a linked mention is `entity: 'employee'` in the column definition and nothing else. No URL, no
+permission string, no `if`.
+
+**This is rendering, not authorization.** Hiding a link is courtesy; the control is the route gate
+and the action's own `requirePermission`. Never let a hidden link stand in for a check.
+
+The viewer's permissions reach the component through Svelte context (`$lib/viewer.svelte.ts`), set
+once by the dashboard layout — **not a module-level `$state`**, because a module is shared by every
+request the server handles, and a viewer-scoped value stored there is one concurrent request away
+from rendering for the wrong person.
+
+The older `link` + `id` form still works and still does no permission check. It is right for
+targets that are not records (a stored file) and wrong for anything that is a row in a table.
+
+---
+
+## 13. Definition of done
 
 - `npm run check` clean **for the files you touched**
 - `npm run lint` clean for the files you touched

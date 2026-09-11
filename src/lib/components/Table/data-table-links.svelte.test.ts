@@ -24,6 +24,37 @@ describe('data-table-links.svelte', () => {
 		expect(screen.container.querySelector('svg')).not.toBeNull();
 	});
 
+	/*
+	 * The rule this component exists to enforce: a mention of a record is a link when the viewer
+	 * may open it and plain text when they may not. Without a viewer context there are no
+	 * permissions, which is the safe default — so an `entity` mention renders as text here.
+	 */
+	it('renders an entity mention as plain text when the viewer may not open it', async () => {
+		const screen = render(DataTableLinks, { id: 7, name: 'Dr Alem', entity: 'employee' });
+
+		await expect.element(page.getByText('Dr Alem')).toBeInTheDocument();
+		expect(
+			screen.container.querySelector('a'),
+			'must not advertise a page that would 403'
+		).toBeNull();
+	});
+
+	it('still renders an explicit link with no permission check', async () => {
+		// The original form, kept for the 71 call sites and for targets that are not records.
+		render(DataTableLinks, { id: '9', name: 'View Reciept', link: '/dashboard/files' });
+
+		await expect
+			.element(page.getByRole('link', { name: 'View Reciept' }))
+			.toHaveAttribute('href', '/dashboard/files/9');
+	});
+
+	it('renders plain text when there is no id to point at', async () => {
+		const screen = render(DataTableLinks, { id: null, name: 'Unassigned', link: '/dashboard/x' });
+
+		await expect.element(page.getByText('Unassigned')).toBeInTheDocument();
+		expect(screen.container.querySelector('a')).toBeNull();
+	});
+
 	it('opens in a new tab when target is set', async () => {
 		// `target` is also a reserved Svelte mount-option name, so it must be passed
 		// under an explicit `props` key here or vitest-browser-svelte's render()
