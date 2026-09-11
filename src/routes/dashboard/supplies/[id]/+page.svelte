@@ -10,7 +10,7 @@
 	import { superForm } from 'sveltekit-superforms/client';
 
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import { ArrowLeft, Pencil, Save, History, Truck } from '@lucide/svelte';
+	import { ArrowLeft, Pencil, Save, History } from '@lucide/svelte';
 	import type { Snapshot } from '@sveltejs/kit';
 
 	import SingleView from '$lib/components/SingleView.svelte';
@@ -20,8 +20,9 @@
 
 	/**
 	 * The company owns this stock wherever it sits, so all four figures are
-	 * shown. "In store" is `supplies.quantity`; reserved and out-at-sites are
-	 * summed from the lease rows, and total owned is the sum of the two.
+	 * shown. Stock on hand is the sum of the item's open lots — see `server/stock.ts`. The
+	 * reserved and out-at-sites figures beside it came from lease rows, which went with the
+	 * facilities prune.
 	 */
 	let singleTable = $derived([
 		{ name: 'Name', value: data.supply?.name },
@@ -114,9 +115,6 @@
 		<Button href="/dashboard/supplies/{data.supply.id}/ranges/{getCurrentMonthRange()}">
 			<History /> See Change History
 		</Button>
-		<Button href="/dashboard/supplies/leases/add-lease" variant="outline">
-			<Truck /> Lease to a Site
-		</Button>
 	</div>
 	{#if edit === false}
 		<div class="w-full p-4"><SingleTable {singleTable} /></div>
@@ -184,10 +182,10 @@
 				{/if}
 
 				<InputComp
-					label="Expected Back From Sites"
+					label="Expected Back"
 					name="returnable"
 					type="checkboxSingle"
-					placeholder="This item is leased out and returned, not consumed on site"
+					placeholder="Chased for return once issued — instruments and equipment, not consumables"
 					{errors}
 					{form}
 				/>

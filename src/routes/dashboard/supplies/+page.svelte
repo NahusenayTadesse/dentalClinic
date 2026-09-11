@@ -11,7 +11,7 @@
 	import { Button } from '$lib/components/ui/button';
 
 	import { Frown, Plus } from '@lucide/svelte';
-	import { SUPPLY_KINDS, STOCK_STATUSES, PLACEMENTS, labelOf } from './filters';
+	import { SUPPLY_KINDS, STOCK_STATUSES, labelOf } from './filters';
 
 	/** Whether anything is narrowing the list, so an empty page can say which. */
 	const isFiltered = $derived(
@@ -48,8 +48,7 @@
 			supplyTypeId: data.currentQuery.supplyTypeId ?? '',
 			kind: data.currentQuery.kind ?? '',
 			unitOfMeasure: data.currentQuery.unitOfMeasure ?? '',
-			stockStatus: data.currentQuery.stockStatus ?? '',
-			placement: data.currentQuery.placement ?? ''
+			stockStatus: data.currentQuery.stockStatus ?? ''
 		}}
 		onQueryChange={applyQueryToUrl}
 	>
@@ -114,21 +113,6 @@
 
 			<div class="flex flex-col gap-2">
 				<Label class="text-sm font-medium">Where It Is</Label>
-				<Select
-					type="single"
-					value={filters.placement as string}
-					onValueChange={(v) => update('placement', v as never)}
-				>
-					<SelectTrigger class="w-full">
-						{labelOf(PLACEMENTS, filters.placement as string, 'Anywhere')}
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value="">Anywhere</SelectItem>
-						{#each PLACEMENTS as placement (placement.value)}
-							<SelectItem value={placement.value}>{placement.name}</SelectItem>
-						{/each}
-					</SelectContent>
-				</Select>
 			</div>
 
 			<div class="flex flex-col gap-2">

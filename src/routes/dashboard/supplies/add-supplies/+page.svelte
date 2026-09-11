@@ -104,10 +104,10 @@
 		{/if}
 
 		<InputComp
-			label="Expected Back From Sites"
+			label="Expected Back"
 			name="returnable"
 			type="checkboxSingle"
-			placeholder="This item is leased out and returned, not consumed on site"
+			placeholder="Chased for return once issued — instruments and equipment, not consumables"
 			{errors}
 			{form}
 		/>

@@ -59,46 +59,6 @@ export const columns: ColumnDef<RowData>[] = [
 	},
 
 	{
-		accessorKey: 'available',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Free to Lease',
-				onclick: column.getToggleSortingHandler()
-			}),
-		// In store minus whatever an approved lease has already claimed. Flagged
-		// when it has fallen to the reorder level.
-		cell: ({ row }) =>
-			row.original.belowReorder
-				? `${row.original.available} — reorder`
-				: String(row.original.available)
-	},
-
-	{
-		accessorKey: 'reserved',
-		header: 'Reserved',
-		cell: (info) => (Number(info.getValue()) > 0 ? info.getValue() : '—')
-	},
-
-	{
-		accessorKey: 'leasedOut',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Out at Sites',
-				onclick: column.getToggleSortingHandler()
-			}),
-		cell: (info) => (Number(info.getValue()) > 0 ? info.getValue() : '—')
-	},
-
-	{
-		accessorKey: 'totalOwned',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Total Owned',
-				onclick: column.getToggleSortingHandler()
-			})
-	},
-
-	{
 		accessorKey: 'kind',
 		header: 'Kind'
 	},

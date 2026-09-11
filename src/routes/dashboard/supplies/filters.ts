@@ -28,19 +28,16 @@ export const SUPPLY_KINDS: Option[] = [
 ];
 
 /**
- * Where a supply sits against its reorder level, measured against what is
- * actually claimable rather than the shelf count: stock already promised to an
- * approved lease cannot fill a new one.
+ * Where a supply sits against its reorder level.
+ *
+ * Measured against stock on hand — the sum of the item's open lots. It used to be measured
+ * against what was "claimable", meaning the shelf count minus whatever an approved lease had
+ * promised away; leases went with the facilities prune, so the shelf count is the whole story.
  */
 export const STOCK_STATUSES: Option[] = [
 	{ value: 'in-stock', name: 'In stock' },
 	{ value: 'at-reorder', name: 'At or below reorder' },
-	{ value: 'nothing-free', name: 'Nothing free' }
-];
-
-export const PLACEMENTS: Option[] = [
-	{ value: 'in-store', name: 'All in store' },
-	{ value: 'at-sites', name: 'Some out at sites' }
+	{ value: 'out-of-stock', name: 'Out of stock' }
 ];
 
 /** Stands in for a NULL `unit_of_measure` so it can be picked from the list. */
@@ -65,19 +62,4 @@ export const SUPPLIER_ACTIVITY: Option[] = [
 export const SUPPLIER_CONTACT: Option[] = [
 	{ value: 'with-email', name: 'Phone and email' },
 	{ value: 'phone-only', name: 'Phone only' }
-];
-
-// --- Leases ---------------------------------------------------------------
-
-export const LEASE_DUE_STATUSES: Option[] = [
-	{ value: 'overdue', name: 'Overdue' },
-	{ value: 'due-soon', name: 'Due within a week' },
-	{ value: 'not-due', name: 'Not due yet' },
-	{ value: 'nothing-owed', name: 'Nothing owed' },
-	{ value: 'no-due-date', name: 'No due date' }
-];
-
-export const LEASE_SETTLEMENTS: Option[] = [
-	{ value: 'still-out', name: 'Still out' },
-	{ value: 'settled', name: 'Settled' }
 ];

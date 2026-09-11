@@ -14,13 +14,7 @@ import type { PageServerLoad } from '../$types';
 import { onHand } from '$lib/server/stock';
 
 export const load: PageServerLoad = async ({ url }) => {
-	const query = parseTableQuery(url, [
-		'supplyTypeId',
-		'kind',
-		'unitOfMeasure',
-		'stockStatus',
-		'placement'
-	]);
+	const query = parseTableQuery(url, ['supplyTypeId', 'kind', 'unitOfMeasure', 'stockStatus']);
 
 	const whereClause = buildWhere(query, {
 		base: [notDeleted(supplies)],
@@ -70,8 +64,7 @@ export const load: PageServerLoad = async ({ url }) => {
 		.orderBy(asc(supplies.name), asc(supplies.id));
 
 	const rows = supplyList.map((row) => {
-		// Stock on hand is derived from the item's open lots — see `server/stock.ts`. It used to be
-		// other three derived from lease rows — those tables went with the prune.
+		// Stock on hand is derived from the item's open lots — see `server/stock.ts`.
 		const onHand = Number(row.quantity ?? 0);
 		const belowReorder = row.reorderLevel != null && onHand <= Number(row.reorderLevel);
 
@@ -81,7 +74,7 @@ export const load: PageServerLoad = async ({ url }) => {
 			kind: row.returnable ? 'Returnable' : 'Consumable',
 			unitOfMeasure: row.unitOfMeasure ?? UNSPECIFIED_UNIT,
 			belowReorder,
-			stockStatus: onHand === 0 ? 'nothing-free' : belowReorder ? 'at-reorder' : 'in-stock'
+			stockStatus: onHand === 0 ? 'out-of-stock' : belowReorder ? 'at-reorder' : 'in-stock'
 		};
 	});
 
@@ -89,9 +82,6 @@ export const load: PageServerLoad = async ({ url }) => {
 	 * `stockStatus` is worked out in JS from the reorder level, so it narrows the rows here
 	 * rather than in the `WHERE`. `paginate` then slices what is left, keeping the shape a
 	 * SQL-paginated page returns.
-	 *
-	 * There was a `placement` filter beside it — in-store versus out at a site — which only
-	 * meant anything while supplies could be leased.
 	 */
 	const narrowed = rows.filter(
 		(row) => !query.filters.stockStatus || row.stockStatus === query.filters.stockStatus

@@ -102,7 +102,7 @@ export const actions: Actions = {
 					description,
 					supplyTypeId: Number(supplyType),
 					// `quantity` is deliberately not set here: it is a running total
-					// kept by adjustments, damage reports and lease movements, and
+					// kept by adjustments and damage reports, and
 					// this form has no business resetting it.
 					unitOfMeasure: unitOfMeasurement === 'other' ? otherUnitOfMeasurement : unitOfMeasurement,
 					reorderLevel,
