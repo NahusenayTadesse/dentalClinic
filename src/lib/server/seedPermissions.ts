@@ -6,6 +6,7 @@ import {
 	appointmentType,
 	branch,
 	contactTypes,
+	medicine,
 	operatory,
 	permissions,
 	providerSpecialty,
@@ -325,5 +326,133 @@ export async function seedAppointmentTypes() {
 		{ name: 'Review / Follow-up', defaultMinutes: 20, colour: '#84cc16', sortOrder: 10 },
 		// Short by design: an emergency slot is triage, and what it finds is booked separately.
 		{ name: 'Emergency / Pain', defaultMinutes: 30, colour: '#ef4444', sortOrder: 11 }
+	]);
+}
+
+/**
+ * The medicines a dental clinic here actually writes.
+ *
+ * Drawn from the Ethiopian Essential Medicines List and from what studies of Ethiopian dental
+ * prescribing report being used: amoxicillin far in front, then metronidazole and the
+ * co-amoxiclav combination, with paracetamol and diclofenac as the analgesics. Erythromycin and
+ * clindamycin are here for the penicillin-allergic patient, which is the case `patient_allergies`
+ * exists to make visible at the moment of prescribing.
+ *
+ * Generic names, because that is what a prescription carries and what a pharmacy dispenses on.
+ * `isAntibiotic` is set honestly so a clinic can count its own antibiotic rate — the reason the
+ * flag exists at all.
+ *
+ * A starting formulary, not a fixed one: strengths and forms vary by what is in the shops, so
+ * this is seeded once and then owned by the clinic.
+ */
+export async function seedMedicines() {
+	const [existing] = await db.select({ id: medicine.id }).from(medicine).limit(1);
+
+	if (existing) return;
+
+	await db.insert(medicine).values([
+		// Antibiotics — the ones dental prescribing here is built on.
+		{
+			genericName: 'Amoxicillin',
+			strength: '500mg',
+			form: 'capsule',
+			isAntibiotic: true,
+			sortOrder: 1
+		},
+		{
+			genericName: 'Amoxicillin suspension',
+			strength: '125mg/5ml',
+			form: 'suspension',
+			isAntibiotic: true,
+			notes: 'Paediatric — dose by weight',
+			sortOrder: 2
+		},
+		{
+			genericName: 'Amoxicillin + Clavulanic acid',
+			strength: '625mg',
+			form: 'tablet',
+			isAntibiotic: true,
+			sortOrder: 3
+		},
+		{
+			genericName: 'Metronidazole',
+			strength: '400mg',
+			form: 'tablet',
+			isAntibiotic: true,
+			notes: 'No alcohol during or 48h after',
+			sortOrder: 4
+		},
+		{
+			genericName: 'Phenoxymethylpenicillin',
+			strength: '500mg',
+			form: 'tablet',
+			isAntibiotic: true,
+			sortOrder: 5
+		},
+		{
+			genericName: 'Erythromycin',
+			strength: '500mg',
+			form: 'tablet',
+			isAntibiotic: true,
+			notes: 'For penicillin allergy',
+			sortOrder: 6
+		},
+		{
+			genericName: 'Clindamycin',
+			strength: '300mg',
+			form: 'capsule',
+			isAntibiotic: true,
+			notes: 'For penicillin allergy',
+			sortOrder: 7
+		},
+		{
+			genericName: 'Doxycycline',
+			strength: '100mg',
+			form: 'capsule',
+			isAntibiotic: true,
+			notes: 'Not in pregnancy or under 8 years',
+			sortOrder: 8
+		},
+
+		// Analgesics — paracetamol and diclofenac are what Ethiopian dentists reach for.
+		{ genericName: 'Paracetamol', strength: '500mg', form: 'tablet', sortOrder: 20 },
+		{
+			genericName: 'Paracetamol suspension',
+			strength: '120mg/5ml',
+			form: 'suspension',
+			notes: 'Paediatric — dose by weight',
+			sortOrder: 21
+		},
+		{
+			genericName: 'Diclofenac',
+			strength: '50mg',
+			form: 'tablet',
+			notes: 'With food; avoid in peptic ulcer',
+			sortOrder: 22
+		},
+		{
+			genericName: 'Ibuprofen',
+			strength: '400mg',
+			form: 'tablet',
+			notes: 'With food',
+			sortOrder: 23
+		},
+
+		// Topical and local.
+		{ genericName: 'Chlorhexidine gluconate', strength: '0.2%', form: 'mouthwash', sortOrder: 40 },
+		{
+			genericName: 'Lidocaine with adrenaline',
+			strength: '2%',
+			form: 'injection',
+			notes: 'Check cardiac history',
+			sortOrder: 41
+		},
+		{
+			genericName: 'Dexamethasone',
+			strength: '4mg/ml',
+			form: 'injection',
+			notes: 'Post-surgical swelling',
+			sortOrder: 42
+		}
 	]);
 }

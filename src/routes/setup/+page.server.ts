@@ -14,6 +14,7 @@ import {
 	seedClinicBasics,
 	seedContactTypes,
 	seedMainBranch,
+	seedMedicines,
 	seedPermissions,
 	seedSpecialties
 } from '$lib/server/seedPermissions';
@@ -75,6 +76,7 @@ export const actions: Actions = {
 			await seedClinicBasics();
 			await seedSpecialties();
 			await seedAppointmentTypes();
+			await seedMedicines();
 
 			const [role] = await db
 				.select({ id: roles.id })

@@ -15,3 +15,6 @@ export * from './teeth';
 export * from './providers';
 export * from './scheduling';
 export * from './procedures';
+export * from './patientFiles';
+export * from './notes';
+export * from './prescriptions';
