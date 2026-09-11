@@ -329,7 +329,44 @@ touched. The rule binds new code.
 
 ---
 
-## 11. Definition of done
+## 11. Audit
+
+**A change to audited data goes through the audit chokepoint, which records it in the same
+transaction. Nothing writes audited data any other way.**
+
+Stated as "everything that writes should also log," this rule would decay, and the repo has
+already proved how: `notDeleted()` holds in 118 files because forgetting it is _visible_ —
+deleted rows show up on screen. `contentCrud` was adopted once against 26 hand-rolled copies
+because forgetting it is _invisible_. Audit is the second kind and worse: omit it and nothing
+breaks until the day somebody asks who changed a price, which is the day it is too late. So the
+rule is **write through the helper** — which fails loudly, and greps for in one line.
+
+**Log the delta, never the row.** Measured here at 200,000 rows against a 128MB buffer pool:
+full `old_values`/`new_values` snapshots cost 5,474 bytes/row and 783 MB/year; changed fields
+only cost 179 bytes/row and 26 MB/year. The pool is what decides it — 783 MB/year written
+through 128 MB evicts live patient data to cache a copy of a row that is still in the table it
+came from. `changes` is `{ field: [before, after] }` for the fields that moved.
+
+**Bulk operations log the operation, not the row.** A payroll run over 400 employees writes one
+audit row, not 400. This is the rule most easily broken by accident and the one that undoes the
+delta saving.
+
+**Never log a secret** — password hashes, session tokens, `gateway_txn_token`, any credential. An
+audit row is a second place to leak from and nothing watches it. Record that the field changed,
+never to what.
+
+**Audited is a closed list**, enforced as a TypeScript union so an unlisted table is a compile
+error: patient data, clinical records, money, controlled stock, and who-may-do-what. Lookup
+tables are not audited — they already carry `updatedBy`/`updatedAt` via `secureFields`, which
+answers the same question without a second table. `patient_access_log` covers reads and is a
+separate concern.
+
+`src/lib/server/AUDIT.md` carries the measurements, the full audited/not-audited lists, the
+redaction list, and why the table has one index rather than five.
+
+---
+
+## 12. Definition of done
 
 - `npm run check` clean **for the files you touched**
 - `npm run lint` clean for the files you touched
