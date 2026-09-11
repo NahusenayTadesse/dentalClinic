@@ -44,7 +44,6 @@ export const actions: Actions = {
 				name,
 				description,
 				supplyTypeId: Number(supplyType),
-				quantity: 0,
 				unitOfMeasure: unitOfMeasurement === 'other' ? otherUnitOfMeasurement : unitOfMeasurement,
 				reorderLevel,
 				returnable,

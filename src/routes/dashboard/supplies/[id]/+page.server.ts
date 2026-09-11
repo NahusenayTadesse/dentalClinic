@@ -8,6 +8,7 @@ import {
 import { edit as schema } from './schema';
 
 import { db } from '$lib/server/db';
+import { moveStock } from '$lib/server/stock';
 import {
 	supplies,
 	deductions,
@@ -16,7 +17,7 @@ import {
 	transactions,
 	suppliesAdjustments
 } from '$lib/server/db/schema';
-import { eq, sql, and, isNotNull, desc } from 'drizzle-orm';
+import { eq, and, isNotNull, desc } from 'drizzle-orm';
 import { notDeleted, softDeleteSupply } from '$lib/server/softDelete';
 import { requireSuperAdmin } from '$lib/server/permissions';
 import type { Actions } from './$types';
@@ -173,23 +174,45 @@ export const actions: Actions = {
 					});
 				}
 
-				await tx.insert(suppliesAdjustments).values({
-					suppliesId: id,
-					adjustment,
-					costPerItem: costPerItem ? String(costPerItem) : null,
-					total: total ? String(total) : null,
-					reason,
-					transactionId,
-					createdBy: locals.user?.id
+				/*
+				 * Stock is the sum of the item's open lots, so the movement happens in the lots and
+				 * the ledger records why. A receipt creates a lot; an issue takes from the ones
+				 * expiring soonest. `moveStock` returns what it touched, so the ledger row can name
+				 * the lot — which is how a recall is traced back to a patient.
+				 */
+				const touched = await moveStock(tx, {
+					supplyId: id,
+					delta: adjustment,
+					userId: locals.user?.id,
+					unitCost: costPerItem ?? null
 				});
 
-				await tx
-					.update(supplies)
-					.set({
-						quantity: sql`${supplies.quantity} + ${adjustment}`,
-						updatedBy: locals.user?.id
-					})
-					.where(eq(supplies.id, id));
+				const moved = touched.reduce((sum, lot) => sum + lot.quantity, 0);
+
+				// One ledger row per lot touched, so every row points at exactly one lot.
+				for (const lot of touched) {
+					await tx.insert(suppliesAdjustments).values({
+						suppliesId: id,
+						adjustment: lot.quantity,
+						batchId: lot.batchId,
+						movementType: adjustment > 0 ? 'received' : 'correction',
+						costPerItem: costPerItem ? String(costPerItem) : null,
+						total: total ? String(total) : null,
+						reason,
+						transactionId,
+						createdBy: locals.user?.id
+					});
+				}
+
+				/*
+				 * An issue larger than the lots hold is not silently rounded away. The shelf and the
+				 * system already disagreed; saying so is more useful than pretending otherwise.
+				 */
+				if (moved !== adjustment) {
+					throw new Error(
+						`Only ${Math.abs(moved)} of ${Math.abs(adjustment)} units were available in stock`
+					);
+				}
 			});
 
 			return message(form, { type: 'success', text: 'Supply Quantity updated successfully' });
@@ -221,13 +244,29 @@ export const actions: Actions = {
 				reason
 			});
 
-			await db
-				.update(supplies)
-				.set({
-					quantity: sql`quantity - ${Number(quantity)}`,
-					updatedBy: locals.user?.id
-				})
-				.where(eq(supplies.id, Number(id)));
+			/*
+			 * Damage takes units out of a lot, not off a total — stock on hand is the sum of open
+			 * lots. The ledger row records which lot, which is also what lets the damage report be
+			 * undone later: `softDeleteDamagedSupply` reads the lot back off this row.
+			 */
+			await db.transaction(async (tx) => {
+				const touched = await moveStock(tx, {
+					supplyId: Number(id),
+					delta: -Math.abs(Number(quantity)),
+					userId: locals.user?.id
+				});
+
+				for (const lot of touched) {
+					await tx.insert(suppliesAdjustments).values({
+						suppliesId: Number(id),
+						adjustment: lot.quantity,
+						batchId: lot.batchId,
+						movementType: 'damaged',
+						reason,
+						createdBy: locals.user?.id
+					});
+				}
+			});
 			if (deductable) {
 				const cost = await db
 					.select({

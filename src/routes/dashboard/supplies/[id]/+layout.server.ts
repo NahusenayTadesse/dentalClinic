@@ -19,6 +19,7 @@ import { and, desc, eq, sql } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
 import type { LayoutServerLoad } from './$types';
 import { employees, paymentMethods, supplyCategories } from '$lib/server/fastData';
+import { onHand } from '$lib/server/stock';
 
 export const load: LayoutServerLoad = async ({ params }) => {
 	const { id } = params;
@@ -33,7 +34,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 			name: supplies.name,
 			supplyTypeId: supplies.supplyTypeId,
 			supplyType: supplyTypes.name,
-			quantity: supplies.quantity,
+			quantity: onHand(),
 			description: supplies.description,
 			unitOfMeasure: supplies.unitOfMeasure,
 			reorderLevel: supplies.reorderLevel,

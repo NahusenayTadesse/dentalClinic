@@ -26,18 +26,11 @@ import { supplies, supplySuppliers } from './inventory';
  * expiry dates and all get used past them if nobody is counting, so `supplies.tracksBatches`
  * decides per item rather than the table assuming.
  *
- * **`quantity` here is what remains in this lot**, and it is authoritative for batch-tracked
- * items. `supplies.quantity` stays as the headline running total the existing pages read — a
- * cache, maintained the way it already was, which for a tracked item should equal the sum of its
- * open batches. That is two places holding one number, which everywhere else in this schema has
- * been the thing to avoid; it is accepted here because the alternative is summing a movement
- * ledger on every row of the stock list, the one aggregate that genuinely grows without bound on
- * a 2GB box. The reconciliation is a query, and it belongs in the stock report:
- *
- *     SELECT s.id, s.quantity, COALESCE(SUM(b.quantity), 0) AS in_batches
- *     FROM supplies s LEFT JOIN supply_batch b
- *       ON b.supply_id = s.id AND b.status = 'active' AND b.deleted_at IS NULL
- *     WHERE s.tracks_batches = true GROUP BY s.id HAVING s.quantity <> in_batches
+ * **`quantity` here is what remains in this lot, and it is the only place stock is recorded.**
+ * `supplies` has no quantity column: the figure every screen shows is the sum of an item's open
+ * lots, computed by `onHand()` in `server/stock.ts`. There is no cached total to reconcile
+ * against, and therefore nothing that can quietly disagree about stock somebody is about to
+ * dispense.
  *
  * Non-goal: enforcing that a batch number is unique. Receiving the same lot twice is a real
  * second delivery, and a clinic that puts them on one row and a clinic that puts them on two are

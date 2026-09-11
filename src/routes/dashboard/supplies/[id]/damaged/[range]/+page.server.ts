@@ -61,7 +61,7 @@ export const actions: Actions = {
 	 * throws 403 rather than failing quietly, because the hidden button is UX,
 	 * not access control.
 	 *
-	 * The helper puts the damaged units back into `supplies.quantity`, since
+	 * The helper puts the damaged units back into the lot they came out of, since
 	 * filing the report is what took them out.
 	 */
 	delete: async ({ request, params, locals, cookies }) => {

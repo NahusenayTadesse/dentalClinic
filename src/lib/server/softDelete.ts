@@ -1,6 +1,7 @@
 import { and, count, eq, inArray, isNull, or, sql, type SQL } from 'drizzle-orm';
 import type { AnyMySqlColumn, MySqlTable } from 'drizzle-orm/mysql-core';
 import { db } from '$lib/server/db';
+import { returnToBatch } from './stock';
 import {
 	address,
 	customers,
@@ -18,6 +19,7 @@ import {
 	staffFamilies,
 	staffSchedule,
 	supplies,
+	supplyBatch,
 	suppliesAdjustments,
 	supplySuppliers,
 	transactions,
@@ -214,7 +216,7 @@ export async function softDeleteEmployee(tx: Tx, staffId: number, userId?: strin
 /**
  * Deletes a supply along with its adjustment ledger and damage reports.
  *
- * `supplies.quantity` is not touched: the supply itself is going away, so the
+ * Stock is not touched: the supply itself is going away, so the
  * running total goes with it.
  */
 export async function softDeleteSupply(tx: Tx, supplyId: number, userId?: string) {
@@ -239,10 +241,12 @@ export async function softDeleteSupply(tx: Tx, supplyId: number, userId?: string
 /**
  * Deletes one row from the adjustment ledger and reverses its effect on stock.
  *
- * `supplies.quantity` is a running total kept by `+=` on every adjustment, not
- * a figure derived from the ledger. Removing a row from the visible history
- * without subtracting its `adjustment` back out would leave the stock count
- * disagreeing with the history that is supposed to explain it.
+ * Stock on hand is the sum of the item's open lots, so reversing a movement means putting the
+ * units back where they came from rather than correcting a total.
+ *
+ * A row that never touched a lot — `batchId` null, which is every adjustment made before lots
+ * existed — never affected the quantity either, so removing it correctly does nothing. That
+ * falls out of deriving rather than caching: there is no second number left behind to fix.
  */
 export async function softDeleteSupplyAdjustment(
 	tx: Tx,
@@ -251,7 +255,11 @@ export async function softDeleteSupplyAdjustment(
 	userId?: string
 ): Promise<boolean> {
 	const [row] = await tx
-		.select({ id: suppliesAdjustments.id, adjustment: suppliesAdjustments.adjustment })
+		.select({
+			id: suppliesAdjustments.id,
+			adjustment: suppliesAdjustments.adjustment,
+			batchId: suppliesAdjustments.batchId
+		})
 		.from(suppliesAdjustments)
 		.where(
 			and(
@@ -269,10 +277,19 @@ export async function softDeleteSupplyAdjustment(
 		.set(deletionStamp(userId))
 		.where(eq(suppliesAdjustments.id, adjustmentId));
 
-	await tx
-		.update(supplies)
-		.set({ quantity: sql`${supplies.quantity} - ${row.adjustment}`, updatedBy: userId })
-		.where(eq(supplies.id, supplyId));
+	// Only a movement that came out of a lot can be put back into one.
+	if (row.batchId && row.adjustment < 0) {
+		await returnToBatch(tx, row.batchId, Math.abs(row.adjustment), userId);
+	} else if (row.batchId && row.adjustment > 0) {
+		// A receipt being reversed: take the units back out of the lot it created.
+		await tx
+			.update(supplyBatch)
+			.set({
+				quantity: sql`GREATEST(${supplyBatch.quantity} - ${row.adjustment}, 0)`,
+				updatedBy: userId
+			})
+			.where(eq(supplyBatch.id, row.batchId));
+	}
 
 	return true;
 }
@@ -280,10 +297,10 @@ export async function softDeleteSupplyAdjustment(
 /**
  * Deletes a damage report and puts the damaged units back on the shelf.
  *
- * Reporting damage subtracts from `supplies.quantity`, so undoing the report
- * has to add it back for the same reason adjustments do. Any staff deduction
- * that the report generated is left alone — that is payroll history, and it is
- * not reachable from here.
+ * Reporting damage takes units out of a lot, so undoing the report puts them back into the same
+ * lot — found through the ledger row the report generated, which is the only thing that knows
+ * which lot it was. Any staff deduction the report created is left alone: that is payroll
+ * history and is not reachable from here.
  */
 export async function softDeleteDamagedSupply(
 	tx: Tx,
@@ -310,7 +327,15 @@ export async function softDeleteDamagedSupply(
 		.set(deletionStamp(userId))
 		.where(eq(damagedSupplies.id, damagedId));
 
-	// Any ledger row generated from this report goes with it.
+	// The ledger row generated from this report goes with it — and is what says which lot the
+	// units came out of, so it is read before it is stamped.
+	const generated = await tx
+		.select({ id: suppliesAdjustments.id, batchId: suppliesAdjustments.batchId })
+		.from(suppliesAdjustments)
+		.where(
+			and(eq(suppliesAdjustments.damagedSuppliesId, damagedId), notDeleted(suppliesAdjustments))
+		);
+
 	await tx
 		.update(suppliesAdjustments)
 		.set(deletionStamp(userId))
@@ -318,10 +343,9 @@ export async function softDeleteDamagedSupply(
 			and(eq(suppliesAdjustments.damagedSuppliesId, damagedId), notDeleted(suppliesAdjustments))
 		);
 
-	await tx
-		.update(supplies)
-		.set({ quantity: sql`${supplies.quantity} + ${row.quantity}`, updatedBy: userId })
-		.where(eq(supplies.id, supplyId));
+	for (const led of generated) {
+		if (led.batchId) await returnToBatch(tx, led.batchId, row.quantity, userId);
+	}
 
 	return true;
 }

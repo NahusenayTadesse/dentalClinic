@@ -70,7 +70,7 @@ export const actions: Actions = {
 	 * not access control.
 	 *
 	 * The helper also subtracts the row's adjustment back out of
-	 * `supplies.quantity`, which is a running total rather than a figure derived
+	 * the derived figure in `server/stock.ts`, which is the sum of open lots rather than
 	 * from this ledger.
 	 */
 	delete: async ({ request, params, locals, cookies }) => {

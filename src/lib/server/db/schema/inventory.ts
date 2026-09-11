@@ -24,7 +24,6 @@ export const supplies = mysqlTable('supplies', {
 		.references(() => supplyTypes.id),
 	name: varchar('name', { length: 50 }).notNull(),
 	description: varchar('description', { length: 255 }),
-	quantity: int('quantity').notNull().default(0),
 	unitOfMeasure: varchar('unit_of_measure', { length: 20 }),
 	reorderLevel: int('reorder_level'),
 	// Whether this item is expected back once issued out. Consumables (gloves,
@@ -49,14 +48,14 @@ export const supplies = mysqlTable('supplies', {
 	medicineId: int('medicine_id').references(() => medicine.id, { onDelete: 'set null' }),
 
 	/**
-	 * Whether this item is received and consumed in lots with expiry dates.
+	 * Whether an expiry date is expected on each lot of this item.
 	 *
-	 * Per item rather than assumed, because it is not free: a tracked item means every receipt
-	 * creates a batch and every issue has to choose one. True for medicines, anaesthetic, composite
-	 * and impression material; false for burs, mirrors and paper bibs, which never expire and
-	 * would only generate rows nobody reads.
+	 * **Not whether lots exist** — every supply has lots now, because the quantity is derived from
+	 * them and an item with none would read as zero. A delivery of burs is a lot with no expiry
+	 * date. This flag is what makes the expiry field required on receipt for medicines,
+	 * anaesthetic, composite and impression material, and absent for mirrors and paper bibs.
 	 */
-	tracksBatches: boolean('tracks_batches').notNull().default(false),
+	tracksExpiry: boolean('tracks_expiry').notNull().default(false),
 	/**
 	 * Where this stock physically sits. Quantity is per-row, so a second branch holding the same
 	 * item is a second row rather than a shared count. See `branchRef`.
@@ -78,12 +77,15 @@ export const damagedSupplies = mysqlTable('damaged_supplies', {
 });
 
 /**
- * The stock movement ledger.
+ * The stock movement ledger — the audit of how stock got to where it is.
  *
- * Every change to a quantity is a row here, and `supplies.quantity` is the running total the
- * write path keeps alongside it. The columns below were added to turn a general adjustment log
- * into something a pharmacy can answer questions from: which lot a movement came out of, and who
- * it was dispensed to.
+ * It is no longer what the quantity is computed from. Stock on hand is the sum of open lots (see
+ * `server/stock.ts`), and this records *why* each lot changed: which one, what kind of movement,
+ * and for a dispense, to which patient and against which prescription.
+ *
+ * That split is deliberate. Summing this table to get a quantity was measured at 67.6 ms against
+ * 1.6 ms for summing lots, and unlike lots it grows forever — every dispense for the life of the
+ * clinic. It is written once and read for history, not for arithmetic.
  */
 export const suppliesAdjustments = mysqlTable('supplies_adjustments', {
 	id: int('id').autoincrement().primaryKey(),

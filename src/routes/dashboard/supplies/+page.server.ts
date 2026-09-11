@@ -11,6 +11,7 @@ import {
 } from '$lib/server/queryFilters';
 import { UNSPECIFIED_UNIT } from './filters';
 import type { PageServerLoad } from '../$types';
+import { onHand } from '$lib/server/stock';
 
 export const load: PageServerLoad = async ({ url }) => {
 	const query = parseTableQuery(url, [
@@ -57,7 +58,7 @@ export const load: PageServerLoad = async ({ url }) => {
 			name: supplies.name,
 			type: supplyTypes.name,
 			description: supplies.description,
-			quantity: supplies.quantity,
+			quantity: onHand(),
 			returnable: supplies.returnable,
 			reorderLevel: supplies.reorderLevel,
 			unitOfMeasure: supplies.unitOfMeasure
@@ -69,7 +70,7 @@ export const load: PageServerLoad = async ({ url }) => {
 		.orderBy(asc(supplies.name), asc(supplies.id));
 
 	const rows = supplyList.map((row) => {
-		// `supplies.quantity` is the whole story now. It used to be one of four figures, the
+		// Stock on hand is derived from the item's open lots — see `server/stock.ts`. It used to be
 		// other three derived from lease rows — those tables went with the prune.
 		const onHand = Number(row.quantity ?? 0);
 		const belowReorder = row.reorderLevel != null && onHand <= Number(row.reorderLevel);

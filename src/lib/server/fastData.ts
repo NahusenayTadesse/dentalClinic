@@ -1,4 +1,5 @@
 import { db } from '$lib/server/db';
+import { onHand } from './stock';
 import { eq, and, sql, isNull, inArray } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
 import {
@@ -108,7 +109,7 @@ export async function supplyItems() {
 		.select({
 			value: supplies.id,
 			name: supplies.name,
-			quantity: supplies.quantity,
+			quantity: onHand(),
 			unitOfMeasure: supplies.unitOfMeasure,
 			returnable: supplies.returnable
 		})

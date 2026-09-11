@@ -8,14 +8,15 @@ import { reports, supplies } from '$lib/server/db/schema';
 import { isApproved } from '$lib/server/approvals';
 import { eq, lte, sql, and, inArray } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
+import { onHand } from '$lib/server/stock';
 export const load: PageServerLoad = async ({ locals }) => {
 	const reorderSupplies = await db
 		.select({
 			name: supplies.name,
-			quantity: supplies.quantity
+			quantity: onHand()
 		})
 		.from(supplies)
-		.where(and(lte(supplies.quantity, supplies.reorderLevel), notDeleted(supplies)));
+		.where(and(lte(onHand(), supplies.reorderLevel), notDeleted(supplies)));
 
 	const todayReport = await db
 		.select({

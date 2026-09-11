@@ -9,6 +9,7 @@ import { supplies, supplyTypes } from '$lib/server/db/schema/';
 import { notDeleted, softDeleteLookup } from '$lib/server/softDelete';
 import { requireSuperAdmin } from '$lib/server/permissions';
 import type { Actions, PageServerLoad } from './$types';
+import { onHand } from '$lib/server/stock';
 
 export const load: PageServerLoad = async () => {
 	const form = await superValidate(zod4(add), { id: 'add' });
@@ -22,7 +23,7 @@ export const load: PageServerLoad = async () => {
 			name: supplyTypes.name,
 			description: supplyTypes.description,
 			supplyCount: sql<number>`COUNT(${supplies.id})`,
-			totalStock: sql<number>`COALESCE(SUM(${supplies.quantity}), 0)`
+			totalStock: sql<number>`COALESCE(SUM(${onHand()}), 0)`
 		})
 		.from(supplyTypes)
 		.leftJoin(supplies, and(eq(supplies.supplyTypeId, supplyTypes.id), notDeleted(supplies)))

@@ -39,6 +39,7 @@ import {
 import { notDeleted } from '$lib/server/softDelete';
 import type { ReportFilters } from './filters';
 import { all, amountScope, inRange, n, searchScope, staffName, staffScope } from './scope.server';
+import { onHand } from '$lib/server/stock';
 
 export type DetailResult = { rows: Record<string, unknown>[]; total: number };
 
@@ -783,16 +784,16 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 								id: supplies.id,
 								supply: supplies.name,
 								supplyType: supplyTypes.name,
-								quantity: supplies.quantity,
+								quantity: onHand(),
 								unitOfMeasure: supplies.unitOfMeasure,
 								reorderLevel: supplies.reorderLevel,
-								belowReorder: sql<string>`IF(${supplies.reorderLevel} IS NOT NULL AND ${supplies.quantity} <= ${supplies.reorderLevel}, 'yes', 'no')`,
+								belowReorder: sql<string>`IF(${supplies.reorderLevel} IS NOT NULL AND ${onHand()} <= ${supplies.reorderLevel}, 'yes', 'no')`,
 								description: supplies.description
 							})
 							.from(supplies)
 							.leftJoin(supplyTypes, eq(supplies.supplyTypeId, supplyTypes.id))
 							.where(where)
-							.orderBy(supplies.quantity)
+							.orderBy(onHand())
 					),
 				() => db.select({ total: count() }).from(supplies).where(where)
 			);

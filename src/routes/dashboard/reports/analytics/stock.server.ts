@@ -23,6 +23,8 @@ import {
 	total
 } from '../scope.server';
 import { employeeFullName } from '$lib/server/employeeName';
+// Aliased: this file already destructures a local `onHand` from its query results.
+import { onHand as stockOnHand } from '$lib/server/stock';
 
 /**
  * What came into the store room and what went out.
@@ -95,11 +97,11 @@ export async function stockStats(
 		db
 			.select({
 				items: count(),
-				quantity: total(supplies.quantity),
+				quantity: total(stockOnHand()),
 				belowReorder: countWhen(
-					sql`${supplies.reorderLevel} IS NOT NULL AND ${supplies.quantity} <= ${supplies.reorderLevel}`
+					sql`${supplies.reorderLevel} IS NOT NULL AND ${stockOnHand()} <= ${supplies.reorderLevel}`
 				),
-				empty: countWhen(sql`${supplies.quantity} <= 0`)
+				empty: countWhen(sql`${stockOnHand()} <= 0`)
 			})
 			.from(supplies)
 			.where(stockWhere),
@@ -173,26 +175,26 @@ export async function stockStats(
 			.limit(12),
 
 		db
-			.select({ label: supplies.name, value: sql<string>`${supplies.quantity}` })
+			.select({ label: supplies.name, value: sql<string>`${stockOnHand()}` })
 			.from(supplies)
 			.where(stockWhere)
-			.orderBy(desc(supplies.quantity))
+			.orderBy(desc(stockOnHand()))
 			.limit(14),
 
 		db
 			.select({
 				label: supplies.name,
-				value: sql<string>`${supplies.quantity}`,
+				value: sql<string>`${stockOnHand()}`,
 				reorder: sql<string>`${supplies.reorderLevel}`
 			})
 			.from(supplies)
 			.where(
 				all([
 					stockWhere,
-					sql`${supplies.reorderLevel} IS NOT NULL AND ${supplies.quantity} <= ${supplies.reorderLevel}`
+					sql`${supplies.reorderLevel} IS NOT NULL AND ${stockOnHand()} <= ${supplies.reorderLevel}`
 				])
 			)
-			.orderBy(supplies.quantity)
+			.orderBy(stockOnHand())
 			.limit(14)
 	]);
 
