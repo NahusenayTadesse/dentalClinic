@@ -8,7 +8,8 @@ import {
 	datetime,
 	boolean,
 	text,
-	index
+	index,
+	type AnyMySqlColumn
 } from 'drizzle-orm/mysql-core';
 import { relations } from 'drizzle-orm';
 import { secureFields } from './secureFields';
@@ -145,6 +146,34 @@ export const patient = mysqlTable(
 		customerId: int('customer_id').references(() => customers.id, { onDelete: 'set null' }),
 
 		/**
+		 * The record this one was merged into, when it turned out to be the same person twice.
+		 *
+		 * **The most likely way this system hurts somebody.** A patient loses their card — which
+		 * the Ministry's own electronic catalogue exists partly to solve, duplicate MRNs and lost
+		 * cards being the named problems — and is registered again under a new file number. Their
+		 * penicillin allergy is now on the old record and today's prescription is written against
+		 * the new one, where the allergy list is empty and looks like "none reported". Nothing in
+		 * the schema was stopping that.
+		 *
+		 * A merge re-points the child rows — allergies, files, notes, appointments, invoices — onto
+		 * the surviving record, and leaves this one as a tombstone. The tombstone is the part that
+		 * matters and the reason the old row is not deleted: the old file number is written on
+		 * paper charts, on a card in someone's pocket, and on a receipt, and looking it up has to
+		 * keep arriving at the right person years later.
+		 *
+		 * Kept shallow on purpose. Every lookup follows this pointer at most once, so a merged
+		 * record must never itself be merged again — point it at the final survivor instead. The
+		 * alternative is a recursive join on the most common query in the app, and a cycle nobody
+		 * notices until two records point at each other.
+		 *
+		 * The re-pointing is the app's work; what the schema owns is the record that it happened.
+		 */
+		mergedIntoId: int('merged_into_id').references((): AnyMySqlColumn => patient.id, {
+			onDelete: 'set null'
+		}),
+		mergedAt: datetime('merged_at'),
+
+		/**
 		 * The branch this patient is registered at. See `branchRef` — nullable and defaulting to
 		 * the main branch, so a single-branch clinic never sees the field. It records where the
 		 * patient's chart lives, not where they may be treated: a patient registered at one
@@ -155,6 +184,9 @@ export const patient = mysqlTable(
 		...secureFields
 	},
 	(table) => [
+		// Merged records must drop out of search and every picker — a front desk that can still
+		// book the tombstone has gained a third copy of the patient rather than lost one.
+		index('patient_merged_idx').on(table.mergedIntoId),
 		// The three ways the front desk actually looks someone up, in order of how often.
 		index('patient_phone_idx').on(table.phone),
 		index('patient_name_idx').on(table.name, table.fatherName),
