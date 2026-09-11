@@ -134,6 +134,13 @@
       "when": 1789152267453,
       "tag": "0018_striped_agent_brand",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "5",
+      "when": 1789153167008,
+      "tag": "0019_lush_squadron_sinister",
+      "breakpoints": true
     }
   ]
 }

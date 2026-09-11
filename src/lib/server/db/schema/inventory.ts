@@ -25,7 +25,12 @@ export const supplies = mysqlTable('supplies', {
 	name: varchar('name', { length: 50 }).notNull(),
 	description: varchar('description', { length: 255 }),
 	unitOfMeasure: varchar('unit_of_measure', { length: 20 }),
-	reorderLevel: int('reorder_level'),
+	/**
+	 * Decimal, like every other quantity here. A clinic that stocks composite by the millilitre or
+	 * alginate by the gram has a reorder level in the same units, and an integer would round it to
+	 * something that never triggers or always does.
+	 */
+	reorderLevel: decimal('reorder_level', { precision: 10, scale: 2, mode: 'number' }),
 	// Whether this item is expected back once issued out. Consumables (gloves,
 	// anaesthetic, impression material) are false and are written off on issue;
 	// instruments and equipment are true and are chased for return.
@@ -69,7 +74,8 @@ export const damagedSupplies = mysqlTable('damaged_supplies', {
 	supplyId: int('supply_id')
 		.notNull()
 		.references(() => supplies.id),
-	quantity: int('quantity').notNull(),
+	/** Decimal: damage is measured in whatever the item is measured in — half a bottle is real. */
+	quantity: decimal('quantity', { precision: 10, scale: 2, mode: 'number' }).notNull(),
 	damagedBy: int('damaged_by').references(() => employee.id),
 	deductable: boolean('deductable').notNull().default(false),
 	reason: varchar('reason', { length: 255 }).notNull(),
@@ -115,7 +121,12 @@ export const suppliesAdjustments = mysqlTable('supplies_adjustments', {
 	suppliesId: int('supplies_id')
 		.notNull()
 		.references(() => supplies.id),
-	adjustment: int('adjustment').notNull(), // e.g., +50 for new stock, -1 for a sale, -1 for internal use
+	/**
+	 * Signed: positive receives, negative issues. Decimal rather than integer, because the lot it
+	 * moves is decimal and a movement that cannot express half a bottle would silently round the
+	 * quantity it is supposed to explain.
+	 */
+	adjustment: decimal('adjustment', { precision: 10, scale: 2, mode: 'number' }).notNull(), // e.g., +50 for new stock, -1 for a sale, -1 for internal use
 	supplierId: int('supplier_id').references(() => supplySuppliers.id),
 	employeeResponsible: int('employee_responsible').references(() => employee.id),
 	reason: varchar('reason', { length: 255 }),
