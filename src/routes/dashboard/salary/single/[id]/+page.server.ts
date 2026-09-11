@@ -3,8 +3,7 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import { addLeavePayrollSchema as schema } from './schema';
 
 import { db } from '$lib/server/db';
-import { payrollEntries, reports } from '$lib/server/db/schema';
-import { eq, sql } from 'drizzle-orm';
+import { payrollEntries } from '$lib/server/db/schema';
 import type { Actions } from './$types';
 import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
@@ -70,27 +69,12 @@ export const actions: Actions = {
 				status: 'paid'
 			});
 
-			const existingReport = await db
-				.select({
-					id: reports.id
-				})
-				.from(reports)
-				.where(eq(reports.reportDate, sql`CURDATE()`))
-				.then((rows) => rows[0]);
-
-			if (existingReport) {
-				await db
-					.update(reports)
-					.set({
-						staffPaid: sql`COALESCE(${reports.staffPaid}, 0) + ${paidAmount}`
-					})
-					.where(eq(reports.id, existingReport.id));
-			} else {
-				await db.insert(reports).values({
-					reportDate: new Date(),
-					staffPaid: paidAmount
-				});
-			}
+			/*
+			 * The daily `reports` rollup this used to bump is gone. It held twelve figures of
+			 * which two were ever written and none were ever read, and every one of them is a
+			 * join away from the rows that actually record the events — so the number is derived
+			 * when a report asks for it rather than accumulated here and trusted later.
+			 */
 
 			// Stay on the same page and set a flash message
 			setFlash({ type: 'success', message: 'Salary Record Successuflly Added' }, cookies);

@@ -6,8 +6,6 @@ import {
 	timestamp,
 	int,
 	json,
-	date,
-	decimal,
 	index
 } from 'drizzle-orm/mysql-core';
 import { user } from './user';
@@ -54,19 +52,3 @@ export const jobRun = mysqlTable(
 	},
 	(table) => [index('job_name_started_idx').on(table.jobName, table.startedAt)]
 );
-
-export const reports = mysqlTable('reports', {
-	id: int('id').autoincrement().primaryKey(),
-	reportDate: date('report_date').notNull().unique(),
-	bookedAppointments: int('booked_appointments').default(0),
-	cancelledAppointments: int('cancelled_appointments').default(0),
-	productsSold: int('products_sold').notNull().default(0),
-	servicesRendered: int('services_rendered').notNull(),
-	dailyExpenses: decimal('daily_expenses', { precision: 10, scale: 2 }),
-	dailyIncome: decimal('daily_income', { precision: 10, scale: 2 }),
-	transactions: int('transactions').notNull(),
-	staffPaid: int('staff_paid'),
-	totalStaffPaid: decimal('total_staff_paid', { precision: 10, scale: 2 }),
-	staffHired: int('staff_hired'),
-	staffFired: int('staff_fired')
-});
