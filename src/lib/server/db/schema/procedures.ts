@@ -14,7 +14,7 @@ import { relations, sql } from 'drizzle-orm';
 import { secureFields } from './secureFields';
 import { branchRef } from './branches';
 import { patient } from './patients';
-import { employee } from './staff';
+import { provider } from './providers';
 import { services } from './services';
 import { tooth } from './teeth';
 import { appointment } from './scheduling';
@@ -73,8 +73,14 @@ export const procedures = mysqlTable(
 			.notNull()
 			.references(() => services.id),
 
-		/** Who did it, or is to do it. Null on a plan not yet assigned to anyone. */
-		providerId: int('provider_id').references(() => employee.id, { onDelete: 'set null' }),
+		/**
+		 * Who did it, or is to do it. Null on a plan not yet assigned to anyone.
+		 *
+		 * `provider`, not `employee` — the same reason as on `appointment`: work is attributed to
+		 * someone licensed to have done it, and the database is what guarantees that rather than
+		 * the form.
+		 */
+		providerId: int('provider_id').references(() => provider.id, { onDelete: 'set null' }),
 
 		branchId: branchRef(),
 
@@ -168,6 +174,6 @@ export const procedureRelations = relations(procedures, ({ one }) => ({
 		references: [appointment.id]
 	}),
 	service: one(services, { fields: [procedures.serviceId], references: [services.id] }),
-	provider: one(employee, { fields: [procedures.providerId], references: [employee.id] }),
+	provider: one(provider, { fields: [procedures.providerId], references: [provider.id] }),
 	tooth: one(tooth, { fields: [procedures.toothId], references: [tooth.id] })
 }));

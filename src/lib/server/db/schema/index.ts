@@ -12,5 +12,6 @@ export * from './patients';
 export * from './contacts';
 export * from './allergies';
 export * from './teeth';
+export * from './providers';
 export * from './scheduling';
 export * from './procedures';

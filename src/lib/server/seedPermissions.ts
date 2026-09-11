@@ -7,6 +7,7 @@ import {
 	contactTypes,
 	operatory,
 	permissions,
+	providerSpecialty,
 	rolePermissions,
 	roles,
 	tooth
@@ -259,4 +260,29 @@ export async function seedClinicBasics() {
 	const [anyChair] = await db.select({ id: operatory.id }).from(operatory).limit(1);
 
 	if (!anyChair) await db.insert(operatory).values({ name: 'Chair 1', sortOrder: 1 });
+}
+
+/**
+ * The clinician cadres a dental clinic starts with.
+ *
+ * The general dentist and the specialties a referral would name, plus the two non-dentist cadres
+ * that treat patients here. Ethiopian licences use their own wording, so this is a starting
+ * point to be edited rather than a fixed list — which is why it is a table.
+ */
+export async function seedSpecialties() {
+	const [existing] = await db.select({ id: providerSpecialty.id }).from(providerSpecialty).limit(1);
+
+	if (existing) return;
+
+	await db.insert(providerSpecialty).values([
+		{ name: 'General Dentist', sortOrder: 1 },
+		{ name: 'Dental Therapist', sortOrder: 2 },
+		{ name: 'Dental Hygienist', sortOrder: 3 },
+		{ name: 'Orthodontist', sortOrder: 10 },
+		{ name: 'Oral and Maxillofacial Surgeon', sortOrder: 11 },
+		{ name: 'Periodontist', sortOrder: 12 },
+		{ name: 'Endodontist', sortOrder: 13 },
+		{ name: 'Prosthodontist', sortOrder: 14 },
+		{ name: 'Paediatric Dentist', sortOrder: 15 }
+	]);
 }

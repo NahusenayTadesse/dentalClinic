@@ -43,6 +43,13 @@
       "when": 1789114484364,
       "tag": "0005_real_kylun",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1789118016367,
+      "tag": "0006_neat_snowbird",
+      "breakpoints": true
     }
   ]
 }

@@ -13,6 +13,7 @@ import { secureFields } from './secureFields';
 import { branchRef } from './branches';
 import { patient } from './patients';
 import { employee } from './staff';
+import { provider } from './providers';
 
 /**
  * A chair. "Operatory" is the term every dental system uses; "surgery" and "room" are the same
@@ -71,10 +72,20 @@ export const appointment = mysqlTable(
 		/** The chair. `set null` so retiring a chair does not erase the history booked into it. */
 		operatoryId: int('operatory_id').references(() => operatory.id, { onDelete: 'set null' }),
 
-		/** The dentist. Null until assigned — see the note above. */
-		providerId: int('provider_id').references(() => employee.id, { onDelete: 'set null' }),
+		/**
+		 * The dentist. Null until assigned — see the note above.
+		 *
+		 * Points at `provider`, not `employee`: only someone with a provider record may be booked,
+		 * so the accountant cannot end up in the day view through a mistyped id. `set null` keeps
+		 * the history when a clinician's provider record is removed.
+		 */
+		providerId: int('provider_id').references(() => provider.id, { onDelete: 'set null' }),
 
-		/** Nurse or assistant, where a clinic tracks one. */
+		/**
+		 * Nurse or assistant, where a clinic tracks one. Still an `employee`, deliberately: an
+		 * assistant does not need a licence to hold an instrument, and requiring a provider record
+		 * would mean inventing one for every nurse.
+		 */
 		assistantId: int('assistant_id').references(() => employee.id, { onDelete: 'set null' }),
 
 		branchId: branchRef(),
@@ -144,5 +155,5 @@ export const operatoryRelations = relations(operatory, ({ many }) => ({
 export const appointmentRelations = relations(appointment, ({ one }) => ({
 	patient: one(patient, { fields: [appointment.patientId], references: [patient.id] }),
 	operatory: one(operatory, { fields: [appointment.operatoryId], references: [operatory.id] }),
-	provider: one(employee, { fields: [appointment.providerId], references: [employee.id] })
+	provider: one(provider, { fields: [appointment.providerId], references: [provider.id] })
 }));
