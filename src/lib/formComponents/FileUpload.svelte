@@ -11,6 +11,7 @@
 	} from '@lucide/svelte';
 	import { fileProxy } from 'sveltekit-superforms';
 	import imageCompression from 'browser-image-compression';
+	import { fileUrl } from '$lib/global.svelte';
 
 	let { form, name, placeholder = 'PDF or Images (Max 10MB)', image = '' } = $props();
 
@@ -150,18 +151,10 @@
 
 			<div class="overflow-hidden rounded-lg border bg-muted/30">
 				{#if image.toLowerCase().endsWith('.pdf')}
-					<iframe
-						src="/dashboard/files/{image}"
-						class="h-64 w-full"
-						frameborder="0"
-						title="pdf-preview"
+					<iframe src={fileUrl(image)} class="h-64 w-full" frameborder="0" title="pdf-preview"
 					></iframe>
 				{:else}
-					<img
-						src="/dashboard/files/{image}"
-						class="max-h-80 w-full object-contain"
-						alt="Preview"
-					/>
+					<img src={fileUrl(image)} class="max-h-80 w-full object-contain" alt="Preview" />
 				{/if}
 			</div>
 		</div>

@@ -151,6 +151,7 @@
 	import EditCommission from './editCommission.svelte';
 	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 	import ApprovalBanner from './approval-banner.svelte';
+	import { fileUrl } from '$lib/global.svelte';
 </script>
 
 <svelte:head>
@@ -220,7 +221,7 @@
 					{#if data?.staffMember?.photo}
 						<Button
 							variant="outline"
-							href="/dashboard/files/{data.staffMember.photo}"
+							href={fileUrl(data.staffMember.photo)}
 							target="_blank"
 							rel="noopener noreferrer"
 						>
@@ -237,7 +238,7 @@
 						<Button
 							title="View {data?.staffMember?.firstName}'s ID"
 							variant="outline"
-							href="/dashboard/files/{data?.staffMember?.govId}"
+							href={fileUrl(data?.staffMember?.govId)}
 							target="_blank"
 							rel="noopener noreferrer"
 							aria-label="View {data?.staffMember?.firstName}'s Government Id(FIDA) in a new tab"
@@ -255,7 +256,7 @@
 						<Button
 							title="View {data?.staffMember?.firstName}'s Signature"
 							variant="outline"
-							href="/dashboard/files/{data?.staffMember?.signiture}"
+							href={fileUrl(data?.staffMember?.signiture)}
 							target="_blank"
 							rel="noopener noreferrer"
 							aria-label="View {data?.staffMember?.firstName}'s Signature in a new tab"
@@ -267,7 +268,7 @@
 						<Button
 							title="View {data?.staffMember?.firstName}'s Pension Card"
 							variant="outline"
-							href="/dashboard/files/{data?.staffMember?.pensionCard}"
+							href={fileUrl(data?.staffMember?.pensionCard)}
 							target="_blank"
 							rel="noopener noreferrer"
 							aria-label="View {data?.staffMember?.firstName}'s Pension Card in a new tab"
@@ -411,7 +412,7 @@
 					{#if data?.guarantor?.photo}
 						<Button
 							variant="outline"
-							href="/dashboard/files/{data?.guarantor?.photo}"
+							href={fileUrl(data?.guarantor?.photo)}
 							target="_blank"
 							rel="noopener noreferrer"
 						>
@@ -428,7 +429,7 @@
 						<Button
 							title="View {data?.guarantor?.name}'s ID"
 							variant="outline"
-							href="/dashboard/files/{data?.guarantor?.govtId}"
+							href={fileUrl(data?.guarantor?.govtId)}
 							target="_blank"
 							rel="noopener noreferrer"
 							aria-label="View {data?.guarantor?.name}'s Government Id(FIDA) in a new tab"
@@ -445,7 +446,7 @@
 						<Button
 							title="View {data?.guarantor?.name}'s ID"
 							variant="outline"
-							href="/dashboard/files/{data?.guarantor?.document}"
+							href={fileUrl(data?.guarantor?.document)}
 							target="_blank"
 							rel="noopener noreferrer"
 							aria-label="View {data?.guarantor?.name}'s Government Id(FIDA) in a new tab"

@@ -3,6 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Download } from '@lucide/svelte';
+	import { fileUrl } from '$lib/global.svelte';
 
 	let { staff } = $props();
 
@@ -69,10 +70,7 @@
 			<!-- Photo + name section -->
 			<div class="id-photo-area">
 				<div class="id-photo-ring">
-					<img
-						src={staff?.photo ? `/dashboard/files/${staff.photo}` : '/dashboard/files/default.jpg'}
-						alt="Profile"
-					/>
+					<img src={staff?.photo ? fileUrl(staff.photo) : fileUrl('default.jpg')} alt="Profile" />
 				</div>
 				<div class="id-name">
 					{staff?.firstName}

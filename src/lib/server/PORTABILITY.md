@@ -47,13 +47,14 @@ starts from a list instead of a grep.
 
 ### Database
 
-| Seam            | Owns                                                                                                                                                                          | Status            |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
-| `db/dialect.ts` | every SQL function that is not spelled identically on all three: current date, date arithmetic, date formatting, age, string concatenation, group concatenation, conditionals | **not built**     |
-| `db/insert.ts`  | getting an id back from an insert — MySQL has `$returningId()`, the others use `RETURNING`                                                                                    | **not built**     |
-| `db/index.ts`   | the driver and the connection                                                                                                                                                 | exists            |
-| `dbErrors.ts`   | driver error codes. A duplicate key is `ER_DUP_ENTRY` on MySQL, `23505` on Postgres, `SQLITE_CONSTRAINT_UNIQUE` on SQLite. Never compare an errno inline                      | exists, 2 callers |
-| `stock.ts`      | the on-hand subquery. Portable as written; it stays the one place that knows how stock is derived                                                                             | exists            |
+| Seam                                 | Owns                                                                                                                                                                          | Status                            |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| `db/dialect.ts`                      | every SQL function that is not spelled identically on all three: current date, date arithmetic, date formatting, age, string concatenation, group concatenation, conditionals | **not built**                     |
+| `db/insert.ts`                       | getting an id back from an insert — MySQL has `$returningId()`, the others use `RETURNING`                                                                                    | **not built**                     |
+| `db/index.ts`                        | the driver and the connection                                                                                                                                                 | exists                            |
+| `dbErrors.ts`                        | driver error codes. A duplicate key is `ER_DUP_ENTRY` on MySQL, `23505` on Postgres, `SQLITE_CONSTRAINT_UNIQUE` on SQLite. Never compare an errno inline                      | exists, 2 callers                 |
+| `stock.ts`                           | the on-hand subquery. Portable as written; it stays the one place that knows how stock is derived                                                                             | exists                            |
+| `lib/global.svelte.ts` → `fileUrl()` | the URL that serves a stored file                                                                                                                                             | **built**, 28 call sites migrated |
 
 Anticipated contents of `db/dialect.ts`, so the names are settled before anything is written:
 
@@ -71,22 +72,31 @@ groupConcat(col, sep)        GROUP_CONCAT / string_agg / group_concat
 
 ### Files
 
-`server/files.ts` already owns the store: the directory, the accepted types, the size limit and
-the safe path resolution (CLAUDE.md §9). The portability rule is the same rule stated for a
-different reason — **nothing outside `files.ts` may touch `fs` or construct a path into the
-store.** Moving to Cloudinary or Supabase Storage should then be a rewrite of `files.ts` and of
-`routes/dashboard/files/[name]/+server.ts`, which stops streaming bytes and starts redirecting
-to a signed URL.
+`server/files.ts` owns the bytes: the directory, the accepted types, the size limit and the safe
+path resolution (CLAUDE.md §9). The portability rule is the same rule stated for a different
+reason — **nothing outside `files.ts` may touch `fs` or construct a path into the store.**
 
-What the seam must grow to absorb a remote store, since the current shape assumes local disk:
+`fileUrl(name)` in `lib/global.svelte.ts` owns the _URL_, and is the half that was missing: the
+path was hand-built as `/dashboard/files/${name}` in 28 places. It lives in the client-safe
+module rather than in `files.ts` because almost every caller is a component — an `img src` or an
+`href` evaluated in the browser — and `files.ts` imports `node:fs`, so the client cannot see it.
 
-- `saveUploadedFile` already returns an opaque name — keep it opaque. A caller that parses the
-  name, or joins it onto a directory, has made the store's layout part of the app.
-- **`fileUrl(name)` does not exist and needs to**, because today the URL is built by hand as
-  `/dashboard/files/${name}` at each call site. A remote store returns a different URL.
-- **Deletion has no helper.** Whatever deletes a stored file should be `deleteStoredFile(name)`.
-- `saveUploadedFile` is already `async`, which is the thing that matters — a remote store is a
-  network call, and a synchronous signature would have to change everywhere.
+Between them, a move to Cloudinary or Supabase Storage is a rewrite of `files.ts` and of
+`routes/dashboard/files/[name]/+server.ts`, which stops streaming bytes and starts redirecting.
+**That holds even if the new store needs signed URLs**, because `fileUrl()` keeps returning an
+app-relative path and the redirect does the signing. It changes only if the URLs turn out to be
+public, in which case it returns them directly and saves a hop.
+
+Two further rules, so the seam does not leak back open:
+
+- **The stored name is opaque.** `saveUploadedFile` returns it; nothing may parse it, split it or
+  join it onto a directory. The one exception is `mimeFor`, which reads the extension and is
+  inside the seam.
+- **Deletion, when it is built, goes through `files.ts`.** There is no `deleteStoredFile` today
+  and deliberately so: nothing in the app has ever deleted a stored file — see `fileAudit.ts`,
+  where replacing an attachment abandons the old one and the store only grows. A helper with zero
+  callers is the `Thing2` that CLAUDE.md §1 forbids. This is a note for whoever writes the
+  cleanup, not a gap.
 
 ## Things that will bite, that no function can hide
 
@@ -176,7 +186,7 @@ settles both rules.
 under `dashboard/` (roles, leave-expiry-policy, customers, employees ×2, salary ×3, supplies ×3).
 All of them want the same two lines of `db/insert.ts`.
 
-### File storage — 3 files outside `files.ts`
+### File storage — 3 files outside the seam
 
 | File                                       | What it does                       | Note                                                                                                                      |
 | ------------------------------------------ | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
@@ -184,5 +194,6 @@ All of them want the same two lines of `db/insert.ts`.
 | `routes/dashboard/backup/+server.ts`       | writes with `fs`                   | backup is genuinely about the filesystem; a remote store changes what a backup even means                                 |
 | `routes/dashboard/files/[name]/+server.ts` | streams bytes off disk             | expected to change — becomes a redirect to a signed URL                                                                   |
 
-Every hand-built `/dashboard/files/${name}` URL is also a caller of the `fileUrl()` that does not
-exist yet.
+Hand-built file URLs are **no longer on this list**: all 28 were migrated onto `fileUrl()` when
+the rule landed. The two mentions left in the tree are prose — `lib/help/content.ts` documents
+the route to users, and `db/schema/patientFiles.ts` cites it in a comment.

@@ -3,7 +3,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { Download, ExternalLink, Eye } from '@lucide/svelte';
-	import { dropdownClass } from '$lib/global.svelte';
+	import { dropdownClass, fileUrl } from '$lib/global.svelte';
 
 	let {
 		id,
@@ -39,11 +39,11 @@
 			></DropdownMenu.Item
 		>
 		<DropdownMenu.Item
-			><a href="/dashboard/files/{recieptLink}" class={dropdownClass}><Eye /> View Reciept</a
+			><a href={fileUrl(recieptLink)} class={dropdownClass}><Eye /> View Reciept</a
 			></DropdownMenu.Item
 		>
 		<DropdownMenu.Item
-			><a href="/dashboard/files/{recieptLink}" download="transactions" class={dropdownClass}
+			><a href={fileUrl(recieptLink)} download="transactions" class={dropdownClass}
 				><Download /> View Reciept</a
 			></DropdownMenu.Item
 		>

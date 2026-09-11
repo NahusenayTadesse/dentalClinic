@@ -66,6 +66,7 @@ any button, dialog, popover, or menu.
 | Dropdown option lists              | `server/fastData.ts` (50 files)                                                             |
 | Anything about stored files        | `server/files.ts` — `saveUploadedFile`, `resolveStoredFile`, `mimeFor`, `MAX_UPLOAD_BYTES`  |
 | Formatting money / Ethiopian dates | `formatETB`, `formatEthiopianDate` — `lib/global.svelte.ts`                                 |
+| The URL of a stored file           | `fileUrl` — `lib/global.svelte.ts` (client-safe; `server/files.ts` owns the bytes)          |
 
 ### Add a row, not a route
 
@@ -307,9 +308,11 @@ error. Same rule for dates, date formatting, string concatenation, `GROUP_CONCAT
 an id back from an insert (`$returningId()` is MySQL-only).
 
 **Same rule for stored files.** `server/files.ts` is the only module that may touch `fs` or build
-a path into the store — already required by §9 for safety, and it is what makes a move to
-Cloudinary or Supabase Storage a rewrite of one file instead of a search. Treat the stored name
-as opaque: never parse it, never join it onto a directory.
+a path into the store — already required by §9 for safety — and **`fileUrl(name)` is the only
+place the served URL is spelled**, which is why it lives in the client-safe
+`lib/global.svelte.ts` rather than beside the bytes. Treat the stored name as opaque: never parse
+it, never join it onto a directory, never write the `/dashboard/files/…` path by hand. Together
+they make a move to Cloudinary or Supabase Storage a rewrite of `files.ts` and one route.
 
 **Where the seam cannot be built** — a query whose _shape_ differs, not just its function names —
 write it inline and **record it in `src/lib/server/PORTABILITY.md`**, which carries the rule in

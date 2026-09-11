@@ -60,6 +60,31 @@ export function generateFileName() {
 }
 
 /**
+ * The URL that serves a stored file.
+ *
+ * **The one place the shape of that URL is written down** (CLAUDE.md §10). It was hand-built as
+ * `/dashboard/files/${name}` in twenty-eight places, which is twenty-eight edits the day the
+ * store stops being a directory on the server — and the one that gets missed renders a broken
+ * image rather than an error.
+ *
+ * Lives here rather than in `server/files.ts` because most callers are components: an `img src`
+ * or an `href`, evaluated in the browser. `server/files.ts` owns the *bytes* and cannot be
+ * imported from the client at all.
+ *
+ * The seam holds for a remote store even if that store needs signed URLs, because this keeps
+ * returning an app-relative path and `/dashboard/files/[name]` becomes a redirect to the signed
+ * one. So a move to Cloudinary or Supabase Storage changes `server/files.ts` and that route —
+ * and touches this function only if the URLs turn out to be public, in which case it returns
+ * them directly and saves the hop.
+ *
+ * Returns `''` for a missing name. Callers already guard with `{#if}`; before this existed they
+ * rendered `/dashboard/files/undefined` when they forgot, which is a request that 404s.
+ */
+export function fileUrl(name: string | null | undefined): string {
+	return name ? `/dashboard/files/${encodeURIComponent(name)}` : '';
+}
+
+/**
  * Weekday name for a `staff_schedule.week_day` index.
  *
  * 0 is Monday, not Sunday — the schedule table stores a working week, and both schedule

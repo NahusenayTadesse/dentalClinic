@@ -7,7 +7,7 @@ type RowData = NonNullable<PageData['allTransactions']>[number];
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
-import { formatEthiopianDate } from '$lib/global.svelte';
+import { formatEthiopianDate, fileUrl } from '$lib/global.svelte';
 
 export const columns: ColumnDef<RowData>[] = [
 	{
@@ -117,7 +117,7 @@ export const columns: ColumnDef<RowData>[] = [
 			return renderComponent(DataTableLinks, {
 				id: row.original.extraSettings,
 				name: 'View Reciept',
-				link: `/dashboard/files/${row.original.recieptLink}`,
+				link: fileUrl(row.original.recieptLink),
 				target: '_blank'
 			});
 		}
