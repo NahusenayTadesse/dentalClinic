@@ -5,10 +5,13 @@ import {
 	allergen,
 	branch,
 	contactTypes,
+	operatory,
 	permissions,
 	rolePermissions,
-	roles
+	roles,
+	tooth
 } from '$lib/server/db/schema';
+import { allTeeth } from '$lib/server/db/schema/teeth';
 import { MAIN_BRANCH_ID } from '$lib/server/db/schema/branches';
 import { routeRules } from '$lib/routeAccess';
 
@@ -233,4 +236,27 @@ export async function seedAllergens() {
 		{ name: 'Acrylic / methacrylate', category: 'material', sortOrder: 23 },
 		{ name: 'Eugenol', category: 'material', sortOrder: 24 }
 	]);
+}
+
+/**
+ * The 52 teeth, and one chair.
+ *
+ * Teeth are reference data, not a clinic's choice — every mouth has the same ones — so they are
+ * seeded rather than administered, and `allTeeth()` derives them from the FDI scheme instead of
+ * listing them. Nothing can be charted before these rows exist, because `procedure.tooth_id`
+ * points at them.
+ *
+ * The chair is a different kind of default: a guess, made because a clinic with no operatory
+ * cannot book anyone, and the first screen they open should not be a configuration screen.
+ * Renaming it is a lookup screen away. Both inserts are skipped entirely once their table has
+ * anything in it.
+ */
+export async function seedClinicBasics() {
+	const [anyTooth] = await db.select({ id: tooth.id }).from(tooth).limit(1);
+
+	if (!anyTooth) await db.insert(tooth).values(allTeeth());
+
+	const [anyChair] = await db.select({ id: operatory.id }).from(operatory).limit(1);
+
+	if (!anyChair) await db.insert(operatory).values({ name: 'Chair 1', sortOrder: 1 });
 }
