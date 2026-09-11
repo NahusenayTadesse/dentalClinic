@@ -18,6 +18,7 @@ import { provider } from './providers';
 import { services } from './services';
 import { tooth } from './teeth';
 import { appointment } from './scheduling';
+import { treatmentPlan } from './treatmentPlans';
 
 /**
  * One procedure: planned, done, or found already present.
@@ -81,6 +82,17 @@ export const procedures = mysqlTable(
 		 * the form.
 		 */
 		providerId: int('provider_id').references(() => provider.id, { onDelete: 'set null' }),
+
+		/**
+		 * The plan this was proposed as part of, where it was.
+		 *
+		 * Null for work done without one — an emergency extraction, a filling agreed and done in
+		 * the same visit. `set null` so tidying an old plan never detaches a treatment from the
+		 * patient it was done to.
+		 */
+		treatmentPlanId: int('treatment_plan_id').references(() => treatmentPlan.id, {
+			onDelete: 'set null'
+		}),
 
 		branchId: branchRef(),
 
@@ -153,6 +165,7 @@ export const procedures = mysqlTable(
 		index('procedure_patient_status_idx').on(table.patientId, table.status),
 		index('procedure_appointment_idx').on(table.appointmentId),
 		index('procedure_tooth_idx').on(table.toothId),
+		index('procedure_plan_idx').on(table.treatmentPlanId),
 		// Production per dentist, and the day sheet.
 		index('procedure_provider_completed_idx').on(table.providerId, table.completedOn),
 		index('procedure_branch_completed_idx').on(table.branchId, table.completedOn),

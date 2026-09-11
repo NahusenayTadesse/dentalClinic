@@ -29,6 +29,7 @@
 		{ name: 'Dental Labs', href: '/dashboard/admin-panel/dental-labs' },
 		{ name: 'Closures', href: '/dashboard/admin-panel/closures' },
 		{ name: 'Appointment Types', href: '/dashboard/admin-panel/appointment-types' },
+		{ name: 'Referral Sources', href: '/dashboard/admin-panel/referral-sources' },
 		{ name: 'Conditions', href: '/dashboard/admin-panel/conditions' },
 		{ name: 'Allergens', href: '/dashboard/admin-panel/allergens' },
 		{ name: 'Contact Types', href: '/dashboard/admin-panel/contact-types' },

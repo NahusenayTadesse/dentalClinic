@@ -19,6 +19,7 @@ import {
 	seedMedicines,
 	seedPermissions,
 	seedSpecialties,
+	seedReferralSources,
 	seedSupplyTypes
 } from '$lib/server/seedPermissions';
 import { setupSchema } from './schema';
@@ -83,6 +84,7 @@ export const actions: Actions = {
 			await seedClinicClosures();
 			await seedConditions();
 			await seedSupplyTypes();
+			await seedReferralSources();
 
 			const [role] = await db
 				.select({ id: roles.id })

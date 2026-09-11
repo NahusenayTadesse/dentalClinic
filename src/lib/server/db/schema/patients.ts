@@ -19,6 +19,25 @@ import { branchRef } from './branches';
 import { customers } from './customers';
 
 /**
+ * How a patient came to the clinic.
+ *
+ * A lookup rather than free text because the only reason to record it is to count it: "twenty
+ * three from word of mouth, eight from the sign, four referred by Dr Tesfaye" is the question,
+ * and a text box answers none of it. It is also the one marketing number a clinic with no
+ * marketing budget can actually act on.
+ *
+ * Editable, because the sources are local. A practice on a main road lives off its board; one in
+ * a compound lives off word of mouth; one near a hospital lives off referrals.
+ */
+export const referralSource = mysqlTable('referral_source', {
+	id: int('id').primaryKey().autoincrement(),
+	name: varchar('name', { length: 80 }).notNull().unique(),
+	description: varchar('description', { length: 255 }),
+	sortOrder: int('sort_order').notNull().default(0),
+	...secureFields
+});
+
+/**
  * A patient.
  *
  * Deliberately a new table rather than a rename of `customers`. The two coexist and mean
@@ -139,6 +158,24 @@ export const patient = mysqlTable(
 
 		/** Stored through `server/files.ts`, like every other file. Rarely filled in. */
 		photo: varchar('photo', { length: 255 }),
+
+		/**
+		 * How they found the clinic. **Nullable, and expected to stay empty often** — it is asked
+		 * at registration when there is time, and a patient in pain at the desk is not the moment
+		 * to insist. A required field here would be answered with whatever is first in the list,
+		 * which is worse than nothing because it looks like data.
+		 */
+		referralSourceId: int('referral_source_id').references(() => referralSource.id, {
+			onDelete: 'set null'
+		}),
+
+		/**
+		 * Who specifically, when the source was a person — "Dr Tesfaye at Bethel", "her sister
+		 * Almaz". Free text on purpose: referring dentists are not in this database and the
+		 * neighbour who recommended the clinic never will be, but knowing the name is what lets a
+		 * clinic say thank you.
+		 */
+		referredBy: varchar('referred_by', { length: 150 }),
 
 		/**
 		 * The corporate account that settles this patient's bills, when one does — an employer

@@ -12,6 +12,7 @@ import {
 	operatory,
 	permissions,
 	providerSpecialty,
+	referralSource,
 	supplyTypes,
 	rolePermissions,
 	roles,
@@ -796,5 +797,31 @@ export async function seedConditions() {
 			source: 'seed' as const,
 			sortOrder: 100 + i
 		}))
+	]);
+}
+
+/**
+ * How patients are likely to have heard of a clinic here.
+ *
+ * Word of mouth first, because in practice it is most of them — and a list that opens with
+ * "Facebook" invites a receptionist to pick it out of habit. The rest are the doors a small
+ * Ethiopian practice actually has: the board outside, a neighbouring clinic, a hospital, an
+ * employer with a corporate account.
+ */
+export async function seedReferralSources() {
+	const [existing] = await db.select({ id: referralSource.id }).from(referralSource).limit(1);
+
+	if (existing) return;
+
+	await db.insert(referralSource).values([
+		{ name: 'Word of mouth', description: 'A friend, relative or neighbour', sortOrder: 1 },
+		{ name: 'Returning patient', description: 'Treated here before', sortOrder: 2 },
+		{ name: 'Walk-in', description: 'Passing, or nearest clinic', sortOrder: 3 },
+		{ name: 'Clinic sign or board', sortOrder: 4 },
+		{ name: 'Referred by a clinic', description: 'Name the clinic in Referred By', sortOrder: 5 },
+		{ name: 'Referred by a hospital', sortOrder: 6 },
+		{ name: 'Employer or insurer', description: 'Sent under a corporate account', sortOrder: 7 },
+		{ name: 'Social media', sortOrder: 8 },
+		{ name: 'Other', sortOrder: 99 }
 	]);
 }
