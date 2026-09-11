@@ -315,13 +315,31 @@ export async function seedAppointmentTypes() {
 
 	await db.insert(appointmentType).values([
 		{ name: 'Consultation', defaultMinutes: 20, colour: '#0ea5e9', sortOrder: 1 },
-		{ name: 'Examination / Check-up', defaultMinutes: 30, colour: '#22c55e', sortOrder: 2 },
-		{ name: 'Scaling and Polishing', defaultMinutes: 45, colour: '#14b8a6', sortOrder: 3 },
+		{
+			name: 'Examination / Check-up',
+			defaultMinutes: 30,
+			colour: '#22c55e',
+			sortOrder: 2,
+			recallIntervalMonths: 6
+		},
+		{
+			name: 'Scaling and Polishing',
+			defaultMinutes: 45,
+			colour: '#14b8a6',
+			sortOrder: 3,
+			recallIntervalMonths: 6
+		},
 		{ name: 'Filling', defaultMinutes: 45, colour: '#6366f1', sortOrder: 4 },
 		{ name: 'Extraction', defaultMinutes: 45, colour: '#f97316', sortOrder: 5 },
 		{ name: 'Root Canal', defaultMinutes: 90, colour: '#a855f7', sortOrder: 6 },
 		{ name: 'Denture / Prosthetic', defaultMinutes: 60, colour: '#8b5cf6', sortOrder: 7 },
-		{ name: 'Orthodontic Adjustment', defaultMinutes: 30, colour: '#ec4899', sortOrder: 8 },
+		{
+			name: 'Orthodontic Adjustment',
+			defaultMinutes: 30,
+			colour: '#ec4899',
+			sortOrder: 8,
+			recallIntervalMonths: 1
+		},
 		{ name: 'Radiograph', defaultMinutes: 15, colour: '#64748b', sortOrder: 9 },
 		{ name: 'Review / Follow-up', defaultMinutes: 20, colour: '#84cc16', sortOrder: 10 },
 		// Short by design: an emergency slot is triage, and what it finds is booked separately.

@@ -26,6 +26,7 @@
 	];
 	let finance = [
 		{ name: 'Specialties', href: '/dashboard/admin-panel/specialties' },
+		{ name: 'Dental Labs', href: '/dashboard/admin-panel/dental-labs' },
 		{ name: 'Appointment Types', href: '/dashboard/admin-panel/appointment-types' },
 		{ name: 'Allergens', href: '/dashboard/admin-panel/allergens' },
 		{ name: 'Contact Types', href: '/dashboard/admin-panel/contact-types' },

@@ -18,3 +18,5 @@ export * from './procedures';
 export * from './patientFiles';
 export * from './notes';
 export * from './prescriptions';
+export * from './recalls';
+export * from './labCases';

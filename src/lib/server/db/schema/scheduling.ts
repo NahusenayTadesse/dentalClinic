@@ -8,6 +8,7 @@ import {
 	boolean,
 	unique,
 	index,
+	foreignKey,
 	type AnyMySqlColumn
 } from 'drizzle-orm/mysql-core';
 import { relations } from 'drizzle-orm';
@@ -48,6 +49,17 @@ export const appointmentType = mysqlTable('appointment_type', {
 	/** Slot length this type suggests. The booker can still override it on the appointment. */
 	defaultMinutes: int('default_minutes').notNull().default(30),
 
+	/**
+	 * Months until the patient should be seen again for this kind of visit, or null if it does
+	 * not generate one. A check-up recalls at six months; an extraction recalls at nothing.
+	 *
+	 * Here rather than on a `recall_type` table of its own, because a recall is an invitation to
+	 * come back *for something*, and that something is already an appointment type. A parallel
+	 * table would have meant maintaining two lists that mean the same thing and watching them
+	 * drift.
+	 */
+	recallIntervalMonths: int('recall_interval_months'),
+
 	/** Hex, for the day view. Wins over `provider.colour` — see above. */
 	colour: varchar('colour', { length: 7 }),
 
@@ -70,15 +82,35 @@ export const appointmentTypeServices = mysqlTable(
 	'appointment_type_services',
 	{
 		id: int('id').primaryKey().autoincrement(),
-		appointmentTypeId: int('appointment_type_id')
-			.notNull()
-			.references(() => appointmentType.id, { onDelete: 'cascade' }),
-		serviceId: int('service_id')
-			.notNull()
-			.references(() => services.id, { onDelete: 'cascade' }),
+		appointmentTypeId: int('appointment_type_id').notNull(),
+		serviceId: int('service_id').notNull(),
 		...secureFields
 	},
+	/*
+	 * The foreign keys are named explicitly, which is not decoration.
+	 *
+	 * Drizzle derives a constraint name from table, column and target —
+	 * `appointment_type_services_appointment_type_id_appointment_type_id_fk` — and that is 68
+	 * characters against MySQL's 64-character limit for an identifier. The `ALTER TABLE` is
+	 * rejected, so this table shipped with *no referential integrity at all* until
+	 * `scripts/check-migration.mjs` caught it: `drizzle-kit migrate` reported success and the
+	 * constraints simply were not there.
+	 *
+	 * Any table whose name and its target's name are both long is at risk of the same thing.
+	 * `supplies_adjustments_damaged_supplies_id_damaged_supplies_id_fk` is 63 and survives by one
+	 * character.
+	 */
 	(table) => [
+		foreignKey({
+			columns: [table.appointmentTypeId],
+			foreignColumns: [appointmentType.id],
+			name: 'appt_type_services_type_fk'
+		}).onDelete('cascade'),
+		foreignKey({
+			columns: [table.serviceId],
+			foreignColumns: [services.id],
+			name: 'appt_type_services_service_fk'
+		}).onDelete('cascade'),
 		unique('appointment_type_service_unique').on(table.appointmentTypeId, table.serviceId)
 	]
 );
