@@ -1,7 +1,14 @@
 import { eq, inArray } from 'drizzle-orm';
 
 import { db } from '$lib/server/db';
-import { branch, contactTypes, permissions, rolePermissions, roles } from '$lib/server/db/schema';
+import {
+	allergen,
+	branch,
+	contactTypes,
+	permissions,
+	rolePermissions,
+	roles
+} from '$lib/server/db/schema';
 import { MAIN_BRANCH_ID } from '$lib/server/db/schema/branches';
 import { routeRules } from '$lib/routeAccess';
 
@@ -192,5 +199,38 @@ export async function seedContactTypes() {
 		{ name: 'Email', kind: 'email', sortOrder: 2 },
 		{ name: 'Telegram', kind: 'username', linkPrefix: 'https://t.me/', sortOrder: 3 },
 		{ name: 'WhatsApp', kind: 'phone', linkPrefix: 'https://wa.me/', sortOrder: 4 }
+	]);
+}
+
+/**
+ * The allergens a dental clinic starts with.
+ *
+ * Seeded for a stronger reason than the contact types were: an empty picker here does not merely
+ * inconvenience the front desk, it pushes a clinician to skip recording an allergy at the moment
+ * it matters. These are the substances a dental clinic actually meets — the antibiotics and
+ * analgesics prescribed after extractions, the local anaesthetics, and the materials in the
+ * room.
+ *
+ * Inserted only when the table is completely empty, so a clinic that curates the list keeps it.
+ */
+export async function seedAllergens() {
+	const [existing] = await db.select({ id: allergen.id }).from(allergen).limit(1);
+
+	if (existing) return;
+
+	await db.insert(allergen).values([
+		{ name: 'Penicillin', category: 'medication', sortOrder: 1 },
+		{ name: 'Amoxicillin', category: 'medication', sortOrder: 2 },
+		{ name: 'Other antibiotics', category: 'medication', sortOrder: 3 },
+		{ name: 'Aspirin / NSAIDs', category: 'medication', sortOrder: 4 },
+		{ name: 'Paracetamol', category: 'medication', sortOrder: 5 },
+		{ name: 'Sulfa drugs', category: 'medication', sortOrder: 6 },
+		{ name: 'Lidocaine', category: 'anaesthetic', sortOrder: 10 },
+		{ name: 'Articaine', category: 'anaesthetic', sortOrder: 11 },
+		{ name: 'Latex', category: 'material', sortOrder: 20 },
+		{ name: 'Iodine / antiseptics', category: 'material', sortOrder: 21 },
+		{ name: 'Nickel / metals', category: 'material', sortOrder: 22 },
+		{ name: 'Acrylic / methacrylate', category: 'material', sortOrder: 23 },
+		{ name: 'Eugenol', category: 'material', sortOrder: 24 }
 	]);
 }

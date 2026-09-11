@@ -10,3 +10,4 @@ export * from './locations';
 export * from './branches';
 export * from './patients';
 export * from './contacts';
+export * from './allergies';

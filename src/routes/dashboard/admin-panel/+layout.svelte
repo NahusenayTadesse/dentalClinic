@@ -43,6 +43,7 @@
 	];
 
 	let finance = [
+		{ name: 'Allergens', href: '/dashboard/admin-panel/allergens' },
 		{ name: 'Contact Types', href: '/dashboard/admin-panel/contact-types' },
 		{ name: 'Payment Methods', href: '/dashboard/admin-panel/payment-methods' },
 		{ name: 'Tax Types', href: '/dashboard/admin-panel/tax-types' },

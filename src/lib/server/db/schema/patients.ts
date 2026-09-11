@@ -32,9 +32,12 @@ import { customers } from './customers';
  * cannot usefully be.
  *
  * Non-goals: this table says who someone is, not what was done to them. Appointments, treatment
- * history, odontogram findings and payments are their own tables and point back here. The two
- * clinical columns that *are* here — `allergies` and `medicalNotes` — are here because they must
- * be readable without a join, on the screen a clinician sees before touching anyone.
+ * history, odontogram findings and payments are their own tables and point back here.
+ *
+ * Allergies were briefly a `text` column here and are now `patient_allergies` — coded, so that
+ * "who reacts to penicillin" is a join rather than a `LIKE`. `medicalNotes` below stays prose
+ * deliberately, and the same argument applies to it: the day someone needs to list every
+ * diabetic patient, conditions earn their own table too.
  *
  * Ways to reach the patient live in `patient_contacts`, and emergency contacts in
  * `patient_emergency_contacts` — both in `contacts.ts`. An earlier version of this table
@@ -101,32 +104,23 @@ export const patient = mysqlTable(
 		bloodType: mysqlEnum('blood_type', ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
 
 		/**
-		 * Known allergies, in the patient's or the clinician's own words.
-		 *
-		 * Free text rather than a coded list, and the reason is the deployment: this competes
-		 * with a paper chart, and a picker that does not contain what the patient just said gets
-		 * filled in as "other" or skipped. A structured `patient_allergy` table can be added
-		 * later without moving this column, which stays as the at-a-glance line.
-		 *
-		 * **Null does not mean "no allergies."** Null means nobody has asked. `historyTakenAt`
-		 * below is what separates the two, and the difference is the whole point of recording it
-		 * — treating "not asked" as "none" is how someone gets given penicillin.
-		 */
-		allergies: text('allergies'),
-
-		/**
 		 * Conditions that change dental treatment: diabetes, hypertension, cardiac history,
-		 * bleeding disorders, hepatitis, HIV, pregnancy, current medication. Same reasoning as
-		 * `allergies` — one prose field a clinician reads in a glance, not a form to fill.
+		 * bleeding disorders, hepatitis, HIV, pregnancy, current medication.
+		 *
+		 * Still prose, unlike allergies, and the difference is what gets asked of it. Allergies
+		 * are queried across patients — a recall, a checked afternoon list — so the substance had
+		 * to become a row. Conditions are read one patient at a time, by the clinician about to
+		 * treat them. When that stops being true, this becomes a table the same way.
 		 */
 		medicalNotes: text('medical_notes'),
 
 		/**
-		 * When the medical history above was last taken or reviewed, and by whom.
+		 * When the medical history was last taken or reviewed, and by whom.
 		 *
 		 * Set only when someone actually asks the questions. It is what makes an empty
-		 * `allergies` field mean "asked, nothing reported" instead of "unknown", and it is what
-		 * tells a clinician a year later that the history is stale and worth repeating.
+		 * `patient_allergies` list mean "asked, nothing reported" instead of "nobody asked", and
+		 * it is what tells a clinician a year later that the history is stale and worth
+		 * repeating. Without it, no rows is indistinguishable from no questions.
 		 *
 		 * `datetime`, not `timestamp` — see CLAUDE.md §9.
 		 */
