@@ -3,6 +3,7 @@ import { eq, inArray } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import {
 	allergen,
+	appointmentType,
 	branch,
 	contactTypes,
 	operatory,
@@ -296,5 +297,33 @@ export async function seedSpecialties() {
 		{ name: 'Dental Nurse', sortOrder: 21 },
 		{ name: 'Dental Assistant', sortOrder: 22 },
 		{ name: 'Anaesthetist', sortOrder: 23 }
+	]);
+}
+
+/**
+ * The visit types a dental clinic starts with, and the slot each one suggests.
+ *
+ * The durations are the point. A clinic will edit the names to its own vocabulary, but the
+ * front desk gets a sane slot length from day one rather than booking every visit at thirty
+ * minutes and running late by eleven.
+ */
+export async function seedAppointmentTypes() {
+	const [existing] = await db.select({ id: appointmentType.id }).from(appointmentType).limit(1);
+
+	if (existing) return;
+
+	await db.insert(appointmentType).values([
+		{ name: 'Consultation', defaultMinutes: 20, colour: '#0ea5e9', sortOrder: 1 },
+		{ name: 'Examination / Check-up', defaultMinutes: 30, colour: '#22c55e', sortOrder: 2 },
+		{ name: 'Scaling and Polishing', defaultMinutes: 45, colour: '#14b8a6', sortOrder: 3 },
+		{ name: 'Filling', defaultMinutes: 45, colour: '#6366f1', sortOrder: 4 },
+		{ name: 'Extraction', defaultMinutes: 45, colour: '#f97316', sortOrder: 5 },
+		{ name: 'Root Canal', defaultMinutes: 90, colour: '#a855f7', sortOrder: 6 },
+		{ name: 'Denture / Prosthetic', defaultMinutes: 60, colour: '#8b5cf6', sortOrder: 7 },
+		{ name: 'Orthodontic Adjustment', defaultMinutes: 30, colour: '#ec4899', sortOrder: 8 },
+		{ name: 'Radiograph', defaultMinutes: 15, colour: '#64748b', sortOrder: 9 },
+		{ name: 'Review / Follow-up', defaultMinutes: 20, colour: '#84cc16', sortOrder: 10 },
+		// Short by design: an emergency slot is triage, and what it finds is booked separately.
+		{ name: 'Emergency / Pain', defaultMinutes: 30, colour: '#ef4444', sortOrder: 11 }
 	]);
 }

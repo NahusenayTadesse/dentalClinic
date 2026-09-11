@@ -6,14 +6,82 @@ import {
 	int,
 	datetime,
 	boolean,
-	index
+	unique,
+	index,
+	type AnyMySqlColumn
 } from 'drizzle-orm/mysql-core';
 import { relations } from 'drizzle-orm';
 import { secureFields } from './secureFields';
 import { branchRef } from './branches';
+import { user } from './user';
 import { patient } from './patients';
+import { services } from './services';
 import { employee } from './staff';
 import { provider } from './providers';
+
+/**
+ * What a visit is for — check-up, scaling, extraction, review.
+ *
+ * A table rather than an enum because the list is a clinic's own vocabulary and grows with what
+ * it offers: a practice that starts doing implants adds a type, and a practice that never does
+ * orthodontics should not see one in the picker.
+ *
+ * It is more than a label, and that is the reason it earns a table:
+ *
+ *   - `defaultMinutes` is the duration the front desk gets for free. Picking "Extraction" should
+ *     set the slot, because the person booking is not the person who knows how long an
+ *     extraction takes.
+ *   - `colour` paints the appointment in the day view, and **supersedes the provider's colour**
+ *     when both are set. Colouring by what is happening is usually more useful than colouring by
+ *     who is doing it, so the type wins; a clinic that prefers the other reading just leaves
+ *     this null.
+ *   - `appointment_type_services` below pre-loads the work a type implies.
+ *
+ * Non-goal: the blockout rules established systems attach to a type — which parts of the diary a
+ * type may be booked into. That needs a scheduling-template layer this app does not have, and
+ * inventing half of one here would be worse than leaving the front desk to use its judgement.
+ */
+export const appointmentType = mysqlTable('appointment_type', {
+	id: int('id').primaryKey().autoincrement(),
+	name: varchar('name', { length: 80 }).notNull().unique(),
+
+	/** Slot length this type suggests. The booker can still override it on the appointment. */
+	defaultMinutes: int('default_minutes').notNull().default(30),
+
+	/** Hex, for the day view. Wins over `provider.colour` — see above. */
+	colour: varchar('colour', { length: 7 }),
+
+	description: varchar('description', { length: 255 }),
+	sortOrder: int('sort_order').notNull().default(0),
+
+	...secureFields
+});
+
+/**
+ * The work an appointment type implies, so that choosing "Root canal" offers the root canal
+ * rather than leaving someone to remember it.
+ *
+ * Suggestions, not requirements. Established systems distinguish attached procedures from
+ * *required* ones with "at least one" and "all" semantics; that machinery exists to enforce
+ * insurance-claim completeness, which is not a pressure here, and a clinic that has to fight the
+ * booking screen stops using the types at all.
+ */
+export const appointmentTypeServices = mysqlTable(
+	'appointment_type_services',
+	{
+		id: int('id').primaryKey().autoincrement(),
+		appointmentTypeId: int('appointment_type_id')
+			.notNull()
+			.references(() => appointmentType.id, { onDelete: 'cascade' }),
+		serviceId: int('service_id')
+			.notNull()
+			.references(() => services.id, { onDelete: 'cascade' }),
+		...secureFields
+	},
+	(table) => [
+		unique('appointment_type_service_unique').on(table.appointmentTypeId, table.serviceId)
+	]
+);
 
 /**
  * A chair. "Operatory" is the term every dental system uses; "surgery" and "room" are the same
@@ -91,6 +159,14 @@ export const appointment = mysqlTable(
 		 */
 		assistantId: int('assistant_id').references(() => employee.id, { onDelete: 'set null' }),
 
+		/**
+		 * What the visit is for. Null for a booking made before anyone knows — a walk-in in pain,
+		 * or a slot held over the phone while the patient checks a date.
+		 */
+		appointmentTypeId: int('appointment_type_id').references(() => appointmentType.id, {
+			onDelete: 'set null'
+		}),
+
 		branchId: branchRef(),
 
 		startsAt: datetime('starts_at').notNull(),
@@ -137,6 +213,59 @@ export const appointment = mysqlTable(
 		seatedAt: datetime('seated_at'),
 		dismissedAt: datetime('dismissed_at'),
 
+		/**
+		 * When the confirmation call actually happened, and not merely that it did — `status` can
+		 * already say `confirmed`. The timing is the whole value: a confirmation made three weeks
+		 * out has expired by the day, one made two days out is why the patient turns up, and
+		 * without the timestamp the two are the same row.
+		 */
+		confirmedAt: datetime('confirmed_at'),
+
+		/**
+		 * When a reminder last went out. Recorded because messages cost money here and because a
+		 * patient texted twice trusts the next one less — and because without it there is no way
+		 * to tell whether reminders reduce no-shows at all.
+		 */
+		reminderSentAt: datetime('reminder_sent_at'),
+
+		/**
+		 * Who cancelled it and when. Distinct from `updatedBy`, which any edit overwrites: "who
+		 * cancelled this" is a question asked precisely when the answer is contested, and an audit
+		 * column shared with every other change cannot answer it.
+		 */
+		cancelledAt: datetime('cancelled_at'),
+		cancelledBy: varchar('cancelled_by', { length: 255 }).references(() => user.id, {
+			onDelete: 'set null'
+		}),
+
+		/**
+		 * The patient will come at short notice if a slot frees up.
+		 *
+		 * A cancellation at nine in the morning is an empty chair unless someone can be found for
+		 * it, and in a clinic paid per visit an empty chair is the loss. This flag is the
+		 * short-call list — the first query the front desk runs when the phone rings with a
+		 * cancellation.
+		 */
+		isAsap: boolean('is_asap').notNull().default(false),
+
+		/**
+		 * The appointment this one replaces, when a cancelled or missed visit is rebooked.
+		 *
+		 * A self-reference rather than overwriting the original, so the history survives: four
+		 * rows chained together say this patient has been rebooked four times, which is a fact
+		 * about the patient worth seeing before the fifth slot is held for them. `set null` keeps
+		 * the newer appointment when an older one is finally purged.
+		 */
+		rebookedFromId: int('rebooked_from_id').references((): AnyMySqlColumn => appointment.id, {
+			onDelete: 'set null'
+		}),
+
+		/**
+		 * Who booked it is `createdBy`, from `secureFields` — the person who created the row is
+		 * the person who took the booking, and a second `bookedBy` column would be the same fact
+		 * twice, free to disagree. `updatedBy` is whoever last moved it, and `cancelledBy` above
+		 * is deliberately separate from both.
+		 */
 		...secureFields
 	},
 	(table) => [
@@ -147,7 +276,10 @@ export const appointment = mysqlTable(
 		index('appointment_patient_idx').on(table.patientId),
 		// "Who has this dentist got today", and the no-show list.
 		index('appointment_provider_start_idx').on(table.providerId, table.startsAt),
-		index('appointment_status_start_idx').on(table.status, table.startsAt)
+		index('appointment_status_start_idx').on(table.status, table.startsAt),
+		index('appointment_type_idx').on(table.appointmentTypeId),
+		// The short-call list: who can fill a slot that just opened.
+		index('appointment_asap_idx').on(table.isAsap, table.startsAt)
 	]
 );
 
@@ -155,7 +287,27 @@ export const operatoryRelations = relations(operatory, ({ many }) => ({
 	appointments: many(appointment)
 }));
 
+export const appointmentTypeRelations = relations(appointmentType, ({ many }) => ({
+	appointments: many(appointment),
+	services: many(appointmentTypeServices)
+}));
+
+export const appointmentTypeServicesRelations = relations(appointmentTypeServices, ({ one }) => ({
+	appointmentType: one(appointmentType, {
+		fields: [appointmentTypeServices.appointmentTypeId],
+		references: [appointmentType.id]
+	}),
+	service: one(services, {
+		fields: [appointmentTypeServices.serviceId],
+		references: [services.id]
+	})
+}));
+
 export const appointmentRelations = relations(appointment, ({ one }) => ({
+	appointmentType: one(appointmentType, {
+		fields: [appointment.appointmentTypeId],
+		references: [appointmentType.id]
+	}),
 	patient: one(patient, { fields: [appointment.patientId], references: [patient.id] }),
 	operatory: one(operatory, { fields: [appointment.operatoryId], references: [operatory.id] }),
 	provider: one(provider, { fields: [appointment.providerId], references: [provider.id] })

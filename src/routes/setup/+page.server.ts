@@ -10,6 +10,7 @@ import { roles, user } from '$lib/server/db/schema';
 import {
 	SUPER_ADMIN_ROLE,
 	seedAllergens,
+	seedAppointmentTypes,
 	seedClinicBasics,
 	seedContactTypes,
 	seedMainBranch,
@@ -73,6 +74,7 @@ export const actions: Actions = {
 			await seedAllergens();
 			await seedClinicBasics();
 			await seedSpecialties();
+			await seedAppointmentTypes();
 
 			const [role] = await db
 				.select({ id: roles.id })
