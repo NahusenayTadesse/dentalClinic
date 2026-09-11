@@ -11,8 +11,12 @@
  *
  * Running it against a scratch copy turns that into a local error message instead.
  *
- *   node scripts/check-migration.mjs                 # every migration, on an empty database
- *   node scripts/check-migration.mjs 0011            # just this one, on a copy of the current schema
+ *   node scripts/check-migration.mjs                 # the whole chain, from empty
+ *   node scripts/check-migration.mjs 0011            # the chain up to 0011, reporting only 0011
+ *
+ * Everything before the target is applied first and silently: an incremental migration cannot
+ * apply to an empty database, because the tables it alters are not there yet. Only failures in
+ * the target are reported, so a filter narrows the noise rather than the work.
  *
  * Needs DATABASE_URL. Creates and drops `<dbname>_migcheck`; never touches the real database.
  */
@@ -24,15 +28,20 @@ const url = new URL(process.env.DATABASE_URL);
 const realDb = url.pathname.slice(1);
 const scratch = `${realDb}_migcheck`;
 
-const files = readdirSync('drizzle')
+const all = readdirSync('drizzle')
 	.filter((f) => f.endsWith('.sql') && /^\d{4}_/.test(f))
-	.sort()
-	.filter((f) => !only || f.startsWith(only));
+	.sort();
 
-if (files.length === 0) {
-	console.error(`No migration matches "${only ?? ''}"`);
+// Everything up to and including the target. A migration that only alters a table needs every
+// migration before it to have run, so narrowing the report cannot mean narrowing what is applied.
+const target = only ? all.findIndex((f) => f.startsWith(only)) : all.length - 1;
+
+if (target === -1) {
+	console.error(`No migration matches "${only}"`);
 	process.exit(1);
 }
+
+const files = all.slice(0, target + 1);
 
 const admin = await mysql.createConnection({
 	host: url.hostname,
@@ -44,7 +53,9 @@ const admin = await mysql.createConnection({
 
 await admin.query(`DROP DATABASE IF EXISTS \`${scratch}\``);
 // Same charset the preflight sets, so the check exercises what production will run.
-await admin.query(`CREATE DATABASE \`${scratch}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci`);
+await admin.query(
+	`CREATE DATABASE \`${scratch}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci`
+);
 await admin.end();
 
 url.pathname = `/${scratch}`;
@@ -59,18 +70,28 @@ for (const file of files) {
 		.map((s) => s.trim())
 		.filter(Boolean);
 
+	// Only the target is reported on. Earlier migrations are setup, and a failure in one of them
+	// is still fatal — it means the chain itself is broken, which the unfiltered run would show.
+	const reporting = !only || file.startsWith(only);
+
 	for (const [i, statement] of statements.entries()) {
 		try {
 			await db.query(statement);
 			applied++;
 		} catch (err) {
 			failed++;
+			if (!reporting) {
+				console.error(`\n✗ ${file} (before the target) — statement ${i + 1}`);
+				console.error(`  ${err.code}: ${err.sqlMessage}`);
+				continue;
+			}
 			console.error(`\n✗ ${file} — statement ${i + 1} of ${statements.length}`);
 			console.error(`  ${err.code}: ${err.sqlMessage}`);
 			console.error(`  ${statement.slice(0, 200).replace(/\s+/g, ' ')}`);
 		}
 	}
-	console.log(`${failed ? '·' : '✓'} ${file} (${statements.length} statements)`);
+
+	if (reporting) console.log(`${failed ? '·' : '✓'} ${file} (${statements.length} statements)`);
 }
 
 await db.query(`DROP DATABASE \`${scratch}\``);

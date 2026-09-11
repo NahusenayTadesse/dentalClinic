@@ -71,6 +71,13 @@
       "when": 1789133029684,
       "tag": "0009_black_leper_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1789134941516,
+      "tag": "0010_amused_quentin_quire",
+      "breakpoints": true
     }
   ]
 }

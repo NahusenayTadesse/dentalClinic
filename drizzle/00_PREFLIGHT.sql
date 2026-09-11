@@ -16,3 +16,23 @@ ALTER DATABASE `dental` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 -- migrations now would bake the wrong charset into every table, and fixing it afterwards
 -- means converting every table and column by hand.
 SELECT @@character_set_database AS charset, @@collation_database AS collation;
+
+-- ---------------------------------------------------------------------------
+-- Second check: are CHECK constraints enforced on this server?
+--
+-- The schema uses two — surface letters on `procedures`, and weekday range on
+-- `staff_schedule`. MariaDB enforces CHECK from 10.2.1 and MySQL from 8.0.16.
+-- Anything older PARSES AND SILENTLY IGNORES them: no error at import, no error
+-- at insert, just a constraint that is not there. The app validates the same
+-- rules, so an old server degrades to app-only validation rather than breaking
+-- — but it is worth knowing which of the two you are on.
+--
+-- Generated columns (the one-live-row uniqueness on `patient_allergies` and
+-- `provider`) are not a worry in the same way: where they are unsupported the
+-- CREATE TABLE fails outright, which is the honest failure.
+SELECT
+  VERSION() AS server_version,
+  CASE
+    WHEN VERSION() LIKE '%MariaDB%' THEN 'MariaDB: CHECK enforced from 10.2.1'
+    ELSE 'MySQL: CHECK enforced from 8.0.16'
+  END AS check_constraint_support;

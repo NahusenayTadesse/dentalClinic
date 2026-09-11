@@ -20,3 +20,4 @@ export * from './notes';
 export * from './prescriptions';
 export * from './recalls';
 export * from './labCases';
+export * from './closures';
