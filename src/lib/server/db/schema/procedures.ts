@@ -18,10 +18,15 @@ import { provider } from './providers';
 import { services } from './services';
 import { tooth } from './teeth';
 import { appointment } from './scheduling';
-import { treatmentPlan } from './treatmentPlans';
 
 /**
  * One procedure: planned, done, or found already present.
+ *
+ * Not linked to a treatment plan from this side. `treatment_plan_item.procedureId` owns that
+ * relationship, because the plan line is a snapshot of what was quoted and the procedure is what
+ * is actually being done — one link, from the record that froze the price to the record that did
+ * the work. A column here as well would be the same relationship stored twice, free to disagree,
+ * and a plan can quote work before anything is charted at all.
  *
  * The table is `procedures`, plural, and that is not a style choice: `PROCEDURE` is a reserved
  * word in MySQL and MariaDB, so `SELECT ... FROM procedure` is a syntax error unless every
@@ -82,17 +87,6 @@ export const procedures = mysqlTable(
 		 * the form.
 		 */
 		providerId: int('provider_id').references(() => provider.id, { onDelete: 'set null' }),
-
-		/**
-		 * The plan this was proposed as part of, where it was.
-		 *
-		 * Null for work done without one — an emergency extraction, a filling agreed and done in
-		 * the same visit. `set null` so tidying an old plan never detaches a treatment from the
-		 * patient it was done to.
-		 */
-		treatmentPlanId: int('treatment_plan_id').references(() => treatmentPlan.id, {
-			onDelete: 'set null'
-		}),
 
 		branchId: branchRef(),
 
@@ -165,7 +159,6 @@ export const procedures = mysqlTable(
 		index('procedure_patient_status_idx').on(table.patientId, table.status),
 		index('procedure_appointment_idx').on(table.appointmentId),
 		index('procedure_tooth_idx').on(table.toothId),
-		index('procedure_plan_idx').on(table.treatmentPlanId),
 		// Production per dentist, and the day sheet.
 		index('procedure_provider_completed_idx').on(table.providerId, table.completedOn),
 		index('procedure_branch_completed_idx').on(table.branchId, table.completedOn),

@@ -169,6 +169,13 @@
       "when": 1789158079424,
       "tag": "0023_gifted_pride",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "5",
+      "when": 1789158713567,
+      "tag": "0024_big_supreme_intelligence",
+      "breakpoints": true
     }
   ]
 }
