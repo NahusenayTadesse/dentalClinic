@@ -28,14 +28,23 @@
 {:else}
 	<h2 class="my-4 text-2xl">Employees List</h2>
 
+	<!--
+		Search and page size are off here because the table owns both now, and both of its controls
+		are server-side. Leaving them on gave the page two search boxes and two page-size pickers
+		that wrote the same URL params — and a "20 results" count next to the table's "105".
+
+		They stay available on `QueryBuilder` itself: seven other pages still use it with the
+		client-side table, where its search box is the only server-side one they have. The prop
+		goes when those pages migrate, not before.
+	-->
 	<QueryBuilder
 		title="Staff Query"
-		description="Server-side search across all employees"
+		description="Extra filters for the employee list"
 		showDate={false}
-		initialSearch={data.currentQuery.search}
+		showSearch={false}
+		showPageSize={false}
 		initialStart={data.currentQuery.dateStart ?? undefined}
 		initialEnd={data.currentQuery.dateEnd ?? undefined}
-		initialPageSize={data.pagination.pageSize}
 		initialCustomFilters={{
 			branchId: data.currentQuery.branchId ?? '',
 			departmentId: data.currentQuery.departmentId ?? '',

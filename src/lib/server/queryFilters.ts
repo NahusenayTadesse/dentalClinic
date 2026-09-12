@@ -171,7 +171,12 @@ export function paginate<T>(rows: T[], query: TableQuery): { rows: T[]; total: n
  * department's name, a branch's name — and inventing a join description here would be a small
  * ORM on top of the one we have. This only runs them together and shapes the result.
  */
-export type FacetQuery = () => Promise<{ value: string | number | null; count: number | string }[]>;
+export type FacetQuery = () => Promise<
+	{ value: string | number | null; label?: string | null; count: number | string }[]
+>;
+
+/** One value a column can be filtered by: what to send, what to show, how many rows carry it. */
+export type Facet = { value: string; label: string; count: number };
 
 /**
  * Runs a page's facet tallies and shapes them for the table.
@@ -185,13 +190,19 @@ export type FacetQuery = () => Promise<{ value: string | number | null; count: n
  * itself out of its own tally.
  *
  *     const facets = await facetCounts({
- *       departmentId: () =>
- *         db.select({ value: department.name, count: count() })
+ *       department: () =>
+ *         db.select({ value: department.id, label: department.name, count: count() })
  *           .from(employee)
  *           .innerJoin(department, and(eq(employee.departmentId, department.id), notDeleted(department)))
  *           .where(buildWhere(query, spec, { except: 'departmentId' }))
- *           .groupBy(department.name)
+ *           .groupBy(department.id, department.name)
  *     });
+ *
+ * **`value` and `label` are separate on purpose.** `value` is what goes into the URL and back
+ * through the filter builder — for a foreign key that is the id. `label` is what the reader sees.
+ * Tallying by name alone shipped once and broke every foreign-key facet on the page: clicking
+ * "Piassa Clinic" wrote `branchId=Piassa+Clinic`, the builder did `Number(...)` on it, and the
+ * list came back empty.
  *
  * Cost is one grouped query per faceted column, run in parallel. Facet a column with an index
  * and it is cheap; facet six unindexed columns on a large table and it will not be, which is the
@@ -202,21 +213,27 @@ export type FacetQuery = () => Promise<{ value: string | number | null; count: n
  */
 export async function facetCounts(
 	spec: Record<string, FacetQuery>
-): Promise<Record<string, Record<string, number>>> {
+): Promise<Record<string, Facet[]>> {
 	const keys = Object.keys(spec);
 	const results = await Promise.all(keys.map((key) => spec[key]()));
 
-	const out: Record<string, Record<string, number>> = {};
+	const out: Record<string, Facet[]> = {};
 
 	keys.forEach((key, i) => {
-		const tally: Record<string, number> = {};
+		const facets: Facet[] = [];
 
 		for (const row of results[i]) {
 			if (row.value === null || row.value === undefined || row.value === '') continue;
-			tally[String(row.value)] = Number(row.count);
+
+			facets.push({
+				value: String(row.value),
+				label: String(row.label ?? row.value),
+				count: Number(row.count)
+			});
 		}
 
-		out[key] = tally;
+		facets.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+		out[key] = facets;
 	});
 
 	return out;

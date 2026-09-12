@@ -38,7 +38,6 @@
 		setServerFacet,
 		setServerPageSize,
 		setServerSearch,
-		toFacetList,
 		type Facet,
 		type ServerTable
 	} from './table-state.svelte';
@@ -172,13 +171,14 @@
 
 		// Server mode never counts its own rows — they are one page, and a tally of one page
 		// presented as a tally of the result set is the bug this component was built to end.
-		const tallies = server
-			? (server.facets ?? {})
-			: facetsFromRows([...indexable], facetKeys, clientFacets);
+		if (server) {
+			const given = server.facets ?? {};
+			const out: Record<string, Facet[]> = {};
+			for (const key of facetKeys) out[key] = given[key] ?? [];
+			return out;
+		}
 
-		const out: Record<string, Facet[]> = {};
-		for (const key of facetKeys) out[key] = toFacetList(tallies[key]);
-		return out;
+		return facetsFromRows([...indexable], facetKeys, clientFacets);
 	});
 
 	function toggleFacet(key: string, value: string) {

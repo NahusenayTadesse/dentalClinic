@@ -69,7 +69,7 @@
 						{#each facets as facet (facet.value)}
 							{@const isOn = selected.includes(facet.value)}
 							<Command.Item
-								value={facet.value}
+								value={facet.label}
 								onSelect={() => {
 									onToggle(facet.value);
 									if (!multi) open = false;
@@ -81,7 +81,8 @@
 								>
 									{#if isOn}<Check class="size-3" />{/if}
 								</div>
-								<span class="truncate">{facet.value}</span>
+								<!-- The label is shown; `facet.value` is what the filter actually sends. -->
+								<span class="truncate">{facet.label}</span>
 								<!-- The tally is the point: it says what narrowing will cost before you commit. -->
 								<span class="ml-auto pl-2 font-mono text-xs text-muted-foreground">
 									{facet.count.toLocaleString()}

@@ -94,7 +94,7 @@
 
 	function chartData() {
 		return {
-			labels: current.map((f) => f.value),
+			labels: current.map((f) => f.label),
 			datasets: [
 				{
 					label: label(currentKey),
@@ -204,7 +204,10 @@
 
 		{#if selected[currentKey]?.length}
 			<p class="text-[11px] text-muted-foreground">
-				Filtered by {selected[currentKey].join(', ')}
+				Filtered by {current
+					.filter((f) => selected[currentKey].includes(f.value))
+					.map((f) => f.label)
+					.join(', ')}
 			</p>
 		{/if}
 	</div>

@@ -149,11 +149,12 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	 * list stay comparable. Keyed by column id, which is what puts each filter in its own header.
 	 */
 	const facetFor = (
-		column: MySqlColumn,
+		value: MySqlColumn,
+		label: MySqlColumn,
 		except: 'departmentId' | 'positionId' | 'branchId' | 'statusId'
 	) =>
 		db
-			.select({ value: column, count: countDistinct(employee.id) })
+			.select({ value, label, count: countDistinct(employee.id) })
 			.from(employee)
 			.leftJoin(branch, and(eq(branch.id, employee.branchId), notDeleted(branch)))
 			.leftJoin(department, and(eq(department.id, employee.departmentId), notDeleted(department)))
@@ -167,13 +168,18 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 				and(eq(educationalLevel.id, employee.educationalLevel), notDeleted(educationalLevel))
 			)
 			.where(buildWhere(query, whereSpec, { except }))
-			.groupBy(column);
+			.groupBy(value, label);
 
+	/*
+	 * The id is the value and the name is the label. Tallying by name alone is what broke every
+	 * one of these: clicking "Piassa Clinic" wrote `branchId=Piassa+Clinic`, `buildWhere` did
+	 * `Number(...)` on it, and the page came back with no table at all.
+	 */
 	const facets = await facetCounts({
-		department: () => facetFor(department.name, 'departmentId'),
-		position: () => facetFor(position.name, 'positionId'),
-		branch: () => facetFor(branch.name, 'branchId'),
-		status: () => facetFor(employmentStatuses.name, 'statusId')
+		department: () => facetFor(department.id, department.name, 'departmentId'),
+		position: () => facetFor(position.id, position.name, 'positionId'),
+		branch: () => facetFor(branch.id, branch.name, 'branchId'),
+		status: () => facetFor(employmentStatuses.id, employmentStatuses.name, 'statusId')
 	});
 
 	return {

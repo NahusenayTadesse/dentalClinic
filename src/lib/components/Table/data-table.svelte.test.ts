@@ -62,7 +62,7 @@ function renderTable<T>(props: {
 	fileName?: string;
 	server?: {
 		pagination: { page: number; pageSize: number; total: number };
-		facets?: Record<string, Record<string, number>>;
+		facets?: Record<string, { value: string; label: string; count: number }[]>;
 		filters?: Record<string, string | null | undefined>;
 	};
 }) {
@@ -183,7 +183,14 @@ describe('data-table.svelte', () => {
 			facetLabels: { department: 'Department' },
 			server: {
 				pagination: { page: 1, pageSize: 2, total: 400 },
-				facets: { department: { Clinical: 310, Reception: 90 } }
+				// `value` is what the filter sends, `label` is what the reader sees. On a foreign key
+				// they differ — tallying by name alone broke every FK facet in the app.
+				facets: {
+					department: [
+						{ value: '902', label: 'Clinical', count: 310 },
+						{ value: '901', label: 'Reception', count: 90 }
+					]
+				}
 			}
 		});
 
@@ -192,6 +199,31 @@ describe('data-table.svelte', () => {
 		await userEvent.click(page.getByRole('button', { name: 'Filter by Department' }));
 		await expect.element(page.getByText('310')).toBeInTheDocument();
 		await expect.element(page.getByText('90')).toBeInTheDocument();
+	});
+
+	/*
+	 * The bug this shape exists to prevent. Facets used to be a plain {name: count} map, so the
+	 * name went into the URL: clicking "Piassa Clinic" wrote `branchId=Piassa+Clinic`, the server
+	 * did `Number(...)` on it, and the page came back with no table at all.
+	 */
+	it('sends the facet value, not the label the reader sees', async () => {
+		renderTable({
+			data: staff.slice(0, 2),
+			columns: staffColumns,
+			facetKeys: ['department'],
+			facetLabels: { department: 'Department' },
+			server: {
+				pagination: { page: 1, pageSize: 2, total: 400 },
+				facets: { department: [{ value: '902', label: 'Clinical', count: 310 }] }
+			}
+		});
+
+		await userEvent.click(page.getByRole('button', { name: 'Filter by Department' }));
+
+		const option = page.getByRole('option', { name: /Clinical/ });
+		await expect.element(option).toBeInTheDocument();
+		// The id never reaches the screen; the name never reaches the URL.
+		await expect.element(option).not.toHaveTextContent('902');
 	});
 
 	it('shows no facets in server mode when the server computed none', async () => {

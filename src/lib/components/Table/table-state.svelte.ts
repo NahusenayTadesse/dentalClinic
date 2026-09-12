@@ -25,18 +25,25 @@ export type ServerTable = {
 	/** Straight from `pagination(query, total)`. */
 	pagination: { page: number; pageSize: number; total: number };
 	/**
-	 * Tallies from `facetCounts`, keyed by the URL param that filters each column.
+	 * Facets from `facetCounts`, keyed by column id.
 	 *
 	 * Absent means "this page did not compute them", and the table shows no facets rather than
 	 * counting the page — which is the whole point of the split.
 	 */
-	facets?: Record<string, Record<string, number>>;
+	facets?: Record<string, Facet[]>;
 	/** What the URL currently asks for, so the controls show their own state. */
 	filters?: Record<string, string | null | undefined>;
 };
 
-/** A value a column can be filtered by, with how many rows carry it. */
-export type Facet = { value: string; count: number };
+/**
+ * One value a column can be filtered by.
+ *
+ * `value` is what goes into the URL or the client-side comparison; `label` is what the reader
+ * sees. They differ whenever the column is a foreign key — `value` is the id, `label` is the
+ * name. Collapsing them shipped once and broke every foreign-key facet: clicking "Piassa Clinic"
+ * wrote `branchId=Piassa+Clinic`, the filter did `Number(...)` on it and matched nothing.
+ */
+export type Facet = { value: string; label: string; count: number };
 
 /**
  * Facet tallies counted from rows already in memory.
@@ -49,8 +56,8 @@ export function facetsFromRows(
 	rows: Record<string, unknown>[],
 	keys: string[],
 	selected: Record<string, string[]>
-): Record<string, Record<string, number>> {
-	const out: Record<string, Record<string, number>> = {};
+): Record<string, Facet[]> {
+	const out: Record<string, Facet[]> = {};
 
 	for (const key of keys) {
 		const tally: Record<string, number> = {};
@@ -71,7 +78,10 @@ export function facetsFromRows(
 			tally[label] = (tally[label] ?? 0) + 1;
 		}
 
-		out[key] = tally;
+		// Client mode filters on the displayed value itself, so value and label are the same here.
+		out[key] = Object.entries(tally)
+			.map(([label, count]) => ({ value: label, label, count }))
+			.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
 	}
 
 	return out;
@@ -86,15 +96,6 @@ export function applyFacets<T extends Record<string, unknown>>(
 	if (!active.length) return rows;
 
 	return rows.filter((row) => active.every(([key, values]) => values.includes(String(row[key]))));
-}
-
-/** A tally object as a sorted list, which is what both the popover and the chart want. */
-export function toFacetList(tally: Record<string, number> | undefined): Facet[] {
-	if (!tally) return [];
-
-	return Object.entries(tally)
-		.map(([value, count]) => ({ value, count }))
-		.sort((a, b) => b.count - a.count || a.value.localeCompare(b.value));
 }
 
 /** How many individual values are selected across every column. */
