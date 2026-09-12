@@ -22,7 +22,8 @@
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run && npm run test:e2e",
 		"auth:schema": "auth generate --config src/lib/server/auth.ts --output src/lib/server/db/auth.schema.ts --yes",
-		"test:e2e": "playwright install && playwright test"
+		"test:e2e": "playwright install && playwright test",
+		"db:seed": "tsx scripts/seed-dev.ts"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^2.1.0",
@@ -48,6 +49,7 @@
 		"dotenv": "^17.4.2",
 		"drizzle-kit": "^0.31.10",
 		"drizzle-orm": "^0.45.2",
+		"drizzle-seed": "^0.3.1",
 		"eslint": "^9.39.4",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.19.0",

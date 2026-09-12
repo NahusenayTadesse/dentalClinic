@@ -32,7 +32,6 @@
 		title="Staff Query"
 		description="Server-side search across all employees"
 		showDate={false}
-		totalResults={data?.staffList.length ?? 0}
 		initialSearch={data.currentQuery.search}
 		initialStart={data.currentQuery.dateStart ?? undefined}
 		initialEnd={data.currentQuery.dateEnd ?? undefined}
