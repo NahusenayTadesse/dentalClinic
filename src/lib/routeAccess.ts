@@ -45,6 +45,9 @@ export const routeRules: RouteRule[] = [
 	{ prefix: '/dashboard', permission: null, exact: true },
 	{ prefix: '/dashboard/change-password', permission: null },
 	{ prefix: '/dashboard/help', permission: null },
+	// Switching branch is not a privilege: everyone works somewhere, and `resolveBranch`
+	// already refuses a branch the caller may not see.
+	{ prefix: '/dashboard/branch', permission: null },
 	// The store is flat and a filename records nothing about what it is attached to, so there is
 	// nothing here to check a permission against — see the note on the route itself.
 	{ prefix: '/dashboard/files/', permission: null },

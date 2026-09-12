@@ -34,6 +34,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		.then((r) => r[0]);
 
 	return {
+		branch: locals.branch,
 		permList: locals.permList,
 		isSuperAdmin: locals.isSuperAdmin,
 		role: dbUser,

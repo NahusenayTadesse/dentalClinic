@@ -7,6 +7,7 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { CloudDownload } from '@lucide/svelte';
 	import HelpButton from '$lib/components/HelpButton.svelte';
+	import BranchSelector from '$lib/components/BranchSelector.svelte';
 	import { canVisit } from '$lib/routeAccess';
 	import { setViewer } from '$lib/viewer.svelte';
 
@@ -32,6 +33,7 @@
 		>
 			<Sidebar.Trigger class="rounded-lg bg-white p-4 dark:bg-black" />
 			<div class="flex flex-row items-center gap-4">
+				<BranchSelector branch={data?.branch} />
 				<Search />
 				<HelpButton />
 				<DarkMode />

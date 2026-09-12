@@ -62,6 +62,7 @@ any button, dialog, popover, or menu.
 | Cascading delete                   | the `softDelete*` family — `server/softDelete.ts`                                           |
 | Delete action on a lookup page     | `lookupDeleteAction` — `server/lookupDelete.ts`                                             |
 | Authorization                      | `requireSuperAdmin` · `syncAdminRole` — `server/permissions.ts`                             |
+| The working branch, and its scope  | `locals.branch` · `branchFilter` · `patientScope` — `server/branchScope.ts`                 |
 | Permission check in an action      | `requirePermission` · `hasPermission` — `server/permissions.ts`                             |
 | Reading a MySQL error code         | `isDuplicateKey` · `mysqlErrorCode` — `server/dbErrors.ts`                                  |
 | The permission list and admin role | `seedPermissions` — `server/seedPermissions.ts`, run by `/setup`                            |
@@ -477,7 +478,57 @@ person.
 
 ---
 
-## 14. Definition of done
+## 14. Branch is context, not a filter
+
+A clinic may have more than one location. **The branch someone is working at is chosen once, in
+the top bar, and every query reads it from `locals.branch`.** It is not a dropdown on each list, a
+column filter, or a chart facet — a filter narrows _within_ a context, and the branch you are
+standing in _is_ the context. It was briefly all three, which put the same decision on
+twenty-one loaders and let them disagree.
+
+A clinic with one branch sees none of it: the selector does not render, and the scope resolves to
+the only branch there is.
+
+**The cookie is a request, not an answer.** `resolveBranch` in `server/branchScope.ts` re-checks
+it on every request and returns the intersection of what was asked for and what the user may see.
+Loaders read `locals.branch`; nothing else reads the cookie. Without that check, a manager at one
+branch edits a cookie and reads another branch's patients — the feature would be an access
+control hole wearing the clothes of a convenience. `branches.view_all` is what allows seeing
+across branches at all; everyone else is pinned to their own.
+
+**Scope is a closed list, not "has a `branch_id` column".** Eighteen tables carry one and most
+must not be filtered by it:
+
+- **Reference data** — allergens, conditions, appointment types, specialties, labs. A clinic's
+  formulary belongs to the clinic, not a location; scoping it empties half the pickers at the
+  second branch.
+- **`audit_log` and `patient_access_log`** — they record _where something happened_. Filtering
+  evidence by where you happen to be sitting is how you fail to find what you are looking for.
+- **`patient`** — see below.
+
+`BRANCH_SCOPED` in `server/branchScope.ts` is the list. Adding a table to it is a decision about
+who can see what, so it is made in the open rather than inferred from a column name.
+
+**Patients: the list is scoped, the search is not.** Browsing shows this branch's patients,
+because a roster of everyone who has ever attended is exactly the sensitive bulk that should not
+be idly readable from a reception desk. Searching crosses branches, because a patient who turns
+up at the other location must be _found_ rather than registered twice — and a deliberate search
+for a named person is a different act from paging through a list. A result from elsewhere carries
+`fromOtherBranch`, and the screen says so: _this patient is not from this branch, but can be
+treated here._ Reading one is exactly what `patient_access_log` is for. **Do not collapse these
+into one rule; they are two on purpose.** `patientScope()` is the helper.
+
+The record itself never moves. An appointment at the other branch carries that branch's id; the
+patient stays one patient.
+
+**Writes are stamped, not defaulted.** `branchRef()` defaults `branch_id` to `MAIN_BRANCH_ID`, so
+a record created while working at a second branch would otherwise be filed under the first —
+reads scoped correctly, writes all landing in branch 1, and nothing on screen to show it. Creates
+set `branchId` from `locals.branch.active`.
+
+---
+
+## 15. Definition of done
 
 - `npm run check` clean **for the files you touched**
 - `npm run lint` clean for the files you touched

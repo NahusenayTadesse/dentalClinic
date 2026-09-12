@@ -19,6 +19,7 @@ import {
 import { notDeleted } from '$lib/server/softDelete';
 import { computeIsSuperAdmin } from '$lib/server/permissions';
 import { PROTECTED_ROOT, ruleForPath } from '$lib/routeAccess';
+import { BRANCH_COOKIE, resolveBranch } from '$lib/server/branchScope';
 
 /**
  * Blocks the public sign-up endpoint.
@@ -89,6 +90,8 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	event.locals.session = result?.session ?? null;
 	event.locals.permList = [];
 	event.locals.isSuperAdmin = false;
+	// A shape rather than undefined, so a loader on a public page can read it without guarding.
+	event.locals.branch = { active: null, options: [], canSeeAll: false, showSelector: false };
 
 	const userId = result?.user?.id;
 
@@ -133,6 +136,21 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 		 * user and their admin; "no permission is defined" is for whoever built the page, and it
 		 * is the only signal that the rule was never written.
 		 */
+		/*
+		 * The branch this request is served for, resolved once and validated here.
+		 *
+		 * The cookie is a request, not an answer: `resolveBranch` returns the intersection of what
+		 * was asked for and what this user may see, so a hand-edited cookie naming another
+		 * branch is ignored rather than honoured. Every loader reads `locals.branch`; none of them
+		 * reads the cookie, which is what keeps that check in one place.
+		 */
+		event.locals.branch = await resolveBranch(
+			event.cookies.get(BRANCH_COOKIE),
+			userId,
+			event.locals.permList,
+			event.locals.isSuperAdmin
+		);
+
 		if (event.url.pathname.startsWith(PROTECTED_ROOT)) {
 			const match = ruleForPath(event.url.pathname);
 

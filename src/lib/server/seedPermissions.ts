@@ -43,12 +43,17 @@ export const SUPER_ADMIN_ROLE = 'Super Admin';
  *
  *   `approvals.override` — release a record you requested yourself (`approvals/[entity]`)
  *   `rejections.reopen`  — put a rejected record back in the queue (`rejections/[entity]`)
+ *   `branches.view_all`  — switch branches, and see across them (`server/branchScope.ts`)
  *
  * Everything else is derived from `routeRules`, which is the single source of truth for route
  * gating (CLAUDE.md §9). Deriving rather than restating means a new gated route cannot ship
  * with a permission nobody can be granted.
  */
-const CODE_ONLY_PERMISSIONS = ['approvals.override', 'rejections.reopen'] as const;
+const CODE_ONLY_PERMISSIONS = [
+	'approvals.override',
+	'rejections.reopen',
+	'branches.view_all'
+] as const;
 
 /** Human wording for the permission list in the admin panel. */
 const DESCRIPTIONS: Record<string, string> = {
@@ -57,6 +62,7 @@ const DESCRIPTIONS: Record<string, string> = {
 	'approvals.view': 'See what is waiting for approval',
 	'attendance.manage': 'Record and correct attendance',
 	'audit_logs.view': 'Read the audit trail',
+	'branches.view_all': 'See data from every branch, and switch between them',
 	'customers.record': 'Maintain corporate billing customers',
 	'employees.create_followup': 'Open and follow up employee records',
 	'leaves.view_approved': 'See approved leave',

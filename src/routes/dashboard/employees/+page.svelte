@@ -46,7 +46,6 @@
 		initialStart={data.currentQuery.dateStart ?? undefined}
 		initialEnd={data.currentQuery.dateEnd ?? undefined}
 		initialCustomFilters={{
-			branchId: data.currentQuery.branchId ?? '',
 			departmentId: data.currentQuery.departmentId ?? '',
 			positionId: data.currentQuery.positionId ?? '',
 			educationId: data.currentQuery.educationId ?? '',
@@ -55,26 +54,6 @@
 		onQueryChange={applyQueryToUrl}
 	>
 		{#snippet children(filters, update)}
-			<div class="flex flex-col gap-2">
-				<Label class="text-sm font-medium">Branch</Label>
-				<Select
-					type="single"
-					value={filters.branchId as string}
-					onValueChange={(v) => update('branchId', v as never)}
-				>
-					<SelectTrigger class="w-full">
-						{data.filterOptions.branches.find((s) => String(s.id) === filters.branchId)?.name ??
-							'All branches'}
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value="">All branches</SelectItem>
-						{#each data.filterOptions.branches as branch (branch.id)}
-							<SelectItem value={String(branch.id)}>{branch.name}</SelectItem>
-						{/each}
-					</SelectContent>
-				</Select>
-			</div>
-
 			<div class="flex flex-col gap-2">
 				<Label class="text-sm font-medium">Department</Label>
 				<Select
@@ -127,15 +106,13 @@
 		{columns}
 		fileName="Employees List"
 		charts
-		facetKeys={['branch', 'department', 'position', 'status']}
+		facetKeys={['department', 'position', 'status']}
 		facetLabels={{
-			branch: 'Branch',
 			department: 'Department',
 			position: 'Position',
 			status: 'Employment status'
 		}}
 		facetParams={{
-			branch: 'branchId',
 			department: 'departmentId',
 			position: 'positionId',
 			status: 'statusId'
@@ -145,7 +122,6 @@
 			facets: data.facets,
 			filters: {
 				search: data.currentQuery.search,
-				branch: data.currentQuery.branchId,
 				department: data.currentQuery.departmentId,
 				position: data.currentQuery.positionId,
 				status: data.currentQuery.statusId

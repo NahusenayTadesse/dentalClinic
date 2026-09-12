@@ -17,6 +17,7 @@ import { isApproved } from '$lib/server/approvals';
 import { notDeleted } from '$lib/server/softDelete';
 import { and, eq, count, sql, countDistinct } from 'drizzle-orm';
 import type { MySqlColumn } from 'drizzle-orm/mysql-core';
+import { branchFilter } from '$lib/server/branchScope';
 import {
 	parseTableQuery,
 	buildWhere,
@@ -34,7 +35,6 @@ import { employeeFullName } from '$lib/server/employeeName';
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// --- Parse query params from QueryBuilder ---
 	const query = parseTableQuery(url, [
-		'branchId',
 		'departmentId',
 		'positionId',
 		'educationId',
@@ -53,10 +53,19 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	// filter dropped — see `facetCounts` for why a facet must not filter itself.
 	const whereSpec = {
 		// Only approved employees belong in the main list; the rest sit in the approval queue.
-		base: [eq(employee.isActive, activeOnly), isApproved(employee)!, notDeleted(employee)],
+		/*
+		 * Branch is context rather than a filter, so it is applied here from `locals.branch` and
+		 * has no dropdown, no column filter and no chart facet of its own. One selector in the top
+		 * bar decides it for the whole app; `undefined` when the user is seeing across branches.
+		 */
+		base: [
+			eq(employee.isActive, activeOnly),
+			isApproved(employee)!,
+			notDeleted(employee),
+			branchFilter(employee.branchId, locals.branch)
+		],
 		search: (term: string) => sql`${nameExpr} LIKE ${'%' + term + '%'}`,
 		filters: {
-			branchId: (v: string) => eq(employee.branchId, Number(v)),
 			departmentId: (v: string) => eq(employee.departmentId, Number(v)),
 			positionId: (v: string) => eq(employee.positionId, Number(v)),
 			educationId: (v: string) => eq(employee.educationalLevel, Number(v)),
@@ -151,7 +160,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const facetFor = (
 		value: MySqlColumn,
 		label: MySqlColumn,
-		except: 'departmentId' | 'positionId' | 'branchId' | 'statusId'
+		except: 'departmentId' | 'positionId' | 'statusId'
 	) =>
 		db
 			.select({ value, label, count: countDistinct(employee.id) })
@@ -178,7 +187,6 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const facets = await facetCounts({
 		department: () => facetFor(department.id, department.name, 'departmentId'),
 		position: () => facetFor(position.id, position.name, 'positionId'),
-		branch: () => facetFor(branch.id, branch.name, 'branchId'),
 		status: () => facetFor(employmentStatuses.id, employmentStatuses.name, 'statusId')
 	});
 
