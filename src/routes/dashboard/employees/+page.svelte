@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { applyQueryToUrl, navigateWithQuery } from '$lib/queryFilters';
+	import { applyQueryToUrl } from '$lib/queryFilters';
 	import { columns } from './columns';
 
 	let { data } = $props();
@@ -11,9 +11,6 @@
 
 	import { Frown, Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
-	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
-
-	let filteredList = $derived(data?.staffList);
 </script>
 
 <svelte:head>
@@ -112,52 +109,39 @@
 		{/snippet}
 	</QueryBuilder>
 
-	<FilterMenu
-		data={data?.staffList}
-		bind:filteredList
-		filterKeys={[
-			'branch',
-			'department',
-			'position',
-			'education',
-			'status',
-			'years',
-			'guarantor',
-			'accounts',
-			'families'
-		]}
+	<!--
+		One table, in server mode. The facet tallies come from the load (`facetCounts`), so the
+		column filters and the chart describe every employee rather than the twenty this page
+		returned — which is what the separate FilterMenu did here until now.
+	-->
+	<DataTable
+		data={data.staffList}
+		{columns}
+		fileName="Employees List"
+		charts
+		facetKeys={['branch', 'department', 'position', 'status']}
+		facetLabels={{
+			branch: 'Branch',
+			department: 'Department',
+			position: 'Position',
+			status: 'Employment status'
+		}}
+		facetParams={{
+			branch: 'branchId',
+			department: 'departmentId',
+			position: 'positionId',
+			status: 'statusId'
+		}}
+		server={{
+			pagination: data.pagination,
+			facets: data.facets,
+			filters: {
+				search: data.currentQuery.search,
+				branch: data.currentQuery.branchId,
+				department: data.currentQuery.departmentId,
+				position: data.currentQuery.positionId,
+				status: data.currentQuery.statusId
+			}
+		}}
 	/>
-	<DataTable data={filteredList} {columns} fileName="Employees List" />
-
-	{#if data.pagination.total > data.pagination.pageSize}
-		<div class="mt-4 flex items-center justify-between text-sm text-muted-foreground">
-			<span>
-				Page {data.pagination.page} of {Math.ceil(data.pagination.total / data.pagination.pageSize)}
-				({data.pagination.total} total)
-			</span>
-			<div class="flex gap-2">
-				<Button
-					variant="outline"
-					size="sm"
-					disabled={data.pagination.page <= 1}
-					onclick={() => {
-						navigateWithQuery({ page: data.pagination.page - 1 });
-					}}
-				>
-					Previous
-				</Button>
-				<Button
-					variant="outline"
-					size="sm"
-					disabled={data.pagination.page >=
-						Math.ceil(data.pagination.total / data.pagination.pageSize)}
-					onclick={() => {
-						navigateWithQuery({ page: data.pagination.page + 1 });
-					}}
-				>
-					Next
-				</Button>
-			</div>
-		</div>
-	{/if}
 {/if}

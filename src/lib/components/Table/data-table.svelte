@@ -2,7 +2,6 @@
 	import {
 		type ColumnDef,
 		type ColumnFiltersState,
-		type GlobalFilterColumn,
 		type PaginationState,
 		type RowSelectionState,
 		type SortingState,
@@ -38,6 +37,7 @@
 		selectionCount,
 		setServerFacet,
 		setServerPageSize,
+		setServerSearch,
 		toFacetList,
 		type Facet,
 		type ServerTable
@@ -87,6 +87,15 @@
 		facetKeys?: string[];
 		/** Human wording per facet key, when the de-camel-cased key is not good enough. */
 		facetLabels?: Record<string, string>;
+		/**
+		 * Column id → URL param, for server mode only.
+		 *
+		 * Facets are keyed by column id everywhere else, because that is what puts a filter in the
+		 * right header. The param that carries it is often spelled differently — the `department`
+		 * column is filtered by `departmentId` — and only the code writing the URL needs to know.
+		 * Defaults to the column id.
+		 */
+		facetParams?: Record<string, string>;
 		/** Show the chart pane beside the table. Requires `facetKeys`. */
 		charts?: boolean;
 		/** Present when the load already filtered and paged. See `ServerTable`. */
@@ -104,6 +113,7 @@
 		pageSizes = [10, 20, 50, 100],
 		facetKeys = [],
 		facetLabels = {},
+		facetParams = {},
 		charts = false,
 		server
 	}: Props = $props();
@@ -157,7 +167,7 @@
 		if (isServer) {
 			// One string per key is all `parseTableQuery` reads, so this is a replace, not an add.
 			const already = selectedFacets[key]?.includes(value);
-			setServerFacet(key, already ? null : value);
+			setServerFacet(facetParams[key] ?? key, already ? null : value);
 			return;
 		}
 
@@ -169,12 +179,12 @@
 	}
 
 	function clearFacet(key: string) {
-		if (isServer) setServerFacet(key, null);
+		if (isServer) setServerFacet(facetParams[key] ?? key, null);
 		else clientFacets = { ...clientFacets, [key]: [] };
 	}
 
 	function clearAllFacets() {
-		if (isServer) for (const key of facetKeys) setServerFacet(key, null);
+		if (isServer) for (const key of facetKeys) setServerFacet(facetParams[key] ?? key, null);
 		else clientFacets = {};
 	}
 
@@ -198,7 +208,25 @@
 	let columnFilters = $state<ColumnFiltersState>([]);
 	let columnVisibility = $state<VisibilityState>({});
 	let rowSelection = $state<RowSelectionState>({});
-	let globalFilter = $state<GlobalFilterColumn>();
+	/*
+	 * In client mode this is TanStack's global filter over rows in memory. In server mode it is
+	 * the `search` param, because filtering the twenty rows the server returned would search one
+	 * page and look like it had searched the list — the same shape of lie the facet counts used
+	 * to tell.
+	 */
+	// Both halves are strings: a search box cannot produce anything else, and typing this as
+	// TanStack's wider `GlobalFilterColumn` made the shared binding below a union it could not set.
+	let globalFilter = $state<string>('');
+	let serverSearch = $state<string>('');
+
+	$effect(() => {
+		if (server) serverSearch = String(server.filters?.search ?? '');
+	});
+
+	function onSearchInput(value: string) {
+		if (server) setServerSearch(value);
+		else table.setGlobalFilter(value);
+	}
 
 	/*
 	 * Server mode holds the page index at zero: the server already returned the right page, so
@@ -312,10 +340,13 @@
 						<div class="flex max-w-4xl flex-row items-center justify-start gap-2 p-4">
 							<Input
 								type="search"
-								placeholder="Search Table..."
+								placeholder={isServer ? 'Search all rows…' : 'Search Table...'}
 								class="w-64 lg:w-xl"
-								bind:value={globalFilter}
-								oninput={() => table.setGlobalFilter(globalFilter)}
+								bind:value={
+									() => (isServer ? serverSearch : globalFilter),
+									(v: string) => (isServer ? (serverSearch = v) : (globalFilter = v))
+								}
+								oninput={(e) => onSearchInput(e.currentTarget.value)}
 							/>
 
 							<DropdownMenu.Root>

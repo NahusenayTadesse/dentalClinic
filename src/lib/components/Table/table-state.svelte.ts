@@ -133,6 +133,23 @@ export function setServerPageSize(pageSize: number) {
 }
 
 /**
+ * Writes the search term to the URL, debounced.
+ *
+ * Debounced because every keystroke would otherwise be a round trip and a history entry. The
+ * delay is deliberately longer than a local filter would need: this is a query, and a clinic on a
+ * slow connection should not be issuing one per character.
+ */
+let searchTimer: ReturnType<typeof setTimeout> | undefined;
+
+export function setServerSearch(term: string, delayMs = 350) {
+	clearTimeout(searchTimer);
+	searchTimer = setTimeout(
+		() => void writeQuery({ search: term.trim() || null, page: 1 }),
+		delayMs
+	);
+}
+
+/**
  * Writes one column's facet selection to the URL.
  *
  * Server filters are single-valued — `parseTableQuery` reads one string per key — so selecting a

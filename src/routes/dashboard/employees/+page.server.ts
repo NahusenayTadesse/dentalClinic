@@ -16,7 +16,14 @@ import { isApproved } from '$lib/server/approvals';
 // import { eq, and, sql, isNull, count, countDistinct } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
 import { and, eq, count, sql, countDistinct } from 'drizzle-orm';
-import { parseTableQuery, buildWhere, pagination, currentQuery } from '$lib/server/queryFilters';
+import type { MySqlColumn } from 'drizzle-orm/mysql-core';
+import {
+	parseTableQuery,
+	buildWhere,
+	pagination,
+	currentQuery,
+	facetCounts
+} from '$lib/server/queryFilters';
 
 import { edit } from './schema';
 import type { PageServerLoad, Actions } from '../$types';
@@ -42,19 +49,23 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	const nameExpr = sql`TRIM(CONCAT(COALESCE(${employee.name}, ''), ' ', COALESCE(${employee.fatherName}, '')))`;
 
-	const whereClause = buildWhere(query, {
+	// Extracted rather than inlined so the facet tallies can be built from the same spec with one
+	// filter dropped — see `facetCounts` for why a facet must not filter itself.
+	const whereSpec = {
 		// Only approved employees belong in the main list; the rest sit in the approval queue.
 		base: [eq(employee.isActive, activeOnly), isApproved(employee)!, notDeleted(employee)],
-		search: (term) => sql`${nameExpr} LIKE ${'%' + term + '%'}`,
+		search: (term: string) => sql`${nameExpr} LIKE ${'%' + term + '%'}`,
 		filters: {
-			branchId: (v) => eq(employee.branchId, Number(v)),
-			departmentId: (v) => eq(employee.departmentId, Number(v)),
-			positionId: (v) => eq(employee.positionId, Number(v)),
-			educationId: (v) => eq(employee.educationalLevel, Number(v)),
-			statusId: (v) => eq(employee.employmentStatus, Number(v))
+			branchId: (v: string) => eq(employee.branchId, Number(v)),
+			departmentId: (v: string) => eq(employee.departmentId, Number(v)),
+			positionId: (v: string) => eq(employee.positionId, Number(v)),
+			educationId: (v: string) => eq(employee.educationalLevel, Number(v)),
+			statusId: (v: string) => eq(employee.employmentStatus, Number(v))
 			// `active` is folded into `base` above, not applied on top of it.
 		}
-	});
+	};
+
+	const whereClause = buildWhere(query, whereSpec);
 
 	// --- Filter option lists (independent of current filters, for the selects) ---
 	const [branchOptions, departmentOptions, positionOptions, educationOptions, statusOptions] =
@@ -127,8 +138,47 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	staffList = staffList.map((r) => ({ ...r, years: Number(r.years) }));
 
+	/*
+	 * The tallies behind the column filters and the chart.
+	 *
+	 * These have to be counted here. The page used to hand its filter menu the rows it had just
+	 * paginated down to, which then counted them and labelled the result as the whole clinic —
+	 * a chart of twenty-five employees titled as though it were all of them.
+	 *
+	 * Each is counted with every other filter applied but not its own, so the options within one
+	 * list stay comparable. Keyed by column id, which is what puts each filter in its own header.
+	 */
+	const facetFor = (
+		column: MySqlColumn,
+		except: 'departmentId' | 'positionId' | 'branchId' | 'statusId'
+	) =>
+		db
+			.select({ value: column, count: countDistinct(employee.id) })
+			.from(employee)
+			.leftJoin(branch, and(eq(branch.id, employee.branchId), notDeleted(branch)))
+			.leftJoin(department, and(eq(department.id, employee.departmentId), notDeleted(department)))
+			.leftJoin(position, and(eq(position.id, employee.positionId), notDeleted(position)))
+			.leftJoin(
+				employmentStatuses,
+				and(eq(employmentStatuses.id, employee.employmentStatus), notDeleted(employmentStatuses))
+			)
+			.leftJoin(
+				educationalLevel,
+				and(eq(educationalLevel.id, employee.educationalLevel), notDeleted(educationalLevel))
+			)
+			.where(buildWhere(query, whereSpec, { except }))
+			.groupBy(column);
+
+	const facets = await facetCounts({
+		department: () => facetFor(department.name, 'departmentId'),
+		position: () => facetFor(position.name, 'positionId'),
+		branch: () => facetFor(branch.name, 'branchId'),
+		status: () => facetFor(employmentStatuses.name, 'statusId')
+	});
+
 	return {
 		staffList,
+		facets,
 		pagination: pagination(query, total),
 		filterOptions: {
 			branches: branchOptions,
