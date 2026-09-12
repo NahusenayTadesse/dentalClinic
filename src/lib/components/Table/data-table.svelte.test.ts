@@ -55,6 +55,7 @@ function renderTable<T>(props: {
 	data: T[];
 	columns: ColumnDef<T, unknown>[];
 	defaultPageSize?: number;
+	height?: string;
 	facetKeys?: string[];
 	facetLabels?: Record<string, string>;
 	fileName?: string;
@@ -217,6 +218,31 @@ describe('data-table.svelte', () => {
 		await expect
 			.element(page.getByRole('cell', { name: 'Row 20', exact: true }))
 			.toBeInTheDocument();
+	});
+
+	/*
+	 * The body used to be capped at `max-h-[45vh]` while the page scrolled past it, so half the
+	 * window sat empty and the rows had their own small scrollbar inside it. The table now claims
+	 * a height and divides it between the toolbar, the rows and the pager.
+	 *
+	 * Only the declared height is asserted, not the flex behaviour that divides it: these browser
+	 * tests load no stylesheet, so every Tailwind utility is absent and every element computes as
+	 * `display: block`. A layout assertion here would pass or fail for reasons unrelated to the
+	 * layout. The height is an inline style, so it is real either way.
+	 */
+	it('takes the height it is given', async () => {
+		const screen = renderTable({ data: manyRows, columns, height: '400px' });
+
+		const frame = screen.container.querySelector('[data-testid="table-frame"]');
+		expect(frame?.getAttribute('style')).toContain('height: 400px');
+		expect((frame as HTMLElement).clientHeight).toBe(400);
+	});
+
+	it('defaults to 80vh rather than a fixed row area', async () => {
+		const screen = renderTable({ data: manyRows, columns });
+
+		const frame = screen.container.querySelector('[data-testid="table-frame"]');
+		expect(frame?.getAttribute('style')).toContain('height: 80vh');
 	});
 
 	it('offers Print and Export to CSV actions in the export menu', async () => {

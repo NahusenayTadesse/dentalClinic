@@ -79,6 +79,16 @@
 		selected?: TData[];
 		/** Rows per page in client mode, and the initial size offered in server mode. */
 		defaultPageSize?: number;
+		/**
+		 * How tall the whole table is, as a CSS length.
+		 *
+		 * The body was capped at `45vh` and the page scrolled past it, so on any normal screen
+		 * half the window was empty while the rows had their own little scrollbar. The table now
+		 * claims a height and divides it: toolbar and pager take what they need, the rows take
+		 * the rest. An inline style rather than a class because the value is a prop, and a
+		 * Tailwind arbitrary class built from one is not in the stylesheet (CLAUDE.md §7).
+		 */
+		height?: string;
 		pageSizes?: number[];
 		/**
 		 * Row properties (client mode) or URL params (server mode) offered as column filters.
@@ -110,6 +120,7 @@
 		fileName = 'File',
 		selected = $bindable(),
 		defaultPageSize = 20,
+		height = '80vh',
 		pageSizes = [10, 20, 50, 100],
 		facetKeys = [],
 		facetLabels = {},
@@ -325,18 +336,25 @@
 	const showCharts = $derived(charts && facetKeys.length > 0 && !isMobile());
 </script>
 
-<Resizable.PaneGroup
-	direction="horizontal"
-	class="mt-4 flex gap-0 rounded-lg lg:w-fit lg:min-w-2xl {className}"
->
-	<Resizable.Pane defaultSize={showCharts ? 70 : 100} class="min-w-0 bg-background">
-		<ScrollArea orientation="both" class="w-full rounded-lg p-2">
-			<div class="flex min-w-full flex-col gap-2 rounded-md border-0 px-1">
+<!--
+	The height sits on a wrapper, not on the pane group: paneforge writes its own `style` for the
+	flex layout and the prop was being dropped, silently, with the table falling back to its
+	content height.
+-->
+<div class="mt-4 w-full" style="height: {height}" data-testid="table-frame">
+	<Resizable.PaneGroup
+		direction="horizontal"
+		class="flex h-full w-full gap-0 rounded-lg {className}"
+	>
+		<Resizable.Pane defaultSize={showCharts ? 70 : 100} class="flex min-w-0 flex-col bg-background">
+			<!--
+			`min-h-0` on every flex child that scrolls: a flex item's default `min-height: auto`
+			refuses to shrink below its content, so without it the rows push the container past the
+			declared height and the page scrolls instead of the table.
+		-->
+			<div class="flex h-full min-h-0 flex-col gap-2 p-2">
 				{#if search}
-					<ScrollArea
-						orientation="horizontal"
-						class="flex flex-row items-start justify-start rounded-md border"
-					>
+					<ScrollArea orientation="horizontal" class="shrink-0 rounded-md border">
 						<div class="flex max-w-4xl flex-row items-center justify-start gap-2 p-4">
 							<Input
 								type="search"
@@ -390,10 +408,12 @@
 					</ScrollArea>
 				{/if}
 
-				<div class="rounded-md border">
-					<div class="max-h-[45vh] overflow-auto">
+				<div class="flex min-h-0 flex-1 flex-col rounded-md border">
+					<div class="min-h-0 flex-1 overflow-auto">
 						<Table.Root class="relative">
-							<Table.Header>
+							<Table.Header
+								class="sticky top-0 z-10 bg-background shadow-[inset_0_-1px_0_var(--border)]"
+							>
 								{#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
 									<Table.Row>
 										{#each headerGroup.headers as header (header.id)}
@@ -459,13 +479,18 @@
 					/>
 				</div>
 			</div>
-		</ScrollArea>
-	</Resizable.Pane>
-
-	{#if showCharts}
-		<ResizableHandle withHandle />
-		<Resizable.Pane defaultSize={30} class="min-w-0">
-			<TableCharts {facets} labels={facetLabels} selected={selectedFacets} onToggle={toggleFacet} />
 		</Resizable.Pane>
-	{/if}
-</Resizable.PaneGroup>
+
+		{#if showCharts}
+			<ResizableHandle withHandle />
+			<Resizable.Pane defaultSize={30} class="min-h-0 min-w-0">
+				<TableCharts
+					{facets}
+					labels={facetLabels}
+					selected={selectedFacets}
+					onToggle={toggleFacet}
+				/>
+			</Resizable.Pane>
+		{/if}
+	</Resizable.PaneGroup>
+</div>
