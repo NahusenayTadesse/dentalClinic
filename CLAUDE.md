@@ -430,7 +430,54 @@ targets that are not records (a stored file) and wrong for anything that is a ro
 
 ---
 
-## 13. Definition of done
+## 13. A new screen ships with its help
+
+**A route is not finished until it can explain itself.** Staff here are often not trained on the
+system before they are using it on a patient, and the manual is a selling point against the
+Laravel shops. Help written months later is help written by someone who has forgotten what was
+confusing.
+
+Help has three surfaces, and they are not equally mechanical:
+
+| Surface                              | What it is                                              | Enforced |
+| ------------------------------------ | ------------------------------------------------------- | -------- |
+| `$lib/content/*.json`                | the `?` panel for one screen, resolved by `Registry.ts` | yes      |
+| `ROUTE_MAP` in `help/content.ts`     | the route map, and the printed manual's appendix        | yes      |
+| `HELP_SECTIONS` in `help/content.ts` | the help page and the printed manual                    | judgment |
+
+`HELP_SECTIONS` is organised by **topic**, not route — "how do I run payroll" spans four pages.
+Forcing one topic per route would turn a manual written for clinic staff into a page-by-page
+index nobody reads, so it is deliberately not guarded. Write the topic when the topic is what
+changed.
+
+**A page needs help of its own, and "some help resolves" is not that.** `resolveHelp` falls back
+to the longest substring `match`, so before the guard existed every page in the app resolved to
+_something_ and coverage looked perfect. It was not: all 28 admin-panel lookup screens — allergens,
+dental labs, tax types, pensions — resolved to one generic "Admin Panel" entry describing the ERP
+this system was repurposed from. **Wrong help is worse than none**, because a blank panel is at
+least honest.
+
+A page that is genuinely a _view of_ its parent — an employee's salary tab, an approval queue
+under `/approvals/[entity]` — declares that in `HELP_FAMILY` and says so. That is a decision on
+the record, the same shape as `permission: null` in §9, and it is a person's call: no rule about
+path depth separates the legitimate case from the admin-panel bug, because
+`/dashboard/approvals/[entity]` and `/dashboard/admin-panel/allergens` sit the same distance
+below their entry.
+
+**Drift is checked in both directions.** Sixteen help files currently describe pages that were
+deleted — contracts, payments, requests, sites, supply leases. Only that direction leaves the
+manual confidently describing a system nobody can find.
+
+`src/lib/help/coverage.test.ts` enforces all of it and names exactly what is missing. The three
+backlogs — 28 screens without their own help, 24 missing from the route map, 16 orphaned files —
+**may only shrink**, the same ratchet `check-budget.mjs` applies to type and lint counts and for
+the same reason: a number that can go up is not a budget. Each is also checked for entries that
+are no longer true, so a debt cannot be paid and left on the books as permission for the next
+person.
+
+---
+
+## 14. Definition of done
 
 - `npm run check` clean **for the files you touched**
 - `npm run lint` clean for the files you touched
@@ -439,6 +486,7 @@ targets that are not records (a stored file) and wrong for anything that is a ro
 - `npx prettier --write` on touched files
 - `npm run test` passes
 - new shared code has a doc comment
+- a new screen has its `$lib/content` help entry and its `ROUTE_MAP` row (§13)
 - no new dependency without justification
 
 **Tests where the logic is subtle, not everywhere.** The existing suite has the right instinct —
