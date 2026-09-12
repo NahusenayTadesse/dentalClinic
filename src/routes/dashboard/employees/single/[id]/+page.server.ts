@@ -8,13 +8,7 @@ import {
 	employeeTermination,
 	employmentStatuses,
 	address,
-	staffFamilies,
-	qualification,
-	workExperience,
-	employeeGuarantor,
-	staffSchedule,
-	staffContacts,
-	staffAccounts
+	employeeGuarantor
 } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import {
@@ -24,6 +18,7 @@ import {
 } from '$lib/server/softDelete';
 import { requireSuperAdmin } from '$lib/server/permissions';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
+import { SECTIONS } from './sections';
 import { fail } from 'sveltekit-superforms';
 import { setFlash, redirect } from 'sveltekit-flash-message/server';
 
@@ -168,6 +163,29 @@ const deleteStaffRecord =
 	};
 
 export const actions: Actions = {
+	/*
+	 * The twelve add/edit pairs these replace were the same twenty lines each, differing in a
+	 * table and about four field names — and every `edit` among them scoped on the row id alone,
+	 * so any of these records could be edited from any employee's page. `childCrud` puts the owner
+	 * in the `where` and stamps it on insert, so that is not something a caller can get wrong.
+	 *
+	 * See `sections.ts` for the six configurations. Guarantors are not among them: that section
+	 * writes two tables, which `childCrud` deliberately does not do.
+	 */
+	addFamily: (event) => SECTIONS.family.actions.add(event, Number(event.params.id)),
+	editFamily: (event) => SECTIONS.family.actions.edit(event, Number(event.params.id)),
+	addQualification: (event) => SECTIONS.qualifications.actions.add(event, Number(event.params.id)),
+	editQualification: (event) =>
+		SECTIONS.qualifications.actions.edit(event, Number(event.params.id)),
+	addExperience: (event) => SECTIONS.experience.actions.add(event, Number(event.params.id)),
+	editExperience: (event) => SECTIONS.experience.actions.edit(event, Number(event.params.id)),
+	addSchedule: (event) => SECTIONS.schedule.actions.add(event, Number(event.params.id)),
+	editSchedule: (event) => SECTIONS.schedule.actions.edit(event, Number(event.params.id)),
+	addContact: (event) => SECTIONS.contacts.actions.add(event, Number(event.params.id)),
+	editContact: (event) => SECTIONS.contacts.actions.edit(event, Number(event.params.id)),
+	addAccount: (event) => SECTIONS.accounts.actions.add(event, Number(event.params.id)),
+	editAccount: (event) => SECTIONS.accounts.actions.edit(event, Number(event.params.id)),
+
 	editStaff: async ({ request, cookies, locals }) => {
 		const form = await superValidate(request, zod4(schema));
 
@@ -539,306 +557,6 @@ export const actions: Actions = {
 			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
 		}
 	},
-	addFamily: async ({ request, locals, params }) => {
-		const { id } = params;
-		const form = await superValidate(request, zod4(addFamily));
-		if (!form.valid) {
-			// Stay on the same page and set a flash message
-			return message(form, { type: 'error', text: `Error: check the form` });
-		}
-		const {
-			name,
-			gender,
-			phone,
-			email,
-			relationShip,
-			otherRelationShip,
-			emergencyContact,
-			status
-		} = form.data;
-
-		try {
-			// Wrap the database operations in a transaction
-			await db.transaction(async (tx) => {
-				// 1. Update the employee identity
-
-				await tx.insert(staffFamilies).values({
-					name,
-					staffId: Number(id),
-					gender,
-					phone,
-					email,
-					relationship: relationShip,
-					otherRelationship: otherRelationShip,
-					emergencyContact,
-					isActive: status,
-					createdBy: locals?.user?.id
-				});
-			});
-			return message(form, {
-				type: 'success',
-				text: 'Family Member Details Added Successfully!'
-			});
-		} catch (err) {
-			console.error('Error added Family Member details:', err);
-			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
-		}
-	},
-	editFamily: async ({ request, locals, params }) => {
-		const form = await superValidate(request, zod4(editFamily));
-		if (!form.valid) {
-			// Stay on the same page and set a flash message
-			return message(form, { type: 'error', text: `Error: check the form` });
-		}
-		const {
-			id,
-			name,
-			gender,
-			phone,
-			email,
-			relationShip,
-			otherRelationShip,
-			emergencyContact,
-			status
-		} = form.data;
-
-		try {
-			if (!id) {
-				return message(form, { type: 'error', text: `Employee Not Found` });
-			}
-
-			// Wrap the database operations in a transaction
-			await db.transaction(async (tx) => {
-				// 1. Update the employee identity
-
-				await tx
-					.update(staffFamilies)
-					.set({
-						name,
-						gender,
-						phone,
-						email,
-						relationship: relationShip,
-						otherRelationship: otherRelationShip,
-						emergencyContact,
-						isActive: status,
-						updatedBy: locals?.user?.id
-					})
-					.where(
-						and(eq(staffFamilies.id, Number(id)), eq(staffFamilies.staffId, Number(params.id)))
-					);
-			});
-			return message(form, {
-				type: 'success',
-				text: 'Family Member Details Updated Successfully!'
-			});
-		} catch (err) {
-			console.error('Error updating Family Member details:', err);
-			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
-		}
-	},
-	addQualification: async ({ request, locals, params }) => {
-		const { id } = params;
-		const form = await superValidate(request, zod4(addQualification));
-		if (!form.valid) {
-			// Stay on the same page and set a flash message
-			return message(form, { type: 'error', text: `Error: check the form` });
-		}
-		const { field, educationalLevel, graduationDate, schoolName, certificate } = form.data;
-
-		try {
-			// Wrap the database operations in a transaction
-			await db.transaction(async (tx) => {
-				// 1. Update the employee identity
-				if (certificate) {
-					const certificateName = await saveUploadedFile(certificate);
-
-					await tx.insert(qualification).values({
-						staffId: Number(id),
-						field,
-						educationLevel: educationalLevel,
-						graduationDate,
-						schoolName,
-						certificate: certificateName,
-						createdBy: locals?.user?.id
-					});
-				} else {
-					await tx.insert(qualification).values({
-						staffId: Number(id),
-						field,
-						educationLevel: educationalLevel,
-						graduationDate,
-						schoolName,
-						createdBy: locals?.user?.id
-					});
-				}
-			});
-			return message(form, {
-				type: 'success',
-				text: 'Qualification Details Added Successfully!'
-			});
-		} catch (err) {
-			console.error('Error added Qualification details:', err);
-			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
-		}
-	},
-	editQualification: async ({ request, locals, params }) => {
-		const form = await superValidate(request, zod4(editQualification));
-
-		if (!form.valid) {
-			// Stay on the same page and set a flash message
-			return message(form, { type: 'error', text: `Error: check the form` });
-		}
-		const { id, field, educationalLevel, graduationDate, schoolName, certificate } = form.data;
-
-		try {
-			// Wrap the database operations in a transaction
-			await db.transaction(async (tx) => {
-				// 1. Update the employee identity
-				if (certificate) {
-					const certificateName = await saveUploadedFile(certificate);
-
-					await tx
-						.update(qualification)
-						.set({
-							field,
-							educationLevel: educationalLevel,
-							graduationDate: new Date(graduationDate),
-							schoolName,
-							certificate: certificateName,
-							updatedBy: locals?.user?.id
-						})
-						.where(
-							and(eq(qualification.id, Number(id)), eq(qualification.staffId, Number(params.id)))
-						);
-				} else {
-					await tx
-						.update(qualification)
-						.set({
-							field,
-							educationLevel: educationalLevel,
-							graduationDate: new Date(graduationDate),
-							schoolName,
-							updatedBy: locals?.user?.id
-						})
-						.where(
-							and(eq(qualification.id, Number(id)), eq(qualification.staffId, Number(params.id)))
-						);
-				}
-			});
-
-			return message(form, {
-				type: 'success',
-				text: 'Qualification Details Updated Successfully!'
-			});
-		} catch (err) {
-			console.error('Error updating Qualification details:', err);
-			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
-		}
-	},
-	addExperience: async ({ request, locals, params }) => {
-		const { id } = params;
-		const form = await superValidate(request, zod4(addExperience));
-		if (!form.valid) {
-			// Stay on the same page and set a flash message
-			return message(form, { type: 'error', text: `Error: check the form` });
-		}
-		const { companyName, position, startDate, endDate, description, certificate } = form.data;
-
-		try {
-			// Wrap the database operations in a transaction
-			await db.transaction(async (tx) => {
-				// 1. Update the employee identity
-				//
-				if (certificate) {
-					const certificateName = await saveUploadedFile(certificate);
-
-					await tx.insert(workExperience).values({
-						staffId: Number(id),
-						companyName,
-						position,
-						startDate,
-						endDate,
-						description,
-						certificate: certificateName,
-						createdBy: locals?.user?.id
-					});
-				} else {
-					await tx.insert(workExperience).values({
-						staffId: Number(id),
-						companyName,
-						position,
-						startDate,
-						endDate,
-						description,
-						createdBy: locals?.user?.id
-					});
-				}
-			});
-			return message(form, {
-				type: 'success',
-				text: 'Experience Details Added Successfully!'
-			});
-		} catch (err) {
-			console.error('Error added experience details:', err);
-			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
-		}
-	},
-	editExperience: async ({ request, locals, params }) => {
-		const form = await superValidate(request, zod4(editExperience));
-
-		if (!form.valid) {
-			// Stay on the same page and set a flash message
-			return message(form, { type: 'error', text: `Error: check the form` });
-		}
-		const { id, companyName, position, startDate, endDate, description, certificate } = form.data;
-
-		try {
-			// Wrap the database operations in a transaction
-			await db.transaction(async (tx) => {
-				// 1. Update the employee identity
-				if (certificate) {
-					const certificateName = await saveUploadedFile(certificate);
-
-					await tx
-						.update(workExperience)
-						.set({
-							companyName,
-							position,
-							startDate: new Date(startDate),
-							endDate: new Date(endDate),
-							description,
-							certificate: certificateName,
-							updatedBy: locals?.user?.id
-						})
-						.where(
-							and(eq(workExperience.id, Number(id)), eq(workExperience.staffId, Number(params.id)))
-						);
-				} else {
-					await tx
-						.update(workExperience)
-						.set({
-							companyName,
-							position,
-							startDate: new Date(startDate),
-							endDate: new Date(endDate),
-							description,
-							updatedBy: locals?.user?.id
-						})
-						.where(
-							and(eq(workExperience.id, Number(id)), eq(workExperience.staffId, Number(params.id)))
-						);
-				}
-			});
-
-			return message(form, {
-				type: 'success',
-				text: 'Experience Details Updated Successfully!'
-			});
-		} catch (err) {
-			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
-		}
-	},
 	editGuarantor: async ({ request, locals, params }) => {
 		const form = await superValidate(request, zod4(editGuarantor));
 
@@ -1004,221 +722,6 @@ export const actions: Actions = {
 			return message(form, {
 				type: 'error',
 				text: `Update failed: ${err instanceof Error ? err.message : 'Unknown error'}`
-			});
-		}
-	},
-	addSchedule: async ({ request, locals, params }) => {
-		const { id } = params;
-		const form = await superValidate(request, zod4(addSchedule));
-
-		if (!form.valid) {
-			return message(form, { type: 'error', text: `Error: check the form` });
-		}
-
-		const { day, startTime, endTime, status } = form.data;
-
-		try {
-			await db.transaction(async (tx) => {
-				await tx.insert(staffSchedule).values({
-					weekDay: day,
-					startTime,
-					staffId: Number(id),
-					endTime,
-					isActive: status,
-					createdBy: locals?.user?.id
-				});
-
-				return message(form, {
-					type: 'success',
-					text: 'Schedule Details Created Successfully!'
-				});
-			});
-		} catch (err) {
-			return message(form, {
-				type: 'error',
-				text: `Creating Schedule failed: ${err instanceof Error ? err.message : 'Unknown error'}`
-			});
-		}
-	},
-	editSchedule: async ({ request, locals, params }) => {
-		const form = await superValidate(request, zod4(editSchedule));
-
-		if (!form.valid) {
-			return message(form, { type: 'error', text: `Error: check the form` });
-		}
-
-		const { id, day, startTime, endTime, status } = form.data;
-
-		try {
-			await db.transaction(async (tx) => {
-				await tx
-					.update(staffSchedule)
-					.set({
-						weekDay: day,
-						startTime,
-						endTime,
-						isActive: status,
-						updatedBy: locals?.user?.id
-					})
-					.where(
-						and(eq(staffSchedule.id, Number(id)), eq(staffSchedule.staffId, Number(params.id)))
-					);
-
-				return message(form, {
-					type: 'success',
-					text: 'Schedule Details Updated Successfully!'
-				});
-			});
-		} catch (err) {
-			return message(form, {
-				type: 'error',
-				text: `Updating Schedule failed: ${err instanceof Error ? err.message : 'Unknown error'}`
-			});
-		}
-	},
-	addContact: async ({ request, locals, params }) => {
-		const { id } = params;
-		const form = await superValidate(request, zod4(addContact));
-
-		if (!form.valid) {
-			return message(form, { type: 'error', text: `Error: check the form` });
-		}
-
-		const { contactDetail, contactType, status } = form.data;
-
-		try {
-			await db.transaction(async (tx) => {
-				await tx.insert(staffContacts).values({
-					staffId: Number(id),
-					contactDetail,
-					contactType,
-					isActive: status,
-					createdBy: locals?.user?.id
-				});
-
-				return message(form, {
-					type: 'success',
-					text: 'Contact Details Created Successfully!'
-				});
-			});
-		} catch (err) {
-			return message(form, {
-				type: 'error',
-				text: `Creating Contact failed: ${err instanceof Error ? err.message : 'Unknown error'}`
-			});
-		}
-	},
-	editContact: async ({ request, locals, params }) => {
-		const form = await superValidate(request, zod4(editContact));
-
-		if (!form.valid) {
-			return message(form, { type: 'error', text: `Error: check the form` });
-		}
-
-		const { id, contactDetail, contactType, status } = form.data;
-
-		try {
-			await db.transaction(async (tx) => {
-				await tx
-					.update(staffContacts)
-					.set({
-						contactDetail,
-						contactType,
-						isActive: status,
-						updatedBy: locals?.user?.id
-					})
-					.where(
-						and(eq(staffContacts.id, Number(id)), eq(staffContacts.staffId, Number(params.id)))
-					);
-
-				return message(form, {
-					type: 'success',
-					text: 'Contact Details Updated Successfully!'
-				});
-			});
-		} catch (err) {
-			return message(form, {
-				type: 'error',
-				text: `Updated Contact failed: ${err instanceof Error ? err.message : 'Unknown error'}`
-			});
-		}
-	},
-	addAccount: async ({ request, locals, params }) => {
-		const { id } = params;
-		const form = await superValidate(request, zod4(addAccount));
-		console.log(form);
-
-		if (!form.valid) {
-			return message(form, { type: 'error', text: `Error: check the form` });
-		}
-
-		const { paymentMethod, accountDetail, status } = form.data;
-
-		try {
-			await db.transaction(async (tx) => {
-				if (status === true) {
-					await tx
-						.update(staffAccounts)
-						.set({ isActive: false })
-						.where(eq(staffAccounts.staffId, Number(id)));
-				}
-				await tx.insert(staffAccounts).values({
-					staffId: Number(id),
-					paymentMethodId: paymentMethod,
-					accountDetail,
-					isActive: status,
-					createdBy: locals?.user?.id
-				});
-			});
-			return message(form, {
-				type: 'success',
-				text: 'Account Details Creating Successfully!'
-			});
-		} catch (err) {
-			return message(form, {
-				type: 'error',
-				text: `Creating Account failed: ${err instanceof Error ? err.message : 'Unknown error'}`
-			});
-		}
-	},
-	editAccount: async ({ request, locals, params }) => {
-		const form = await superValidate(request, zod4(editAccount));
-		const { id: staffId } = params;
-		if (!form.valid) {
-			return message(form, { type: 'error', text: `Error: check the form` });
-		}
-
-		const { id, paymentMethod, accountDetail, status } = form.data;
-
-		try {
-			await db.transaction(async (tx) => {
-				if (status === true) {
-					await tx
-						.update(staffAccounts)
-						.set({ isActive: false })
-						.where(eq(staffAccounts.staffId, Number(staffId)));
-				}
-				await tx
-					.update(staffAccounts)
-					.set({
-						paymentMethodId: paymentMethod,
-						accountDetail,
-						isActive: status,
-						updatedBy: locals?.user?.id
-					})
-					.where(
-						and(eq(staffAccounts.id, Number(id)), eq(staffAccounts.staffId, Number(params.id)))
-					);
-			});
-			return message(form, {
-				type: 'success',
-				text: 'Account Details Updated Successfully!'
-			});
-		} catch (err) {
-			console.error(err?.message);
-			return message(form, {
-				type: 'error',
-				text: `Updated Account failed: ${err instanceof Error ? err.message : 'Unknown error'}`
 			});
 		}
 	},

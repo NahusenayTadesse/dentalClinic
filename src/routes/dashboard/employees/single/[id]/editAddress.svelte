@@ -47,7 +47,9 @@
 			}
 		}
 	});
-	$form.id = address.id;
+	// Optional like every line below it. Without the `?.` an employee with no address on file —
+	// any imported or seeded record — turned the whole detail page into a 500.
+	$form.id = address?.id;
 	$form.subcity = address?.subcityId ? address.subcityId : undefined;
 	$form.street = address?.street ? address.street : undefined;
 	$form.buildingNumber = address?.buildingNumber ? address.buildingNumber : undefined;

@@ -3,7 +3,7 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import { and, asc, eq } from 'drizzle-orm';
 import { z } from 'zod/v4';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { MySqlColumn, MySqlTable } from 'drizzle-orm/mysql-core';
+import type { MySqlTable } from 'drizzle-orm/mysql-core';
 
 import { db } from '$lib/server/db';
 import { isDuplicateKey } from '$lib/server/dbErrors';
@@ -30,8 +30,19 @@ import { notDeleted, softDeleteOwnedRecord } from '$lib/server/softDelete';
  * keep their own page.
  */
 
-/** A child table: an id, a soft-delete marker, and a column naming its owner. */
-type ChildTable = MySqlTable & Record<string, MySqlColumn>;
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * A child table: an id, a soft-delete marker, and a column naming its owner.
+ *
+ * `Record<string, any>` rather than `Record<string, MySqlColumn>`, which is what this said until
+ * the first caller tried to use it — a concrete Drizzle table has no index signature, so no real
+ * table was assignable and the helper could not be called at all. That is why it shipped with
+ * zero consumers and nothing noticed. `crud.ts` names the same escape for the same reason
+ * (CLAUDE.md §3): Drizzle does not expose columns by index, and this is generic over arbitrary
+ * tables by design.
+ */
+type ChildTable = MySqlTable & Record<string, any>;
+/* eslint-enable @typescript-eslint/no-explicit-any */
 type AnySchema = z.ZodType<Record<string, unknown>>;
 
 /**

@@ -57,7 +57,7 @@ any button, dialog, popover, or menu.
 | Need                               | Use                                                                                         |
 | ---------------------------------- | ------------------------------------------------------------------------------------------- |
 | Lookup-table CRUD                  | `contentCrud` — `server/crud.ts`                                                            |
-| CRUD for rows owned by a parent    | `childCrud` — `server/childCrud.ts`                                                         |
+| CRUD for rows owned by a parent    | `childCrud` — `server/childCrud.ts` (first consumer: `employees/single/[id]/sections.ts`)   |
 | List filtering + pagination        | `parseTableQuery` / `buildWhere` / `pagination` / `currentQuery` — `server/queryFilters.ts` |
 | Exclude deleted rows               | `notDeleted()` — `server/softDelete.ts` (118 files)                                         |
 | Cascading delete                   | the `softDelete*` family — `server/softDelete.ts`                                           |
