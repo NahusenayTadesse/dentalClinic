@@ -1,6 +1,7 @@
 import { page, userEvent } from 'vitest/browser';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
+import type { ComponentProps } from 'svelte';
 import type { ColumnDef } from '@tanstack/table-core';
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTable from './data-table.svelte';
@@ -23,17 +24,52 @@ const columns: ColumnDef<Row, unknown>[] = [
 	}
 ];
 
-// 12 rows so the "Pages" dropdown offers a size smaller than the full set
-// (getTableBreakpoints only ever offers multiples of 10 plus the total count).
-const manyRows: Row[] = Array.from({ length: 12 }, (_, i) => ({
+// More rows than the default page size, so paging is real rather than theoretical.
+const manyRows: Row[] = Array.from({ length: 25 }, (_, i) => ({
 	id: i + 1,
 	name: `Row ${i + 1}`,
 	amount: (i + 1) * 10
 }));
 
+/** Rows with a column worth faceting, for the filter and chart tests. */
+type Staff = { id: number; name: string; department: string };
+
+const staff: Staff[] = [
+	{ id: 1, name: 'Abebe', department: 'Reception' },
+	{ id: 2, name: 'Kidist', department: 'Clinical' },
+	{ id: 3, name: 'Marta', department: 'Clinical' },
+	{ id: 4, name: 'Samuel', department: 'Clinical' }
+];
+
+const staffColumns: ColumnDef<Staff, unknown>[] = [
+	{ accessorKey: 'name', header: 'Name' },
+	{ accessorKey: 'department', header: 'Department' }
+];
+
+/**
+ * `render` cannot infer a generic component's type parameters, so every direct call reported
+ * `ColumnDef<Row>` as unassignable to `ColumnDef<unknown>` — eleven errors describing the test
+ * harness rather than the component. One wrapper carries the row type through instead.
+ */
+function renderTable<T>(props: {
+	data: T[];
+	columns: ColumnDef<T, unknown>[];
+	defaultPageSize?: number;
+	facetKeys?: string[];
+	facetLabels?: Record<string, string>;
+	fileName?: string;
+	server?: {
+		pagination: { page: number; pageSize: number; total: number };
+		facets?: Record<string, Record<string, number>>;
+		filters?: Record<string, string | null | undefined>;
+	};
+}) {
+	return render(DataTable, props as ComponentProps<typeof DataTable>);
+}
+
 describe('data-table.svelte', () => {
 	it('renders a header per column and a row per data item', async () => {
-		const screen = render(DataTable, { data: rows, columns });
+		const screen = renderTable({ data: rows, columns });
 
 		await expect.element(page.getByRole('cell', { name: 'Alice' })).toBeInTheDocument();
 		await expect.element(page.getByRole('cell', { name: 'Bob' })).toBeInTheDocument();
@@ -42,13 +78,13 @@ describe('data-table.svelte', () => {
 	});
 
 	it('shows the empty state when there is no data', async () => {
-		render(DataTable, { data: [], columns });
+		renderTable({ data: [], columns });
 
 		await expect.element(page.getByText('Nothing found here.')).toBeInTheDocument();
 	});
 
 	it('filters rows by the global search box', async () => {
-		render(DataTable, { data: rows, columns });
+		renderTable({ data: rows, columns });
 
 		await userEvent.fill(page.getByPlaceholder('Search Table...'), 'Bob');
 
@@ -58,7 +94,7 @@ describe('data-table.svelte', () => {
 	});
 
 	it('hides a column when it is unchecked from the "Columns" menu', async () => {
-		const screen = render(DataTable, { data: rows, columns });
+		const screen = renderTable({ data: rows, columns });
 
 		expect(screen.container.textContent).toContain('Name');
 
@@ -69,7 +105,7 @@ describe('data-table.svelte', () => {
 	});
 
 	it('sorts rows when a sortable column header is clicked (desc, then asc)', async () => {
-		render(DataTable, { data: rows, columns });
+		renderTable({ data: rows, columns });
 
 		// Unsorted: insertion order, Alice (300) first.
 		await expect.element(page.getByRole('row').nth(1)).toHaveTextContent('Alice');
@@ -84,16 +120,13 @@ describe('data-table.svelte', () => {
 		await expect.element(page.getByRole('row').nth(1)).toHaveTextContent('Bob');
 	});
 
-	it('changes page size and paginates via Previous/Next', async () => {
-		render(DataTable, { data: manyRows, columns });
-
-		// Full 12-row set fits on one page by default; no pager shown yet.
-		await expect.element(page.getByRole('button', { name: 'Next' })).not.toBeInTheDocument();
-
-		await userEvent.click(page.getByRole('button', { name: 'Pages' }));
-		// bits-ui's DropdownMenu.Item renders role="menuitem" on the underlying <button>,
-		// which overrides its implicit "button" role for accessibility queries.
-		await userEvent.click(page.getByRole('menuitem', { name: '10', exact: true }));
+	/*
+	 * Rewritten when the table stopped defaulting to `pageSize: data.length`. The previous version
+	 * asserted that twelve rows produced no pager — which was the bug: every table put every row
+	 * into the DOM and the pager never appeared.
+	 */
+	it('paginates client-side at the default page size', async () => {
+		renderTable({ data: manyRows, columns, defaultPageSize: 10 });
 
 		await expect
 			.element(page.getByRole('cell', { name: 'Row 1', exact: true }))
@@ -102,15 +135,92 @@ describe('data-table.svelte', () => {
 			.element(page.getByRole('cell', { name: 'Row 11', exact: true }))
 			.not.toBeInTheDocument();
 
-		await userEvent.click(page.getByRole('button', { name: 'Next' }));
+		// The count is the whole set, not the page — that distinction is the point of the rewrite.
+		await expect.element(page.getByRole('button', { name: /25 Results/ })).toBeInTheDocument();
+
+		await userEvent.click(page.getByRole('button', { name: 'Next page' }));
 		await expect
 			.element(page.getByRole('cell', { name: 'Row 11', exact: true }))
 			.toBeInTheDocument();
-		await expect.element(page.getByRole('button', { name: 'Previous' })).toBeEnabled();
+		await expect.element(page.getByRole('button', { name: 'Previous page' })).toBeEnabled();
+	});
+
+	it('counts facets over every row and filters on one', async () => {
+		renderTable({
+			data: staff,
+			columns: staffColumns,
+			facetKeys: ['department'],
+			facetLabels: { department: 'Department' }
+		});
+
+		await userEvent.click(page.getByRole('button', { name: 'Filter by Department' }));
+
+		// Targeted by role: "Clinical" is also the text of three table cells, and the popover's
+		// Command.Item is the only one of them that is an option.
+		const clinical = page.getByRole('option', { name: /Clinical/ });
+
+		// Three clinical, one reception — counted off all four rows, not off the page.
+		await expect.element(clinical).toBeInTheDocument();
+		await expect.element(clinical).toHaveTextContent('3');
+
+		await userEvent.click(clinical);
+		await expect.element(page.getByRole('cell', { name: 'Abebe' })).not.toBeInTheDocument();
+		await expect.element(page.getByRole('cell', { name: 'Kidist' })).toBeInTheDocument();
+	});
+
+	/*
+	 * The bug this component was built to end: a server-paginated page handed its facet menu one
+	 * page of rows, which then counted them and presented the tally as the whole result set.
+	 * In server mode the tally must come from the server and must not be derived from `data`.
+	 */
+	it('uses the server facet tally, never the page it was handed', async () => {
+		renderTable({
+			data: staff.slice(0, 2), // one "page" of a much larger result
+			columns: staffColumns,
+			facetKeys: ['department'],
+			facetLabels: { department: 'Department' },
+			server: {
+				pagination: { page: 1, pageSize: 2, total: 400 },
+				facets: { department: { Clinical: 310, Reception: 90 } }
+			}
+		});
+
+		await expect.element(page.getByRole('button', { name: /400 Results/ })).toBeInTheDocument();
+
+		await userEvent.click(page.getByRole('button', { name: 'Filter by Department' }));
+		await expect.element(page.getByText('310')).toBeInTheDocument();
+		await expect.element(page.getByText('90')).toBeInTheDocument();
+	});
+
+	it('shows no facets in server mode when the server computed none', async () => {
+		const screen = renderTable({
+			data: staff.slice(0, 2),
+			columns: staffColumns,
+			facetKeys: ['department'],
+			server: { pagination: { page: 1, pageSize: 2, total: 400 } }
+		});
+
+		// Silence beats a tally of two rows labelled as four hundred.
+		expect(screen.container.querySelector('[aria-label="Filter by department"]')).toBeNull();
+	});
+
+	it('does not re-slice rows the server already paged', async () => {
+		renderTable({
+			data: manyRows.slice(10, 20), // page two, handed to us whole
+			columns,
+			server: { pagination: { page: 2, pageSize: 10, total: 25 } }
+		});
+
+		await expect
+			.element(page.getByRole('cell', { name: 'Row 11', exact: true }))
+			.toBeInTheDocument();
+		await expect
+			.element(page.getByRole('cell', { name: 'Row 20', exact: true }))
+			.toBeInTheDocument();
 	});
 
 	it('offers Print and Export to CSV actions in the export menu', async () => {
-		const screen = render(DataTable, { data: rows, columns, fileName: 'MyReport' });
+		const screen = renderTable({ data: rows, columns, fileName: 'MyReport' });
 
 		// The export trigger is icon-only (no accessible name), so `name: ''` isn't a
 		// usable filter for getByRole (Playwright treats an empty name as "no filter").

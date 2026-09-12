@@ -103,10 +103,19 @@ export type WhereSpec<F extends string> = {
 	filters?: Partial<Record<F, (value: string) => SQL | undefined>>;
 };
 
-/** Assembles the whole `WHERE` for a load. Undefined when nothing constrains it. */
+/**
+ * Assembles the whole `WHERE` for a load. Undefined when nothing constrains it.
+ *
+ * `options.except` drops one dropdown's own condition. That is only for counting facets, and it
+ * is not an optimisation — it is what makes the counts mean anything. A facet list that applied
+ * its own filter would report "Active: 120" next to every other option showing 0, because the
+ * rows that would have been in them were already excluded. Every faceted UI works this way; see
+ * `facetCounts`.
+ */
 export function buildWhere<F extends string>(
 	query: TableQuery<F>,
-	spec: WhereSpec<F>
+	spec: WhereSpec<F>,
+	options: { except?: F } = {}
 ): SQL | undefined {
 	const conditions: (SQL | undefined)[] = [...(spec.base ?? [])];
 
@@ -117,6 +126,8 @@ export function buildWhere<F extends string>(
 	}
 
 	for (const [key, build] of Object.entries(spec.filters ?? {})) {
+		if (options.except === key) continue;
+
 		const value = query.filters[key as F];
 		if (!value || !build) continue;
 		conditions.push((build as (v: string) => SQL | undefined)(value));
@@ -151,4 +162,62 @@ export function currentQuery<F extends string>(query: TableQuery<F>) {
  */
 export function paginate<T>(rows: T[], query: TableQuery): { rows: T[]; total: number } {
 	return { rows: rows.slice(query.offset, query.offset + query.limit), total: rows.length };
+}
+
+/**
+ * One faceted column's tally: how many rows carry each value.
+ *
+ * The caller writes the query, because a facet is almost always on a joined column — a
+ * department's name, a branch's name — and inventing a join description here would be a small
+ * ORM on top of the one we have. This only runs them together and shapes the result.
+ */
+export type FacetQuery = () => Promise<{ value: string | number | null; count: number | string }[]>;
+
+/**
+ * Runs a page's facet tallies and shapes them for the table.
+ *
+ * **Why the server has to do this at all.** The table used to draw its facet counts and its
+ * charts from the rows it had been handed. On a server-paginated page that is one page of them,
+ * so `/dashboard/employees` was drawing a chart of the current twenty-five employees and
+ * labelling it as the clinic. Counting where the rows are is the only way the number is true.
+ *
+ * Build each query with `buildWhere(query, spec, { except: key })`, so a facet does not filter
+ * itself out of its own tally.
+ *
+ *     const facets = await facetCounts({
+ *       departmentId: () =>
+ *         db.select({ value: department.name, count: count() })
+ *           .from(employee)
+ *           .innerJoin(department, and(eq(employee.departmentId, department.id), notDeleted(department)))
+ *           .where(buildWhere(query, spec, { except: 'departmentId' }))
+ *           .groupBy(department.name)
+ *     });
+ *
+ * Cost is one grouped query per faceted column, run in parallel. Facet a column with an index
+ * and it is cheap; facet six unindexed columns on a large table and it will not be, which is the
+ * reason a page declares its facets rather than getting them by default.
+ *
+ * Null and empty values are dropped — "no department" is not a filter anyone can pick, and a
+ * blank chart segment is noise.
+ */
+export async function facetCounts(
+	spec: Record<string, FacetQuery>
+): Promise<Record<string, Record<string, number>>> {
+	const keys = Object.keys(spec);
+	const results = await Promise.all(keys.map((key) => spec[key]()));
+
+	const out: Record<string, Record<string, number>> = {};
+
+	keys.forEach((key, i) => {
+		const tally: Record<string, number> = {};
+
+		for (const row of results[i]) {
+			if (row.value === null || row.value === undefined || row.value === '') continue;
+			tally[String(row.value)] = Number(row.count);
+		}
+
+		out[key] = tally;
+	});
+
+	return out;
 }
