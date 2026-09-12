@@ -7,14 +7,7 @@ import { db } from '$lib/server/db';
 import { salaries, employee, staffContacts, address } from '$lib/server/db/schema/';
 import { asRequested } from '$lib/server/approvals';
 import type { Actions } from './$types';
-import {
-	departments,
-	empStatus,
-	eduLevel,
-	branches,
-	subcities,
-	positions
-} from '$lib/server/fastData';
+import { departments, empStatus, eduLevel, subcities, positions } from '$lib/server/fastData';
 import type { PageServerLoad } from './$types.js';
 import { and, eq } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
@@ -26,7 +19,6 @@ export const load: PageServerLoad = async () => {
 	const positionList = await positions();
 	const empStatusList = await empStatus();
 	const eduLevelList = await eduLevel();
-	const branchList = await branches();
 	const subcityList = await subcities();
 
 	return {
@@ -35,7 +27,6 @@ export const load: PageServerLoad = async () => {
 		positionList,
 		empStatusList,
 		eduLevelList,
-		branchList,
 		subcityList
 	};
 };
@@ -48,7 +39,19 @@ export const actions: Actions = {
 	add: async ({ request, locals, cookies }) => {
 		const form = await superValidate(request, zod4(add));
 
-		console.log(form);
+		/*
+		 * A record has to be filed somewhere. "All branches" is a way of looking at data, not a
+		 * place to put it, so this refuses rather than guessing — guessing would file the employee
+		 * at whichever branch happened to sort first.
+		 */
+		const activeBranch = locals.branch.active;
+
+		if (!activeBranch) {
+			return message(form, {
+				type: 'error',
+				text: 'Pick a branch in the top bar before adding an employee.'
+			});
+		}
 
 		if (!form.valid) {
 			return fail(400, { form });
@@ -74,7 +77,6 @@ export const actions: Actions = {
 			nonTaxAllowance,
 			hireDate,
 			govtId,
-			branch,
 			photo,
 			martialStatus,
 			employmentStatus,
@@ -150,7 +152,12 @@ export const actions: Actions = {
 					educationalLevel,
 					bloodType,
 					existingPensionCard,
-					branchId: branch,
+					/*
+					 * Stamped from the working branch, never read off the form (§9, §15). It used to be
+					 * a select: a client could post any branch id, including one they cannot see, and
+					 * file an employee out of their own reach.
+					 */
+					branchId: activeBranch,
 					hireDate: new Date(hireDate).toLocaleDateString('en-CA'),
 					createdBy: locals.user?.id,
 					// Balance is derived from `employee_leave_grant`, and a new hire has earned nothing

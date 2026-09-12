@@ -27,7 +27,6 @@ export const add = z.object({
 
 	department: z.number().int().positive('Please select a department'),
 	position: z.number().int().positive('Please select a position'),
-	branch: z.number().int().positive('Please select a branch'),
 	birthDate: z.coerce.string('Birth date is required').refine(
 		(value) => {
 			const birth = new Date(value);

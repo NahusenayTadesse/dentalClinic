@@ -2,56 +2,31 @@
 	import type { Snapshot } from '@sveltejs/kit';
 	import { ExternalLink, Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { add } from './schema';
-	import { superForm } from 'sveltekit-superforms/client';
+	import { createForm, confirmLeave } from '$lib/forms/createForm';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import FormCard from '$lib/formComponents/FormCard.svelte';
 	import Input from '$lib/formComponents/InputComp.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 
 	let { data } = $props();
-	const { form, errors, enhance, message, delayed, capture, restore, allErrors } = superForm(
+
+	/*
+	 * This form is the example §13 cites: it carried `onUpdated` with `if (form.message)` nested
+	 * inside itself, and a commented-out `$effect` underneath doing the same job a third time.
+	 * `createForm` wires the validator and the toast once.
+	 *
+	 * `taintedMessage` earns its place here — it is a long form, and losing it to a stray back
+	 * button costs real re-typing.
+	 */
+	const { form, errors, enhance, delayed, capture, restore, allErrors, message } = createForm(
 		data.form,
-		{
-			taintedMessage: () => {
-				return new Promise((resolve) => {
-					resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
-				});
-			},
-
-			onUpdated({ form }) {
-				if (form.message) {
-					if (form.message) {
-						if (form.message.type === 'error') {
-							toast.error(form.message.text);
-						} else {
-							toast.success(form.message.text);
-						}
-					}
-				}
-			},
-
-			validators: zod4Client(add)
-		}
+		add,
+		{ taintedMessage: confirmLeave }
 	);
 
 	export const snapshot: Snapshot = { capture, restore };
-	import { toast } from 'svelte-sonner';
-	// $effect(() => {
-	// 	if ($message) {
-	// 		if ($message.type === 'error') {
-	// 			toast.error($message.text);
-	// 		} else {
-	// 			toast.success($message.text);
-	// 		}
-	// 	}
-	// });
-	// 	 function getItemNameById(items: any, value: any) {
-	//   const item = items.find(i=> i.value === value);
-	//   return item ? item.name : null; // returns null if not found
-	// }
-	//
+
 	const genders = [
 		{ value: 'male', name: 'Male' },
 		{ value: 'female', name: 'Female' }
@@ -70,12 +45,21 @@
 	const sectionStyle = `flex flex-col gap-4 my-4`;
 	const rowStyle = `grid lg:grid-cols-3 grid-cols-1 mt-4  gap-4`;
 
+	/*
+	 * `$form` holds what was typed, which for a `z.coerce.number()` field is whatever the input
+	 * gave — a number once Svelte has coerced a `type="number"` binding, but `undefined` while the
+	 * field is still empty. Adding that produced `NaN`, so the running total read "NaN" until
+	 * every allowance had been filled in. `Number(x) || 0` treats blank as nothing, which is what
+	 * an empty allowance means.
+	 */
+	const money = (value: unknown) => Number(value) || 0;
+
 	const total = $derived(
-		$form.positionAllowance +
-			$form.nonTaxAllowance +
-			$form.housingAllowance +
-			$form.transportAllowance +
-			$form.salary
+		money($form.positionAllowance) +
+			money($form.nonTaxAllowance) +
+			money($form.housingAllowance) +
+			money($form.transportAllowance) +
+			money($form.salary)
 	);
 </script>
 
@@ -358,15 +342,6 @@
 					{errors}
 					type="combo"
 					items={data?.empStatusList}
-					required
-				/>
-				<Input
-					label="Branch"
-					name="branch"
-					{form}
-					{errors}
-					type="combo"
-					items={data?.branchList}
 					required
 				/>
 				<Input

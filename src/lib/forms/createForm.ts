@@ -37,6 +37,11 @@ import { toast } from 'svelte-sonner';
  * `onUpdated`, which is *composed* rather than replaced, so a page can do its own thing on
  * success and still get the toast.
  */
+/**
+ * The shape every form's message has. Forms may add to it — `add-employee` attaches the id of the
+ * duplicate it found so the toast can link there — which is why `createForm` is generic over the
+ * message rather than pinning it to this.
+ */
 export type FormMessage = { type: 'success' | 'error'; text: string };
 
 /** Shows one superforms message. Exported for the few places that post a message by hand. */
@@ -53,21 +58,21 @@ export function showFormMessage(message: FormMessage | undefined | null) {
  */
 type FormSchema = Parameters<typeof zod4Client>[0];
 
-export function createForm<T extends Record<string, unknown>>(
-	data: SuperValidated<T, FormMessage>,
+export function createForm<T extends Record<string, unknown>, M extends FormMessage = FormMessage>(
+	data: SuperValidated<T, M>,
 	schema: FormSchema,
-	options: FormOptions<T, FormMessage> = {}
-): SuperForm<T, FormMessage> {
+	options: FormOptions<T, M> = {}
+): SuperForm<T, M> {
 	const { onUpdated, ...rest } = options;
 
-	return superForm<T, FormMessage>(data, {
+	return superForm<T, M>(data, {
 		/*
 		 * The adapter is generic over the schema and `superForm` over the form's own shape; the
 		 * two are the same type in practice — the schema is what produced `data` — but nothing in
 		 * the signature says so, and there is no way to tell TypeScript that from here without
 		 * requiring every caller to restate its type. One cast, named and explained (CLAUDE.md §3).
 		 */
-		validators: zod4Client(schema) as FormOptions<T, FormMessage>['validators'],
+		validators: zod4Client(schema) as FormOptions<T, M>['validators'],
 
 		...rest,
 
