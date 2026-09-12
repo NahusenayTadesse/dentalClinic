@@ -2,5 +2,5 @@
 	"_comment": "Ratchet, not a target. Lower a number in the same commit that earns it; raising one needs a reason in the commit message. See scripts/check-budget.mjs.",
 	"typeErrors": 1031,
 	"typeWarnings": 320,
-	"lintProblems": 554
+	"lintProblems": 550
 }

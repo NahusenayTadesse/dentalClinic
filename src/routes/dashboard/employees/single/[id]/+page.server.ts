@@ -474,7 +474,7 @@ export const actions: Actions = {
 			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
 		}
 	},
-	editAddress: async ({ request }) => {
+	editAddress: async ({ request, params }) => {
 		const form = await superValidate(request, zod4(editAddress));
 		if (!form.valid) {
 			// Stay on the same page and set a flash message
@@ -495,6 +495,24 @@ export const actions: Actions = {
 		try {
 			if (!id) {
 				return message(form, { type: 'error', text: `Employee Not Found` });
+			}
+
+			/*
+			 * Address is owned the other way round — the employee points at it — so there is no
+			 * owner column to match. Without this check the action updated whatever address id the
+			 * form carried, which is every address in the system from any employee's page.
+			 */
+			const [owned] = await db
+				.select({ id: employee.id })
+				.from(employee)
+				.where(and(eq(employee.id, Number(params.id)), eq(employee.address, Number(id))))
+				.limit(1);
+
+			if (!owned) {
+				return message(form, {
+					type: 'error',
+					text: 'That address does not belong to this employee.'
+				});
 			}
 
 			// Wrap the database operations in a transaction
@@ -566,7 +584,7 @@ export const actions: Actions = {
 			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
 		}
 	},
-	editFamily: async ({ request, locals }) => {
+	editFamily: async ({ request, locals, params }) => {
 		const form = await superValidate(request, zod4(editFamily));
 		if (!form.valid) {
 			// Stay on the same page and set a flash message
@@ -606,7 +624,9 @@ export const actions: Actions = {
 						isActive: status,
 						updatedBy: locals?.user?.id
 					})
-					.where(eq(staffFamilies.id, Number(id)));
+					.where(
+						and(eq(staffFamilies.id, Number(id)), eq(staffFamilies.staffId, Number(params.id)))
+					);
 			});
 			return message(form, {
 				type: 'success',
@@ -688,7 +708,9 @@ export const actions: Actions = {
 							certificate: certificateName,
 							updatedBy: locals?.user?.id
 						})
-						.where(eq(qualification.id, Number(id)));
+						.where(
+							and(eq(qualification.id, Number(id)), eq(qualification.staffId, Number(params.id)))
+						);
 				} else {
 					await tx
 						.update(qualification)
@@ -699,7 +721,9 @@ export const actions: Actions = {
 							schoolName,
 							updatedBy: locals?.user?.id
 						})
-						.where(eq(qualification.id, Number(id)));
+						.where(
+							and(eq(qualification.id, Number(id)), eq(qualification.staffId, Number(params.id)))
+						);
 				}
 			});
 
@@ -787,7 +811,9 @@ export const actions: Actions = {
 							certificate: certificateName,
 							updatedBy: locals?.user?.id
 						})
-						.where(eq(workExperience.id, Number(id)));
+						.where(
+							and(eq(workExperience.id, Number(id)), eq(workExperience.staffId, Number(params.id)))
+						);
 				} else {
 					await tx
 						.update(workExperience)
@@ -799,7 +825,9 @@ export const actions: Actions = {
 							description,
 							updatedBy: locals?.user?.id
 						})
-						.where(eq(workExperience.id, Number(id)));
+						.where(
+							and(eq(workExperience.id, Number(id)), eq(workExperience.staffId, Number(params.id)))
+						);
 				}
 			});
 
@@ -874,7 +902,12 @@ export const actions: Actions = {
 						govtId: newGovtId,
 						updatedBy: locals?.user?.id
 					})
-					.where(eq(employeeGuarantor.id, Number(id)));
+					.where(
+						and(
+							eq(employeeGuarantor.id, Number(id)),
+							eq(employeeGuarantor.staffId, Number(params.id))
+						)
+					);
 
 				return message(form, {
 					type: 'success',
@@ -1007,7 +1040,7 @@ export const actions: Actions = {
 			});
 		}
 	},
-	editSchedule: async ({ request, locals }) => {
+	editSchedule: async ({ request, locals, params }) => {
 		const form = await superValidate(request, zod4(editSchedule));
 
 		if (!form.valid) {
@@ -1027,7 +1060,9 @@ export const actions: Actions = {
 						isActive: status,
 						updatedBy: locals?.user?.id
 					})
-					.where(eq(staffSchedule.id, id));
+					.where(
+						and(eq(staffSchedule.id, Number(id)), eq(staffSchedule.staffId, Number(params.id)))
+					);
 
 				return message(form, {
 					type: 'success',
@@ -1073,7 +1108,7 @@ export const actions: Actions = {
 			});
 		}
 	},
-	editContact: async ({ request, locals }) => {
+	editContact: async ({ request, locals, params }) => {
 		const form = await superValidate(request, zod4(editContact));
 
 		if (!form.valid) {
@@ -1092,7 +1127,9 @@ export const actions: Actions = {
 						isActive: status,
 						updatedBy: locals?.user?.id
 					})
-					.where(eq(staffContacts.id, id));
+					.where(
+						and(eq(staffContacts.id, Number(id)), eq(staffContacts.staffId, Number(params.id)))
+					);
 
 				return message(form, {
 					type: 'success',
@@ -1169,7 +1206,9 @@ export const actions: Actions = {
 						isActive: status,
 						updatedBy: locals?.user?.id
 					})
-					.where(eq(staffAccounts.id, id));
+					.where(
+						and(eq(staffAccounts.id, Number(id)), eq(staffAccounts.staffId, Number(params.id)))
+					);
 			});
 			return message(form, {
 				type: 'success',
