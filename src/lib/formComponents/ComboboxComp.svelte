@@ -6,7 +6,7 @@
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { cn } from '$lib/utils.js';
-	import { selectItem } from '$lib/global.svelte';
+	import { selectItem, type Item } from '$lib/global.svelte';
 
 	let {
 		items,
@@ -16,15 +16,11 @@
 	}: {
 		items: Item[];
 		name: string;
-		value: string | number | undefined;
+		value: string | number | boolean | undefined;
 		required: boolean;
 	} = $props();
 	let open = $state(false);
 	let triggerRef = $state<HTMLButtonElement>(null!);
-	type Item = {
-		value: string | number;
-		name: string;
-	};
 
 	const selectedValue = $derived(items.find((f) => f.value === value)?.name);
 
@@ -39,7 +35,7 @@
 			'Select ' + name.replace(/([a-z])([A-Z])/g, '$1 $2')
 	);
 
-	function getNameByValue(items: Item[], value: string | number): string | undefined {
+	function getNameByValue(items: Item[], value: Item['value']): string | undefined {
 		return items.find((item) => item.value === value)?.name.replace(/([a-z])([A-Z])/g, '$1 $2');
 	}
 	// We want to refocus the trigger button when the user selects

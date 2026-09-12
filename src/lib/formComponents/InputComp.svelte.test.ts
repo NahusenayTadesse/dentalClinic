@@ -5,14 +5,12 @@ import { writable, get } from 'svelte/store';
 import InputComp from './InputComp.svelte';
 
 describe('InputComp.svelte', () => {
-	// KNOWN BUG: InputComp.svelte renders <Label for={name}> next to the underlying
-	// <Input>/<Textarea>, but never passes an `id` prop to them — only `name`. The
-	// label's `for` attribute therefore points at an id that doesn't exist anywhere
-	// in the DOM, so the label is not programmatically associated with its field
-	// (bad for accessibility, and clicking the label text won't focus the input).
-	// This test intentionally asserts the *correct* behavior and is expected to FAIL
-	// until that's fixed.
-	it('associates the visible label with its input via id/for (currently broken)', async () => {
+	/*
+	 * Was "currently broken", and was: `<Label for={name}>` sat beside an `<Input>` that got
+	 * `name` but never `id`, so `for` pointed at nothing. Clicking the label focused nothing and
+	 * a screen reader never paired them — across all 76 call sites.
+	 */
+	it('associates the visible label with its input via id/for', async () => {
 		const form = writable<Record<string, unknown>>({ name: '' });
 		const errors = writable<Record<string, unknown>>({});
 
@@ -21,13 +19,59 @@ describe('InputComp.svelte', () => {
 		await expect.element(page.getByLabelText('Name')).toBeInTheDocument();
 	});
 
+	it('marks the field invalid and announces the message', async () => {
+		const form = writable<Record<string, unknown>>({ name: '' });
+		const errors = writable<Record<string, unknown>>({ name: ['Name is required'] });
+
+		const screen = render(InputComp, {
+			label: 'Name',
+			form,
+			errors,
+			type: 'text',
+			name: 'name'
+		});
+
+		const input = screen.container.querySelector('input') as HTMLInputElement;
+		// The styling for this already existed in components/ui/input and was never switched on.
+		expect(input.getAttribute('aria-invalid')).toBe('true');
+
+		// The message is announced, and tied to the field rather than merely near it.
+		const described = input.getAttribute('aria-describedby');
+		expect(described).toBeTruthy();
+		expect(screen.container.querySelector(`#${described}`)?.getAttribute('role')).toBe('alert');
+		await expect.element(page.getByText('Name is required')).toBeInTheDocument();
+	});
+
+	it('leaves aria-invalid off when the field is fine', async () => {
+		const form = writable<Record<string, unknown>>({ name: '' });
+		const errors = writable<Record<string, unknown>>({});
+
+		const screen = render(InputComp, { label: 'Name', form, errors, type: 'text', name: 'name' });
+
+		const input = screen.container.querySelector('input') as HTMLInputElement;
+		expect(input.getAttribute('aria-invalid')).toBeNull();
+		expect(input.getAttribute('aria-describedby')).toBeNull();
+	});
+
+	it('puts step only on a number, not on every input', async () => {
+		const form = writable<Record<string, unknown>>({ qty: 0, note: '' });
+		const errors = writable<Record<string, unknown>>({});
+
+		const number = render(InputComp, { label: 'Qty', form, errors, type: 'number', name: 'qty' });
+		expect(number.container.querySelector('input')?.getAttribute('step')).toBe('any');
+
+		// `step="any"` used to go on text inputs too, where it means nothing, and on numbers it
+		// switched off step validation entirely.
+		const text = render(InputComp, { label: 'Note', form, errors, type: 'text', name: 'note' });
+		expect(text.container.querySelectorAll('input')[0]?.getAttribute('step')).toBeNull();
+	});
+
 	it('updates the form store when typing in a text input', async () => {
 		const form = writable<Record<string, unknown>>({ name: '' });
 		const errors = writable<Record<string, unknown>>({});
 
 		render(InputComp, { label: 'Name', form, errors, type: 'text', name: 'name' });
 
-		// Queried by role instead of label, since the label isn't associated (see bug above).
 		await userEvent.fill(page.getByRole('textbox'), 'John Doe');
 
 		expect(get(form).name).toBe('John Doe');

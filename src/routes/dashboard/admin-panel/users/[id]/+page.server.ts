@@ -56,7 +56,9 @@ export const load: PageServerLoad = async ({ params }) => {
 	const rolePermissionList = await db
 		.select({
 			value: permissions.id,
-			name: permissions.description,
+			// `description` is nullable, so an unworded permission would render a blank option.
+			// COALESCE is standard across all three engines (CLAUDE.md §10).
+			name: sql<string>`COALESCE(${permissions.description}, ${permissions.name})`,
 			description: permissions.name
 		})
 		.from(permissions)
@@ -69,7 +71,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	const userPermissionsList = await db
 		.select({
 			value: permissions.id,
-			name: permissions.description,
+			name: sql<string>`COALESCE(${permissions.description}, ${permissions.name})`,
 			description: permissions.name
 		})
 		.from(permissions)
@@ -89,7 +91,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	const allPerms = await db
 		.select({
 			value: permissions.id,
-			name: permissions.description,
+			name: sql<string>`COALESCE(${permissions.description}, ${permissions.name})`,
 			description: permissions.name
 		})
 		.from(permissions)

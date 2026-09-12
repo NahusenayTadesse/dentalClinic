@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { toast } from 'svelte-sonner';
+	import { createForm } from '$lib/forms/createForm';
 	import {
 		Card,
 		CardHeader,
@@ -12,27 +12,13 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { ArrowLeftIcon, ArrowRight, TriangleAlert } from '@lucide/svelte';
-	import { superForm } from 'sveltekit-superforms';
-	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { resetPasswordSchema as schema } from './schema';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 
 	let { data } = $props();
 
-	const { form, errors, enhance, allErrors, message, delayed } = superForm(data.form, {
-		validators: zod4Client(schema)
-	});
-
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
+	const { form, errors, enhance, allErrors, delayed } = createForm(data.form, schema);
 </script>
 
 <svelte:head>

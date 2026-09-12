@@ -1,39 +1,25 @@
 <script lang="ts">
+	import { createForm, confirmLeave } from '$lib/forms/createForm';
 	import type { Snapshot } from '@sveltejs/kit';
 
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 
 	import { Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { supplyItemSchema } from './schema';
-	import { superForm } from 'sveltekit-superforms/client';
 	import FormCard from '$lib/formComponents/FormCard.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import { fly } from 'svelte/transition';
 
 	let { data } = $props();
 
-	const { form, errors, enhance, delayed, capture, restore, message } = superForm(data.form, {
-		taintedMessage: () => {
-			return new Promise((resolve) => {
-				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
-			});
-		},
-
-		validators: zod4Client(supplyItemSchema)
-	});
-
-	import { toast } from 'svelte-sonner';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
+	const { form, errors, enhance, delayed, capture, restore } = createForm(
+		data.form,
+		supplyItemSchema,
+		{
+			taintedMessage: confirmLeave
 		}
-	});
+	);
 
 	export const snapshot: Snapshot = { capture, restore };
 </script>

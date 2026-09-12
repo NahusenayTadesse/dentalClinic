@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { createForm, confirmLeave } from '$lib/forms/createForm';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import type { Snapshot } from '@sveltejs/kit';
@@ -9,37 +10,21 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { overtimeSchema as schema } from './schema';
-	import { superForm } from 'sveltekit-superforms/client';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	let { data } = $props();
 
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 
-	const { form, errors, enhance, delayed, allErrors, capture, restore, message } = superForm(
+	const { form, errors, enhance, delayed, allErrors, capture, restore } = createForm(
 		data.form,
+		schema,
 		{
-			taintedMessage: () => {
-				return new Promise((resolve) => {
-					resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
-				});
-			},
-			validators: zod4Client(schema)
+			taintedMessage: confirmLeave
 		}
 	);
 
 	export const snapshot: Snapshot = { capture, restore };
-	import { toast } from 'svelte-sonner';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
 
 	$form.hours = 1;
 </script>

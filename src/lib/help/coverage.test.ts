@@ -3,7 +3,7 @@ import { join, sep } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 /**
- * Guards the rule that a new screen ships with its help (CLAUDE.md §13).
+ * Guards the rule that a new screen ships with its help (CLAUDE.md §14).
  *
  * Help has three surfaces and this checks the two that are route-shaped: the `?` panel
  * (`$lib/content/*.json`, resolved by `$lib/Registry.ts`) and the route map in

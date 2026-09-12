@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { createForm, confirmLeave } from '$lib/forms/createForm';
 	import type { Snapshot } from '@sveltejs/kit';
 
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
@@ -6,38 +7,22 @@
 
 	import { Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { customerSchema as schema } from './schema';
-	import { superForm } from 'sveltekit-superforms/client';
 	import Errors from '$lib/formComponents/Errors.svelte';
 
 	let { data } = $props();
 
-	const { form, errors, enhance, delayed, allErrors, capture, restore, message } = superForm(
+	const { form, errors, enhance, delayed, allErrors, capture, restore } = createForm(
 		data.form,
+		schema,
 		{
-			taintedMessage: () => {
-				return new Promise((resolve) => {
-					resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
-				});
-			},
-			validators: zod4Client(schema)
+			taintedMessage: confirmLeave
 		}
 	);
 
 	export const snapshot: Snapshot = { capture, restore };
 
-	import { toast } from 'svelte-sonner';
 	import FormCard from '$lib/formComponents/FormCard.svelte';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
 </script>
 
 <svelte:head>

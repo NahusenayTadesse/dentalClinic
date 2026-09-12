@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { createForm, confirmLeave } from '$lib/forms/createForm';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import type { Snapshot } from '@sveltejs/kit';
@@ -9,33 +10,18 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Plus, Upload, X } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { insertExpenseSchema as expensesSchema } from './expenseSchema';
-	import { superForm, fileProxy } from 'sveltekit-superforms/client';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 
 	let { data } = $props();
 
-	const { form, errors, enhance, delayed, message, capture, restore } = superForm(data.form, {
-		taintedMessage: () => {
-			return new Promise((resolve) => {
-				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
-			});
-		},
-
-		validators: zod4Client(expensesSchema)
-	});
-
-	import { toast } from 'svelte-sonner';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
+	const { form, errors, enhance, delayed, message, capture, restore } = createForm(
+		data.form,
+		expensesSchema,
+		{
+			taintedMessage: confirmLeave
 		}
-	});
+	);
 
 	export const snapshot: Snapshot = { capture, restore };
 </script>

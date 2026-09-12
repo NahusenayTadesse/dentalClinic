@@ -4,7 +4,7 @@ import { editRoleSchema as schema } from './schema';
 
 import { db } from '$lib/server/db';
 import { roles, user, permissions, rolePermissions, session } from '$lib/server/db/schema';
-import { eq, countDistinct, and } from 'drizzle-orm';
+import { eq, countDistinct, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 import { fail } from 'sveltekit-superforms';
 import { setFlash, redirect } from 'sveltekit-flash-message/server';
@@ -62,7 +62,9 @@ export const load: PageServerLoad = async ({ params }) => {
 	const allPerms = await db
 		.select({
 			value: permissions.id,
-			name: permissions.description,
+			// `description` is nullable, so an unworded permission would render a blank option.
+			// COALESCE is standard across all three engines (CLAUDE.md §10).
+			name: sql<string>`COALESCE(${permissions.description}, ${permissions.name})`,
 			description: permissions.name
 		})
 		.from(permissions)

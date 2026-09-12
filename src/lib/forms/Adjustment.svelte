@@ -118,7 +118,10 @@
 						{form}
 						{errors}
 						required={true}
-						items={paymentMethods}
+						items={paymentMethods.map((m) => ({
+							value: m.value,
+							name: m.name ?? 'Unnamed method'
+						}))}
 					/>
 				{/if}
 

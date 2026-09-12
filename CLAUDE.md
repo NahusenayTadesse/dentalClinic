@@ -38,6 +38,7 @@ thing, give it a new optional prop — do not fork it and leave the old one behi
 | Form error summary                  | `formComponents/Errors.svelte`                                        | 133           |
 | Submit spinner                      | `formComponents/LoadingBtn.svelte`                                    | 169           |
 | Form shell · flash line             | `FormCard.svelte` · `Messages.svelte`                                 | 22 · 12       |
+| Initialise a superforms form        | `createForm` — `$lib/forms/createForm.ts` (validator + toast wired)   |
 | Ethiopian month/year picker         | `formComponents/MonthYear.svelte`                                     | 26            |
 | Delete confirmation                 | `components/DeleteEntity.svelte`                                      | 48            |
 | Detail page shell · key/value table | `SingleView.svelte` · `SingleTable.svelte`                            | 8 · 8         |
@@ -431,7 +432,47 @@ targets that are not records (a stored file) and wrong for anything that is a ro
 
 ---
 
-## 13. A new screen ships with its help
+## 13. Forms go through `createForm`
+
+**`createForm(data.form, schema)` rather than `superForm` directly.** It wires the zod validator
+and the message toast, and everything `superForm` accepts still passes through — including
+`onUpdated`, which is composed rather than replaced.
+
+The toast is the point. Eighty-seven of the eighty-eight form pages hand-rolled it, and all of
+them with an `$effect` watching `$message`:
+
+```svelte
+$effect(() => {
+	if ($message) {
+		if ($message.type === 'error') toast.error($message.text);
+		else toast.success($message.text);
+	}
+});
+```
+
+That is the wrong tool twice. An effect is tied to the _store_ and re-runs whenever anything it
+reads changes; superforms already hands the result of a completed submit to `onUpdated`, which is
+what that hook is for. And eighty-seven copies of a two-branch conditional is eighty-seven
+chances to disagree — one already did, in `add-employee`, where the check is nested inside itself
+with a commented-out `$effect` underneath doing the job again.
+
+**A function, not a component**, because `superForm` returns stores the caller binds to
+(`$form[name]`, `enhance`). A component could only hand those back through a snippet, which is
+more ceremony than it removes.
+
+`taintedMessage: confirmLeave` for forms long enough that losing one matters. Not by default: on
+a two-field dialog it is an interruption, and a prompt people learn to dismiss protects nothing.
+
+**Six pages are migrated; seventy-three are not.** Of those, fifty call `superForm` in a shape
+this could not rewrite mechanically, sixteen pass no zod validator, and seven toast something
+other than the standard message. They move over when their feature is next touched. Nine more
+were migrated and reverted: their pages hand-roll `$form[name]` field snippets, and the sharper
+form type that `createForm` gives them turns that indexing into errors — those want their fields
+moved onto `InputComp` first, which now does the `aria-invalid` wiring they were hand-rolling.
+
+---
+
+## 14. A new screen ships with its help
 
 **A route is not finished until it can explain itself.** Staff here are often not trained on the
 system before they are using it on a patient, and the manual is a selling point against the
@@ -478,7 +519,7 @@ person.
 
 ---
 
-## 14. Branch is context, not a filter
+## 15. Branch is context, not a filter
 
 A clinic may have more than one location. **The branch someone is working at is chosen once, in
 the top bar, and every query reads it from `locals.branch`.** It is not a dropdown on each list, a
@@ -528,7 +569,7 @@ set `branchId` from `locals.branch.active`.
 
 ---
 
-## 15. Definition of done
+## 16. Definition of done
 
 - `npm run check` clean **for the files you touched**
 - `npm run lint` clean for the files you touched
@@ -537,7 +578,7 @@ set `branchId` from `locals.branch.active`.
 - `npx prettier --write` on touched files
 - `npm run test` passes
 - new shared code has a doc comment
-- a new screen has its `$lib/content` help entry and its `ROUTE_MAP` row (§13)
+- a new screen has its `$lib/content` help entry and its `ROUTE_MAP` row (§14)
 - no new dependency without justification
 
 **Tests where the logic is subtle, not everywhere.** The existing suite has the right instinct —

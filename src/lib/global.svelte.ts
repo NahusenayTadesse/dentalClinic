@@ -25,8 +25,15 @@ export const searchableFields = [
 	'time'
 ];
 
+/**
+ * One option in a picker — a select, a combobox, a checkbox group.
+ *
+ * `value` admits `boolean` because thirty call sites pass `{ value: true, name: 'Active' }` for
+ * an is-active field. That was always what the app did; the type simply did not say so, and
+ * nothing noticed while `InputComp` passed its `items` through untyped.
+ */
 export type Item = {
-	value: string | number;
+	value: string | number | boolean;
 	name: string;
 };
 
