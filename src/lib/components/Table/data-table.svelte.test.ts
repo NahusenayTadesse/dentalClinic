@@ -56,6 +56,7 @@ function renderTable<T>(props: {
 	columns: ColumnDef<T, unknown>[];
 	defaultPageSize?: number;
 	height?: string;
+	charts?: boolean;
 	facetKeys?: string[];
 	facetLabels?: Record<string, string>;
 	fileName?: string;
@@ -230,6 +231,40 @@ describe('data-table.svelte', () => {
 	 * `display: block`. A layout assertion here would pass or fail for reasons unrelated to the
 	 * layout. The height is an inline style, so it is real either way.
 	 */
+	/*
+	 * The chart used to sit in a pane beside the table, which narrowed every column permanently to
+	 * make room for something most readers were not looking at — on the employees list it clipped
+	 * the status column outright. It is a toggle now, and it opens above the rows rather than
+	 * beside them, so opening it never hides a column.
+	 */
+	it('keeps the chart closed until asked, then opens it above the rows', async () => {
+		const screen = renderTable({
+			data: staff,
+			columns: staffColumns,
+			facetKeys: ['department'],
+			charts: true
+		});
+
+		expect(screen.container.querySelector('canvas'), 'closed by default').toBeNull();
+
+		const toggle = page.getByRole('button', { name: 'Charts' });
+		await expect.element(toggle).toBeInTheDocument();
+		await userEvent.click(toggle);
+
+		const canvas = screen.container.querySelector('canvas');
+		expect(canvas, 'opens on click').not.toBeNull();
+
+		// Above the rows: the panel must precede the table in document order, never sit beside it.
+		const table = screen.container.querySelector('table');
+		expect(canvas!.compareDocumentPosition(table!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+	});
+
+	it('offers no chart button when the page asked for none', async () => {
+		renderTable({ data: staff, columns: staffColumns, facetKeys: ['department'] });
+
+		await expect.element(page.getByRole('button', { name: 'Charts' })).not.toBeInTheDocument();
+	});
+
 	it('takes the height it is given', async () => {
 		const screen = renderTable({ data: manyRows, columns, height: '400px' });
 

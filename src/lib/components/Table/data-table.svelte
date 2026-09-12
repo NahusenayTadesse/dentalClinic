@@ -15,16 +15,16 @@
 	import Frown from '@lucide/svelte/icons/frown';
 	import ListOrdered from '@lucide/svelte/icons/list-ordered';
 	import RotateCcw from '@lucide/svelte/icons/rotate-ccw';
+	import ChartColumnBig from '@lucide/svelte/icons/chart-column-big';
+
+	import { slide } from 'svelte/transition';
 
 	import { createSvelteTable, FlexRender } from '$lib/components/ui/data-table/index.js';
 	import * as Table from '$lib/components/ui/table/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import * as Resizable from '$lib/components/ui/resizable/index.js';
-	import ResizableHandle from '../ui/resizable/resizable-handle.svelte';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { isMobile } from '$lib/global.svelte';
 
 	import Pdf from './pdf.svelte';
 	import TableFacet from './table-facet.svelte';
@@ -106,7 +106,14 @@
 		 * Defaults to the column id.
 		 */
 		facetParams?: Record<string, string>;
-		/** Show the chart pane beside the table. Requires `facetKeys`. */
+		/**
+		 * Offer the chart panel. Requires `facetKeys`.
+		 *
+		 * It is a button, not a pane. Beside the table it permanently narrowed the columns to make
+		 * room for something most readers were not looking at — on the employees list it clipped
+		 * the status column outright. It now opens above the rows, like the filter bar, and costs
+		 * nothing until it is asked for.
+		 */
 		charts?: boolean;
 		/** Present when the load already filtered and paged. See `ServerTable`. */
 		server?: ServerTable;
@@ -333,164 +340,158 @@
 		else table.setPageSize(size);
 	}
 
-	const showCharts = $derived(charts && facetKeys.length > 0 && !isMobile());
+	const canChart = $derived(charts && facetKeys.length > 0);
+	let chartsOpen = $state(false);
 </script>
 
-<!--
-	The height sits on a wrapper, not on the pane group: paneforge writes its own `style` for the
-	flex layout and the prop was being dropped, silently, with the table falling back to its
-	content height.
--->
-<div class="mt-4 w-full" style="height: {height}" data-testid="table-frame">
-	<Resizable.PaneGroup
-		direction="horizontal"
-		class="flex h-full w-full gap-0 rounded-lg {className}"
-	>
-		<Resizable.Pane defaultSize={showCharts ? 70 : 100} class="flex min-w-0 flex-col bg-background">
-			<!--
-			`min-h-0` on every flex child that scrolls: a flex item's default `min-height: auto`
-			refuses to shrink below its content, so without it the rows push the container past the
-			declared height and the page scrolls instead of the table.
-		-->
-			<div class="flex h-full min-h-0 flex-col gap-2 p-2">
-				{#if search}
-					<ScrollArea orientation="horizontal" class="shrink-0 rounded-md border">
-						<div class="flex max-w-4xl flex-row items-center justify-start gap-2 p-4">
-							<Input
-								type="search"
-								placeholder={isServer ? 'Search all rows…' : 'Search Table...'}
-								class="w-64 lg:w-xl"
-								bind:value={
-									() => (isServer ? serverSearch : globalFilter),
-									(v: string) => (isServer ? (serverSearch = v) : (globalFilter = v))
-								}
-								oninput={(e) => onSearchInput(e.currentTarget.value)}
-							/>
+<div class="mt-4 w-full {className}" style="height: {height}" data-testid="table-frame">
+	<!--
+		`min-h-0` on every flex child that scrolls: a flex item's default `min-height: auto` refuses
+		to shrink below its content, so without it the rows push the container past the declared
+		height and the page scrolls instead of the table.
+	-->
+	<div class="flex h-full min-h-0 flex-col gap-2 p-2">
+		{#if search}
+			<ScrollArea orientation="horizontal" class="shrink-0 rounded-md border">
+				<div class="flex max-w-4xl flex-row items-center justify-start gap-2 p-4">
+					<Input
+						type="search"
+						placeholder={isServer ? 'Search all rows…' : 'Search Table...'}
+						class="w-64 lg:w-xl"
+						bind:value={
+							() => (isServer ? serverSearch : globalFilter),
+							(v: string) => (isServer ? (serverSearch = v) : (globalFilter = v))
+						}
+						oninput={(e) => onSearchInput(e.currentTarget.value)}
+					/>
 
-							<DropdownMenu.Root>
-								<DropdownMenu.Trigger>
-									{#snippet child({ props })}
-										<Button {...props} variant="outline" class="ml-auto">
-											Columns <ChevronDownIcon class="size-5" />
-										</Button>
-									{/snippet}
-								</DropdownMenu.Trigger>
-								<DropdownMenu.Content align="end">
-									{#each table
-										.getAllColumns()
-										.filter((col) => col.getCanHide()) as column (column.id)}
-										<DropdownMenu.CheckboxItem
-											class="capitalize"
-											bind:checked={
-												() => column.getIsVisible(), (v) => column.toggleVisibility(!!v)
-											}
-										>
-											{column.id.replace(/([a-z])([A-Z])/g, '$1 $2')}
-										</DropdownMenu.CheckboxItem>
-									{/each}
-								</DropdownMenu.Content>
-							</DropdownMenu.Root>
-
-							{#if activeFacetCount}
-								<Button variant="ghost" size="sm" class="gap-1" onclick={clearAllFacets}>
-									<RotateCcw class="size-4" />
-									Clear {activeFacetCount}
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger>
+							{#snippet child({ props })}
+								<Button {...props} variant="outline" class="ml-auto">
+									Columns <ChevronDownIcon class="size-5" />
 								</Button>
-							{/if}
+							{/snippet}
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content align="end">
+							{#each table.getAllColumns().filter((col) => col.getCanHide()) as column (column.id)}
+								<DropdownMenu.CheckboxItem
+									class="capitalize"
+									bind:checked={() => column.getIsVisible(), (v) => column.toggleVisibility(!!v)}
+								>
+									{column.id.replace(/([a-z])([A-Z])/g, '$1 $2')}
+								</DropdownMenu.CheckboxItem>
+							{/each}
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
 
-							<Pdf {fileName} {table} />
+					{#if activeFacetCount}
+						<Button variant="ghost" size="sm" class="gap-1" onclick={clearAllFacets}>
+							<RotateCcw class="size-4" />
+							Clear {activeFacetCount}
+						</Button>
+					{/if}
 
-							<Button variant="outline">
-								<ListOrdered />
-								{pagerTotal.toLocaleString()} Results
-							</Button>
-						</div>
-					</ScrollArea>
-				{/if}
+					<Pdf {fileName} {table} />
 
-				<div class="flex min-h-0 flex-1 flex-col rounded-md border">
-					<div class="min-h-0 flex-1 overflow-auto">
-						<Table.Root class="relative">
-							<Table.Header
-								class="sticky top-0 z-10 bg-background shadow-[inset_0_-1px_0_var(--border)]"
-							>
-								{#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
-									<Table.Row>
-										{#each headerGroup.headers as header (header.id)}
-											<Table.Head colspan={header.colSpan}>
-												{#if !header.isPlaceholder}
-													<div class="flex items-center gap-1">
-														<FlexRender
-															content={header.column.columnDef.header}
-															context={header.getContext()}
-														/>
-														<!-- The filter belongs on the column it filters, not in a panel
-														     the reader has to look away from the data to open. -->
-														{#if facetKeys.includes(header.column.id)}
-															<TableFacet
-																label={facetLabels[header.column.id] ?? header.column.id}
-																facets={facets[header.column.id] ?? []}
-																selected={selectedFacets[header.column.id] ?? []}
-																multi={!isServer}
-																onToggle={(v) => toggleFacet(header.column.id, v)}
-																onClear={() => clearFacet(header.column.id)}
-															/>
-														{/if}
-													</div>
-												{/if}
-											</Table.Head>
-										{/each}
-									</Table.Row>
-								{/each}
-							</Table.Header>
+					{#if canChart}
+						<Button
+							variant={chartsOpen ? 'default' : 'outline'}
+							aria-expanded={chartsOpen}
+							onclick={() => (chartsOpen = !chartsOpen)}
+						>
+							<ChartColumnBig />
+							Charts
+						</Button>
+					{/if}
 
-							<Table.Body>
-								{#each table.getRowModel().rows as row (row.id)}
-									<Table.Row data-state={row.getIsSelected() && 'selected'}>
-										{#each row.getVisibleCells() as cell (cell.id)}
-											<Table.Cell>
-												<FlexRender
-													content={cell.column.columnDef.cell}
-													context={cell.getContext()}
-												/>
-											</Table.Cell>
-										{/each}
-									</Table.Row>
-								{:else}
-									<Table.Row>
-										<Table.Cell colspan={columns.length} class="text-center font-2xl">
-											<div class="flex flex-row items-center justify-center gap-2">
-												<Frown class="animate-bounce" /> Nothing found here.
-											</div>
-										</Table.Cell>
-									</Table.Row>
-								{/each}
-							</Table.Body>
-						</Table.Root>
-					</div>
+					<Button variant="outline">
+						<ListOrdered />
+						{pagerTotal.toLocaleString()} Results
+					</Button>
+				</div>
+			</ScrollArea>
+		{/if}
 
-					<TablePagination
-						page={pagerPage}
-						pageSize={pagerSize}
-						total={pagerTotal}
-						{pageSizes}
-						onPage={goToPage}
-						onPageSize={changePageSize}
+		<div class="flex min-h-0 flex-1 flex-col rounded-md border">
+			{#if canChart && chartsOpen}
+				<!-- Above the rows and below the toolbar: it pushes the table down rather than
+					     squeezing it sideways, so no column is hidden to make room for it. -->
+				<div class="h-64 shrink-0 border-b" transition:slide={{ duration: 150 }}>
+					<TableCharts
+						{facets}
+						labels={facetLabels}
+						selected={selectedFacets}
+						onToggle={toggleFacet}
 					/>
 				</div>
-			</div>
-		</Resizable.Pane>
+			{/if}
 
-		{#if showCharts}
-			<ResizableHandle withHandle />
-			<Resizable.Pane defaultSize={30} class="min-h-0 min-w-0">
-				<TableCharts
-					{facets}
-					labels={facetLabels}
-					selected={selectedFacets}
-					onToggle={toggleFacet}
-				/>
-			</Resizable.Pane>
-		{/if}
-	</Resizable.PaneGroup>
+			<div class="min-h-0 flex-1 overflow-auto">
+				<Table.Root class="relative">
+					<Table.Header
+						class="sticky top-0 z-10 bg-background shadow-[inset_0_-1px_0_var(--border)]"
+					>
+						{#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
+							<Table.Row>
+								{#each headerGroup.headers as header (header.id)}
+									<Table.Head colspan={header.colSpan}>
+										{#if !header.isPlaceholder}
+											<div class="flex items-center gap-1">
+												<FlexRender
+													content={header.column.columnDef.header}
+													context={header.getContext()}
+												/>
+												<!-- The filter belongs on the column it filters, not in a panel
+												     the reader has to look away from the data to open. -->
+												{#if facetKeys.includes(header.column.id)}
+													<TableFacet
+														label={facetLabels[header.column.id] ?? header.column.id}
+														facets={facets[header.column.id] ?? []}
+														selected={selectedFacets[header.column.id] ?? []}
+														multi={!isServer}
+														onToggle={(v) => toggleFacet(header.column.id, v)}
+														onClear={() => clearFacet(header.column.id)}
+													/>
+												{/if}
+											</div>
+										{/if}
+									</Table.Head>
+								{/each}
+							</Table.Row>
+						{/each}
+					</Table.Header>
+
+					<Table.Body>
+						{#each table.getRowModel().rows as row (row.id)}
+							<Table.Row data-state={row.getIsSelected() && 'selected'}>
+								{#each row.getVisibleCells() as cell (cell.id)}
+									<Table.Cell>
+										<FlexRender content={cell.column.columnDef.cell} context={cell.getContext()} />
+									</Table.Cell>
+								{/each}
+							</Table.Row>
+						{:else}
+							<Table.Row>
+								<Table.Cell colspan={columns.length} class="text-center font-2xl">
+									<div class="flex flex-row items-center justify-center gap-2">
+										<Frown class="animate-bounce" /> Nothing found here.
+									</div>
+								</Table.Cell>
+							</Table.Row>
+						{/each}
+					</Table.Body>
+				</Table.Root>
+			</div>
+
+			<TablePagination
+				page={pagerPage}
+				pageSize={pagerSize}
+				total={pagerTotal}
+				{pageSizes}
+				onPage={goToPage}
+				onPageSize={changePageSize}
+			/>
+		</div>
+	</div>
 </div>

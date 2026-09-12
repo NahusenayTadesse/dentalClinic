@@ -103,6 +103,12 @@
 					borderColor: current.map((_, i) => PALETTE[i % PALETTE.length]),
 					borderWidth: 2,
 					borderRadius: type === 'bar' ? 6 : 0,
+					/*
+					 * Chart.js divides the full width between the categories, so a facet with two
+					 * values drew two slabs the width of half the panel each. Fine in the narrow
+					 * side pane this replaced; absurd now the panel is full width.
+					 */
+					maxBarThickness: 72,
 					hoverOffset: type === 'pie' || type === 'doughnut' ? 8 : 0
 				}
 			]
