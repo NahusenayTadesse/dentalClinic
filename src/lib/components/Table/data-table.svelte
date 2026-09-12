@@ -38,6 +38,7 @@
 		setServerFacet,
 		setServerPageSize,
 		setServerSearch,
+		setServerSort,
 		type Facet,
 		type ServerTable
 	} from './table-state.svelte';
@@ -222,7 +223,19 @@
 		pageIndex,
 		pageSize: chosenPageSize ?? defaultPageSize
 	});
-	let sorting = $state<SortingState>([]);
+	/*
+	 * Client mode sorts in memory. Server mode reflects what the URL asked for, because the rows
+	 * arrived already ordered and re-sorting one page would only shuffle it within itself.
+	 */
+	let clientSorting = $state<SortingState>([]);
+
+	const sorting = $derived<SortingState>(
+		server
+			? server.filters?.sort
+				? [{ id: String(server.filters.sort), desc: server.filters.dir === 'desc' }]
+				: []
+			: clientSorting
+	);
 	let columnFilters = $state<ColumnFiltersState>([]);
 	let columnVisibility = $state<VisibilityState>({});
 	let rowSelection = $state<RowSelectionState>({});
@@ -300,7 +313,16 @@
 			chosenPageSize = next.pageSize;
 		},
 		onSortingChange: (updater) => {
-			sorting = typeof updater === 'function' ? updater(sorting) : updater;
+			const next = typeof updater === 'function' ? updater(sorting) : updater;
+
+			if (server) {
+				// The sort belongs to the query, not to the page of rows it returned.
+				const first = next[0];
+				setServerSort(first ? String(first.id) : null, first?.desc ? 'desc' : 'asc');
+				return;
+			}
+
+			clientSorting = next;
 		},
 		onColumnFiltersChange: (updater) => {
 			columnFilters = typeof updater === 'function' ? updater(columnFilters) : updater;

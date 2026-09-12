@@ -151,6 +151,19 @@ export function setServerSearch(term: string, delayMs = 350) {
 }
 
 /**
+ * Writes the sort to the URL, or clears it.
+ *
+ * Server mode sets `manualSorting`, which tells TanStack not to reorder the rows it was handed —
+ * correct, because they are one page of a larger set and sorting a page is not sorting the list.
+ * But that alone leaves every sort header inert: it changes local state that nothing reads. The
+ * sort has to reach the query that produced the page, which means the URL.
+ */
+export function setServerSort(column: string | null, dir: 'asc' | 'desc') {
+	// Back to page one: the row that was at the top of page three is not at the top any more.
+	void writeQuery({ sort: column, dir: column ? dir : null, page: 1 });
+}
+
+/**
  * Writes one column's facet selection to the URL.
  *
  * Server filters are single-valued — `parseTableQuery` reads one string per key — so selecting a

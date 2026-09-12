@@ -47,28 +47,17 @@ starts from a list instead of a grep.
 
 ### Database
 
-| Seam                                 | Owns                                                                                                                                                                          | Status                            |
-| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
-| `db/dialect.ts`                      | every SQL function that is not spelled identically on all three: current date, date arithmetic, date formatting, age, string concatenation, group concatenation, conditionals | **not built**                     |
-| `db/insert.ts`                       | getting an id back from an insert — MySQL has `$returningId()`, the others use `RETURNING`                                                                                    | **not built**                     |
-| `db/index.ts`                        | the driver and the connection                                                                                                                                                 | exists                            |
-| `dbErrors.ts`                        | driver error codes. A duplicate key is `ER_DUP_ENTRY` on MySQL, `23505` on Postgres, `SQLITE_CONSTRAINT_UNIQUE` on SQLite. Never compare an errno inline                      | exists, 2 callers                 |
-| `stock.ts`                           | the on-hand subquery. Portable as written; it stays the one place that knows how stock is derived                                                                             | exists                            |
-| `lib/global.svelte.ts` → `fileUrl()` | the URL that serves a stored file                                                                                                                                             | **built**, 28 call sites migrated |
+| Seam                                 | Owns                                                                                                                                                                      | Status                                          |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `db/dialect.ts`                      | every SQL expression the three engines spell differently — `today`, `nowExpr`, `yearsSince`, `daysBetween`, `isoDate`, `monthKey`, `addDays`, `concatWith`, `groupConcat` | **built**; first consumer is the employees list |
+| `db/insert.ts`                       | getting an id back from an insert — MySQL has `$returningId()`, the others use `RETURNING`                                                                                | **not built**                                   |
+| `db/index.ts`                        | the driver and the connection                                                                                                                                             | exists                                          |
+| `dbErrors.ts`                        | driver error codes. A duplicate key is `ER_DUP_ENTRY` on MySQL, `23505` on Postgres, `SQLITE_CONSTRAINT_UNIQUE` on SQLite. Never compare an errno inline                  | exists, 2 callers                               |
+| `stock.ts`                           | the on-hand subquery. Portable as written; it stays the one place that knows how stock is derived                                                                         | exists                                          |
+| `lib/global.svelte.ts` → `fileUrl()` | the URL that serves a stored file                                                                                                                                         | **built**, 28 call sites migrated               |
 
-Anticipated contents of `db/dialect.ts`, so the names are settled before anything is written:
-
-```
-today()                      CURDATE() / CURRENT_DATE / date('now')
-nowExpr()                    NOW() / now() / datetime('now')
-ageYears(col)                the worked example above
-daysBetween(a, b)            DATEDIFF / (a - b) / julianday arithmetic
-monthKey(col)                DATE_FORMAT(col,'%Y-%m') / to_char / strftime
-addDays(col, n)              DATE_ADD / col + interval / date(col, '+n days')
-concatWith(sep, ...parts)    CONCAT_WS / concat_ws / || with separators
-fullName(...parts)           the employee/patient name fragment, once
-groupConcat(col, sep)        GROUP_CONCAT / string_agg / group_concat
-```
+`db/dialect.ts` exists now. Every body in it is still MariaDB — that is the point: the port is a
+file rather than a search. Adding to it is how a new dialect-specific expression enters the app.
 
 ### Files
 
@@ -154,14 +143,13 @@ the entry says why, because "I was in a hurry" is how a ledger becomes fiction.
 > **These files are not to be changed as part of adopting this rule.** They predate it, they
 > work, and they will be cleaned up when their feature is next touched. The rule binds new code.
 
-### `src/routes` — 17 files
+### `src/routes` — 16 files
 
 | File                                                            | Uses                                      |
 | --------------------------------------------------------------- | ----------------------------------------- |
 | `dashboard/+page.server.ts`                                     | `CURDATE`                                 |
 | `dashboard/customers/+page.server.ts`                           | `DATEDIFF`, `DATE_FORMAT`                 |
 | `dashboard/customers/[id]/+page.server.ts`                      | `DATEDIFF`, `DATE_FORMAT`                 |
-| `dashboard/employees/+page.server.ts`                           | `CURDATE`, `DATE_FORMAT`, `TIMESTAMPDIFF` |
 | `dashboard/employees/inactive/+page.server.ts`                  | `CURDATE`, `DATE_FORMAT`, `TIMESTAMPDIFF` |
 | `dashboard/employees/attendance/[range]/+page.server.ts`        | `GROUP_CONCAT`                            |
 | `dashboard/employees/single/[id]/+layout.server.ts`             | `CURDATE`, `DATE_FORMAT`, `TIMESTAMPDIFF` |

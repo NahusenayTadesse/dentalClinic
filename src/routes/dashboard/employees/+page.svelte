@@ -1,105 +1,65 @@
 <script lang="ts">
-	import { applyQueryToUrl } from '$lib/queryFilters';
+	import Frown from '@lucide/svelte/icons/frown';
+	import Plus from '@lucide/svelte/icons/plus';
+	import { Button } from '$lib/components/ui/button';
+	import DataTable from '$lib/components/Table/data-table.svelte';
 	import { columns } from './columns';
 
 	let { data } = $props();
 
-	import DataTable from '$lib/components/Table/data-table.svelte';
-	import QueryBuilder from '$lib/QueryBuilder.svelte';
-	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
-	import Label from '$lib/components/ui/label/label.svelte';
-
-	import { Frown, Plus } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
+	/*
+	 * Nothing is filtered when the URL asks for nothing — which is what separates "this clinic has
+	 * no employees yet" from "your filters matched none". Showing the add-your-first-employee
+	 * screen to someone who has just searched for a name is the bug this guards.
+	 */
+	const isFiltered = $derived(
+		Boolean(
+			data.currentQuery.search ||
+			data.currentQuery.departmentId ||
+			data.currentQuery.positionId ||
+			data.currentQuery.statusId ||
+			data.currentQuery.educationId
+		)
+	);
 </script>
 
 <svelte:head>
 	<title>Employee List</title>
 </svelte:head>
 
-{#if data.staffList.length === 0 && !data.currentQuery.search}
-	<div class="flex h-96 w-5xl flex-col items-center justify-center">
-		<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl">
+{#if data.pagination.total === 0 && !isFiltered}
+	<div class="flex h-96 w-full flex-col items-center justify-center gap-4">
+		<p class="flex flex-row gap-4 text-center text-4xl">
 			<Frown class="h-12 w-16 animate-bounce" />
-			No Employees added yet
+			{data.elsewhere > 0 ? 'No employees at this branch' : 'No employees added yet'}
 		</p>
-		<Button href="/dashboard/employees/add-employee"><Plus />Add New Employees</Button>
+
+		{#if data.elsewhere > 0}
+			<!--
+				Branch scoping made this screen lie: a clinic with employees at another location saw
+				"none added yet" and an invitation to add their first, because the list was empty
+				*here*. Saying which it is costs one count, and only when the list is empty.
+			-->
+			<p class="text-muted-foreground">
+				{data.elsewhere.toLocaleString()} at other branches — switch branch in the top bar to see them.
+			</p>
+		{/if}
+
+		<Button href="/dashboard/employees/add-employee"><Plus />Add new employee</Button>
 	</div>
 {:else}
 	<h2 class="my-4 text-2xl">Employees List</h2>
 
 	<!--
-		Search and page size are off here because the table owns both now, and both of its controls
-		are server-side. Leaving them on gave the page two search boxes and two page-size pickers
-		that wrote the same URL params — and a "20 results" count next to the table's "105".
+		One table, in server mode, and no filter bar above it.
 
-		They stay available on `QueryBuilder` itself: seven other pages still use it with the
-		client-side table, where its search box is the only server-side one they have. The prop
-		goes when those pages migrate, not before.
-	-->
-	<QueryBuilder
-		title="Staff Query"
-		description="Extra filters for the employee list"
-		showDate={false}
-		showSearch={false}
-		showPageSize={false}
-		initialStart={data.currentQuery.dateStart ?? undefined}
-		initialEnd={data.currentQuery.dateEnd ?? undefined}
-		initialCustomFilters={{
-			departmentId: data.currentQuery.departmentId ?? '',
-			positionId: data.currentQuery.positionId ?? '',
-			educationId: data.currentQuery.educationId ?? '',
-			statusId: data.currentQuery.statusId ?? ''
-		}}
-		onQueryChange={applyQueryToUrl}
-	>
-		{#snippet children(filters, update)}
-			<div class="flex flex-col gap-2">
-				<Label class="text-sm font-medium">Department</Label>
-				<Select
-					type="single"
-					value={filters.departmentId as string}
-					onValueChange={(v) => update('departmentId', v as never)}
-				>
-					<SelectTrigger class="w-full">
-						{data.filterOptions.departments.find((d) => String(d.id) === filters.departmentId)
-							?.name ?? 'All departments'}
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value="">All departments</SelectItem>
-						{#each data.filterOptions.departments as dept (dept.id)}
-							<SelectItem value={String(dept.id)}>{dept.name}</SelectItem>
-						{/each}
-					</SelectContent>
-				</Select>
-			</div>
+		`QueryBuilder` used to sit here carrying a department select and a status select — the same
+		two the table now renders in their own column headers, writing the same URL params. It also
+		carried a search box and a page-size picker the table already owned, so the page shipped two
+		of each. The branch select went when branch became context (§15) rather than a filter.
 
-			<div class="flex flex-col gap-2">
-				<Label class="text-sm font-medium">Status</Label>
-				<Select
-					type="single"
-					value={filters.statusId as string}
-					onValueChange={(v) => update('statusId', v as never)}
-				>
-					<SelectTrigger class="w-full">
-						{data.filterOptions.statuses.find((s) => String(s.id) === filters.statusId)?.name ??
-							'All statuses'}
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value="">All statuses</SelectItem>
-						{#each data.filterOptions.statuses as status (status.id)}
-							<SelectItem value={String(status.id)}>{status.name}</SelectItem>
-						{/each}
-					</SelectContent>
-				</Select>
-			</div>
-		{/snippet}
-	</QueryBuilder>
-
-	<!--
-		One table, in server mode. The facet tallies come from the load (`facetCounts`), so the
-		column filters and the chart describe every employee rather than the twenty this page
-		returned — which is what the separate FilterMenu did here until now.
+		The facet tallies come from `facetCounts` in the load, so the column filters and the chart
+		describe every employee the query matches rather than the twenty on this page.
 	-->
 	<DataTable
 		data={data.staffList}
@@ -122,6 +82,8 @@
 			facets: data.facets,
 			filters: {
 				search: data.currentQuery.search,
+				sort: data.currentQuery.sort,
+				dir: data.currentQuery.dir,
 				department: data.currentQuery.departmentId,
 				position: data.currentQuery.positionId,
 				status: data.currentQuery.statusId

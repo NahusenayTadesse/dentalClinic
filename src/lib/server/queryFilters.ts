@@ -28,7 +28,7 @@
  * but not that" condition building is not part of it — those tables get a
  * dropdown of real choices instead.
  */
-import { and, type SQL } from 'drizzle-orm';
+import { and, asc, desc, type SQL } from 'drizzle-orm';
 import type { MySqlColumn } from 'drizzle-orm/mysql-core';
 import { currentMonthFilter } from '$lib/global.svelte';
 
@@ -44,6 +44,10 @@ export type TableQuery<F extends string = string> = {
 	dateEnd: string | null;
 	/** Raw dropdown selections, keyed by the param name that carried them. */
 	filters: Record<F, string | null>;
+	/** The column the user asked to sort by, or null. Always one of the caller's `sortKeys`. */
+	sort: string | null;
+	/** Sort direction. Meaningless without `sort`. */
+	dir: 'asc' | 'desc';
 	/** Ready to pass straight to `.limit()` / `.offset()`. */
 	limit: number;
 	offset: number;
@@ -63,7 +67,15 @@ function toInt(raw: string | null, fallback: number): number {
 export function parseTableQuery<const F extends readonly string[]>(
 	url: URL,
 	filterKeys: F = [] as unknown as F,
-	defaultPageSize = DEFAULT_PAGE_SIZE
+	defaultPageSize = DEFAULT_PAGE_SIZE,
+	/**
+	 * Columns the caller will actually sort by.
+	 *
+	 * An allowlist rather than a check, because the alternative is a column name off the URL
+	 * reaching an `ORDER BY` — and `sql.raw` would make that an injection. A name not on this
+	 * list is dropped, so the worst a hand-typed `?sort=` can do is nothing.
+	 */
+	sortKeys: readonly string[] = []
 ): TableQuery<F[number]> {
 	const page = toInt(url.searchParams.get('page'), 1);
 	const pageSize = Math.min(
@@ -77,10 +89,14 @@ export function parseTableQuery<const F extends readonly string[]>(
 		filters[key as F[number]] = url.searchParams.get(key)?.trim() || null;
 	}
 
+	const askedSort = url.searchParams.get('sort')?.trim() || null;
+
 	return {
 		search: url.searchParams.get('search')?.trim() ?? '',
 		page,
 		pageSize,
+		sort: askedSort && sortKeys.includes(askedSort) ? askedSort : null,
+		dir: url.searchParams.get('dir') === 'desc' ? 'desc' : 'asc',
 		dateStart: url.searchParams.get('dateStart')?.trim() || null,
 		dateEnd: url.searchParams.get('dateEnd')?.trim() || null,
 		filters,
@@ -136,6 +152,28 @@ export function buildWhere<F extends string>(
 	return and(...conditions.filter((c): c is SQL => c !== undefined));
 }
 
+/**
+ * The `ORDER BY` for a load, or `undefined` when nothing was asked for.
+ *
+ *     .orderBy(...orderBy(query, { name: nameExpr, years: employee.hireDate }) ?? [employee.id])
+ *
+ * The map is the same allowlist `parseTableQuery` was given, now pointing at what each key
+ * actually sorts by — which is often not the column it displays. "Years of service" is computed
+ * from `hire_date`, so it sorts by the date; sorting by the rendered number would mean computing
+ * it for every row first, which is the whole reason the list is paginated in SQL.
+ */
+export function orderBy<F extends string>(
+	query: TableQuery<F>,
+	columns: Record<string, MySqlColumn | SQL>
+): SQL[] | undefined {
+	if (!query.sort) return undefined;
+
+	const target = columns[query.sort];
+	if (!target) return undefined;
+
+	return [query.dir === 'desc' ? desc(target) : asc(target)];
+}
+
 /** The `pagination` half of a load's return value. */
 export function pagination(query: TableQuery, total: number | string) {
 	return { page: query.page, pageSize: query.pageSize, total: Number(total) };
@@ -150,6 +188,8 @@ export function currentQuery<F extends string>(query: TableQuery<F>) {
 		search: query.search,
 		dateStart: query.dateStart,
 		dateEnd: query.dateEnd,
+		sort: query.sort,
+		dir: query.dir,
 		...query.filters
 	};
 }

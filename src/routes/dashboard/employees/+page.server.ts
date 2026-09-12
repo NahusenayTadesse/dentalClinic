@@ -18,12 +18,14 @@ import { notDeleted } from '$lib/server/softDelete';
 import { and, eq, count, sql, countDistinct } from 'drizzle-orm';
 import type { MySqlColumn } from 'drizzle-orm/mysql-core';
 import { branchFilter } from '$lib/server/branchScope';
+import { isoDate, yearsSince } from '$lib/server/db/dialect';
 import {
 	parseTableQuery,
 	buildWhere,
 	pagination,
 	currentQuery,
-	facetCounts
+	facetCounts,
+	orderBy
 } from '$lib/server/queryFilters';
 
 import { edit } from './schema';
@@ -34,20 +36,33 @@ import { employeeFullName } from '$lib/server/employeeName';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// --- Parse query params from QueryBuilder ---
-	const query = parseTableQuery(url, [
-		'departmentId',
-		'positionId',
-		'educationId',
-		'statusId',
-		'active'
-	]);
+	/*
+	 * What the table may sort by, and what each key actually sorts on — often not the column it
+	 * displays. "Years of service" is computed from `hire_date`, so it sorts by the date; sorting
+	 * by the rendered number would mean computing it for every row before paginating, which is
+	 * the whole reason the list is paged in SQL.
+	 */
+	const SORTABLE = {
+		name: employeeFullName,
+		department: department.name,
+		position: position.name,
+		branch: branch.name,
+		education: educationalLevel.name,
+		status: employmentStatuses.name,
+		years: employee.hireDate
+	};
+
+	const query = parseTableQuery(
+		url,
+		['departmentId', 'positionId', 'educationId', 'statusId', 'active'],
+		undefined,
+		Object.keys(SORTABLE)
+	);
 
 	// 'true' | 'false' | null — an explicit choice replaces the default
 	// "active staff only", rather than contradicting it.
 	const active = query.filters.active;
 	const activeOnly = active === 'true' || active === 'false' ? active === 'true' : true;
-
-	const nameExpr = sql`TRIM(CONCAT(COALESCE(${employee.name}, ''), ' ', COALESCE(${employee.fatherName}, '')))`;
 
 	// Extracted rather than inlined so the facet tallies can be built from the same spec with one
 	// filter dropped — see `facetCounts` for why a facet must not filter itself.
@@ -64,7 +79,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			notDeleted(employee),
 			branchFilter(employee.branchId, locals.branch)
 		],
-		search: (term: string) => sql`${nameExpr} LIKE ${'%' + term + '%'}`,
+		search: (term: string) => sql`${employeeFullName} LIKE ${'%' + term + '%'}`,
 		filters: {
 			departmentId: (v: string) => eq(employee.departmentId, Number(v)),
 			positionId: (v: string) => eq(employee.positionId, Number(v)),
@@ -75,18 +90,6 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	};
 
 	const whereClause = buildWhere(query, whereSpec);
-
-	// --- Filter option lists (independent of current filters, for the selects) ---
-	const [branchOptions, departmentOptions, positionOptions, educationOptions, statusOptions] =
-		await Promise.all([
-			db.select({ id: branch.id, name: branch.name }).from(branch).where(notDeleted(branch)),
-			db.select({ id: department.id, name: department.name }).from(department),
-			db.select({ id: position.id, name: position.name }).from(position),
-			db.select({ id: educationalLevel.id, name: educationalLevel.name }).from(educationalLevel),
-			db
-				.select({ id: employmentStatuses.id, name: employmentStatuses.name })
-				.from(employmentStatuses)
-		]);
 
 	// --- Total count for pagination ---
 	const [{ total }] = await db.select({ total: count() }).from(employee).where(whereClause);
@@ -107,8 +110,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			accounts: countDistinct(staffAccounts.id),
 			families: countDistinct(staffFamilies.id),
 			active: employee.isActive,
-			years: sql<number>`TIMESTAMPDIFF(YEAR, ${employee.hireDate}, CURDATE())`,
-			joined: sql<string>`DATE_FORMAT(${employee.hireDate}, '%Y-%m-%d')`
+			years: yearsSince(employee.hireDate),
+			joined: isoDate(employee.hireDate)
 		})
 		.from(employee)
 		.leftJoin(branch, and(eq(branch.id, employee.branchId), notDeleted(branch)))
@@ -142,6 +145,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			employee.isActive,
 			employee.hireDate
 		)
+		.orderBy(...(orderBy(query, SORTABLE) ?? []), employee.id)
 		.limit(query.limit)
 		.offset(query.offset);
 
@@ -184,6 +188,25 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	 * one of these: clicking "Piassa Clinic" wrote `branchId=Piassa+Clinic`, `buildWhere` did
 	 * `Number(...)` on it, and the page came back with no table at all.
 	 */
+	/*
+	 * "None here" and "none at all" are different sentences, and only this tells them apart.
+	 *
+	 * Branch scoping made the empty state lie: a clinic with 105 employees across two branches
+	 * showed "No employees added yet" to anyone whose working branch happened to have none, with
+	 * an invitation to add their first. Counted only when the scoped list is empty, so the normal
+	 * page pays nothing for it.
+	 */
+	const elsewhere =
+		total === 0
+			? await db
+					.select({ total: count() })
+					.from(employee)
+					.where(
+						and(eq(employee.isActive, activeOnly), isApproved(employee)!, notDeleted(employee))
+					)
+					.then(([row]) => Number(row?.total ?? 0))
+			: 0;
+
 	const facets = await facetCounts({
 		department: () => facetFor(department.id, department.name, 'departmentId'),
 		position: () => facetFor(position.id, position.name, 'positionId'),
@@ -193,52 +216,69 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	return {
 		staffList,
 		facets,
+		/** How many exist outside this branch, when this branch has none. */
+		elsewhere,
 		pagination: pagination(query, total),
-		filterOptions: {
-			branches: branchOptions,
-			departments: departmentOptions,
-			positions: positionOptions,
-			educations: educationOptions,
-			statuses: statusOptions
-		},
 		currentQuery: currentQuery(query)
 	};
 };
 
 export const actions: Actions = {
-	addDays: async ({ request, cookies, locals }) => {
+	/**
+	 * Records days an employee was absent.
+	 *
+	 * Deliberately not gated beyond the page's own rule: adding a missing day is the ordinary work
+	 * of whoever keeps attendance, and the route already requires `employees.create_followup` to
+	 * reach this path at all (§9). It becomes a `requirePermission` call the day it can deduct pay
+	 * without an approval step — which is what `approval` on the row is there to prevent.
+	 */
+	addDays: async ({ request, locals }) => {
 		const form = await superValidate(request, zod4(edit));
 
 		if (!form.valid) {
-			return message(form, { type: 'error', text: `Error: check the form` });
+			return message(form, { type: 'error', text: 'Please check the form and try again.' });
 		}
 
 		const { id, day, reason, deductable, deductableAmount } = form.data;
 
 		try {
-			const dateList = day.split(',');
-			await db.transaction(async (tx) => {
-				const valuesToInsert = dateList.map((singleDay) => ({
+			// Comma-separated because the picker allows several dates in one go; trimmed because
+			// "2026-01-01, 2026-01-02" is what it produces.
+			const days = day
+				.split(',')
+				.map((d) => d.trim())
+				.filter(Boolean);
+
+			if (!days.length) {
+				return message(form, { type: 'error', text: 'Pick at least one day.' });
+			}
+
+			await db.insert(missingDays).values(
+				days.map((singleDay) => ({
 					staffId: Number(id),
-					day: singleDay.trim(), // trim() handles potential spaces like "2026-01-01, 2026-01-02"
+					day: singleDay,
 					reason,
 					deductable: Boolean(deductable),
 					deductableAmount: deductableAmount ? parseFloat(deductableAmount) : null,
 					createdBy: locals?.user?.id
-				}));
+				}))
+			);
 
-				// 3. Perform a single batch insert
-				await tx.insert(missingDays).values(valuesToInsert);
-			});
 			return message(form, {
 				type: 'success',
-				text: 'Missing Days added Successfully!'
+				text: days.length === 1 ? 'Missing day added.' : `${days.length} missing days added.`
 			});
-		} catch (err) {
-			console.error(err?.message);
+		} catch (err: unknown) {
+			/*
+			 * Loud in the log, quiet to the client (§9). This used to put `err.message` straight
+			 * into the toast, which hands a database error — table names, constraint names — to
+			 * whoever provoked it.
+			 */
+			console.error('[employees] addDays failed:', err);
+
 			return message(form, {
 				type: 'error',
-				text: `Adding missing days failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+				text: 'Could not add those days. Please try again.'
 			});
 		}
 	}

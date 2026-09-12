@@ -1,12 +1,12 @@
 <script lang="ts">
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import { SquarePen, Plus } from '@lucide/svelte';
+	import Plus from '@lucide/svelte/icons/plus';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import type { Edit } from './schema';
+	import { edit, type Edit } from './schema';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
-	import { superForm } from 'sveltekit-superforms';
+	import { createForm } from '$lib/forms/createForm';
 	import Errors from '$lib/formComponents/Errors.svelte';
 
 	let {
@@ -21,27 +21,26 @@
 		count: number;
 	} = $props();
 	let open = $state(false);
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
+	import InputComp from '$lib/formComponents/InputComp.svelte';
+
+	/*
+	 * This form previously passed no validator at all, so nothing was checked until the round trip
+	 * came back. `createForm` wires the schema and the toast; the hand-rolled `$effect` watching
+	 * `$message` that used to sit here is what §13 replaced.
+	 */
+	const { form, errors, enhance, delayed, allErrors } = createForm(data, edit, {
 		onUpdate({ result }) {
-			if (result.type === 'success') {
-				open = false; // This will now trigger correctly
-			}
+			// Close only on success, so a rejected submit leaves the dialog and its errors in place.
+			if (result.type === 'success') open = false;
 		},
 		resetForm: false
 	});
 
-	import { toast } from 'svelte-sonner';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	// An effect rather than a one-off assignment: the dialog is reused across rows, and a plain
+	// `$form.id = id` captures whichever row happened to mount it first (§4).
 	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
+		$form.id = id;
 	});
-	$form.id = id;
 </script>
 
 <DialogComp

@@ -9,14 +9,6 @@ import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Stasuses from '$lib/components/Table/statuses.svelte';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
-import { superValidate } from 'sveltekit-superforms';
-import { zod4 } from 'sveltekit-superforms/adapters';
-const form = await superValidate(zod4(edit));
-
-import { minutesToHoursString } from '$lib/global.svelte';
-import Copy from '$lib/Copy.svelte';
-import { edit } from './schema';
-import Edit from './edit.svelte';
 
 export const columns: ColumnDef<RowData>[] = [
 	{
@@ -67,17 +59,12 @@ export const columns: ColumnDef<RowData>[] = [
 		accessorKey: 'branch',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Branches',
+				name: 'Branch',
 				onclick: column.getToggleSortingHandler()
-			}),
-		cell: ({ row }) => {
-			// You can pass whatever you need from `row.original` to the component
-			return renderComponent(DataTableLinks, {
-				id: row.original.branchId,
-				name: row.original.branch,
-				link: '/dashboard/branches'
-			});
-		}
+			})
+		// Plain text on purpose. It linked to `/dashboard/branches`, which is not a route and never
+		// was — a dead link nobody noticed because a dead link looks exactly like a live one. The
+		// branch is chosen in the top bar now (§15), so there is nowhere here worth going.
 	},
 	{
 		accessorKey: 'education',
