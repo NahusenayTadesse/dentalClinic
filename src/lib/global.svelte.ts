@@ -1,5 +1,5 @@
-export const bgGradient = `
-  bg-gradient-to-b from-[#E0EAFC] to-white text-foreground dark:bg-gradient-to-br dark:from-gray-800 dark:to-black`;
+/** The sidebar's surface. A flat colour: the blue-to-white gradient went with the rebrand. */
+export const appSurface = `bg-sidebar text-sidebar-foreground`;
 export const selectItem = `hover:bg-gray-100 hover:shadow-md hover:scale-101 duration-300 transition-all ease-in-out dark:hover:bg-gray-900`;
 export const toastmsg = `fixed right-4 bottom-20 lg:bottom-4 z-50
              flex items-center gap-3

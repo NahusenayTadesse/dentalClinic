@@ -17,10 +17,14 @@ export async function GET() {
 		error(500, 'FILES_DIR is not set or does not exist');
 	}
 
-	// --- Find latest .pulsedata backup ---
+	/*
+	 * --- Find the latest backup ---
+	 * `.amno` since the rebrand. `.pulsedata` is still read: backups already written under the old
+	 * name must stay downloadable, and whatever writes them may not have been updated yet.
+	 */
 	const backupFiles = fs
 		.readdirSync(backupDir)
-		.filter((f) => f.endsWith('.pulsedata'))
+		.filter((f) => f.endsWith('.amno') || f.endsWith('.pulsedata'))
 		.map((f) => path.join(backupDir, f));
 
 	if (backupFiles.length === 0) {

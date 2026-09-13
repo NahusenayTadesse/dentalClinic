@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Logo from '$lib/components/Logo.svelte';
 	import { toast } from 'svelte-sonner';
 	import {
 		Card,
@@ -42,13 +43,11 @@
 	<title>Forgot Password</title>
 </svelte:head>
 
-<div
-	class="flex min-h-dvh w-full items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4"
->
+<div class="flex min-h-dvh w-full items-center justify-center bg-background p-4">
 	<Card class="shadow-lg-lg w-full max-w-md">
 		{#if !isSubmitted}
 			<div class="flex w-full flex-col items-center justify-center">
-				<img src="/logo.png" class="h-24 w-24" alt="Placeholder Logo" />
+				<Logo class="h-20" />
 			</div>
 			<CardHeader class="flex flex-col gap-2">
 				<CardTitle class="text-2xl">Forgot Password?</CardTitle>

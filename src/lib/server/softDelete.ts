@@ -466,7 +466,7 @@ export async function softDeleteExpense(
 	await tx.update(expenses).set(stamp).where(eq(expenses.id, expenseId));
 
 	if (row.transactionId) {
-		// Used to reverse the bank posting too; bank balances were a Spotless feature and went
+		// Used to reverse the bank posting too; bank balances were a feature of the ERP this was repurposed from and went
 		// with those tables. The transaction itself is still soft-deleted alongside the expense.
 		await tx
 			.update(transactions)

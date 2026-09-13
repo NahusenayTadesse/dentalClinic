@@ -66,7 +66,6 @@
 				description="Clinic branches, and the regions, cities and subcities addresses are built from"
 				icon="MapPin"
 				items={locations}
-				accentColor="from-emerald-500/15 to-emerald-500/5"
 			/>
 
 			<AdminNavCard
@@ -74,7 +73,6 @@
 				description="Configure departments and payment methods"
 				icon="Building2"
 				items={organization}
-				accentColor="from-blue-500/15 to-blue-500/5"
 			/>
 
 			<AdminNavCard
@@ -82,7 +80,6 @@
 				description="Control users and their assigned roles"
 				icon="Users"
 				items={userManagement}
-				accentColor="from-violet-500/15 to-violet-500/5"
 			/>
 
 			<AdminNavCard
@@ -90,7 +87,6 @@
 				description="Control users and their assigned roles"
 				icon="BankNote"
 				items={finance}
-				accentColor="from-cyan-500/15 to-violet-500/5"
 			/>
 		</div>
 	</main>
@@ -98,7 +94,7 @@
 	<!-- Footer -->
 	<!-- <footer class="mt-16 border-t border-border/50 bg-card/50 py-8">
 		<div class="mx-auto max-w-7xl px-6 text-center text-sm text-muted-foreground">
-			<p>© {new Date().getFullYear()} Spotless System Admin Panel. All rights reserved.</p>
+			<p>© {new Date().getFullYear()} amno ERP Solutions. All rights reserved.</p>
 		</div>
 	</footer> -->
 </div>

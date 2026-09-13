@@ -14,23 +14,28 @@
 		sectionWrapper: 'mx-auto max-w-305! grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3',
 
 		// Card Styles
-		card: 'rounded-2xl border shadow-lg bg-accent transition-all overflow-hidden',
-		cardHeader: 'flex items-center gap-3 border-b border-background px-6 py-4',
-		cardContent: 'p-6',
+		card: 'rounded-lg border bg-card shadow-xs overflow-hidden',
+		cardHeader: 'flex items-center gap-3 border-b px-5 py-3',
+		cardContent: 'p-5',
 
 		// Typography
 		mainHeading: 'text-3xl text-cetner font-extrabold tracking-tight text-gray-900 dark:text-white',
 		subHeading: 'mt-1 text-sm text-gray-500 dark:text-slate-400',
-		sectionTitle: 'text-lg font-bold text-gray-800 dark:text-slate-100',
+		sectionTitle: 'text-base font-semibold text-foreground',
 
-		// Icon Styles
-		iconBox: 'flex gap-4  h-10 w-10 items-center justify-center rounded-lg',
+		/*
+		 * One neutral icon tile. The five variants were five colours — indigo, red, emerald, amber,
+		 * slate — and are kept as names so callers keep compiling; colour on a card now means a
+		 * warning, not a category.
+		 */
+		iconBox:
+			'flex h-8 w-8 items-center justify-center rounded-md bg-muted text-muted-foreground [&_svg]:size-4',
 		// Specific Icon Variants
-		identityIcon: 'bg-indigo-100  text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400',
-		addressIcon: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
-		employmentIcon: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
-		personalIcon: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
-		systemIcon: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+		identityIcon: '',
+		addressIcon: '',
+		employmentIcon: '',
+		personalIcon: '',
+		systemIcon: ''
 	};
 
 	type Styles = 'identityIcon' | 'addressIcon' | 'employmentIcon' | 'personalIcon' | 'systemIcon';

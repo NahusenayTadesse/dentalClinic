@@ -195,17 +195,7 @@
 				<Download class="size-4" />
 				{downloading ? 'Preparing…' : 'Download the manual'}
 			</Button>
-			<p class="text-xs text-muted-foreground">
-				Built and maintained by
-				<a
-					href="https://pulsedata.com"
-					target="_blank"
-					rel="noreferrer"
-					class="text-primary hover:underline"
-				>
-					PulseData Solutions
-				</a>
-			</p>
+			<p class="text-xs text-muted-foreground">Built and maintained by amno ERP Solutions</p>
 		</div>
 	</div>
 

@@ -23,30 +23,31 @@ thing, give it a new optional prop — do not fork it and leave the old one behi
 
 ### Catalog — client
 
-| Need                                | Use                                                                   | Current users |
-| ----------------------------------- | --------------------------------------------------------------------- | ------------- |
-| A table                             | `components/Table/data-table.svelte`                                  | 85            |
-| Server-driven filter bar            | `$lib/QueryBuilder.svelte` + `$lib/queryFilters.ts`                   | 17            |
-| Client-side facets over loaded rows | `components/Table/FilterMenu.svelte`                                  | 41            |
-| Sortable header                     | `Table/data-table-sort.svelte`                                        | 89            |
-| Link cell                           | `Table/data-table-links.svelte`                                       | 71            |
-| Mention of a record (auto-linked)   | `Table/data-table-links.svelte` with `entity` + `$lib/entityLinks.ts` |
-| Status badge                        | `Table/statuses.svelte`                                               | 56            |
-| Long text cell                      | `Table/bigText.svelte` · address cell `Table/address.svelte`          | 8 · 4         |
-| Any form field                      | `formComponents/InputComp.svelte`                                     | 153           |
-| Modal                               | `formComponents/DialogComp.svelte`                                    | 135           |
-| Form error summary                  | `formComponents/Errors.svelte`                                        | 133           |
-| Submit spinner                      | `formComponents/LoadingBtn.svelte`                                    | 169           |
-| Form shell · flash line             | `FormCard.svelte` · `Messages.svelte`                                 | 22 · 12       |
-| Initialise a superforms form        | `createForm` — `$lib/forms/createForm.ts` (validator + toast wired)   |
-| An edit dialog on a detail page     | `formComponents/FormDialog.svelte` — fields as a snippet              | new           |
-| A date window on a server table     | `data-table.svelte`'s `dateFilter` prop → `Table/table-date-range`    | new           |
-| Ethiopian month/year picker         | `formComponents/MonthYear.svelte`                                     | 26            |
-| Delete confirmation                 | `components/DeleteEntity.svelte`                                      | 48            |
-| Detail page shell · key/value table | `SingleView.svelte` · `SingleTable.svelte`                            | 8 · 8         |
-| A whole admin-panel lookup screen   | `components/lookup/LookupPage.svelte`                                 | 13            |
-| One child table on a detail page    | `components/lookup/LookupSection.svelte` + `lookup/actions.ts`        | 5             |
-| A card on a detail page             | `components/Section.svelte`                                           | 3             |
+| Need                                | Use                                                                     | Current users |
+| ----------------------------------- | ----------------------------------------------------------------------- | ------------- |
+| A table                             | `components/Table/data-table.svelte`                                    | 85            |
+| Server-driven filter bar            | `$lib/QueryBuilder.svelte` + `$lib/queryFilters.ts`                     | 17            |
+| Client-side facets over loaded rows | `components/Table/FilterMenu.svelte`                                    | 41            |
+| Sortable header                     | `Table/data-table-sort.svelte`                                          | 89            |
+| Link cell                           | `Table/data-table-links.svelte`                                         | 71            |
+| Mention of a record (auto-linked)   | `Table/data-table-links.svelte` with `entity` + `$lib/entityLinks.ts`   |
+| Status badge                        | `Table/statuses.svelte`                                                 | 56            |
+| Long text cell                      | `Table/bigText.svelte` · address cell `Table/address.svelte`            | 8 · 4         |
+| Any form field                      | `formComponents/InputComp.svelte`                                       | 153           |
+| Modal                               | `formComponents/DialogComp.svelte`                                      | 135           |
+| Form error summary                  | `formComponents/Errors.svelte`                                          | 133           |
+| Submit spinner                      | `formComponents/LoadingBtn.svelte`                                      | 169           |
+| Form shell · flash line             | `FormCard.svelte` · `Messages.svelte`                                   | 22 · 12       |
+| Initialise a superforms form        | `createForm` — `$lib/forms/createForm.ts` (validator + toast wired)     |
+| An edit dialog on a detail page     | `formComponents/FormDialog.svelte` — fields as a snippet                | new           |
+| A date window on a server table     | `data-table.svelte`'s `dateFilter` prop → `Table/table-date-range`      | new           |
+| Ethiopian month/year picker         | `formComponents/MonthYear.svelte`                                       | 26            |
+| Delete confirmation                 | `components/DeleteEntity.svelte`                                        | 48            |
+| Detail page shell · key/value table | `SingleView.svelte` · `SingleTable.svelte`                              | 8 · 8         |
+| A whole admin-panel lookup screen   | `components/lookup/LookupPage.svelte`                                   | 13            |
+| One child table on a detail page    | `components/lookup/LookupSection.svelte` + `lookup/actions.ts`          | 5             |
+| A card on a detail page             | `components/Section.svelte`                                             | 3             |
+| The logo                            | `components/Logo.svelte` — `static/newLogo.png`, never an `<img>` of it | 5             |
 
 `InputComp` dispatches on `type` to file, select, date, combo, checkbox and password variants.
 **Most fields need nothing but `InputComp`** — reach for `SelectComp`/`ComboboxComp`/
@@ -260,6 +261,9 @@ Everything else over 500 is a real target. Current offenders:
   first. Prefer the deep import (`@lucide/svelte/icons/pencil`) over the barrel; it tree-shakes.
 - **UI is shadcn-svelte + Tailwind.** 34 primitives live in `components/ui/`. Check there before
   writing a button, dialog, popover, menu, or table.
+- **Flat and neutral.** No gradients, no gradient text, no colour per category. Colour on a card
+  means something — a warning, a severe allergy, a negative balance — and only the theme tokens in
+  `app.css` (`primary`, `muted`, `destructive`…) are used for it. One font, Inter.
 - **CSS only when Tailwind genuinely cannot express it.** In practice that means two things, and
   the seven `<style>` blocks left in the repo are all one of them:
   - **print styles** — `@page`, `@media print`, page-break rules (`IdCard`, `Receipt`, `pdf`)

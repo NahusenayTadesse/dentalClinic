@@ -3,7 +3,7 @@
   "configVersion": 0,
   "workspaces": {
     "": {
-      "name": "spotless-system",
+      "name": "amno",
       "dependencies": {
         "@node-rs/argon2": "^2.0.2",
         "browser-image-compression": "^2.0.2",

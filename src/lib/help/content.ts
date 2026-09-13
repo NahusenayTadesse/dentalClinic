@@ -1,5 +1,5 @@
 /**
- * The Spotless system manual.
+ * The amno system manual.
  *
  * One source for three surfaces: the searchable Help page, the printable manual,
  * and the route map. An instruction can therefore never be right in one place and
@@ -47,16 +47,16 @@ export const HELP_SECTIONS: HelpSection[] = [
 		topics: [
 			{
 				id: 'what-is-this',
-				title: 'What the Spotless system is',
+				title: 'What the amno system is',
 				summary:
 					'One place to run the whole business: the customers you serve, the sites you serve them at, the people who do the work, the money in and the money out, and the stock that goes with it.',
 				notes: [
 					'It replaces the separate spreadsheets that used to hold customers, contracts, attendance, payroll, collections and stock. Because everything sits in one database, a figure you see on a report is the same figure the person who entered it saw — there is no second copy to reconcile.',
 					'Every screen lives under `/dashboard`. Nothing is public: if you are not signed in you are sent to the login page, whatever address you typed.',
-					'The system is built and maintained by **PulseData Solutions**. The footer of the menu links to them, and support requests go through them.',
+					'The system is built and maintained by **amno ERP Solutions**. The footer of the menu names them, and support requests go through them.',
 					'Six things flow through the system, and almost every screen is one of them: **customers**, **sites**, **contracts**, **employees**, **money** and **supplies**. If you can place a screen into one of those six, you already know roughly what it does.'
 				],
-				keywords: ['erp', 'overview', 'purpose', 'about', 'system', 'pulsedata', 'spotless']
+				keywords: ['erp', 'overview', 'purpose', 'about', 'system', 'amno']
 			},
 			{
 				id: 'signing-in',
@@ -1030,7 +1030,7 @@ export const HELP_SECTIONS: HelpSection[] = [
 				notes: [
 					'A backup is the entire business in one file. It sits behind the settings permission for that reason, not because it is a technical screen.',
 					'The system records when a backup was last downloaded, so a gap in that habit is visible.',
-					'A backup you have never restored is a hope, not a plan. Ask PulseData to prove a restore periodically.'
+					'A backup you have never restored is a hope, not a plan. Ask amno to prove a restore periodically.'
 				],
 				keywords: ['backup', 'download', 'archive', 'restore', 'disaster', 'export', 'database']
 			}
@@ -1152,21 +1152,12 @@ export const HELP_SECTIONS: HelpSection[] = [
 			{
 				id: 'q-support',
 				title: 'Something is broken, or something is missing from this manual',
-				summary: 'The system is built and maintained by PulseData Solutions.',
+				summary: 'The system is built and maintained by amno ERP Solutions.',
 				notes: [
 					'Note the screen you were on, what you pressed and the exact message you saw. Those three things usually settle it immediately.',
 					'If you find yourself repeatedly wanting a screen the system does not have, say so — the shape of it is already here, and adding to it is ordinary work.'
 				],
-				keywords: [
-					'support',
-					'bug',
-					'broken',
-					'help',
-					'contact',
-					'pulsedata',
-					'developer',
-					'missing'
-				]
+				keywords: ['support', 'bug', 'broken', 'help', 'contact', 'amno', 'developer', 'missing']
 			}
 		]
 	}

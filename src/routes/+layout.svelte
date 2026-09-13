@@ -31,7 +31,7 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href="/favicon.png" />
+	<link rel="icon" href="/newLogo.png" />
 </svelte:head>
 <ModeWatcher />
 <Toaster position="bottom-right" richColors closeButton />

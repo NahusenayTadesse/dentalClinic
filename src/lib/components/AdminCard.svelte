@@ -19,10 +19,9 @@
 		description: string;
 		icon: 'MapPin' | 'Building2' | 'Users' | 'BankNote';
 		items: NavItem[];
-		accentColor: string;
 	}
 
-	const { title, description, icon, items, accentColor }: Props = $props();
+	const { title, description, icon, items }: Props = $props();
 
 	const iconMap = {
 		MapPin: MapPinIcon,
@@ -37,11 +36,6 @@
 <Card
 	class="group hover:shadow-lg-xl hover:shadow-lg-primary/10 relative overflow-hidden border-border/50 transition-all duration-300"
 >
-	<!-- Gradient Background -->
-	<div
-		class={`absolute inset-0 bg-linear-to-br ${accentColor} opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
-	></div>
-
 	<!-- Content -->
 	<div class="relative">
 		<CardHeader class="pb-4">

@@ -39,7 +39,8 @@
 	} from '@lucide/svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
-	import { bgGradient } from '$lib/global.svelte';
+	import { appSurface } from '$lib/global.svelte';
+	import Logo from '$lib/components/Logo.svelte';
 	import { useSidebar } from '$lib/components/ui/sidebar/index.js';
 	import { canVisit } from '$lib/routeAccess';
 
@@ -473,15 +474,13 @@
   [&::-webkit-scrollbar]:w-2
   [&::-webkit-scrollbar-thumb]:bg-gray-400
   [&::-webkit-scrollbar-thumb:hover]:bg-gray-500 [&::-webkit-scrollbar-track]:bg-transparent
-  {bgGradient}
+  {appSurface}
 "
 	>
 		<Sidebar.Group>
 			<Sidebar.GroupLabel>
-				<div class="flex flex-row items-center justify-center gap-4">
-					<img src="/logo.webp" class="block h-16 w-16 dark:hidden" alt="Logo" />
-					<img src="/logoWhite.webp" class="hidden h-16 w-16 dark:block" alt="Logo" />
-					<h4 class="text-[22px]! text-gray-900 dark:text-white">Spotless</h4>
+				<div class="flex w-full flex-row items-center justify-start px-1">
+					<Logo class="h-14" />
 				</div></Sidebar.GroupLabel
 			>
 			<Sidebar.GroupContent class="my-4">
@@ -508,9 +507,7 @@
 			</Sidebar.GroupContent>
 		</Sidebar.Group>
 	</Sidebar.Content>
-	<Sidebar.Footer class="flex flex-row bg-white dark:bg-black">
-		<Sidebar.GroupLabel>
-			Powered By <a href="https://pulsedata.com" target="_blank" class="ml-1">PulseData</a>
-		</Sidebar.GroupLabel>
+	<Sidebar.Footer class="flex flex-row border-t bg-sidebar">
+		<Sidebar.GroupLabel>Powered by amno ERP Solutions</Sidebar.GroupLabel>
 	</Sidebar.Footer>
 </Sidebar.Root>

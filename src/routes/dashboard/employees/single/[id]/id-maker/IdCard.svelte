@@ -57,11 +57,11 @@
 			<div class="id-top bg-foreground dark:bg-background">
 				<div class="id-top-inner">
 					<div class="id-org">
-						<span class="id-org-name">Spotless</span>
+						<span class="id-org-name">amno</span>
 						<span class="id-org-sub">Employee Identification</span>
 					</div>
 					<div class="id-logo">
-						<img src="/logo.webp" alt="Logo" />
+						<img src="/newLogo.png" alt="amno ERP Solutions" />
 					</div>
 				</div>
 				<div class="id-top-arc"></div>
@@ -116,7 +116,7 @@
 			<!-- Footer strip -->
 			<div class="id-strip bg-foreground dark:bg-background">
 				<div>
-					<span class="id-strip-brand">Spotless.</span>
+					<span class="id-strip-brand">amno</span>
 					<span class="id-strip-id">ID Card</span>
 				</div>
 				<div class="id-barcode text-white" aria-hidden="true">
@@ -180,7 +180,7 @@
 		gap: 2px;
 	}
 	.id-org-name {
-		font-family: 'Playfair Display', serif;
+		font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
 		font-size: 15px;
 		font-weight: 600;
 		color: #fff;
@@ -233,7 +233,7 @@
 	.id-name {
 		margin-top: 12px;
 		text-align: center;
-		font-family: 'Playfair Display', serif;
+		font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
 		font-size: 17px;
 		font-weight: 600;
 		line-height: 1.25;
@@ -309,7 +309,7 @@
 		justify-content: space-between;
 	}
 	.id-strip-brand {
-		font-family: 'Playfair Display', serif;
+		font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
 		font-size: 13px;
 		font-weight: 600;
 		color: #fff;

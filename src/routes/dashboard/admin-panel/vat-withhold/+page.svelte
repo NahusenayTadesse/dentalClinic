@@ -49,7 +49,7 @@
 					</div>
 				</div>
 
-				<div class="h-px bg-linear-to-r from-transparent via-slate-200 to-transparent"></div>
+				<div class="h-px bg-border"></div>
 
 				<div class="flex items-center justify-between">
 					<div class="space-y-1">

@@ -9,7 +9,7 @@
  * document therefore carries its own type scale, palette and rules, and none of
  * the dashboard's chrome can leak into it.
  *
- * It is laid out as a delivered document rather than a screen dump: a PulseData
+ * It is laid out as a delivered document rather than a screen dump: an amno
  * letterhead, a title page, a contents list, then numbered chapters and the
  * route map as an appendix. The palette is taken off the mark — teal #027F81,
  * gold #CDA756 — so the whole thing reads as one piece of stationery.
@@ -293,10 +293,10 @@ function styles(): string {
  * is checked when the layout changes.
  */
 export function buildDocument(origin: string, stamp: string): string {
-	const logo = `${origin}/pulsedata-logo.png`;
+	const logo = `${origin}/newLogo.png`;
 
 	const masthead = `<header class="masthead">
-		<img src="${esc(logo)}" alt="PulseData Solutions" />
+		<img src="${esc(logo)}" alt="amno ERP Solutions" />
 		<p>Complexity, Simplified.</p>
 	</header>
 	<div class="rule"><span></span><span></span><span></span></div>`;
@@ -304,7 +304,7 @@ export function buildDocument(origin: string, stamp: string): string {
 	const cover = `<section class="cover">
 		${masthead}
 		<p class="eyebrow">System manual</p>
-		<h1>Running the Spotless&nbsp;system</h1>
+		<h1>Running the amno&nbsp;system</h1>
 		<p class="cover-sub">
 			A complete guide to the dashboard — what each screen does, what happens when you use it,
 			and where every address in the system leads. Written for the people who run the business.
@@ -375,8 +375,8 @@ export function buildDocument(origin: string, stamp: string): string {
 	const colophon = `<footer class="colophon">
 		<div class="rule"><span></span><span></span><span></span></div>
 		<div class="colophon-row">
-			<img src="${esc(logo)}" alt="PulseData Solutions" />
-			<p>Spotless system manual &middot; issued ${esc(stamp)} &middot; built and maintained by PulseData Solutions</p>
+			<img src="${esc(logo)}" alt="amno ERP Solutions" />
+			<p>amno system manual &middot; issued ${esc(stamp)} &middot; built and maintained by amno ERP Solutions</p>
 		</div>
 	</footer>`;
 
@@ -384,7 +384,7 @@ export function buildDocument(origin: string, stamp: string): string {
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>Spotless — System Manual</title>
+<title>amno — System Manual</title>
 <style>${styles()}</style>
 </head>
 <body>

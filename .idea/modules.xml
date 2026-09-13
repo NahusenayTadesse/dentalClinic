@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Spotless System.iml" filepath="$PROJECT_DIR$/.idea/Spotless System.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/amno.iml" filepath="$PROJECT_DIR$/.idea/amno.iml" />
     </modules>
   </component>
 </project>

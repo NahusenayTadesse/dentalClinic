@@ -316,9 +316,7 @@
 				<CardDescription>Narrow the data shown in each chart</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<div
-					class="space-y-2 rounded-xl border border-border/50 bg-background bg-linear-to-br from-card to-card/50 p-6 shadow-sm"
-				>
+				<div class="space-y-2 rounded-xl border border-border/50 bg-card p-6 shadow-sm">
 					<!-- header row -->
 					<div class="flex items-center justify-between">
 						<div class="flex items-center gap-2">

@@ -56,19 +56,17 @@
 		<!-- Main Metrics Grid -->
 		<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2 lg:gap-8">
 			<!-- Daily Income -->
-			<Card
-				class="hover:shadow-lg-lg transition-shadow-lg border-l-4 border-l-emerald-500 duration-200"
-			>
+			<Card>
 				<CardHeader class="pb-2">
 					<CardTitle
 						class="flex items-center justify-between text-sm font-medium text-muted-foreground"
 					>
 						<span>Daily Income</span>
-						<TrendingUpIcon class="size-4 text-emerald-500" />
+						<TrendingUpIcon class="size-4 text-muted-foreground" />
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<div class="text-2xl font-bold text-emerald-600">
+					<div class="text-2xl font-semibold">
 						{formatCurrency(report.dailyIncome)}
 					</div>
 					<p class="mt-1 text-xs text-muted-foreground">{report.transactions} Transactions</p>
@@ -76,58 +74,49 @@
 			</Card>
 
 			<!-- Daily Expenses -->
-			<Card
-				class="hover:shadow-lg-lg transition-shadow-lg border-l-4 border-l-red-500 duration-200"
-			>
+			<Card>
 				<CardHeader class="pb-2">
 					<CardTitle
 						class="flex items-center justify-between text-sm font-medium text-muted-foreground"
 					>
 						<span>Daily Expenses</span>
-						<TrendingDownIcon class="size-4 text-red-500" />
+						<TrendingDownIcon class="size-4 text-muted-foreground" />
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<div class="text-2xl font-bold text-red-600">{formatCurrency(report.dailyExpenses)}</div>
+					<div class="text-2xl font-semibold">{formatCurrency(report.dailyExpenses)}</div>
 					<p class="mt-1 text-xs text-muted-foreground">Operational costs</p>
 				</CardContent>
 			</Card>
 
 			<!-- Staff Paid -->
-			<Card
-				class="hover:shadow-lg-lg transition-shadow-lg border-l-4 border-l-blue-500 duration-200"
-			>
+			<Card>
 				<CardHeader class="pb-2">
 					<CardTitle
 						class="flex items-center justify-between text-sm font-medium text-muted-foreground"
 					>
 						<span>Staff Paid</span>
-						<UsersIcon class="size-4 text-blue-500" />
+						<UsersIcon class="size-4 text-muted-foreground" />
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<div class="text-2xl font-bold text-blue-600">{formatCurrency(report.staffPaid)}</div>
+					<div class="text-2xl font-semibold">{formatCurrency(report.staffPaid)}</div>
 					<p class="mt-1 text-xs text-muted-foreground">Payroll</p>
 				</CardContent>
 			</Card>
 
 			<!-- Net Income -->
-			<Card
-				class={[
-					'hover:shadow-lg-lg transition-shadow-lg border-l-4 duration-200',
-					isPositive ? 'border-l-green-500' : 'border-l-orange-500'
-				]}
-			>
+			<Card>
 				<CardHeader class="pb-2">
 					<CardTitle
 						class="flex items-center justify-between text-sm font-medium text-muted-foreground"
 					>
 						<span>Net Income</span>
-						<DollarSignIcon class={['size-4', isPositive ? 'text-green-500' : 'text-orange-500']} />
+						<DollarSignIcon class="size-4 text-muted-foreground" />
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<div class={['text-2xl font-bold', isPositive ? 'text-green-600' : 'text-orange-600']}>
+					<div class={['text-2xl font-semibold', !isPositive && 'text-destructive']}>
 						{formatCurrency(netIncome)}
 					</div>
 					<p class="mt-1 text-xs text-muted-foreground">{isPositive ? 'Profit' : 'Loss'}</p>
@@ -144,11 +133,11 @@
 						class="flex items-center justify-between text-sm font-medium text-muted-foreground"
 					>
 						<span>Appointments</span>
-						<UserCheckIcon class="size-4 text-primary" />
+						<UserCheckIcon class="size-4 text-muted-foreground" />
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<div class="text-2xl font-bold text-primary">{report.bookedAppointments}</div>
+					<div class="text-2xl font-semibold">{report.bookedAppointments}</div>
 					<p class="mt-1 text-xs text-muted-foreground">Booked today</p>
 				</CardContent>
 			</Card>
@@ -160,11 +149,11 @@
 						class="flex items-center justify-between text-sm font-medium text-muted-foreground"
 					>
 						<span>Products Sold</span>
-						<ShoppingBagIcon class="size-4 text-amber-500" />
+						<ShoppingBagIcon class="size-4 text-muted-foreground" />
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<div class="text-2xl font-bold text-amber-600">{report.productsSold}</div>
+					<div class="text-2xl font-semibold">{report.productsSold}</div>
 					<p class="mt-1 text-xs text-muted-foreground">Units sold</p>
 				</CardContent>
 			</Card>
@@ -176,11 +165,11 @@
 						class="flex items-center justify-between text-sm font-medium text-muted-foreground"
 					>
 						<span>Services</span>
-						<ClipboardListIcon class="size-4 text-violet-500" />
+						<ClipboardListIcon class="size-4 text-muted-foreground" />
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<div class="text-2xl font-bold text-violet-600">{report.serviceRendered}</div>
+					<div class="text-2xl font-semibold">{report.serviceRendered}</div>
 					<p class="mt-1 text-xs text-muted-foreground">Completed</p>
 				</CardContent>
 			</Card>
