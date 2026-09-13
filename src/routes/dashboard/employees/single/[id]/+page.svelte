@@ -129,7 +129,7 @@
 	import EditEmployment from './editEmployment.svelte';
 	import EditPersonal from './editPersonal.svelte';
 	import EditAddress from './editAddress.svelte';
-	import Section from './section.svelte';
+	import Section from '$lib/components/Section.svelte';
 	import Families from './Families.svelte';
 	import Qualifications from './qualifications.svelte';
 	import Experience from './experience.svelte';

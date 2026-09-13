@@ -30,6 +30,7 @@
 	import TableFacet from './table-facet.svelte';
 	import TableCharts from './table-charts.svelte';
 	import TablePagination from './table-pagination.svelte';
+	import TableDateRange from './table-date-range.svelte';
 	import {
 		applyFacets,
 		facetsFromRows,
@@ -117,6 +118,11 @@
 		charts?: boolean;
 		/** Present when the load already filtered and paged. See `ServerTable`. */
 		server?: ServerTable;
+		/**
+		 * Offer a date window in the toolbar, labelled with what it narrows — "Registered". Server
+		 * mode only: it writes `dateStart`/`dateEnd`, which the load applies to its `dateColumn`.
+		 */
+		dateFilter?: string;
 	};
 
 	let {
@@ -133,7 +139,8 @@
 		facetLabels = {},
 		facetParams = {},
 		charts = false,
-		server
+		server,
+		dateFilter
 	}: Props = $props();
 
 	const isServer = $derived(Boolean(server));
@@ -412,6 +419,14 @@
 							<RotateCcw class="size-4" />
 							Clear {activeFacetCount}
 						</Button>
+					{/if}
+
+					{#if server && dateFilter}
+						<TableDateRange
+							label={dateFilter}
+							start={server.filters?.dateStart}
+							end={server.filters?.dateEnd}
+						/>
 					{/if}
 
 					<Pdf {fileName} {table} />

@@ -60,7 +60,13 @@ type FormSchema = Parameters<typeof zod4Client>[0];
 
 export function createForm<T extends Record<string, unknown>, M extends FormMessage = FormMessage>(
 	data: SuperValidated<T, M>,
-	schema: FormSchema,
+	/**
+	 * The schema the form posts to. `undefined` only for a generic component handed a form
+	 * without its schema — `LookupEdit` on a lookup screen that has not passed one yet. That form
+	 * is still validated, on the server, which is the validation that counts; it just waits for
+	 * the round trip to say so.
+	 */
+	schema: FormSchema | undefined,
 	options: FormOptions<T, M> = {}
 ): SuperForm<T, M> {
 	const { onUpdated, ...rest } = options;
@@ -72,7 +78,7 @@ export function createForm<T extends Record<string, unknown>, M extends FormMess
 		 * the signature says so, and there is no way to tell TypeScript that from here without
 		 * requiring every caller to restate its type. One cast, named and explained (CLAUDE.md §3).
 		 */
-		validators: zod4Client(schema) as FormOptions<T, M>['validators'],
+		validators: schema ? (zod4Client(schema) as FormOptions<T, M>['validators']) : undefined,
 
 		...rest,
 

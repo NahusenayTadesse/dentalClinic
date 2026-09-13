@@ -173,3 +173,12 @@ export function setServerSort(column: string | null, dir: 'asc' | 'desc') {
 export function setServerFacet(key: string, value: string | null) {
 	void writeQuery({ [key]: value, page: 1 });
 }
+
+/**
+ * Writes several params at once, back to page one — for a control that owns more than one key,
+ * like a date window's two ends. Writing them one at a time would navigate twice and load a page
+ * filtered by half a window in between.
+ */
+export function setServerParams(params: Record<string, string | null>) {
+	void writeQuery({ ...params, page: 1 });
+}

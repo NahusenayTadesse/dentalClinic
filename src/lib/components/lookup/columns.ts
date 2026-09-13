@@ -7,10 +7,14 @@ import Statuses from '$lib/components/Table/statuses.svelte';
 import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 import LookupEdit from './LookupEdit.svelte';
 import { formatEthiopianDate } from '$lib/global.svelte';
+import type { createForm } from '$lib/forms/createForm';
 import type { LookupConfig, LookupField, LookupOptions, LookupRow } from './types';
 
 /** The validated form a lookup route hands to its dialogs. */
 export type LookupForm = SuperValidated<Record<string, unknown>>;
+
+/** A form's zod schema, as `createForm` accepts it. */
+export type LookupSchema = Parameters<typeof createForm>[1];
 
 /** A boolean cell reads as a status badge, in the field's own wording. */
 function badgeText(field: LookupField, value: unknown): string {
@@ -39,7 +43,9 @@ export function lookupColumns(
 		editForm,
 		canDelete = false,
 		options,
-		actions = { edit: '?/edit', delete: '?/delete' }
+		actions = { edit: '?/edit', delete: '?/delete' },
+		editSchema,
+		readonly = false
 	}: {
 		editForm: LookupForm;
 		canDelete?: boolean;
@@ -51,9 +57,46 @@ export function lookupColumns(
 		 * `?/editFamily`, `?/editQualification` and so on.
 		 */
 		actions?: { edit: string; delete: string };
+		/** Passed to each edit dialog so it validates before posting. */
+		editSchema?: LookupSchema;
+		/** No edit or delete controls, and the label column is plain text. */
+		readonly?: boolean;
 	}
 ): ColumnDef<LookupRow>[] {
 	const [labelField, ...rest] = config.fields;
+
+	/**
+	 * What a cell shows for this field on this row.
+	 *
+	 * A `reference` reads the joined name from `display` when the load joined one. `childCrud` does
+	 * not join — it selects the child table as it is — so the name is found in the picker's own
+	 * options instead. They are the same list the form offers, so the cell and the picker cannot
+	 * disagree about what an id is called.
+	 */
+	const shown = (field: LookupField, row: LookupRow): unknown => {
+		const value = row[field.name];
+		if (field.type === 'reference') {
+			if (field.display && row[field.display] !== undefined) return row[field.display];
+			return options?.[field.name]?.find((o) => String(o.value) === String(value))?.name ?? value;
+		}
+		if (field.type === 'select') {
+			return field.choices?.find((c) => c.value === value)?.name ?? value;
+		}
+		return value;
+	};
+
+	const editDialog = (row: LookupRow, icon: boolean) =>
+		renderComponent(LookupEdit, {
+			row,
+			fields: config.fields,
+			entity: config.entity,
+			data: editForm,
+			options,
+			action: actions.edit,
+			icon,
+			schema: editSchema,
+			label: String(shown(labelField, row) ?? '')
+		});
 
 	return [
 		{
@@ -64,19 +107,12 @@ export function lookupColumns(
 		},
 
 		{
-			accessorKey: labelField.name,
+			id: labelField.name,
+			accessorFn: (row) => shown(labelField, row),
 			header: sortableHeader(labelField.label),
 			// The name is the link that opens the editor, so there is no separate "view" action.
-			cell: ({ row }) =>
-				renderComponent(LookupEdit, {
-					row: row.original,
-					fields: config.fields,
-					entity: config.entity,
-					data: editForm,
-					options,
-					action: actions.edit,
-					icon: false
-				})
+			cell: ({ row, getValue }) =>
+				readonly ? String(getValue() ?? '') : editDialog(row.original, false)
 		},
 
 		...rest
@@ -89,12 +125,10 @@ export function lookupColumns(
 				// rather than blank — that state means the choices and the data have drifted.
 				if (field.type === 'select') {
 					return {
-						accessorKey: field.name,
+						id: field.name,
+						accessorFn: (row) => shown(field, row),
 						header: sortableHeader(field.label),
-						cell: ({ row }) => {
-							const value = row.original[field.name];
-							return field.choices?.find((c) => c.value === value)?.name ?? String(value ?? '');
-						}
+						cell: ({ getValue }) => String(getValue() ?? '')
 					};
 				}
 
@@ -111,11 +145,14 @@ export function lookupColumns(
 					};
 				}
 
-				// A reference sorts and reads on the joined *name*, never the raw id.
+				// A reference sorts and reads on the *name*, never the raw id.
 				if (field.type === 'reference') {
 					return {
-						accessorKey: field.display ?? field.name,
-						header: sortableHeader(field.label)
+						// The display key when there is one, as before: lookup screens name the column by it.
+						id: field.display ?? field.name,
+						accessorFn: (row) => shown(field, row),
+						header: sortableHeader(field.label),
+						cell: ({ getValue }) => String(getValue() ?? '')
 					};
 				}
 
@@ -135,36 +172,33 @@ export function lookupColumns(
 
 		...(config.extraColumns ?? []),
 
-		{
-			id: 'edit',
-			header: 'Edit',
-			enableSorting: false,
-			cell: ({ row }) =>
-				renderComponent(LookupEdit, {
-					row: row.original,
-					fields: config.fields,
-					entity: config.entity,
-					data: editForm,
-					options,
-					action: actions.edit,
-					icon: true
-				})
-		},
-
-		{
-			id: 'delete',
-			header: '',
-			enableSorting: false,
-			// Renders nothing unless the viewer is a super admin; the action re-checks server-side.
-			cell: ({ row }) =>
-				renderComponent(DeleteEntity, {
-					entity: config.entity,
-					name: String(row.original[labelField.name] ?? ''),
-					id: row.original.id,
-					icon: true,
-					canDelete,
-					action: actions.delete
-				})
-		}
+		...(readonly ? [] : actionColumns())
 	];
+
+	function actionColumns(): ColumnDef<LookupRow>[] {
+		return [
+			{
+				id: 'edit',
+				header: 'Edit',
+				enableSorting: false,
+				cell: ({ row }) => editDialog(row.original, true)
+			},
+
+			{
+				id: 'delete',
+				header: '',
+				enableSorting: false,
+				// Renders nothing unless the viewer is a super admin; the action re-checks server-side.
+				cell: ({ row }) =>
+					renderComponent(DeleteEntity, {
+						entity: config.entity,
+						name: String(shown(labelField, row.original) ?? ''),
+						id: row.original.id,
+						icon: true,
+						canDelete,
+						action: actions.delete
+					})
+			}
+		];
+	}
 }

@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { Plus } from '@lucide/svelte';
-	import { superForm } from 'sveltekit-superforms/client';
-	import { toast } from 'svelte-sonner';
+	import { createForm } from '$lib/forms/createForm';
 
 	import { Button } from '$lib/components/ui/button/index';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import Errors from '$lib/formComponents/Errors.svelte';
 	import LookupFields from './LookupFields.svelte';
-	import { lookupColumns, type LookupForm } from './columns';
+	import { lookupColumns, type LookupForm, type LookupSchema } from './columns';
 	import type { LookupConfig, LookupOptions, LookupRow } from './types';
 
 	/**
@@ -30,7 +30,9 @@
 		editForm,
 		canDelete = false,
 		options,
-		actions
+		actions,
+		schemas,
+		readonly = false
 	}: {
 		config: LookupConfig;
 		rows: LookupRow[];
@@ -40,45 +42,68 @@
 		options?: LookupOptions;
 		/** Namespaced form actions — `{ add: '?/addFamily', edit: '?/editFamily', … }`. */
 		actions: { add: string; edit: string; delete: string };
+		/**
+		 * The schemas the two forms post to, so a field is checked before the round trip. Optional
+		 * only because the server validates regardless; a new section should pass them.
+		 */
+		schemas?: { add?: LookupSchema; edit?: LookupSchema };
+		/** Hide the add button — for a viewer who may read these rows but not change them. */
+		readonly?: boolean;
 	} = $props();
 
-	const { form, errors, enhance, delayed, message } = superForm(addForm, {});
+	let open = $state(false);
 
-	const columns = $derived(lookupColumns(config, { editForm, canDelete, options, actions }));
-
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
+	// An add form starts from the load's empty form once; after a save superforms resets it.
+	// svelte-ignore state_referenced_locally
+	const { form, errors, enhance, delayed, allErrors } = createForm(addForm, schemas?.add, {
+		// Empty again after a save, so reopening does not show the entry just added.
+		resetForm: true,
+		onUpdated({ form }) {
+			if (form.message?.type === 'success') open = false;
 		}
 	});
+
+	const columns = $derived(
+		lookupColumns(config, {
+			editForm,
+			canDelete,
+			options,
+			actions,
+			editSchema: schemas?.edit,
+			readonly
+		})
+	);
 </script>
 
 <div class="flex flex-col gap-4">
-	<DialogComp title="+ Add {config.entity}" variant="outline" triggerClass="self-start">
-		<form
-			action={actions.add}
-			use:enhance
-			id={actions.add}
-			class="flex flex-col gap-4"
-			method="post"
-		>
-			<LookupFields fields={config.fields} {form} {errors} entity={config.entity} {options} />
+	{#if !readonly}
+		<DialogComp bind:open title="+ Add {config.entity}" variant="outline" triggerClass="self-start">
+			<form
+				action={actions.add}
+				use:enhance
+				id={actions.add}
+				class="flex flex-col gap-4"
+				method="post"
+			>
+				<Errors allErrors={$allErrors} />
+				<LookupFields fields={config.fields} {form} {errors} entity={config.entity} {options} />
 
-			<Button type="submit" form={actions.add}>
-				{#if $delayed}
-					<LoadingBtn name="Adding {config.entity}" />
-				{:else}
-					<Plus /> Add {config.entity}
-				{/if}
-			</Button>
-		</form>
-	</DialogComp>
+				<Button type="submit" form={actions.add}>
+					{#if $delayed}
+						<LoadingBtn name="Adding {config.entity}" />
+					{:else}
+						<Plus /> Add {config.entity}
+					{/if}
+				</Button>
+			</form>
+		</DialogComp>
+	{/if}
 
 	{#key rows}
-		<DataTable {columns} data={rows} search={false} fileName={config.plural} />
+		<!--
+			Sized to its rows. The table's default claims 80% of the screen, which is right for a list
+			page and left a chart of five sections as five screens of empty frame.
+		-->
+		<DataTable {columns} data={rows} search={false} fileName={config.plural} height="auto" />
 	{/key}
 </div>

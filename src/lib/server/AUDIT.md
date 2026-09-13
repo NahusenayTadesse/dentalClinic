@@ -29,9 +29,11 @@ So the rule is not "remember to log". It is **"write through the helper"**, whic
 (the helper is how you write at all) and is checkable with one grep for `db.insert` /
 `db.update` outside the sanctioned modules.
 
-Today that means `contentCrud`, `childCrud` and the `softDelete*` family, plus one helper for
-everything they do not cover — 61 direct write call sites across 15 route files still bypass
-them, and those are pre-existing (see _Not done yet_).
+The helper is `recordAudit` in `audit.ts`. `childCrud` calls it for any section given an `audit`
+table name, so a child section is audited by one line of configuration; a write that `childCrud`
+does not cover calls it directly, in the write's own transaction — the patient pages are the first
+consumers of both. 61 direct write call sites across 15 older route files still bypass it, and
+those are pre-existing (see _Not done yet_).
 
 ## Why the row looks like this
 
@@ -118,10 +120,13 @@ same as a patient record:
 
 ## Not done yet
 
-- **The helper does not exist.** `audit_log` has no writers at all today. It is written in the
-  app phase, and until it is, this file is the specification rather than a description.
+- **Only the patient pages write through it so far.** `patient` and its five editable children
+  are audited; the other tables on the list are audited when their screens are built or next
+  touched. The closed `AuditedTable` union already names all of them.
+- **Not audited yet on purpose: `patient_access_log` inserts**, which are reads, and the employee
+  child sections, whose tables are not on the list.
 - **61 direct write call sites** across 15 route files bypass every chokepoint. They predate this
   rule and are cleaned up when their feature is next touched, the same way the portability ledger
   works. The rule binds new code.
-- The analytics page at `reports/analytics/system.server.ts` already reads `audit_log` and will
-  return nothing until the helper lands.
+- The analytics page at `reports/analytics/system.server.ts` reads `audit_log`, and shows only
+  patient changes until more writers arrive.

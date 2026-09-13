@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { SquarePen, Save } from '@lucide/svelte';
-	import { superForm } from 'sveltekit-superforms';
-	import { toast } from 'svelte-sonner';
+	import { createForm } from '$lib/forms/createForm';
 
 	import { Button } from '$lib/components/ui/button/index.js';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
@@ -10,7 +9,7 @@
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import LookupFields from './LookupFields.svelte';
 	import type { LookupField, LookupOptions, LookupRow } from './types';
-	import type { LookupForm } from './columns';
+	import type { LookupForm, LookupSchema } from './columns';
 
 	/**
 	 * The edit dialog for one lookup row.
@@ -26,7 +25,9 @@
 		data,
 		action = '?/edit',
 		icon = false,
-		options
+		options,
+		schema,
+		label
 	}: {
 		row: LookupRow;
 		fields: LookupField[];
@@ -37,13 +38,26 @@
 		icon?: boolean;
 		/** Options for every `reference` field, keyed by field name. */
 		options?: LookupOptions;
+		/** The edit schema, so the dialog checks a field before the round trip. */
+		schema?: LookupSchema;
+		/**
+		 * What the trigger and the title say. The first field's raw value is the default, which is
+		 * wrong for a reference — a patient's allergy row read "22" instead of "Latex".
+		 */
+		label?: string;
 	} = $props();
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
-		resetForm: false
-	});
-
 	let open = $state(false);
+
+	// Seeded once per row: the dialog is rendered per row, so there is no later value to follow.
+	// svelte-ignore state_referenced_locally
+	const { form, errors, enhance, delayed, message, allErrors } = createForm(data, schema, {
+		resetForm: false,
+		// Closed only on success, so a refused save keeps the dialog and its errors on screen.
+		onUpdated({ form }) {
+			if (form.message?.type === 'success') open = false;
+		}
+	});
 
 	/*
 	 * Seeded once, on creation. The dialog is rendered per row, so each instance gets its own
@@ -52,18 +66,15 @@
 	$form.id = row.id;
 	for (const field of fields) $form[field.name] = row[field.name];
 
-	const title = $derived(String(row[fields[0]?.name ?? 'name'] ?? ''));
+	/*
+	 * Unique per row and per action. Every dialog here used `id="edit"`, and the submit button
+	 * finds its form by that id — harmless with one table on a page, but a detail page hosts
+	 * several, and a button pointing at the first `#edit` in the document submits somebody else's
+	 * form.
+	 */
+	const formId = $derived(`${action}-${row.id}`);
 
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-				open = false;
-			}
-		}
-	});
+	const title = $derived(label ?? String(row[fields[0]?.name ?? 'name'] ?? ''));
 </script>
 
 <DialogComp title="Edit {title}" variant="ghost" bind:open triggerClass="justify-self-start p-0!">
@@ -82,14 +93,14 @@
 		</Button>
 	{/snippet}
 
-	<form {action} use:enhance method="post" id="edit" class="flex w-full flex-col gap-4 p-4">
+	<form {action} use:enhance method="post" id={formId} class="flex w-full flex-col gap-4 p-4">
 		<Errors allErrors={$allErrors} />
 		<input type="hidden" name="id" value={$form.id} />
 		<Messages {message} />
 
 		<LookupFields {fields} {form} {errors} {entity} {options} />
 
-		<Button type="submit" class="mt-4" form="edit">
+		<Button type="submit" class="mt-4" form={formId}>
 			{#if $delayed}
 				<LoadingBtn name="Saving Changes" />
 			{:else}

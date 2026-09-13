@@ -1,7 +1,13 @@
 <script lang="ts">
+	/**
+	 * One card on a detail page: an icon, a title, an optional edit control, and the content.
+	 *
+	 * Shared since the patient page became its third user. The employee and customer pages each
+	 * carried a byte-identical `section.svelte` of their own — the second copy is where extraction
+	 * was due (CLAUDE.md §2).
+	 */
 	import type { Component } from 'svelte';
 	import type { Snippet } from 'svelte';
-	import type { PageData } from './$types';
 
 	const styles = {
 		container: 'min-h-screen  p-4 transition-colors duration-300 md:p-8',

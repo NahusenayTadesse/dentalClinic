@@ -7,7 +7,7 @@
 
 	import SingleView from '$lib/components/SingleView.svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte';
-	import Section from './section.svelte';
+	import Section from '$lib/components/Section.svelte';
 	import EditDetail from './editDetail.svelte';
 	import EditAddress from './editAddress.svelte';
 	import Contacts from './contacts.svelte';

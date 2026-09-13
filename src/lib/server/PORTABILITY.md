@@ -47,14 +47,14 @@ starts from a list instead of a grep.
 
 ### Database
 
-| Seam                                 | Owns                                                                                                                                                                      | Status                                          |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| `db/dialect.ts`                      | every SQL expression the three engines spell differently — `today`, `nowExpr`, `yearsSince`, `daysBetween`, `isoDate`, `monthKey`, `addDays`, `concatWith`, `groupConcat` | **built**; first consumer is the employees list |
-| `db/insert.ts`                       | getting an id back from an insert — MySQL has `$returningId()`, the others use `RETURNING`                                                                                | **not built**                                   |
-| `db/index.ts`                        | the driver and the connection                                                                                                                                             | exists                                          |
-| `dbErrors.ts`                        | driver error codes. A duplicate key is `ER_DUP_ENTRY` on MySQL, `23505` on Postgres, `SQLITE_CONSTRAINT_UNIQUE` on SQLite. Never compare an errno inline                  | exists, 2 callers                               |
-| `stock.ts`                           | the on-hand subquery. Portable as written; it stays the one place that knows how stock is derived                                                                         | exists                                          |
-| `lib/global.svelte.ts` → `fileUrl()` | the URL that serves a stored file                                                                                                                                         | **built**, 28 call sites migrated               |
+| Seam                                 | Owns                                                                                                                                                                      | Status                                                                                    |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `db/dialect.ts`                      | every SQL expression the three engines spell differently — `today`, `nowExpr`, `yearsSince`, `daysBetween`, `isoDate`, `monthKey`, `addDays`, `concatWith`, `groupConcat` | **built**; first consumer is the employees list                                           |
+| `db/insert.ts`                       | getting an id back from an insert — MySQL has `$returningId()`, the others use `RETURNING`                                                                                | **built** — `insertReturningId`; first consumers are `childCrud` and patient registration |
+| `db/index.ts`                        | the driver and the connection                                                                                                                                             | exists                                                                                    |
+| `dbErrors.ts`                        | driver error codes. A duplicate key is `ER_DUP_ENTRY` on MySQL, `23505` on Postgres, `SQLITE_CONSTRAINT_UNIQUE` on SQLite. Never compare an errno inline                  | exists, 2 callers                                                                         |
+| `stock.ts`                           | the on-hand subquery. Portable as written; it stays the one place that knows how stock is derived                                                                         | exists                                                                                    |
+| `lib/global.svelte.ts` → `fileUrl()` | the URL that serves a stored file                                                                                                                                         | **built**, 28 call sites migrated                                                         |
 
 `db/dialect.ts` exists now. Every body in it is still MariaDB — that is the point: the port is a
 file rather than a search. Adding to it is how a new dialect-specific expression enters the app.
@@ -172,7 +172,7 @@ settles both rules.
 
 `lib/server/leaveJob.ts`, `lib/server/stock.ts`, `lib/server/money.test.ts`, and 11 route files
 under `dashboard/` (roles, leave-expiry-policy, customers, employees ×2, salary ×3, supplies ×3).
-All of them want the same two lines of `db/insert.ts`.
+All of them want `insertReturningId` from `db/insert.ts`, which now exists; new code uses it.
 
 ### File storage — 3 files outside the seam
 

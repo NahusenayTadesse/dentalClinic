@@ -9,6 +9,9 @@ import { db } from '$lib/server/db';
 import { isDuplicateKey } from '$lib/server/dbErrors';
 import { saveUploadedFile } from '$lib/server/upload';
 import { notDeleted, softDeleteOwnedRecord } from '$lib/server/softDelete';
+import { recordAudit, type AuditedTable } from '$lib/server/audit';
+import { insertReturningId } from '$lib/server/db/insert';
+import { requirePermission } from '$lib/server/permissions';
 
 /**
  * CRUD for a table of rows owned by one parent record — the tabs on a detail page.
@@ -67,8 +70,32 @@ export interface ChildCrudOptions {
 	/**
 	 * Runs after the form is validated and before the write, for columns the server must decide.
 	 * The owner id is already stamped by the time this is called.
+	 *
+	 * On an edit, `before` is the row as it stands, read in the write's own transaction — for a
+	 * column that should change only when something else does, like a resolved date that is set
+	 * the first time a condition is marked resolved and left alone on every save after.
 	 */
-	transform?: (values: WritableRow, event: RequestEvent) => WritableRow | Promise<WritableRow>;
+	transform?: (
+		values: WritableRow,
+		event: RequestEvent,
+		before?: WritableRow
+	) => WritableRow | Promise<WritableRow>;
+	/**
+	 * The audit name of `table`, when its changes are audited (CLAUDE.md §11).
+	 *
+	 * Given, every add, edit and delete runs in a transaction with its audit row. Named here rather
+	 * than read off the Drizzle table so the closed `AuditedTable` list is what decides, and an
+	 * unlisted table cannot be audited by accident — or skipped by one.
+	 */
+	audit?: AuditedTable;
+	/**
+	 * The permission a write needs beyond the route's own gate (CLAUDE.md §9).
+	 *
+	 * The route rule decides who may *open* the parent's page. Changing what is on it can be a
+	 * different privilege — a receptionist reads a patient's allergy list and a clinician changes
+	 * it — and the action is reachable by anyone who can POST to the page, so it is checked here.
+	 */
+	permission?: string;
 }
 
 /** Every child action needs the row and, on edit and delete, which row. */
@@ -81,7 +108,9 @@ export function childCrud({
 	addSchema,
 	editSchema,
 	fileFields = [],
-	transform
+	transform,
+	audit,
+	permission
 }: ChildCrudOptions) {
 	const owner = table[ownerColumn];
 	if (!owner) throw new Error(`childCrud: ${ownerColumn} is not a column on this table`);
@@ -138,11 +167,19 @@ export function childCrud({
 					.orderBy(asc(table.id))
 			]);
 
-			return { addForm, editForm, deleteForm, rows };
+			// Every child table is keyed by an int `id`; saying so here is what lets the section's
+			// table component take the rows without each page restating it.
+			return {
+				addForm,
+				editForm,
+				deleteForm,
+				rows: rows.map((row) => ({ ...row, id: Number(row.id) }))
+			};
 		},
 
 		actions: {
 			add: async (event: RequestEvent, ownerId: number) => {
+				if (permission) requirePermission(event.locals, permission);
 				const form = await superValidate(event.request, zod4(addSchema));
 
 				if (!form.valid) {
@@ -161,7 +198,16 @@ export function childCrud({
 					if (hasSecureFields) values.createdBy = event.locals.user?.id;
 					if (transform) values = await transform(values, event);
 
-					await db.insert(table).values(values as never);
+					const written = values;
+					if (audit) {
+						// The id is only needed to say which row the audit entry is about.
+						await db.transaction(async (tx) => {
+							const id = await insertReturningId(tx, table, written);
+							await recordAudit(tx, event, { table: audit, recordId: id, action: 'create' });
+						});
+					} else {
+						await db.insert(table).values(written as never);
+					}
 					return message(form, { type: 'success', text: `${label} added` });
 				} catch (err) {
 					if (isDuplicateKey(err)) {
@@ -179,6 +225,7 @@ export function childCrud({
 			},
 
 			edit: async (event: RequestEvent, ownerId: number) => {
+				if (permission) requirePermission(event.locals, permission);
 				const form = await superValidate(event.request, zod4(editSchema));
 
 				if (!form.valid) {
@@ -191,18 +238,45 @@ export function childCrud({
 
 				try {
 					const rowId = Number(form.data.id);
-					let values = await toRow(form.data);
+					const values = await toRow(form.data);
 					if (hasSecureFields) values.updatedBy = event.locals.user?.id;
-					if (transform) values = await transform(values, event);
 
 					// The owner is in the `where`, not the `set`: an edit may never move a row to a
 					// different parent, and a row id from another parent must match nothing.
-					await db
-						.update(table)
-						.set(values as never)
-						.where(and(eq(table.id, rowId), eq(owner, ownerId), notDeleted(table as never)));
+					const scope = and(eq(table.id, rowId), eq(owner, ownerId), notDeleted(table as never));
 
-					return message(form, { type: 'success', text: `${label} updated` });
+					const found = await db.transaction(async (tx) => {
+						// Read first, in the same transaction: the audit row needs what changed, and a row
+						// that is not this owner's must say so rather than report a save that matched nothing.
+						const [before] = await tx.select().from(table).where(scope).limit(1);
+						if (!before) return false;
+
+						const written = transform ? await transform(values, event, before) : values;
+
+						await tx
+							.update(table)
+							.set(written as never)
+							.where(scope);
+
+						if (audit) {
+							await recordAudit(tx, event, {
+								table: audit,
+								recordId: rowId,
+								action: 'update',
+								before,
+								after: written
+							});
+						}
+						return true;
+					});
+
+					return found
+						? message(form, { type: 'success', text: `${label} updated` })
+						: message(
+								form,
+								{ type: 'error', text: `That ${label.toLowerCase()} no longer exists.` },
+								{ status: 404 }
+							);
 				} catch (err) {
 					console.error(`Failed to update ${label}:`, err);
 					return message(
@@ -222,6 +296,7 @@ export function childCrud({
 			 * what decides who that is.
 			 */
 			delete: async (event: RequestEvent, ownerId: number) => {
+				if (permission) requirePermission(event.locals, permission);
 				const form = await superValidate(event.request, zod4(idSchema));
 
 				if (!form.valid) {
@@ -229,16 +304,25 @@ export function childCrud({
 				}
 
 				try {
-					const removed = await db.transaction((tx) =>
-						softDeleteOwnedRecord(
+					const removed = await db.transaction(async (tx) => {
+						const done = await softDeleteOwnedRecord(
 							tx,
 							table as never,
 							owner,
 							form.data.id,
 							ownerId,
 							event.locals.user?.id
-						)
-					);
+						);
+
+						if (done && audit) {
+							await recordAudit(tx, event, {
+								table: audit,
+								recordId: form.data.id,
+								action: 'delete'
+							});
+						}
+						return done;
+					});
 
 					return removed
 						? message(form, { type: 'success', text: `${label} deleted` })
@@ -258,4 +342,36 @@ export function childCrud({
 			}
 		}
 	};
+}
+
+/**
+ * The form actions for a page's child sections, generated rather than written out.
+ *
+ *     export const actions = {
+ *       ...childActions({ Allergy: allergies, Condition: conditions }, livePatientId),
+ *       editIdentity: …
+ *     };
+ *
+ * gives `addAllergy`, `editAllergy`, `deleteAllergy`, `addCondition` and so on — the names
+ * `childActionPaths` on the client posts to, so the two halves are spelled from one key.
+ *
+ * The employee page wrote its twelve of these by hand, one line each, and every line took the
+ * owner straight off the URL. `owner` is a function here for the reason that was wrong: a POST to
+ * a record that does not exist, or a merged patient's tombstone, must be refused before a child
+ * row is filed under it — a foreign key error is not a refusal, it is a 500.
+ */
+export function childActions<K extends string, E extends RequestEvent>(
+	sections: Record<K, ReturnType<typeof childCrud>>,
+	/** Generic over the route's own event type, so a route can pass a resolver typed to its params. */
+	owner: (event: E) => Promise<number>
+) {
+	const actions: Record<string, (event: E) => Promise<unknown>> = {};
+
+	for (const [key, section] of Object.entries(sections) as [K, ReturnType<typeof childCrud>][]) {
+		actions[`add${key}`] = async (event) => section.actions.add(event, await owner(event));
+		actions[`edit${key}`] = async (event) => section.actions.edit(event, await owner(event));
+		actions[`delete${key}`] = async (event) => section.actions.delete(event, await owner(event));
+	}
+
+	return actions;
 }
