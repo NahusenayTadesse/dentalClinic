@@ -24,7 +24,7 @@
 		id,
 		startTime,
 		endTime,
-		day,
+		weekDay,
 		status,
 		icon = false
 	}: {
@@ -32,7 +32,7 @@
 		id: number;
 		startTime: string;
 		endTime: string;
-		day: number;
+		weekDay: number;
 		status: boolean;
 		icon: boolean;
 	} = $props();
@@ -44,7 +44,7 @@
 	let open = $state(false);
 
 	$form.id = id;
-	$form.day = day;
+	$form.weekDay = weekDay;
 	$form.startTime = startTime;
 	$form.endTime = endTime;
 	$form.status = status;
@@ -65,7 +65,7 @@
 </script>
 
 <DialogComp
-	title="Edit {getWeekdayName(day)}"
+	title="Edit {getWeekdayName(weekDay)}"
 	variant="ghost"
 	bind:open
 	triggerClass="justify-self-start p-0!"
@@ -80,7 +80,7 @@
 			{#if icon}
 				<SquarePen /> Edit
 			{:else}
-				{getWeekdayName(day)}
+				{getWeekdayName(weekDay)}
 			{/if}
 		</Button>
 	{/snippet}
@@ -94,7 +94,7 @@
 	>
 		<Errors allErrors={$allErrors} />
 		<input type="hidden" name="id" value={$form.id} />
-		<InputComp label="Day" name="day" type="select" {form} {errors} items={weekDays} />
+		<InputComp label="Day" name="weekDay" type="select" {form} {errors} items={weekDays} />
 		<InputComp label="Start Time" name="startTime" type="time" {form} {errors} required />
 		<InputComp label="End Time" name="endTime" type="time" {form} {errors} required />
 		<InputComp

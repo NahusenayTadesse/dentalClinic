@@ -58,9 +58,9 @@
 		email,
 		gender,
 		icon = false,
-		relationShip,
+		relationship,
 		emergencyContact,
-		otherRelationShip,
+		otherRelationship,
 		status = true
 	}: {
 		data: SuperValidated<Infer<EditFamily>>;
@@ -70,8 +70,8 @@
 		phone?: string;
 		email?: string;
 		icon: boolean;
-		relationShip: RelationShip;
-		otherRelationShip?: string;
+		relationship: RelationShip;
+		otherRelationship?: string;
 		emergencyContact: boolean;
 		status: boolean;
 	} = $props();
@@ -87,9 +87,9 @@
 	$form.gender = gender;
 	$form.email = email;
 	$form.phone = phone;
-	$form.relationShip = relationShip;
+	$form.relationship = relationship;
 	$form.emergencyContact = emergencyContact;
-	$form.otherRelationShip = otherRelationShip;
+	$form.otherRelationship = otherRelationship;
 	$form.status = status;
 
 	import { toast } from 'svelte-sonner';
@@ -170,23 +170,23 @@
 
 		<InputComp
 			label="Relationship to Employee"
-			name="relationShip"
+			name="relationship"
 			type="combo"
 			{form}
 			{errors}
 			items={relationShips}
 		/>
-		{#if $form.relationShip === 'other'}
+		{#if $form.relationship === 'other'}
 			<InputComp
 				label="Relationship to Employee"
-				name="otherRelationShip"
+				name="otherRelationship"
 				type="text"
 				{form}
 				{errors}
 			/>
 		{/if}
 
-		<input hidden bind:value={$form.otherRelationShip} name="otherRelationShip" />
+		<input hidden bind:value={$form.otherRelationship} name="otherRelationship" />
 
 		<InputComp
 			label="Is this Family Member an Emergency Contact?"

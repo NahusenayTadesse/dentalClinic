@@ -61,7 +61,7 @@
 			enableSorting: false
 		},
 		{
-			accessorKey: 'day',
+			accessorKey: 'weekDay',
 			header: ({ column }) =>
 				renderComponent(DataTableSort, {
 					name: 'Day',
@@ -72,7 +72,7 @@
 				return renderComponent(Edit, {
 					data: editForm,
 					id: row.original?.id,
-					day: row.original?.day,
+					weekDay: row.original?.weekDay,
 					startTime: row.original?.startTime,
 					endTime: row.original?.endTime,
 					status: row.original?.status,
@@ -138,7 +138,7 @@
 				return renderComponent(Edit, {
 					id: row.original?.id,
 					data: editForm,
-					day: row.original?.day,
+					weekDay: row.original?.weekDay,
 					startTime: row.original?.startTime,
 					endTime: row.original?.endTime,
 					status: row.original?.status,
@@ -193,7 +193,7 @@
 	>
 		<Errors allErrors={$allErrors} />
 		<input type="hidden" name="id" value={$form.id} />
-		<InputComp label="Day" name="day" type="select" {form} {errors} items={weekDays} />
+		<InputComp label="Day" name="weekDay" type="select" {form} {errors} items={weekDays} />
 		<InputComp label="Start Time" name="startTime" type="time" {form} {errors} required />
 		<InputComp label="End Time" name="endTime" type="time" {form} {errors} required />
 		<InputComp

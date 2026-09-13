@@ -93,6 +93,19 @@ export function childCrud({
 		const values = { ...data };
 		delete values.id;
 
+		/*
+		 * Forms across the app call the active flag `status`; `secureFields` tables call the column
+		 * `isActive`, and the layouts read it back under the `status` alias. `contentCrud` has mapped
+		 * this since the toggle was found silently doing nothing — Drizzle drops keys that match no
+		 * column, so the row saved and `is_active` kept its default. This factory did not, and every
+		 * section on the employee page had to repeat the rename in its own `transform`. One place,
+		 * the same as its sibling.
+		 */
+		if ('status' in values && !('status' in table) && 'isActive' in table) {
+			values.isActive = values.status;
+			delete values.status;
+		}
+
 		for (const field of fileFields) {
 			const file = values[field];
 			// No new upload means "keep whatever is already stored".

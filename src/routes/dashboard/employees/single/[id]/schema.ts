@@ -118,8 +118,8 @@ export const editFamily = z.object({
 	phone: z.string().optional(),
 	email: z.string().optional(),
 	emergencyContact: z.boolean().default(false),
-	otherRelationShip: z.string().optional(),
-	relationShip: RelationShipEnum,
+	otherRelationship: z.string().optional(),
+	relationship: RelationShipEnum,
 	status: z.boolean().default(true)
 });
 export type EditFamily = z.infer<typeof editFamily>;
@@ -133,8 +133,8 @@ export const addFamily = z.object({
 	phone: z.string().optional(),
 	email: z.string().optional(),
 	emergencyContact: z.boolean().default(false),
-	otherRelationShip: z.string().optional(),
-	relationShip: RelationShipEnum,
+	otherRelationship: z.string().optional(),
+	relationship: RelationShipEnum,
 	status: z.boolean().default(true)
 });
 
@@ -143,7 +143,7 @@ export type AddFamily = z.infer<typeof addFamily>;
 export const addQualification = z.object({
 	field: z.string('Field name is required').min(1).max(100),
 
-	educationalLevel: z.number('Educational Level is required'),
+	educationLevel: z.number('Educational Level is required'),
 	schoolName: z.string('School Name is required'),
 	graduationDate: z.string('Graduation Date is required'),
 	certificate: z
@@ -166,7 +166,7 @@ export const editQualification = z.object({
 
 	field: z.string('Field name is required').min(1).max(100),
 
-	educationalLevel: z.number('Educational Level is required'),
+	educationLevel: z.number('Educational Level is required'),
 	schoolName: z.string('School Name is required'),
 	graduationDate: z.string('Graduation Date is required'),
 	certificate: z
@@ -352,7 +352,7 @@ export const addGuarantor = z.object({
 export type AddGuarantor = z.infer<typeof addGuarantor>;
 
 export const addSchedule = z.object({
-	day: z.number('Day is Required'),
+	weekDay: z.number('Day is Required'),
 	startTime: z.string('Start Time is required'),
 	endTime: z.string('End Time is required'),
 	status: z.boolean('Status is Required').default(true)
@@ -361,7 +361,7 @@ export type AddSchedule = z.infer<typeof addSchedule>;
 
 export const editSchedule = z.object({
 	id: z.number('Schedule not found'),
-	day: z.number('Day is Required'),
+	weekDay: z.number('Day is Required'),
 	startTime: z.string('Start Time is required'),
 	endTime: z.string('End Time is required'),
 	status: z.boolean('Status is Required').default(true)
@@ -386,7 +386,7 @@ export const editContact = z.object({
 export type EditContact = z.infer<typeof editContact>;
 
 export const addAccount = z.object({
-	paymentMethod: z.number('Bank Name is Required'),
+	paymentMethodId: z.number('Bank Name is Required'),
 	accountDetail: z.string('Account Detail is required').optional(),
 	status: z.boolean('Status is Required').default(true)
 });
@@ -394,16 +394,9 @@ export type AddAccount = z.infer<typeof addAccount>;
 
 export const editAccount = z.object({
 	id: z.number('Schedule not found'),
-	paymentMethod: z.number('Bank Name is Required'),
+	paymentMethodId: z.number('Bank Name is Required'),
 	accountDetail: z.string('Account Detail is required'),
 	status: z.boolean('Status is Required').default(true)
 });
 
 export type EditAccount = z.infer<typeof editAccount>;
-
-export const editCommission = z.object({
-	percentage: z.number('Percentage is Required').default(0),
-	status: z.boolean('Status is Required').default(true)
-});
-
-export type EditCommission = z.infer<typeof editCommission>;

@@ -103,8 +103,8 @@
 		{
 			name: 'Relationship',
 			value:
-				data?.guarantor?.relationShip !== 'other'
-					? data?.guarantor?.relationShip
+				data?.guarantor?.relationship !== 'other'
+					? data?.guarantor?.relationship
 					: data?.guarantor?.relation
 		},
 		{ name: 'Job Type', value: data?.guarantor?.jobType },
@@ -123,16 +123,6 @@
 		{ name: 'Status', value: data?.guarantor?.address?.status ? 'Active' : 'Inactive' }
 	]);
 
-	let officeCommission = $derived([
-		{
-			name: 'Percentage',
-			value: data?.officeCommission?.percentage + '%' || 'Not Included in Office Commission'
-		},
-		{ name: 'First Added By', value: data?.officeCommission?.createdBy },
-		{ name: 'Last Updated By', value: data?.officeCommission?.updatedBy },
-		{ name: 'Status', value: data?.officeCommission?.status ? 'Active' : 'Inactive' }
-	]);
-
 	import Terminate from './terminate.svelte';
 	import Reinstate from './reinstate.svelte';
 	import EditIdentity from './editIdentity.svelte';
@@ -148,7 +138,6 @@
 	import Schedules from './schedules.svelte';
 	import Contacts from './contacts.svelte';
 	import Accounts from './accounts.svelte';
-	import EditCommission from './editCommission.svelte';
 	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 	import ApprovalBanner from './approval-banner.svelte';
 	import { fileUrl } from '$lib/global.svelte';
@@ -362,7 +351,7 @@
 										name={data?.guarantor?.name}
 										phone={data?.guarantor?.phone}
 										email={data?.guarantor?.email}
-										relationship={data?.guarantor?.relationShip}
+										relationship={data?.guarantor?.relationship}
 										relation={data?.guarantor?.relation}
 										jobType={data?.guarantor?.jobType}
 										company={data?.guarantor?.company}
@@ -512,30 +501,6 @@
 					canDelete={data?.isSuperAdmin}
 				/>
 			</Section>
-
-			{#if data?.officeCommission}
-				<Section title="Office Commission" IconComp={Settings} style="systemIcon">
-					{#snippet editDialog()}
-						<EditCommission
-							data={data?.editCommissionForm}
-							percentage={data?.officeCommission?.percentage}
-							status={data?.officeCommission?.status}
-						/>
-					{/snippet}
-					<SingleTable singleTable={officeCommission} />
-					{#if data?.isSuperAdmin}
-						<div class="flex justify-end">
-							<DeleteEntity
-								entity="Commission"
-								name="{data?.officeCommission?.percentage}% office commission"
-								id={data?.officeCommission?.id}
-								action="?/deleteCommission"
-								canDelete={data?.isSuperAdmin}
-							/>
-						</div>
-					{/if}
-				</Section>
-			{/if}
 
 			<Section title="System Information" IconComp={Settings} style="systemIcon">
 				<SingleTable singleTable={systemInformation} />

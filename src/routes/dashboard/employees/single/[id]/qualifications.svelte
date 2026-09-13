@@ -56,7 +56,7 @@
 				return renderComponent(Edit, {
 					id: row.original?.id,
 					field: row.original?.field,
-					educationalLevel: row.original?.educationalLevelId,
+					educationLevel: row.original?.educationalLevelId,
 					schoolName: row.original?.schoolName,
 					graduationDate: row.original?.graduationDate,
 					certificate: row.original?.certificate,
@@ -136,7 +136,7 @@
 				return renderComponent(Edit, {
 					id: row.original?.id,
 					field: row.original?.field,
-					educationalLevel: row.original?.educationalLevelId,
+					educationLevel: row.original?.educationalLevelId,
 					schoolName: row.original?.schoolName,
 					certificate: row.original?.certificate,
 					graduationDate: row.original?.graduationDate,
@@ -200,7 +200,7 @@
 		/>
 		<InputComp
 			label="Educational Level"
-			name="educationalLevel"
+			name="educationLevel"
 			type="combo"
 			{form}
 			{errors}

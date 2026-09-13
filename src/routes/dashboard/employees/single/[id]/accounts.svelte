@@ -60,7 +60,7 @@
 					id: row.original?.id,
 					name: row.original?.paymentMethod,
 					paymentMethods: paymentMethods,
-					paymentMethod: row.original?.paymentMethodId,
+					paymentMethodId: row.original?.paymentMethodId,
 					accountDetail: row.original?.accountDetail,
 					status: row.original?.status,
 					data: editForm,
@@ -114,7 +114,7 @@
 					id: row.original?.id,
 					paymentMethods: paymentMethods,
 					name: row.original?.paymentMethod,
-					paymentMethod: row.original?.paymentMethodId,
+					paymentMethodId: row.original?.paymentMethodId,
 					accountDetail: row.original?.accountDetail,
 					status: row.original?.status,
 					data: editForm,
@@ -144,7 +144,7 @@
 	const { form, errors, enhance, delayed, message, allErrors } = superForm(addForm, {
 		resetForm: false
 		// onChange() {
-		// 	if ($form.paymentMethod === 8) {
+		// 	if ($form.paymentMethodId === 8) {
 		// 		$form.accountDetail = 'No Account';
 		// 		disabled = true;
 		// 	} else {
@@ -153,10 +153,10 @@
 		// }
 	});
 
-	let prevPaymentMethod = $state($form.paymentMethod);
+	let prevPaymentMethod = $state($form.paymentMethodId);
 
 	$effect(() => {
-		const current = $form.paymentMethod;
+		const current = $form.paymentMethodId;
 
 		if (current !== prevPaymentMethod) {
 			if (current === 8) {
@@ -196,7 +196,7 @@
 		<Errors allErrors={$allErrors} />
 		<InputComp
 			label="Bank"
-			name="paymentMethod"
+			name="paymentMethodId"
 			type="select"
 			{form}
 			{errors}

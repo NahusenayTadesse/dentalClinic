@@ -21,7 +21,7 @@
 		data,
 		id,
 		paymentMethods,
-		paymentMethod,
+		paymentMethodId,
 		accountDetail,
 		name,
 		status,
@@ -31,7 +31,7 @@
 		id: number;
 		name: string;
 		paymentMethods: Item[];
-		paymentMethod: number;
+		paymentMethodId: number;
 		accountDetail: string;
 		status: boolean;
 		icon: boolean;
@@ -43,10 +43,10 @@
 	});
 
 	let disabled = $state(false);
-	let prevPaymentMethod = $state($form.paymentMethod);
+	let prevPaymentMethod = $state($form.paymentMethodId);
 
 	$effect(() => {
-		const current = $form.paymentMethod;
+		const current = $form.paymentMethodId;
 
 		if (current !== prevPaymentMethod) {
 			if (current === 8) {
@@ -73,11 +73,11 @@
 	});
 
 	$form.id = id;
-	$form.paymentMethod = paymentMethod;
+	$form.paymentMethodId = paymentMethodId;
 	$form.accountDetail = accountDetail;
 	$form.status = status;
-	prevPaymentMethod = paymentMethod;
-	disabled = paymentMethod === 8;
+	prevPaymentMethod = paymentMethodId;
+	disabled = paymentMethodId === 8;
 </script>
 
 <DialogComp title={icon ? 'Edit' : name} variant="ghost" IconComp={icon ? SquarePen : undefined}>
@@ -91,7 +91,7 @@
 		<input type="hidden" bind:value={$form.id} name="id" />
 		<InputComp
 			label="Bank"
-			name="paymentMethod"
+			name="paymentMethodId"
 			type="select"
 			{form}
 			{errors}

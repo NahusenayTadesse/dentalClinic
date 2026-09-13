@@ -37,3 +37,22 @@ export function isForeignKeyViolation(err: unknown): boolean {
 	const code = mysqlErrorCode(err);
 	return code === 'ER_ROW_IS_REFERENCED_2' || code === 'ER_NO_REFERENCED_ROW_2';
 }
+
+/**
+ * Logs a failure in full and returns the sentence the client is allowed to see.
+ *
+ * CLAUDE.md §9: loud in the log, quiet to the client. The employee detail page alone had eleven
+ * actions putting `err.message` straight into the toast — which, for a failed query, is Drizzle's
+ * message: the SQL, the table and column names, and the parameters that were bound. That hands
+ * the schema to whoever can provoke an error, and tells an ordinary user nothing they can act on.
+ *
+ * Returns the text rather than building the response, so it works the same whether the caller
+ * answers with a superforms `message`, a flash, or `fail`.
+ *
+ *     return message(form, { type: 'error', text: hideFailure('employees.editAddress', err,
+ *       'Could not save the address. Please try again.') });
+ */
+export function hideFailure(context: string, err: unknown, shown: string): string {
+	console.error(`[${context}]`, err);
+	return shown;
+}

@@ -219,9 +219,9 @@ Two qualifications, so this rule does not fight the others:
   its own file, not because a line count says so.
 
 Everything else over 500 is a real target. Current offenders:
-`reports/details.server.ts` (1,518), `employees/single/[id]/+page.server.ts` (1,281),
+`reports/details.server.ts` (1,518), `employees/single/[id]/+page.server.ts` (830, down from 1,296),
 `app-sidebar.svelte` (639), `salary/add-payroll/**/+page.server.ts` (588/586),
-`employees/single/[id]/+page.svelte` (555), `Table/FilterMenu.svelte` (548),
+`employees/single/[id]/+page.svelte` (521), `Table/FilterMenu.svelte` (548),
 `QueryBuilder.svelte` (534).
 
 ---

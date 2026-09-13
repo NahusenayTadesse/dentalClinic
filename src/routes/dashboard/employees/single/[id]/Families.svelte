@@ -79,8 +79,8 @@
 					email: row.original?.email,
 					gender: data[row.index]?.gender,
 					emergencyContact: row.original?.emergencyContact,
-					relationShip: row.original?.relationShip,
-					otherRelationShip: row.original?.relationShip,
+					relationship: row.original?.relationship,
+					otherRelationship: row.original?.otherRelationship,
 					data: editForm,
 					icon: false,
 					status: row.original?.status
@@ -127,16 +127,16 @@
 		},
 
 		{
-			accessorKey: 'relationShip',
+			accessorKey: 'relationship',
 			header: ({ column }) =>
 				renderComponent(DataTableSort, {
 					name: 'RelationShip',
 					onclick: column.getToggleSortingHandler()
 				}),
 			cell: ({ row }) => {
-				return row.original.relationShip === 'other'
-					? row.original.otherRelationShip
-					: row.original.relationShip;
+				return row.original.relationship === 'other'
+					? row.original.otherRelationship
+					: row.original.relationship;
 			}
 		},
 
@@ -189,8 +189,8 @@
 					email: row.original?.email,
 					gender: data[row.index]?.gender,
 					emergencyContact: row.original?.emergencyContact,
-					relationShip: row.original?.relationShip,
-					otherRelationShip: row.original?.relationShip,
+					relationship: row.original?.relationship,
+					otherRelationship: row.original?.otherRelationship,
 					data: editForm,
 					icon: true,
 					status: row.original?.status
@@ -282,23 +282,23 @@
 
 		<InputComp
 			label="Relationship to Employee"
-			name="relationShip"
+			name="relationship"
 			type="combo"
 			{form}
 			{errors}
 			items={relationShips}
 		/>
-		{#if $form.relationShip === 'other'}
+		{#if $form.relationship === 'other'}
 			<InputComp
 				label="Relationship to Employee"
-				name="otherRelationShip"
+				name="otherRelationship"
 				type="text"
 				{form}
 				{errors}
 			/>
 		{/if}
 
-		<input hidden bind:value={$form.otherRelationShip} name="otherRelationShip" />
+		<input hidden bind:value={$form.otherRelationship} name="otherRelationship" />
 
 		<InputComp
 			label="Is this Family Member an Emergency Contact?"

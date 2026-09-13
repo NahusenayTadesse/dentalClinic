@@ -10,13 +10,14 @@ import {
 	address,
 	employeeGuarantor
 } from '$lib/server/db/schema';
-import { eq, and, sql } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import {
 	softDeleteEmployee,
 	softDeleteStaffRecord,
 	type StaffOwnedKind
 } from '$lib/server/softDelete';
 import { requireSuperAdmin } from '$lib/server/permissions';
+import { hideFailure } from '$lib/server/dbErrors';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
 import { SECTIONS } from './sections';
 import { fail } from 'sveltekit-superforms';
@@ -42,8 +43,7 @@ import {
 	addContact,
 	editContact,
 	addAccount,
-	editAccount,
-	editCommission
+	editAccount
 } from './schema';
 import {
 	empStatus,
@@ -56,66 +56,61 @@ import {
 
 import { saveUploadedFile } from '$lib/server/upload';
 
-export const load: PageServerLoad = async () => {
-	const terminateForm = await superValidate(zod4(terminate));
-	const reinstateForm = await superValidate(zod4(reinstate));
-	const identityForm = await superValidate(zod4(editIdentity));
-	const employmentForm = await superValidate(zod4(editEmployment));
-	const personalForm = await superValidate(zod4(editPersonal));
-	const addressForm = await superValidate(zod4(editAddress));
-	const familyForm = await superValidate(zod4(editFamily));
-	const addfamilyForm = await superValidate(zod4(addFamily));
-	const addQualificationForm = await superValidate(zod4(addQualification));
-	const editQualificationForm = await superValidate(zod4(editQualification));
-	const editExperienceForm = await superValidate(zod4(editExperience));
-	const addExperienceForm = await superValidate(zod4(addExperience));
-	const editGuarantorForm = await superValidate(zod4(editGuarantor));
-	const addGuarantorForm = await superValidate(zod4(addGuarantor));
-	const addScheduleForm = await superValidate(zod4(addSchedule));
-	const editScheduleForm = await superValidate(zod4(editSchedule));
-	const editContactForm = await superValidate(zod4(editContact));
-	const addContactForm = await superValidate(zod4(addContact));
-	const addAccountForm = await superValidate(zod4(addAccount));
-	const editAccountForm = await superValidate(zod4(editAccount));
-	const editCommissionForm = await superValidate(zod4(editCommission));
+/**
+ * Awaits an object of promises together, keeping each result under its own key.
+ *
+ * The one cast is forced: `Object.fromEntries` returns `Record<string, unknown>` whatever went in,
+ * and the mapped type restores exactly the keys and awaited values that were passed. Nothing
+ * outside this function sees anything untyped.
+ */
+async function awaitAll<T extends Record<string, Promise<unknown>>>(
+	pending: T
+): Promise<{ [K in keyof T]: Awaited<T[K]> }> {
+	const settled = await Promise.all(
+		Object.entries(pending).map(async ([key, value]) => [key, await value] as const)
+	);
+	return Object.fromEntries(settled) as { [K in keyof T]: Awaited<T[K]> };
+}
 
-	const statusList = await empStatus();
-	const departmentList = await departments();
-	const positionList = await positions();
-	const educationalLevelList = await eduLevel();
-	const subcityList = await subcities();
-	const bankList = await paymentMethods();
+/**
+ * Every form and option list the detail page's dialogs need.
+ *
+ * These were twenty-six awaits in a row, six of them database queries each waiting on the last.
+ * They are independent, so they now run together. Measured against a local database this made no
+ * difference worth reporting — 17.8 ms median before, 19.6 ms after, inside the noise — because
+ * each lookup takes well under a millisecond there. It is kept for the shape, and because the
+ * gap only opens on a slower database link. The page's real cost is in `+layout.server.ts`.
+ */
+export const load: PageServerLoad = async () =>
+	awaitAll({
+		terminateForm: superValidate(zod4(terminate)),
+		reinstateForm: superValidate(zod4(reinstate)),
+		identityForm: superValidate(zod4(editIdentity)),
+		employmentForm: superValidate(zod4(editEmployment)),
+		personalForm: superValidate(zod4(editPersonal)),
+		addressForm: superValidate(zod4(editAddress)),
+		familyForm: superValidate(zod4(editFamily)),
+		addfamilyForm: superValidate(zod4(addFamily)),
+		addQualificationForm: superValidate(zod4(addQualification)),
+		editQualificationForm: superValidate(zod4(editQualification)),
+		addExperienceForm: superValidate(zod4(addExperience)),
+		editExperienceForm: superValidate(zod4(editExperience)),
+		editGuarantorForm: superValidate(zod4(editGuarantor)),
+		addGuarantorForm: superValidate(zod4(addGuarantor)),
+		addScheduleForm: superValidate(zod4(addSchedule)),
+		editScheduleForm: superValidate(zod4(editSchedule)),
+		addContactForm: superValidate(zod4(addContact)),
+		editContactForm: superValidate(zod4(editContact)),
+		addAccountForm: superValidate(zod4(addAccount)),
+		editAccountForm: superValidate(zod4(editAccount)),
 
-	return {
-		terminateForm,
-		reinstateForm,
-		statusList,
-		identityForm,
-		departmentList,
-		positionList,
-		employmentForm,
-		educationalLevelList,
-		personalForm,
-		addressForm,
-		subcityList,
-		familyForm,
-		addfamilyForm,
-		addQualificationForm,
-		editQualificationForm,
-		addExperienceForm,
-		editExperienceForm,
-		editGuarantorForm,
-		addGuarantorForm,
-		addScheduleForm,
-		editScheduleForm,
-		addContactForm,
-		editContactForm,
-		addAccountForm,
-		editAccountForm,
-		bankList,
-		editCommissionForm
-	};
-};
+		statusList: empStatus(),
+		departmentList: departments(),
+		positionList: positions(),
+		educationalLevelList: eduLevel(),
+		subcityList: subcities(),
+		bankList: paymentMethods()
+	});
 
 /**
  * Builds a super-admin-only delete action for one of the lists on this page.
@@ -146,12 +141,15 @@ const deleteStaffRecord =
 				setFlash({ type: 'error', message: `That ${label} was not found.` }, cookies);
 				return fail(404);
 			}
-		} catch (err) {
-			console.error(`Error deleting ${label}:`, err);
+		} catch (err: unknown) {
 			setFlash(
 				{
 					type: 'error',
-					message: `Could not delete ${label}: ${err instanceof Error ? err.message : 'Unknown error'}`
+					message: hideFailure(
+						`employees.delete.${kind}`,
+						err,
+						`Could not delete that ${label}. Please try again.`
+					)
 				},
 				cookies
 			);
@@ -161,6 +159,21 @@ const deleteStaffRecord =
 		setFlash({ type: 'success', message: `${label} deleted.` }, cookies);
 		return { success: true };
 	};
+
+/**
+ * A replacement upload, or the file already on record.
+ *
+ * An edit form re-posts every field, and a file input left untouched arrives as an empty `File`;
+ * treating that as "remove the document" would wipe it on every unrelated edit.
+ */
+async function keepOrReplace(upload: unknown, current: string | null): Promise<string | null> {
+	return upload instanceof File && upload.size > 0 ? saveUploadedFile(upload) : current;
+}
+
+/** A new upload, or nothing — for a form where the file is optional. */
+async function optionalUpload(upload: unknown): Promise<string | null> {
+	return upload instanceof File && upload.size > 0 ? saveUploadedFile(upload) : null;
+}
 
 export const actions: Actions = {
 	/*
@@ -240,62 +253,99 @@ export const actions: Actions = {
 			// Stay on the same page and set a flash message
 			setFlash({ type: 'success', message: 'Service Updated Successuflly' }, cookies);
 			return message(form, { type: 'success', text: 'Staff Member Updated Successfully!' });
-		} catch (err) {
-			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
-			return message(form, {
-				type: 'error',
-				text: 'An error occurred while updating the staff member. ' + err?.message
-			});
+		} catch (err: unknown) {
+			const text = hideFailure(
+				'employees.editStaff',
+				err,
+				'Could not update this staff member. Please try again.'
+			);
+			setFlash({ type: 'error', message: text }, cookies);
+			return message(form, { type: 'error', text });
 		}
 	},
-	terminate: async ({ params, cookies, request, locals }) => {
-		const { id } = params;
-
+	/**
+	 * Ends an employee's employment: records why, files the letter if there is one, and marks the
+	 * record inactive under the status the clinic has designated for terminations.
+	 *
+	 * Three things this used to get wrong, each fatal on its own:
+	 *
+	 * - **The letter is optional, and terminating without one always failed.** The form and the
+	 *   schema both say optional; the action called `saveUploadedFile` unconditionally, which throws
+	 *   on a missing file, so every termination without an attachment came back as "Unexpected
+	 *   Error: No file was uploaded."
+	 * - **`new Date(x) || null` is never null.** A `Date` is truthy even when invalid, so a bad date
+	 *   reached the database as `Invalid Date` rather than being refused.
+	 * - **The termination status was looked up after the letter was saved.** On a clinic that had not
+	 *   flagged a status for terminations — every fresh install — `data[0].id` threw, the transaction
+	 *   rolled back, and the letter stayed on disk attached to nothing.
+	 *
+	 * Everything that can refuse now refuses before anything is written.
+	 */
+	terminate: async ({ params, request, locals }) => {
+		const staffId = Number(params.id);
 		const form = await superValidate(request, zod4(terminate));
 
 		if (!form.valid) {
-			// Stay on the same page and set a flash message
-			return message(form, { type: 'error', text: `Error: check the form` });
+			return message(form, { type: 'error', text: 'Please check the form and try again.' });
 		}
+
 		const { reason, terminationDate, terminationLetter } = form.data;
 
+		// Files cannot be serialised back to the page; the letter is read here or not at all.
+		delete form.data.terminationLetter;
+
+		const effective = new Date(terminationDate);
+		if (Number.isNaN(effective.getTime())) {
+			return message(form, { type: 'error', text: 'That termination date is not a valid date.' });
+		}
+
+		const [terminatedStatus] = await db
+			.select({ id: employmentStatuses.id })
+			.from(employmentStatuses)
+			.where(eq(employmentStatuses.terminationStatus, true))
+			.limit(1);
+
+		if (!terminatedStatus) {
+			return message(form, {
+				type: 'error',
+				text: 'No employment status is marked as the termination status. Set one under Admin Panel → Employment Status first.'
+			});
+		}
+
 		try {
-			if (!id) {
-				return message(form, { type: 'error', text: `Employee Not Found` });
-			}
-			const terminationLetterName = await saveUploadedFile(terminationLetter);
-			if (terminationLetterName) delete form.data.terminationLetter;
+			const letter =
+				terminationLetter && terminationLetter.size > 0
+					? await saveUploadedFile(terminationLetter)
+					: null;
+
 			await db.transaction(async (tx) => {
 				await tx.insert(employeeTermination).values({
-					staffId: Number(id),
+					staffId,
 					reason,
 					terminationDate,
-					terminationLetter: terminationLetterName,
-					createdBy: locals?.user?.id
+					terminationLetter: letter,
+					createdBy: locals.user?.id
 				});
-
-				const employmentStatus = await db
-					.select({
-						id: employmentStatuses.id
-					})
-					.from(employmentStatuses)
-					.where(eq(employmentStatuses.terminationStatus, true))
-					.then((data) => data[0].id);
 
 				await tx
 					.update(employee)
 					.set({
-						employmentStatus,
-						terminationDate: new Date(terminationDate) || null,
+						employmentStatus: terminatedStatus.id,
+						terminationDate: effective,
 						isActive: false,
-						updatedBy: locals?.user?.id
+						updatedBy: locals.user?.id
 					})
-					.where(eq(employee.id, Number(id)));
+					.where(eq(employee.id, staffId));
 			});
-			return message(form, { type: 'success', text: 'Employee Terminated Successfully!' });
-		} catch (err) {
-			console.error('Error terminating employee:', err);
-			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+
+			return message(form, { type: 'success', text: 'Employee terminated.' });
+		} catch (err: unknown) {
+			// Loud in the log, quiet to the client (§9).
+			console.error('[employees] terminate failed:', err);
+			return message(form, {
+				type: 'error',
+				text: 'Could not terminate this employee. Please try again.'
+			});
 		}
 	},
 	reinstate: async ({ params, request, locals }) => {
@@ -342,9 +392,15 @@ export const actions: Actions = {
 					.where(eq(employee.id, Number(id)));
 			});
 			return message(form, { type: 'success', text: 'Employee Reinstated Successfully!' });
-		} catch (err) {
-			console.error('Error terminating employee:', err);
-			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		} catch (err: unknown) {
+			return message(form, {
+				type: 'error',
+				text: hideFailure(
+					'employees.reinstate',
+					err,
+					'Could not reinstate this employee. Please try again.'
+				)
+			});
 		}
 	},
 	editIdentity: async ({ params, request, locals }) => {
@@ -414,9 +470,15 @@ export const actions: Actions = {
 					.where(eq(employee.id, Number(id)));
 			});
 			return message(form, { type: 'success', text: 'Employee Identity Updated Successfully!' });
-		} catch (err) {
-			console.error('Error updating employee identity:', err);
-			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		} catch (err: unknown) {
+			return message(form, {
+				type: 'error',
+				text: hideFailure(
+					'employees.editIdentity',
+					err,
+					'Could not save the identity details. Please try again.'
+				)
+			});
 		}
 	},
 	editEmployment: async ({ params, request, locals }) => {
@@ -450,9 +512,15 @@ export const actions: Actions = {
 					.where(eq(employee.id, Number(id)));
 			});
 			return message(form, { type: 'success', text: 'Employment Details Updated Successfully!' });
-		} catch (err) {
-			console.error('Error updating employment details:', err);
-			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		} catch (err: unknown) {
+			return message(form, {
+				type: 'error',
+				text: hideFailure(
+					'employees.editEmployment',
+					err,
+					'Could not save the employment details. Please try again.'
+				)
+			});
 		}
 	},
 	editPersonal: async ({ params, request, locals }) => {
@@ -487,9 +555,15 @@ export const actions: Actions = {
 					.where(eq(employee.id, Number(id)));
 			});
 			return message(form, { type: 'success', text: 'Employee Details Updated Successfully!' });
-		} catch (err) {
-			console.error('Error updating employee details:', err);
-			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		} catch (err: unknown) {
+			return message(form, {
+				type: 'error',
+				text: hideFailure(
+					'employees.editPersonal',
+					err,
+					'Could not save the personal details. Please try again.'
+				)
+			});
 		}
 	},
 	editAddress: async ({ request, params }) => {
@@ -552,129 +626,123 @@ export const actions: Actions = {
 					.where(eq(address.id, Number(id)));
 			});
 			return message(form, { type: 'success', text: 'Address Details Updated Successfully!' });
-		} catch (err) {
-			console.error('Error updating Address details:', err);
-			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		} catch (err: unknown) {
+			return message(form, {
+				type: 'error',
+				text: hideFailure(
+					'employees.editAddress',
+					err,
+					'Could not save the address. Please try again.'
+				)
+			});
 		}
 	},
+	/**
+	 * Updates a guarantor, keeping any document that was not replaced.
+	 *
+	 * Hand-written rather than on `childCrud`: a guarantor also carries an address row, and
+	 * `childCrud` manages one table by design (see `sections.ts`).
+	 *
+	 * Two bugs here, both silent. The success `message` was returned from *inside* the transaction
+	 * callback, and nothing returned the transaction's result — so a successful save answered with
+	 * an empty 204 and no confirmation ever reached the screen. And the existing row was read by id
+	 * alone, then dereferenced unguarded, so an id that matched nothing threw.
+	 */
 	editGuarantor: async ({ request, locals, params }) => {
+		const staffId = Number(params.id);
 		const form = await superValidate(request, zod4(editGuarantor));
 
 		if (!form.valid) {
-			return message(form, { type: 'error', text: `Error: check the form` });
+			return message(form, { type: 'error', text: 'Please check the form and try again.' });
 		}
 
-		const {
-			id,
-			name,
-			phone,
-			email,
-			relationship,
-			relation,
-			jobType,
-			company,
-			salary,
-			photo,
-			document,
-			govtId
-		} = form.data;
+		const { id, name, phone, email, relationship, relation, jobType, company, salary } = form.data;
+		const { photo, document, govtId } = form.data;
+		delete form.data.photo;
+		delete form.data.document;
+		delete form.data.govtId;
+
+		// Scoped to this employee, so another employee's guarantor id finds nothing here either.
+		const [existing] = await db
+			.select()
+			.from(employeeGuarantor)
+			.where(and(eq(employeeGuarantor.id, Number(id)), eq(employeeGuarantor.staffId, staffId)))
+			.limit(1);
+
+		if (!existing) {
+			return message(form, { type: 'error', text: 'That guarantor was not found.' });
+		}
 
 		try {
-			// Use a single transaction
-			await db.transaction(async (tx) => {
-				// 1. Fetch old files using the transaction client 'tx'
-				const existing = await tx
-					.select()
-					.from(employeeGuarantor)
-					.where(eq(employeeGuarantor.id, id))
-					.then((row) => row[0]);
+			// Files first: a write to disk cannot be rolled back, so it happens before the row that
+			// would point at it rather than inside a transaction that pretends otherwise.
+			const values = {
+				photo: await keepOrReplace(photo, existing.photo),
+				gurantorDocument: await keepOrReplace(document, existing.gurantorDocument),
+				govtId: await keepOrReplace(govtId, existing.govtId)
+			};
 
-				// if (!existing) throw new Error('Guarantor not found');
+			await db
+				.update(employeeGuarantor)
+				.set({
+					name,
+					phone,
+					email,
+					relationship,
+					relation,
+					jobType,
+					company,
+					salary: String(salary),
+					...values,
+					updatedBy: locals.user?.id
+				})
+				.where(and(eq(employeeGuarantor.id, existing.id), eq(employeeGuarantor.staffId, staffId)));
 
-				// 2. Helper to handle file logic consistently
-				const resolveFile = async (newVal, oldVal) => {
-					if (newVal instanceof File && newVal.size > 0) {
-						return await saveUploadedFile(newVal);
-					}
-					return oldVal;
-				};
-
-				const newPhoto = await resolveFile(photo, existing.photo);
-				const newDocument = await resolveFile(document, existing.gurantorDocument);
-				const newGovtId = await resolveFile(govtId, existing.govtId);
-
-				// 3. Update using 'tx'
-				await tx
-					.update(employeeGuarantor)
-					.set({
-						name,
-						phone,
-						email,
-						relationship,
-						relation,
-						jobType,
-						company,
-						salary: String(salary),
-						photo: newPhoto,
-						gurantorDocument: newDocument,
-						govtId: newGovtId,
-						updatedBy: locals?.user?.id
-					})
-					.where(
-						and(
-							eq(employeeGuarantor.id, Number(id)),
-							eq(employeeGuarantor.staffId, Number(params.id))
-						)
-					);
-
-				return message(form, {
-					type: 'success',
-					text: 'Guarantor Details Updated Successfully!'
-				});
-			});
-		} catch (err) {
-			console.error('Database Error:', err);
+			return message(form, { type: 'success', text: 'Guarantor updated.' });
+		} catch (err: unknown) {
 			return message(form, {
 				type: 'error',
-				text: `Update failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+				text: hideFailure(
+					'employees.editGuarantor',
+					err,
+					'Could not save the guarantor. Please try again.'
+				)
 			});
 		}
 	},
+	/**
+	 * Adds a guarantor and the address they live at, together.
+	 *
+	 * The address was inserted with `db` inside a transaction opened as `tx`, so it committed on its
+	 * own: a guarantor insert that failed afterwards left an address row belonging to nobody. Both
+	 * inserts are on `tx` now. And, as in `editGuarantor`, the success message was returned from
+	 * inside the transaction and never reached the client — verified: a successful add answered
+	 * `{"type":"success","status":204,"data":"-1"}`, with no form and no message.
+	 */
 	addGuarantor: async ({ request, locals, params }) => {
-		const { id } = params;
+		const staffId = Number(params.id);
 		const form = await superValidate(request, zod4(addGuarantor));
-		console.log(form);
+
 		if (!form.valid) {
-			return message(form, { type: 'error', text: `Error: check the form` });
+			return message(form, { type: 'error', text: 'Please check the form and try again.' });
 		}
 
-		const {
-			name,
-			phone,
-			email,
-			relationship,
-			relation,
-			jobType,
-			company,
-			salary,
-			photo,
-			document,
-			govtId,
-			street,
-			subcity,
-			otherSubcity,
-			kebele,
-			buildingNumber,
-			floor,
-			houseNumber
-		} = form.data;
+		const { name, phone, email, relationship, relation, jobType, company, salary } = form.data;
+		const { street, subcity, otherSubcity, kebele, buildingNumber, floor, houseNumber } = form.data;
+		const { photo, document, govtId } = form.data;
+		delete form.data.photo;
+		delete form.data.document;
+		delete form.data.govtId;
 
 		try {
-			// Use a single transaction
-			await db.transaction(async (tx) => {
-				// 1. Fetch old files using the transaction client 'tx'
+			const files = {
+				photo: await optionalUpload(photo),
+				gurantorDocument: await optionalUpload(document),
+				govtId: await optionalUpload(govtId)
+			};
 
-				const [newAddress] = await db
+			await db.transaction(async (tx) => {
+				const [newAddress] = await tx
 					.insert(address)
 					.values({
 						street,
@@ -688,17 +756,9 @@ export const actions: Actions = {
 					})
 					.$returningId();
 
-				let newPhoto: string;
-				let newDocument: string;
-				let newGovtId: string;
-				if (photo) newPhoto = await saveUploadedFile(photo);
-				if (document) newDocument = await saveUploadedFile(document);
-				if (govtId) newGovtId = await saveUploadedFile(govtId);
-
-				// 3. Update using 'tx'
 				await tx.insert(employeeGuarantor).values({
 					name,
-					staffId: Number(id),
+					staffId,
 					phone,
 					email,
 					relationship,
@@ -706,55 +766,24 @@ export const actions: Actions = {
 					jobType,
 					company,
 					salary: String(salary),
-					photo: newPhoto,
-					gurantorDocument: newDocument,
-					govtId: newGovtId,
-					createdBy: locals?.user?.id,
-					address: newAddress.id
-				});
-
-				return message(form, {
-					type: 'success',
-					text: 'Guarantor Details Updated Successfully!'
+					...files,
+					address: newAddress.id,
+					createdBy: locals.user?.id
 				});
 			});
-		} catch (err) {
+
+			return message(form, { type: 'success', text: 'Guarantor added.' });
+		} catch (err: unknown) {
 			return message(form, {
 				type: 'error',
-				text: `Update failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+				text: hideFailure(
+					'employees.addGuarantor',
+					err,
+					'Could not add the guarantor. Please try again.'
+				)
 			});
 		}
 	},
-	editCommission: async ({ request, locals, params }) => {
-		const { id } = params;
-		const form = await superValidate(request, zod4(editCommission));
-		if (!form.valid) {
-			return message(form, { type: 'error', text: `Error: check the form` });
-		}
-
-		const { percentage, status } = form.data;
-
-		try {
-			await db.transaction(async (tx) => {});
-			return message(form, {
-				type: 'success',
-				text: 'Commission Details Updated Successfully!'
-			});
-		} catch (err) {
-			console.error(err?.message);
-			return message(
-				form,
-				{
-					type: 'error',
-					text: `Updated Commission failed: ${err instanceof Error ? err.message : 'Unknown error'}`
-				},
-				{
-					status: 500
-				}
-			);
-		}
-	},
-
 	/**
 	 * Soft delete of the whole employee. Super admin only — `requireSuperAdmin`
 	 * throws 403 rather than failing quietly, because the hidden button is UX,
@@ -768,12 +797,15 @@ export const actions: Actions = {
 			await db.transaction(async (tx) => {
 				await softDeleteEmployee(tx, Number(id), locals.user?.id);
 			});
-		} catch (err) {
-			console.error('Error deleting employee:', err);
+		} catch (err: unknown) {
 			setFlash(
 				{
 					type: 'error',
-					message: `Could not delete employee: ${err instanceof Error ? err.message : 'Unknown error'}`
+					message: hideFailure(
+						'employees.delete',
+						err,
+						'Could not delete this employee. Please try again.'
+					)
 				},
 				cookies
 			);

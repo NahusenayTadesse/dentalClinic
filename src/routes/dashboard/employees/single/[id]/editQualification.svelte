@@ -13,7 +13,7 @@
 		data,
 		id,
 		field,
-		educationalLevel,
+		educationLevel,
 		schoolName,
 		graduationDate,
 		eduLevel,
@@ -24,7 +24,7 @@
 		id: number;
 		field: string;
 		schoolName: string;
-		educationalLevel: number;
+		educationLevel: number;
 		graduationDate: Date;
 		certificate?: string;
 		eduLevel: Item[];
@@ -40,7 +40,7 @@
 	$form.id = id;
 	$form.field = field;
 	$form.schoolName = schoolName;
-	$form.educationalLevel = educationalLevel;
+	$form.educationLevel = educationLevel;
 	$form.graduationDate = graduationDate?.toLocaleDateString('en-CA');
 
 	import { toast } from 'svelte-sonner';
@@ -93,7 +93,7 @@
 		/>
 		<InputComp
 			label="Educational Level"
-			name="educationalLevel"
+			name="educationLevel"
 			type="combo"
 			{form}
 			{errors}

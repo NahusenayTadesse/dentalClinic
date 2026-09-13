@@ -33,40 +33,23 @@ import {
  * employee's page. `childCrud` puts the owner in the `where` and stamps it on insert, which is
  * what makes that class of mistake unavailable rather than merely fixed.
  *
- * **Renames live in `transform`.** The forms and the columns disagree in a handful of places —
- * `relationShip` against `relationship`, `status` against `isActive` — and the honest fix is to
- * rename the form fields to match. That is a change to six components and their schemas, so it is
- * not smuggled in here; the mapping is written down instead, in one place, where the drift is
- * visible.
+ * **No section needs a `transform`.** Each carried one at first, to map form fields onto columns
+ * spelled differently — `relationShip` against `relationship`, `day` against `weekDay`. The fields
+ * now match their columns in the schemas, the dialogs and the layout's read aliases, and
+ * `childCrud` maps `status` to `isActive` itself, as `contentCrud` always has. One that needs a
+ * mapping again should have a reason to.
  *
  * **Guarantors are not here on purpose.** That section writes two tables — an address and then
  * the guarantor pointing at it — and `childCrud` manages one. Its non-goals already say so. It
  * keeps its hand-written pair.
  */
 
-/** Moves a value from one key to another, when the form and the column disagree. */
-function rename(values: Record<string, unknown>, from: string, to: string) {
-	if (from in values) {
-		values[to] = values[from];
-		delete values[from];
-	}
-	return values;
-}
-
-/** Every form here posts `status` for what the schema calls `isActive`. */
-const statusToIsActive = (values: Record<string, unknown>) => rename(values, 'status', 'isActive');
-
 export const family = childCrud({
 	table: staffFamilies,
 	ownerColumn: 'staffId',
 	label: 'Family member',
 	addSchema: addFamily,
-	editSchema: editFamily,
-	transform: (values) => {
-		rename(values, 'relationShip', 'relationship');
-		rename(values, 'otherRelationShip', 'otherRelationship');
-		return statusToIsActive(values);
-	}
+	editSchema: editFamily
 });
 
 export const qualifications = childCrud({
@@ -76,11 +59,7 @@ export const qualifications = childCrud({
 	addSchema: addQualification,
 	editSchema: editQualification,
 	// The upload is posted as `certificate` and stored as its filename under the same name.
-	fileFields: ['certificate'],
-	transform: (values) => {
-		rename(values, 'educationalLevel', 'educationLevel');
-		return statusToIsActive(values);
-	}
+	fileFields: ['certificate']
 });
 
 export const experience = childCrud({
@@ -89,8 +68,7 @@ export const experience = childCrud({
 	label: 'Work experience',
 	addSchema: addExperience,
 	editSchema: editExperience,
-	fileFields: ['certificate'],
-	transform: statusToIsActive
+	fileFields: ['certificate']
 });
 
 export const schedule = childCrud({
@@ -98,11 +76,7 @@ export const schedule = childCrud({
 	ownerColumn: 'staffId',
 	label: 'Schedule',
 	addSchema: addSchedule,
-	editSchema: editSchedule,
-	transform: (values) => {
-		rename(values, 'day', 'weekDay');
-		return statusToIsActive(values);
-	}
+	editSchema: editSchedule
 });
 
 export const contacts = childCrud({
@@ -110,8 +84,7 @@ export const contacts = childCrud({
 	ownerColumn: 'staffId',
 	label: 'Contact',
 	addSchema: addContact,
-	editSchema: editContact,
-	transform: statusToIsActive
+	editSchema: editContact
 });
 
 export const accounts = childCrud({
@@ -119,11 +92,7 @@ export const accounts = childCrud({
 	ownerColumn: 'staffId',
 	label: 'Account',
 	addSchema: addAccount,
-	editSchema: editAccount,
-	transform: (values) => {
-		rename(values, 'paymentMethod', 'paymentMethodId');
-		return statusToIsActive(values);
-	}
+	editSchema: editAccount
 });
 
 /** Every section, for the load that builds their forms. */

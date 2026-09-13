@@ -133,8 +133,8 @@ export const load: LayoutServerLoad = async ({ params }) => {
 			gender: staffFamilies.gender,
 			phone: staffFamilies.phone,
 			email: staffFamilies.email,
-			relationShip: staffFamilies.relationship, // Note: watch for casing (relationShip vs relationship)
-			otherRelationShip: staffFamilies.otherRelationship,
+			relationship: staffFamilies.relationship,
+			otherRelationship: staffFamilies.otherRelationship,
 			emergencyContact: staffFamilies.emergencyContact,
 			status: staffFamilies.isActive,
 			addedBy: user.name,
@@ -186,7 +186,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		.select({
 			id: eg.id,
 			name: eg.name,
-			relationShip: eg.relationship,
+			relationship: eg.relationship,
 			relation: eg.relation,
 			jobType: eg.jobType,
 			company: eg.company,
@@ -221,7 +221,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 	const schedule = await db
 		.select({
 			id: staffSchedule.id,
-			day: staffSchedule.weekDay,
+			weekDay: staffSchedule.weekDay,
 			startTime: staffSchedule.startTime,
 			endTime: staffSchedule.endTime,
 			status: staffSchedule.isActive,
