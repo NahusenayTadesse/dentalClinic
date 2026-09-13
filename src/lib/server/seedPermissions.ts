@@ -38,12 +38,14 @@ import { toEthiopian, toGregorian } from 'ethiopian-calendar-new';
 export const SUPER_ADMIN_ROLE = 'Super Admin';
 
 /**
- * Two permissions are enforced in code rather than by a route prefix, so `routeRules` alone
+ * Some permissions are enforced in code rather than by a route prefix, so `routeRules` alone
  * would miss them:
  *
  *   `approvals.override` — release a record you requested yourself (`approvals/[entity]`)
  *   `rejections.reopen`  — put a rejected record back in the queue (`rejections/[entity]`)
  *   `branches.view_all`  — switch branches, and see across them (`server/branchScope.ts`)
+ *   `patients.edit`      — change who a patient is and how to reach them (`patients/[id]`)
+ *   `patients.clinical`  — change allergies, conditions, medicines and history (`patients/[id]`)
  *
  * Everything else is derived from `routeRules`, which is the single source of truth for route
  * gating (CLAUDE.md §9). Deriving rather than restating means a new gated route cannot ship
@@ -52,7 +54,9 @@ export const SUPER_ADMIN_ROLE = 'Super Admin';
 const CODE_ONLY_PERMISSIONS = [
 	'approvals.override',
 	'rejections.reopen',
-	'branches.view_all'
+	'branches.view_all',
+	'patients.edit',
+	'patients.clinical'
 ] as const;
 
 /** Human wording for the permission list in the admin panel. */
@@ -66,6 +70,10 @@ const DESCRIPTIONS: Record<string, string> = {
 	'customers.record': 'Maintain corporate billing customers',
 	'employees.create_followup': 'Open and follow up employee records',
 	'leaves.view_approved': 'See approved leave',
+	'patients.clinical': 'Change a patient’s allergies, conditions, medicines and medical history',
+	'patients.edit': 'Change a patient’s details, contacts and billing',
+	'patients.register': 'Register new patients',
+	'patients.view': 'Find patients and open their charts',
 	'rejections.reopen': 'Put a rejected record back into its queue',
 	'rejections.view': 'See rejected records',
 	'reports.finance': 'Read the money and payroll reports',

@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db';
 import { onHand } from './stock';
-import { eq, and, sql, isNull, inArray } from 'drizzle-orm';
+import { eq, and, sql, isNull, inArray, asc } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
 import {
 	city,
@@ -22,7 +22,12 @@ import {
 	branch,
 	customers,
 	overTimeType,
-	position
+	position,
+	allergen,
+	condition,
+	contactTypes,
+	referralSource,
+	medicine
 } from '$lib/server/db/schema/';
 
 export async function cities() {
@@ -317,4 +322,72 @@ export async function customerList() {
 		.where(notDeleted(customers));
 
 	return customerList;
+}
+
+/*
+ * The patient chart's pickers.
+ *
+ * Each is a clinic-wide lookup (CLAUDE.md §15 — reference data is never branch scoped), ordered by
+ * the `sortOrder` the admin panel sets and then by name, so the choices a clinic uses most can be
+ * put first. Inactive rows drop out of the picker; rows already recorded against a patient keep
+ * showing their name, because the chart resolves names from the row, not from this list.
+ */
+
+/** Allergens, e.g. penicillin, latex, lidocaine. */
+export async function allergens() {
+	return db
+		.select({ value: allergen.id, name: allergen.name })
+		.from(allergen)
+		.where(and(eq(allergen.isActive, true), notDeleted(allergen)))
+		.orderBy(asc(allergen.sortOrder), asc(allergen.name));
+}
+
+/** Diagnosable conditions, dental-related first. */
+export async function conditions() {
+	return db
+		.select({ value: condition.id, name: condition.name })
+		.from(condition)
+		.where(and(eq(condition.isActive, true), notDeleted(condition)))
+		.orderBy(sql`${condition.isDentalRelated} desc`, asc(condition.sortOrder), asc(condition.name));
+}
+
+/** Ways to reach someone — phone, email, Telegram. */
+export async function contactTypeList() {
+	return db
+		.select({ value: contactTypes.id, name: contactTypes.name })
+		.from(contactTypes)
+		.where(and(eq(contactTypes.isActive, true), notDeleted(contactTypes)))
+		.orderBy(asc(contactTypes.sortOrder), asc(contactTypes.name));
+}
+
+/** How patients hear of the clinic. */
+export async function referralSources() {
+	return db
+		.select({ value: referralSource.id, name: referralSource.name })
+		.from(referralSource)
+		.where(and(eq(referralSource.isActive, true), notDeleted(referralSource)))
+		.orderBy(asc(referralSource.sortOrder), asc(referralSource.name));
+}
+
+/**
+ * Every medicine, prescribable or not — a patient arrives already taking things this clinic would
+ * never prescribe, and `patient_medications` must be able to record them. The brand and strength
+ * are in the label because "Warfarin" alone does not say which tablet.
+ */
+export async function medicines() {
+	const rows = await db
+		.select({
+			value: medicine.id,
+			generic: medicine.genericName,
+			brand: medicine.brandName,
+			strength: medicine.strength
+		})
+		.from(medicine)
+		.where(and(eq(medicine.isActive, true), notDeleted(medicine)))
+		.orderBy(asc(medicine.sortOrder), asc(medicine.genericName));
+
+	return rows.map((m) => ({
+		value: m.value,
+		name: [m.generic, m.strength, m.brand && `(${m.brand})`].filter(Boolean).join(' ')
+	}));
 }

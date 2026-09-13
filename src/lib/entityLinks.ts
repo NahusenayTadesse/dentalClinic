@@ -36,12 +36,13 @@ export type EntityKind =
 	| 'supply'
 	| 'user'
 	| 'role'
-	| 'salary';
+	| 'salary'
+	| 'patient';
 
 /**
  * Base path per kind. The record's id is appended.
  *
- * These are the *existing* detail pages. Patients, providers, invoices and appointments join the
+ * These are the *existing* detail pages. Providers, invoices and appointments join the
  * list as their pages are built — the schema has the tables, the routes are the app phase.
  */
 const ENTITY_ROUTES: Record<EntityKind, string> = {
@@ -51,7 +52,8 @@ const ENTITY_ROUTES: Record<EntityKind, string> = {
 	supply: '/dashboard/supplies',
 	user: '/dashboard/admin-panel/users',
 	role: '/dashboard/admin-panel/roles',
-	salary: '/dashboard/salary/single'
+	salary: '/dashboard/salary/single',
+	patient: '/dashboard/patients'
 };
 
 /** The path to one record's page, or null when there is no id to point at. */

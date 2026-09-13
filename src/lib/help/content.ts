@@ -374,6 +374,68 @@ export const HELP_SECTIONS: HelpSection[] = [
 
 	/* ------------------------------------------------------------------ */
 	{
+		id: 'patients',
+		title: 'Patients',
+		blurb:
+			'Finding patients, registering them once and only once, and keeping their chart safe to treat from.',
+		topics: [
+			{
+				id: 'finding-patients',
+				title: 'Finding a patient',
+				summary:
+					'Search by any of their names in any order, their file number, or any phone number connected to them.',
+				where: 'Menu → **Patients** → `/dashboard/patients`',
+				permission: 'patients.view',
+				steps: [
+					'Type what the patient tells you — a name, a file number or a phone number.',
+					'Results from every branch appear; one registered elsewhere is marked with its branch and can still be treated here.',
+					'Open the name to see the chart.'
+				],
+				notes: [
+					'Without a search, the list shows only the patients of the branch chosen in the top bar. With one, it looks across every branch — so a patient who lost their card at one branch is found at the other instead of being registered again.',
+					'An emergency contact’s phone finds the patient too: a parent calling about a child is found by the number they are calling from.',
+					'The column headers filter by sex, age band, blood type, alerts, allergy, condition, medical history, how they heard of the clinic and who pays. **Registered** narrows by registration date, and **Charts** draws every filter as a chart.'
+				],
+				keywords: ['search', 'file number', 'phone', 'mrn', 'card', 'find']
+			},
+			{
+				id: 'registering-patients',
+				title: 'Registering a patient',
+				summary:
+					'Three things are required — given name, father’s name and sex. The system checks for an existing record before it saves.',
+				where: 'Menu → **Patients → Register a patient** → `/dashboard/patients/add`',
+				permission: 'patients.register',
+				steps: [
+					'Enter the names, sex, and a birth date if the patient knows it — otherwise their approximate age.',
+					'Add a phone, any allergies they report, how they heard of the clinic, and who pays if it is not the patient.',
+					'Register. If someone with the same name or phone already exists, the matches are shown: open theirs if it is the same person, or confirm it is someone else and register again.'
+				],
+				notes: [
+					'A second record for one person is the most dangerous mistake this system allows: allergies on the first record do not appear on the second, and its empty list looks like “none reported”. That is why the duplicate check stops the save.',
+					'An approximate age is stored as an estimated birth date and shown with a ~.'
+				],
+				keywords: ['new patient', 'duplicate', 'walk-in', 'age']
+			},
+			{
+				id: 'patient-chart',
+				title: 'The patient chart',
+				summary:
+					'Alerts first, then details, contacts, the medical history, allergies, conditions and medicines.',
+				where: '`/dashboard/patients/[id]`',
+				permission: 'patients.view to read; patients.edit and patients.clinical to change',
+				notes: [
+					'The red alerts panel lists severe allergies, medicines with a bleeding, bone or immunity risk, and other allergies — and warns when the medical history was never taken or is over a year old.',
+					'Tick **I asked the medical history questions today** only when you did. Correcting a note is not taking a history, and marking it would make an old history look current.',
+					'Marking a condition resolved or a medicine stopped records the date by itself.',
+					'Every change to a chart is written to the audit trail, and every opening of a chart is recorded in the access log. Holders of **Read the audit trail** see who opened it at the bottom of the page.'
+				],
+				keywords: ['allergy', 'condition', 'medication', 'warfarin', 'history', 'emergency contact']
+			}
+		]
+	},
+
+	/* ------------------------------------------------------------------ */
+	{
 		id: 'people',
 		title: 'Employees, attendance and leave',
 		blurb:
@@ -1244,6 +1306,29 @@ export const ROUTE_MAP: RouteEntry[] = [
 		purpose: 'Rejected records of one kind, with their reasons.',
 		permission: 'rejections.view',
 		group: 'Approvals'
+	},
+
+	// Patients
+	{
+		path: '/dashboard/patients',
+		title: 'Patients',
+		purpose: 'Find patients across branches, with alerts, filters and charts.',
+		permission: 'patients.view',
+		group: 'Patients'
+	},
+	{
+		path: '/dashboard/patients/add',
+		title: 'Register a patient',
+		purpose: 'Register a new patient, after checking they are not already on file.',
+		permission: 'patients.register',
+		group: 'Patients'
+	},
+	{
+		path: '/dashboard/patients/[id]',
+		title: 'Patient chart',
+		purpose: 'One patient: alerts, details, medical history, allergies, conditions and medicines.',
+		permission: 'patients.view',
+		group: 'Patients'
 	},
 
 	// Employees

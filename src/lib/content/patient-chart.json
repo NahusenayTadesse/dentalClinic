@@ -1,0 +1,51 @@
+{
+	"match": "/dashboard/patients/",
+	"languages": {
+		"en": {
+			"title": "Patient chart",
+			"summary": "Everything held about one patient, with the medical alerts first.",
+			"sections": [
+				{
+					"heading": "Medical alerts",
+					"body": "The red panel at the top lists severe allergies, medicines that change treatment, and any other allergy. It also warns when no medical history has been taken, or when it is over a year old — an empty allergy list means nothing until someone has asked."
+				},
+				{
+					"heading": "The sections",
+					"body": "• Personal details — names, file number, sex, birth date or estimated age, blood type\n• Reaching them, and billing — phones, how they heard of the clinic, who pays\n• Medical history — notes, and when the history was last taken and by whom. Tick \"I asked the medical history questions today\" only when you did; fixing a note does not count.\n• Allergies, Conditions, Medications — one row each. Marking a condition resolved or a medicine stopped dates itself.\n• Other contacts, Emergency contacts\n• Clinical record — counts of visits, plans, prescriptions, bills, files, notes and consents\n• System information — who registered and last changed the record"
+				},
+				{
+					"heading": "Who can change what",
+					"body": "Anyone who can open the chart can read it. Changing personal details, phones, billing and contacts needs \"Change a patient's details\". Changing the medical history, allergies, conditions and medications needs \"Change a patient's allergies, conditions, medicines and medical history\". Buttons you may not use are hidden. Every change is recorded in the audit trail, and every time the chart is opened is recorded too."
+				},
+				{
+					"heading": "Other branches and merged records",
+					"body": "A chart can be opened from any branch. When the patient is registered elsewhere, the page says so — they can still be treated here. If you opened an old record that was merged into another, you are taken to the current chart."
+				}
+			],
+			"links": [{ "label": "Full guide — Patients", "href": "/dashboard/help#section-patients" }]
+		},
+		"am": {
+			"title": "የታካሚ መዝገብ",
+			"summary": "ስለ አንድ ታካሚ የተያዘው መረጃ በሙሉ፤ የሕክምና ማስጠንቀቂያዎች ቀድመው።",
+			"sections": [
+				{
+					"heading": "የሕክምና ማስጠንቀቂያዎች",
+					"body": "ከላይ ያለው ቀይ ሳጥን ከባድ አለርጂዎችን፣ ሕክምናን የሚቀይሩ መድኃኒቶችንና ሌሎች አለርጂዎችን ይዘረዝራል። የሕክምና ታሪክ ካልተወሰደ ወይም ከአንድ ዓመት በላይ ከሆነው ያስጠነቅቃል — አንድ ሰው እስኪጠይቅ ድረስ ባዶ የአለርጂ ዝርዝር ምንም ማለት አይደለም።"
+				},
+				{
+					"heading": "ክፍሎቹ",
+					"body": "• የግል መረጃ — ስሞች፣ የፋይል ቁጥር፣ ጾታ፣ የልደት ቀን ወይም ግምታዊ ዕድሜ፣ የደም ዓይነት\n• መገናኛና ክፍያ — ስልኮች፣ ክሊኒኩን እንዴት እንዳወቁ፣ ማን እንደሚከፍል\n• የሕክምና ታሪክ — ማስታወሻዎች፣ ታሪኩ መቼና በማን እንደተወሰደ\n• አለርጂዎች፣ በሽታዎች፣ መድኃኒቶች\n• ሌሎች ተጠሪዎች፣ የአደጋ ጊዜ ተጠሪዎች\n• የሕክምና መዝገብ — የጉብኝቶች፣ እቅዶች፣ ማዘዣዎች፣ ክፍያዎች ብዛት\n• የሲስተም መረጃ — መዝገቡን ማን እንደመዘገበና በመጨረሻ ማን እንደለወጠው"
+				},
+				{
+					"heading": "ማን ምን መለወጥ ይችላል",
+					"body": "መዝገቡን መክፈት የሚችል ሁሉ ማንበብ ይችላል። የግል መረጃን፣ ስልኮችንና ክፍያን ለመለወጥ \"የታካሚ መረጃ መለወጥ\" ፈቃድ ያስፈልጋል። የሕክምና ታሪክን፣ አለርጂዎችን፣ በሽታዎችንና መድኃኒቶችን ለመለወጥ የሕክምና ፈቃድ ያስፈልጋል። እያንዳንዱ ለውጥና መዝገቡ በተከፈተ ቁጥር ይመዘገባል።"
+				},
+				{
+					"heading": "ሌሎች ቅርንጫፎችና የተዋሃዱ መዝገቦች",
+					"body": "መዝገቡ ከማንኛውም ቅርንጫፍ ሊከፈት ይችላል። ታካሚው በሌላ ቅርንጫፍ ከተመዘገበ ገጹ ይናገራል — አሁንም እዚህ መታከም ይችላሉ። ወደ ሌላ የተዋሃደ አሮጌ መዝገብ ከከፈቱ ወደ አሁኑ መዝገብ ይወሰዳሉ።"
+				}
+			],
+			"links": [{ "label": "ሙሉ መመሪያ — ታካሚዎች", "href": "/dashboard/help#section-patients" }]
+		}
+	}
+}

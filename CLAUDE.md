@@ -39,11 +39,14 @@ thing, give it a new optional prop — do not fork it and leave the old one behi
 | Submit spinner                      | `formComponents/LoadingBtn.svelte`                                    | 169           |
 | Form shell · flash line             | `FormCard.svelte` · `Messages.svelte`                                 | 22 · 12       |
 | Initialise a superforms form        | `createForm` — `$lib/forms/createForm.ts` (validator + toast wired)   |
+| An edit dialog on a detail page     | `formComponents/FormDialog.svelte` — fields as a snippet              | new           |
+| A date window on a server table     | `data-table.svelte`'s `dateFilter` prop → `Table/table-date-range`    | new           |
 | Ethiopian month/year picker         | `formComponents/MonthYear.svelte`                                     | 26            |
 | Delete confirmation                 | `components/DeleteEntity.svelte`                                      | 48            |
 | Detail page shell · key/value table | `SingleView.svelte` · `SingleTable.svelte`                            | 8 · 8         |
 | A whole admin-panel lookup screen   | `components/lookup/LookupPage.svelte`                                 | 13            |
-| One child table on a detail page    | `components/lookup/LookupSection.svelte`                              | new           |
+| One child table on a detail page    | `components/lookup/LookupSection.svelte` + `lookup/actions.ts`        | 5             |
+| A card on a detail page             | `components/Section.svelte`                                           | 3             |
 
 `InputComp` dispatches on `type` to file, select, date, combo, checkbox and password variants.
 **Most fields need nothing but `InputComp`** — reach for `SelectComp`/`ComboboxComp`/
@@ -57,7 +60,10 @@ any button, dialog, popover, or menu.
 | Need                               | Use                                                                                         |
 | ---------------------------------- | ------------------------------------------------------------------------------------------- |
 | Lookup-table CRUD                  | `contentCrud` — `server/crud.ts`                                                            |
-| CRUD for rows owned by a parent    | `childCrud` — `server/childCrud.ts` (first consumer: `employees/single/[id]/sections.ts`)   |
+| CRUD for rows owned by a parent    | `childCrud` + `childActions` — `server/childCrud.ts` (`audit`, `permission` options)        |
+| Recording a change to audited data | `recordAudit` — `server/audit.ts`, in the write's own transaction (§11)                     |
+| Getting an id back from an insert  | `insertReturningId` — `server/db/insert.ts` (§10)                                           |
+| Finding patients, and their alerts | `server/patients.ts` — search, age bands, alerts, duplicates                                |
 | List filtering + pagination        | `parseTableQuery` / `buildWhere` / `pagination` / `currentQuery` — `server/queryFilters.ts` |
 | Exclude deleted rows               | `notDeleted()` — `server/softDelete.ts` (118 files)                                         |
 | Cascading delete                   | the `softDelete*` family — `server/softDelete.ts`                                           |
@@ -83,6 +89,27 @@ route is almost always wrong:
   section needs no new route or component.
 - **`routeRules`** (`lib/routeAccess.ts`) — a route's permission gate.
 - **`Search.svelte`** — the command palette.
+
+### An entity page is assembled, not written
+
+The patient pages are the pattern for the next one — appointments, providers, invoices. What each
+part is, so the next page starts from a list rather than from the employee page:
+
+- **List** — one server load: `parseTableQuery` → a `WhereSpec` → `facetCounts` with `except`, and
+  `data-table.svelte` in server mode with `facetKeys`, `charts` and `dateFilter`. Queries the list,
+  the create form and the detail page share go in one server module (`server/patients.ts`).
+- **Create** — a schema shared with the detail page, `createForm`, and the write in a transaction
+  with `recordAudit`. Branch stamped from `locals.branch.active` (§15).
+- **Detail** — `Section` cards; `FormDialog` for each edit of the record itself; one `childCrud`
+  per child table in `sections.ts` with `audit` and `permission` set, spread in as
+  `childActions(SECTIONS, liveOwnerId)`; a `LookupConfig` per child in `configs.ts`, rendered by
+  `LookupSection` posting to `childActionPaths(key)`.
+- **Around it** — `routeRules` + `DESCRIPTIONS` (§9), an `entityLinks` kind (§12), `$lib/content`
+  help and `ROUTE_MAP` rows (§14), a sidebar entry, and rows in `scripts/seed-dev.ts`.
+
+Measured: the three patient pages — list, registration and chart, with more filters and more
+sections than the employee pages — are 2,502 lines of route code, comments included. The employee
+detail page alone is about 4,800: 830 of server and 3,981 across its page and twenty dialog files.
 
 ---
 
@@ -463,7 +490,7 @@ more ceremony than it removes.
 `taintedMessage: confirmLeave` for forms long enough that losing one matters. Not by default: on
 a two-field dialog it is an interruption, and a prompt people learn to dismiss protects nothing.
 
-**Twenty-eight forms are on it; fifty-nine are not.** The employee detail page's twenty dialogs
+**Twenty-nine forms are on it, plus every `FormDialog` and lookup section; fifty-nine are not.** The employee detail page's twenty dialogs
 moved over together, along with add-employee and the pages migrated first. The rest move when
 their feature is next touched. A page that hand-rolls `$form[name]` field snippets wants those
 fields on `InputComp` first — `createForm` gives the form its real type, and dynamic indexing

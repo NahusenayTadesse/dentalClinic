@@ -1,0 +1,43 @@
+{
+	"path": "/dashboard/patients/add",
+	"languages": {
+		"en": {
+			"title": "Register a patient",
+			"summary": "Only the given name, father's name and sex are required. Record what the patient can tell you now.",
+			"sections": [
+				{
+					"heading": "If the system says the patient may already be registered",
+					"body": "Before saving, the system looks for anyone with the same given and father's name, or the same phone number, at every branch. A second record for the same person is dangerous: their allergies stay on the first one, and the new record's empty list looks like \"none reported\".\n\nOpen the matching chart if it is the same person. If it is not, tick \"I have checked — this is a different person\" and register again."
+				},
+				{
+					"heading": "Birth date or age",
+					"body": "Many patients do not know their date of birth. Tick the box when they do and pick the date. When they do not, type their approximate age: it is saved as an estimated birth date and shown with a ~ so nobody mistakes it for an exact one."
+				},
+				{
+					"heading": "Allergies at the desk",
+					"body": "Tick any allergies the patient reports. They are saved with severity \"not assessed\" — a clinician grades them on the chart. Registering does not count as taking a medical history."
+				}
+			],
+			"links": [{ "label": "Full guide — Patients", "href": "/dashboard/help#section-patients" }]
+		},
+		"am": {
+			"title": "ታካሚ መመዝገብ",
+			"summary": "የሚያስፈልጉት ስም፣ የአባት ስምና ጾታ ብቻ ናቸው። ታካሚው አሁን ሊነግርዎ የሚችለውን ይመዝግቡ።",
+			"sections": [
+				{
+					"heading": "ሲስተሙ ታካሚው ቀድሞ ተመዝግቦ ሊሆን ይችላል ካለ",
+					"body": "ከማስቀመጡ በፊት ሲስተሙ ተመሳሳይ ስምና የአባት ስም ወይም ተመሳሳይ ስልክ ያለውን ሰው በሁሉም ቅርንጫፎች ይፈልጋል። ለአንድ ሰው ሁለት መዝገብ አደገኛ ነው፦ አለርጂዎቹ በመጀመሪያው ላይ ይቀራሉ፣ የአዲሱ መዝገብ ባዶ ዝርዝር ደግሞ \"ምንም አልተገለጸም\" ይመስላል።\n\nያው ሰው ከሆነ የተገኘውን መዝገብ ይክፈቱ። ካልሆነ \"አረጋግጫለሁ — ይህ ሌላ ሰው ነው\" የሚለውን ምልክት አድርገው እንደገና ይመዝግቡ።"
+				},
+				{
+					"heading": "የልደት ቀን ወይም ዕድሜ",
+					"body": "ብዙ ታካሚዎች የልደት ቀናቸውን አያውቁም። ካወቁ ሳጥኑን ምልክት አድርገው ቀኑን ይምረጡ። ካላወቁ ግምታዊ ዕድሜያቸውን ይጻፉ፤ እንደ ግምታዊ የልደት ቀን ተቀምጦ በ ~ ምልክት ይታያል።"
+				},
+				{
+					"heading": "በመቀበያ የሚነገሩ አለርጂዎች",
+					"body": "ታካሚው የሚናገራቸውን አለርጂዎች ምልክት ያድርጉ። \"ያልተገመገመ\" ተብለው ይቀመጣሉ — ሐኪም በመዝገቡ ላይ ደረጃ ይሰጣቸዋል። መመዝገብ የሕክምና ታሪክ እንደመውሰድ አይቆጠርም።"
+				}
+			],
+			"links": [{ "label": "ሙሉ መመሪያ — ታካሚዎች", "href": "/dashboard/help#section-patients" }]
+		}
+	}
+}

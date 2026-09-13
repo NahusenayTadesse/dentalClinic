@@ -1,0 +1,51 @@
+{
+	"path": "/dashboard/patients",
+	"languages": {
+		"en": {
+			"title": "Patients",
+			"summary": "Find a patient, see what to watch for, and narrow the list by anything a front desk or a clinician asks.",
+			"sections": [
+				{
+					"heading": "Searching",
+					"body": "Type any of the patient's names, in any order — \"abebe kebede\" and \"kebede abebe\" find the same person. The search also matches the file number, the patient's phones, their other contact details, and their emergency contacts' phones, so a mother calling about her child is found by the number she is calling from.\n\nPhone numbers match however they were typed: 0911 23 45 67, +251911234567 and 911234567 are the same number."
+				},
+				{
+					"heading": "Branches",
+					"body": "Browsing the list shows the patients registered at the branch chosen in the top bar. Searching looks across every branch, so a patient who turns up at another location is found rather than registered twice. A result from elsewhere is marked with its branch: that patient is not from this branch, but can be treated here."
+				},
+				{
+					"heading": "Filters and charts",
+					"body": "Each filter lives in its column's header: sex, age band, blood type, alerts, allergy, condition, medical history, how they heard of the clinic, and who pays. Registered narrows by the date the patient was registered. Every count is for the whole list, not just the page on screen. Charts draws the same counts, and clicking a bar filters by it."
+				},
+				{
+					"heading": "Reading the Alerts and History columns",
+					"body": "• Red — a severe allergy\n• Amber — a medicine that changes treatment: bleeding risk, bone risk, immunosuppression\n• Outlined — any other recorded allergy\n\nHistory says whether anyone asked. An empty Alerts cell beside \"Never taken\" means nobody has asked yet — not that there is nothing to know."
+				}
+			],
+			"links": [{ "label": "Full guide — Patients", "href": "/dashboard/help#section-patients" }]
+		},
+		"am": {
+			"title": "ታካሚዎች",
+			"summary": "ታካሚን ይፈልጉ፣ ሊጠነቀቁበት የሚገባውን ይመልከቱ፣ ዝርዝሩንም የእንግዳ መቀበያም ሆነ ሐኪም በሚጠይቀው ማንኛውም ነገር ያጣሩ።",
+			"sections": [
+				{
+					"heading": "መፈለግ",
+					"body": "ከታካሚው ስሞች ማንኛውንም በማንኛውም ቅደም ተከተል ይጻፉ — \"አበበ ከበደ\" እና \"ከበደ አበበ\" አንድን ሰው ያገኛሉ። ፍለጋው የፋይል ቁጥርን፣ የታካሚውን ስልኮች፣ ሌሎች የመገናኛ ዝርዝሮችንና የአደጋ ጊዜ ተጠሪዎችን ስልኮች ጭምር ያያል።\n\nስልክ ቁጥሮች በየትኛውም መንገድ ቢጻፉ ይገናኛሉ፦ 0911 23 45 67፣ +251911234567 እና 911234567 አንድ ቁጥር ናቸው።"
+				},
+				{
+					"heading": "ቅርንጫፎች",
+					"body": "ዝርዝሩን ሲያስሱ በላይኛው አሞሌ በተመረጠው ቅርንጫፍ የተመዘገቡ ታካሚዎች ይታያሉ። ፍለጋ ግን ሁሉንም ቅርንጫፎች ያያል፤ ስለዚህ ወደ ሌላ ቅርንጫፍ የመጣ ታካሚ ሁለት ጊዜ ከመመዝገብ ይልቅ ይገኛል። ከሌላ ቅርንጫፍ የመጣ ውጤት በቅርንጫፉ ስም ምልክት ይደረግበታል፦ ታካሚው ከዚህ ቅርንጫፍ አይደለም፣ ግን እዚህ መታከም ይችላል።"
+				},
+				{
+					"heading": "ማጣሪያዎችና ቻርቶች",
+					"body": "እያንዳንዱ ማጣሪያ በዓምዱ ራስ ላይ ነው፦ ጾታ፣ የዕድሜ ክልል፣ የደም ዓይነት፣ ማስጠንቀቂያዎች፣ አለርጂ፣ በሽታ፣ የሕክምና ታሪክ፣ ክሊኒኩን እንዴት እንዳወቁ እና ማን እንደሚከፍል። \"የተመዘገበበት\" በምዝገባ ቀን ያጣራል። ቁጥሮቹ ሁሉ ለጠቅላላው ዝርዝር ናቸው፣ በማያ ገጹ ላለው ገጽ ብቻ አይደሉም።"
+				},
+				{
+					"heading": "ማስጠንቀቂያዎችንና ታሪክን ማንበብ",
+					"body": "• ቀይ — ከባድ አለርጂ\n• ብርቱካናማ — ሕክምናን የሚቀይር መድኃኒት፦ የደም መፍሰስ፣ የአጥንት ወይም የበሽታ መከላከል አደጋ\n• የተከበበ — ሌላ የተመዘገበ አለርጂ\n\nየታሪክ ዓምድ አንድ ሰው ጠይቆ እንደሆነ ይናገራል። \"ፈጽሞ አልተወሰደም\" አጠገብ ያለ ባዶ የማስጠንቀቂያ ሕዋስ ማንም ገና አልጠየቀም ማለት ነው — ምንም የለም ማለት አይደለም።"
+				}
+			],
+			"links": [{ "label": "ሙሉ መመሪያ — ታካሚዎች", "href": "/dashboard/help#section-patients" }]
+		}
+	}
+}

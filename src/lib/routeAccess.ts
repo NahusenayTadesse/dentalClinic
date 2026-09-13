@@ -70,6 +70,24 @@ export const routeRules: RouteRule[] = [
 		permission: 'customers.record'
 	},
 
+	/*
+	 * Patients are where reading and changing a record split (CLAUDE.md §9). The route rule is the
+	 * floor — who may open a chart at all — and it is deliberately the broad one, because the front
+	 * desk has to find people. Changing a chart is checked on each action: `patients.edit` for who
+	 * someone is and how to reach them, `patients.clinical` for allergies, conditions, medicines
+	 * and the history. Both are in `CODE_ONLY_PERMISSIONS`, since no path carries them.
+	 *
+	 * Registering is its own page and its own rule, so it must come before the general prefix.
+	 */
+	{
+		prefix: '/dashboard/patients/add',
+		permission: 'patients.register'
+	},
+	{
+		prefix: '/dashboard/patients',
+		permission: 'patients.view'
+	},
+
 	{
 		prefix: '/dashboard/employees/leaves',
 		permission: 'leaves.view_approved'

@@ -6,6 +6,8 @@
 		ChartArea,
 		SquareChartGantt,
 		IdCardLanyard,
+		HeartPulse,
+		UserPlus,
 		LayoutDashboard,
 		GraduationCap,
 		Container,
@@ -141,6 +143,24 @@
 					title: 'Payroll Runs',
 					url: '/dashboard/rejections/payroll-runs',
 					icon: CircleX
+				}
+			]
+		},
+
+		{
+			title: 'Patients',
+			url: '/dashboard/patients',
+			icon: HeartPulse,
+			items: [
+				{
+					title: 'All Patients',
+					url: '/dashboard/patients',
+					icon: List
+				},
+				{
+					title: 'Register a Patient',
+					url: '/dashboard/patients/add',
+					icon: UserPlus
 				}
 			]
 		},

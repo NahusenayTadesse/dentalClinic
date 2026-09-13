@@ -49,6 +49,9 @@ const HELP_FAMILY = new Set([
 	'/dashboard/employees/leaves/cancelled',
 	'/dashboard/employees/leaves/pending',
 	'/dashboard/employees/single/[id]',
+	// Served by `patient-chart.json`, a `match` on the prefix — the chart's URL carries an id, and a
+	// help entry cannot name one. The same shape as the employee profile above.
+	'/dashboard/patients/[id]',
 	'/dashboard/employees/single/[id]/add-leave',
 	'/dashboard/employees/single/[id]/id-maker',
 	'/dashboard/employees/single/[id]/leave-history',
