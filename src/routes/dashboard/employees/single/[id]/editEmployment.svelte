@@ -32,8 +32,14 @@
 		educationalLevelList: Item[];
 	} = $props();
 
+	let open = $state(false);
+
 	const { form, errors, enhance, delayed, allErrors } = createForm(data, editEmployment, {
-		resetForm: false
+		resetForm: false,
+		// Closed only on success, so a rejected save keeps the dialog and its errors on screen.
+		onUpdated({ form }) {
+			if (form.message?.type === 'success') open = false;
+		}
 	});
 
 	// $form.idNo = idNo;
@@ -45,7 +51,7 @@
 	$form.leavesLeft = leavesLeft;
 </script>
 
-<DialogComp title="Edit" variant="default" class="" IconComp={SquarePen}>
+<DialogComp bind:open title="Edit" variant="default" class="" IconComp={SquarePen}>
 	<form
 		id="main"
 		action="?/editEmployment"

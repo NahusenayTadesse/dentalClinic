@@ -39,9 +39,15 @@
 		birthDate: Date;
 	} = $props();
 
+	let open = $state(false);
+
 	const { form, errors, enhance, delayed, allErrors } = createForm(data, editIdentity, {
 		resetForm: false,
-		invalidateAll: true
+		invalidateAll: true,
+		// Closed only on success, so a rejected save keeps the dialog and its errors on screen.
+		onUpdated({ form }) {
+			if (form.message?.type === 'success') open = false;
+		}
 	});
 
 	$form.firstName = firstName;
@@ -54,7 +60,7 @@
 	let image2 = pensionCard ?? '';
 </script>
 
-<DialogComp title="Edit" variant="default" IconComp={SquarePen}>
+<DialogComp bind:open title="Edit" variant="default" IconComp={SquarePen}>
 	<form
 		id="main"
 		action="?/editIdentity"

@@ -16,10 +16,18 @@
 		statusList
 	}: { data: SuperValidated<Reinstate>; employee: string; statusList: Item[] } = $props();
 
-	const { form, errors, enhance, delayed, allErrors } = createForm(data, reinstate);
+	let open = $state(false);
+
+	const { form, errors, enhance, delayed, allErrors } = createForm(data, reinstate, {
+		// Closed only on success, so a rejected save keeps the dialog and its errors on screen.
+		onUpdated({ form }) {
+			if (form.message?.type === 'success') open = false;
+		}
+	});
 </script>
 
 <DialogComp
+	bind:open
 	title="Reinstate {employee}"
 	variant="default"
 	class="flex w-full flex-col items-center justify-center"

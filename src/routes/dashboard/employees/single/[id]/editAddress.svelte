@@ -33,9 +33,15 @@
 		subcityList: Item[];
 	} = $props();
 
+	let open = $state(false);
+
 	const { form, errors, enhance, delayed, allErrors } = createForm(data, editAddress, {
 		resetForm: false, // Resets form to initial 'data' after successful submit
-		invalidateAll: true
+		invalidateAll: true,
+		// Closed only on success, so a rejected save keeps the dialog and its errors on screen.
+		onUpdated({ form }) {
+			if (form.message?.type === 'success') open = false;
+		}
 	});
 	// Optional like every line below it. Without the `?.` an employee with no address on file —
 	// any imported or seeded record — turned the whole detail page into a 500.
@@ -49,7 +55,7 @@
 	$form.status = address?.status ? address.status : undefined;
 </script>
 
-<DialogComp title="Edit" variant="default" class="" IconComp={SquarePen}>
+<DialogComp bind:open title="Edit" variant="default" class="" IconComp={SquarePen}>
 	<form
 		id="main"
 		action="?/editAddress"

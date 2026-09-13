@@ -36,9 +36,15 @@
 		icon: boolean;
 	} = $props();
 
+	let open = $state(false);
+
 	const { form, errors, enhance, delayed, allErrors } = createForm(data, editAccount, {
 		resetForm: false,
-		invalidateAll: true
+		invalidateAll: true,
+		// Closed only on success, so a rejected save keeps the dialog and its errors on screen.
+		onUpdated({ form }) {
+			if (form.message?.type === 'success') open = false;
+		}
 	});
 
 	let disabled = $state(false);
@@ -69,7 +75,12 @@
 	disabled = paymentMethodId === 8;
 </script>
 
-<DialogComp title={icon ? 'Edit' : name} variant="ghost" IconComp={icon ? SquarePen : undefined}>
+<DialogComp
+	bind:open
+	title={icon ? 'Edit' : name}
+	variant="ghost"
+	IconComp={icon ? SquarePen : undefined}
+>
 	<form
 		id="main"
 		action="?/editAccount"

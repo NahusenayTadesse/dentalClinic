@@ -173,12 +173,19 @@
 		}
 	];
 
+	let open = $state(false);
+
 	const { form, errors, enhance, delayed, allErrors } = createForm(addForm, addExperience, {
-		resetForm: false
+		// An add form starts empty again, so reopening it does not show the entry just saved.
+		resetForm: true,
+		// Closed only on success, so a rejected save keeps the dialog and its errors on screen.
+		onUpdated({ form }) {
+			if (form.message?.type === 'success') open = false;
+		}
 	});
 </script>
 
-<DialogComp variant="default" title="Add Experience" IconComp={Plus}>
+<DialogComp bind:open variant="default" title="Add Experience" IconComp={Plus}>
 	<form
 		action="?/addExperience"
 		use:enhance

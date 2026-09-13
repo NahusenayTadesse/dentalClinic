@@ -11,10 +11,18 @@
 
 	let { data, employee }: { data: SuperValidated<Terminate>; employee: string } = $props();
 
-	const { form, errors, enhance, delayed, allErrors } = createForm(data, terminate);
+	let open = $state(false);
+
+	const { form, errors, enhance, delayed, allErrors } = createForm(data, terminate, {
+		// Closed only on success, so a rejected save keeps the dialog and its errors on screen.
+		onUpdated({ form }) {
+			if (form.message?.type === 'success') open = false;
+		}
+	});
 </script>
 
 <DialogComp
+	bind:open
 	title="Terminate {employee}"
 	variant="destructive"
 	class="flex w-full flex-col items-center justify-center"

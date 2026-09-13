@@ -141,16 +141,15 @@
 	];
 	let disabled = $state(false);
 
+	let open = $state(false);
+
 	const { form, errors, enhance, delayed, allErrors } = createForm(addForm, addAccount, {
-		resetForm: false
-		// onChange() {
-		// 	if ($form.paymentMethodId === 8) {
-		// 		$form.accountDetail = 'No Account';
-		// 		disabled = true;
-		// 	} else {
-		// 		disabled = false;
-		// 	}
-		// }
+		// An add form starts empty again, so reopening it does not show the entry just saved.
+		resetForm: true,
+		// Closed only on success, so a rejected save keeps the dialog and its errors on screen.
+		onUpdated({ form }) {
+			if (form.message?.type === 'success') open = false;
+		}
 	});
 
 	let prevPaymentMethod = $state($form.paymentMethodId);
@@ -174,7 +173,7 @@
 	import type { Item } from '$lib/global.svelte';
 </script>
 
-<DialogComp variant="default" title="Add Account" IconComp={Plus}>
+<DialogComp bind:open variant="default" title="Add Account" IconComp={Plus}>
 	<form
 		action="?/addAccount"
 		use:enhance

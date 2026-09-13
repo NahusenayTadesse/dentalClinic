@@ -29,9 +29,15 @@
 		icon: boolean;
 	} = $props();
 
+	let open = $state(false);
+
 	const { form, errors, enhance, delayed, allErrors } = createForm(data, editContact, {
 		resetForm: false,
-		invalidateAll: true
+		invalidateAll: true,
+		// Closed only on success, so a rejected save keeps the dialog and its errors on screen.
+		onUpdated({ form }) {
+			if (form.message?.type === 'success') open = false;
+		}
 	});
 	import { editContact, type EditContact } from './schema';
 	$form.id = id;
@@ -40,7 +46,12 @@
 	$form.status = status;
 </script>
 
-<DialogComp title="Edit {contactDetail}" variant="ghost" triggerClass="justify-self-start p-0!">
+<DialogComp
+	bind:open
+	title="Edit {contactDetail}"
+	variant="ghost"
+	triggerClass="justify-self-start p-0!"
+>
 	{#snippet trigger(props)}
 		<Button
 			size="sm"

@@ -215,14 +215,21 @@
 		}
 	];
 
+	let open = $state(false);
+
 	const { form, errors, enhance, delayed, allErrors } = createForm(addForm, addFamily, {
-		resetForm: false
+		// An add form starts empty again, so reopening it does not show the entry just saved.
+		resetForm: true,
+		// Closed only on success, so a rejected save keeps the dialog and its errors on screen.
+		onUpdated({ form }) {
+			if (form.message?.type === 'success') open = false;
+		}
 	});
 	import { addFamily, type AddFamily } from './schema';
 	import EditFamily from './editFamily.svelte';
 </script>
 
-<DialogComp variant="default" title="Add Family Members" IconComp={Plus}>
+<DialogComp bind:open variant="default" title="Add Family Members" IconComp={Plus}>
 	<form
 		action="?/addFamily"
 		use:enhance
