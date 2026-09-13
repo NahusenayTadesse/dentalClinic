@@ -38,7 +38,7 @@ const FILENAME_COLUMNS: ReadonlyArray<readonly [table: string, column: string]> 
 	['employee_guarantor', 'photo'],
 	['employee_guarantor', 'govt_id'],
 	['leave', 'leave_letter'],
-	['empoloyee_termination', 'termination_letter'],
+	['employee_termination', 'termination_letter'],
 	['qualification', 'certificate'],
 	['work_experience', 'certificate'],
 	['transactions', 'reciept_link'],

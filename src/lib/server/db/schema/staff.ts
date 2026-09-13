@@ -502,7 +502,7 @@ export const staffScheduleRelations = relations(staffSchedule, ({ one }) => ({
 	})
 }));
 
-export const employeeTermination = mysqlTable('empoloyee_termination', {
+export const employeeTermination = mysqlTable('employee_termination', {
 	id: int('id').autoincrement().primaryKey(),
 	staffId: int('staff_id')
 		.notNull()
