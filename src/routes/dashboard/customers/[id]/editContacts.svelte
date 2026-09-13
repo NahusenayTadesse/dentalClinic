@@ -4,7 +4,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
@@ -21,7 +21,7 @@
 		status,
 		icon
 	}: {
-		data: SuperValidated<Infer<EditContact>>;
+		data: SuperValidated<EditContact>;
 		id: number;
 		contactType: string;
 		contactDetail: string;

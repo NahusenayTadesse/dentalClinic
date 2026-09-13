@@ -5,7 +5,7 @@
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import type { DeleteService as schema } from './schema';
 
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
@@ -16,7 +16,7 @@
 		id,
 		canDelete = false
 	}: {
-		data: SuperValidated<Infer<schema>>;
+		data: SuperValidated<schema>;
 		action: string;
 		id: number;
 		/** Only a super admin gets the delete button. */

@@ -8,7 +8,7 @@
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import { SquarePen, Save } from '@lucide/svelte';
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 
 	type Address = {
 		id: number | null;
@@ -27,7 +27,7 @@
 		address,
 		subcityList
 	}: {
-		data: SuperValidated<Infer<EditAddress>>;
+		data: SuperValidated<EditAddress>;
 		address: Address;
 		subcityList: Item[];
 	} = $props();

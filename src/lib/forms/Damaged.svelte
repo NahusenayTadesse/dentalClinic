@@ -3,7 +3,7 @@
 	import { PackageX as Minus } from '@lucide/svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
 	import type { DamagedForm } from '$lib/ZodSchema';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
@@ -14,7 +14,7 @@
 		name = 'item',
 		employees
 	}: {
-		data: SuperValidated<Infer<DamagedForm>>;
+		data: SuperValidated<DamagedForm>;
 		name: string;
 		employees?: Item[];
 	} = $props();

@@ -3,7 +3,7 @@
 	import { buttonVariants } from '$lib/components/ui/button/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
@@ -17,7 +17,7 @@
 		id,
 		canDelete = false
 	}: {
-		data: SuperValidated<Infer<Delete>>;
+		data: SuperValidated<Delete>;
 		id: number;
 		/** Only a super admin gets the delete button. */
 		canDelete?: boolean;

@@ -15,7 +15,7 @@
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 
 	import { Plus } from '@lucide/svelte';
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	import type { Item } from '$lib/global.svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte';
 	import type { EditContact, AddContact } from './schema';
@@ -31,8 +31,8 @@
 		canDelete = false
 	}: {
 		data: any;
-		form: SuperValidated<Infer<EditContact>>;
-		addForm: SuperValidated<Infer<AddContact>>;
+		form: SuperValidated<EditContact>;
+		addForm: SuperValidated<AddContact>;
 		/** Only a super admin gets the per-row delete button. */
 		canDelete?: boolean;
 	} = $props();

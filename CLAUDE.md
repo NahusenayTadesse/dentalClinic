@@ -473,8 +473,9 @@ into a real type is an error the old untyped form hid.
 files export `type EditThing = z.infer<typeof editThing>`, which is already the inferred object;
 superforms' `Infer<>` expects the schema itself, rejects the object, and leaves `$form` typed as
 `{}` — so every `$form.field` in the dialog is an error and no field name is checked. Fixing it
-across the twenty employee dialogs removed 104 type errors at once. About twenty files elsewhere
-still spell it the old way.
+across the twenty employee dialogs removed 104 type errors, and across the other twenty-six files
+that spelled it this way, 99 more. `Infer<typeof schema>` is the correct spelling of the same
+thing; `Login.svelte`'s `LoginSchema` is a `typeof`, which is why it keeps its `Infer`.
 
 **A client validator is the schema the form posts to, not the schema its type names.**
 `editPersonal.svelte` was typed against the employment schema while posting to `editPersonal`;

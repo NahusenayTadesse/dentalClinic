@@ -5,7 +5,7 @@
 	import type { BulkAdd } from './schema';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
 	import Errors from '$lib/formComponents/Errors.svelte';
 
@@ -23,7 +23,7 @@
 		selected = $bindable([]),
 		overtimeTypes
 	}: {
-		data: SuperValidated<Infer<BulkAdd>>;
+		data: SuperValidated<BulkAdd>;
 		selected: any[];
 		overtimeTypes: Item[];
 	} = $props();

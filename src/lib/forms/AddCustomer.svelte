@@ -7,7 +7,7 @@
 	// import { zod4Client } from "sveltekit-superforms/adapters";
 	import type { AddCustomerSchema } from '$lib/ZodSchema';
 	// import { createRoleSchema } from "$lib/ZodSchema";
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import { gender } from '$lib/global.svelte';
@@ -15,7 +15,7 @@
 	let {
 		data,
 		action = '/dashboard/cusotmers?/addCustomer'
-	}: { data: SuperValidated<Infer<AddCustomerSchema>>; action: string } = $props();
+	}: { data: SuperValidated<AddCustomerSchema>; action: string } = $props();
 
 	const { form, errors, enhance, delayed, message } = superForm(data, {
 		taintedMessage: () => {

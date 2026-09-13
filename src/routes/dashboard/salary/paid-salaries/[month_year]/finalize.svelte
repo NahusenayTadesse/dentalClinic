@@ -4,7 +4,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import type { FinalizePayroll } from './schema';
 
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
 	import Errors from '$lib/formComponents/Errors.svelte';
 
@@ -13,7 +13,7 @@
 		id,
 		employees
 	}: {
-		data: SuperValidated<Infer<FinalizePayroll>>;
+		data: SuperValidated<FinalizePayroll>;
 		id: number;
 		employees: Item[];
 	} = $props();

@@ -5,7 +5,7 @@
 	import { edit, type Edit } from './schema';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	import { createForm } from '$lib/forms/createForm';
 	import Errors from '$lib/formComponents/Errors.svelte';
 
@@ -15,7 +15,7 @@
 		name,
 		count
 	}: {
-		data: SuperValidated<Infer<Edit>>;
+		data: SuperValidated<Edit>;
 		id: number;
 		name: string;
 		count: number;

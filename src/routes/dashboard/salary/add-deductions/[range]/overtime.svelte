@@ -13,7 +13,7 @@
 	import AddForm from './add.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 
 	interface OvertimeEntry {
 		id: number;
@@ -37,9 +37,9 @@
 		totalOvertimePay,
 		canDelete = false
 	}: {
-		data: SuperValidated<Infer<Delete>>;
-		editForm: SuperValidated<Infer<Edit>>;
-		addForm: SuperValidated<Infer<Add>>;
+		data: SuperValidated<Delete>;
+		editForm: SuperValidated<Edit>;
+		addForm: SuperValidated<Add>;
 		overtimeDetails: OvertimeEntry[];
 		staffId: number;
 		name: string;

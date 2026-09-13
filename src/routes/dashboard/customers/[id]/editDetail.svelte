@@ -6,7 +6,7 @@
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import { SquarePen, Save } from '@lucide/svelte';
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	const genders = [
 		{ value: 'male', name: 'Male' },
 		{ value: 'female', name: 'Female' }
@@ -20,7 +20,7 @@
 		tinNo,
 		status
 	}: {
-		data: SuperValidated<Infer<EditDetail>>;
+		data: SuperValidated<EditDetail>;
 		name?: string;
 		phone?: string;
 		email?: string;

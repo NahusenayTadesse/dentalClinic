@@ -17,7 +17,7 @@
 		nonTaxableAllowance: 'Non-Taxable Allowance'
 	};
 
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
 	import Errors from '$lib/formComponents/Errors.svelte';
 
@@ -26,7 +26,7 @@
 		id,
 		banks
 	}: {
-		data: SuperValidated<Infer<Adjust>>;
+		data: SuperValidated<Adjust>;
 		id: number[];
 		banks: Item[];
 	} = $props();

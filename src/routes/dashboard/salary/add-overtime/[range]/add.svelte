@@ -5,7 +5,7 @@
 	import type { Add } from './schema';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
 	import Errors from '$lib/formComponents/Errors.svelte';
 
@@ -23,7 +23,7 @@
 		staffId,
 		overtimeTypes
 	}: {
-		data: SuperValidated<Infer<Add>>;
+		data: SuperValidated<Add>;
 		staffId: number;
 		overtimeTypes: Item[];
 	} = $props();

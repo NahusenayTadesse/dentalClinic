@@ -5,7 +5,7 @@
 	import type { Edit } from './schema';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
 	import Errors from '$lib/formComponents/Errors.svelte';
 
@@ -20,7 +20,7 @@
 		data,
 		staffId
 	}: {
-		data: SuperValidated<Infer<Edit>>;
+		data: SuperValidated<Edit>;
 		staffId: number;
 	} = $props();
 	let open = $state(false);
