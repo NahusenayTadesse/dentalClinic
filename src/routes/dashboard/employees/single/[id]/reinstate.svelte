@@ -1,32 +1,22 @@
 <script lang="ts">
+	import { createForm } from '$lib/forms/createForm';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import { superForm } from 'sveltekit-superforms/client';
-	import { type Reinstate } from './schema';
+	import { reinstate, type Reinstate } from './schema';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import { RotateCcw } from '@lucide/svelte';
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	import { type Item } from '$lib/global.svelte';
 
 	let {
 		data,
 		employee,
 		statusList
-	}: { data: SuperValidated<Infer<Reinstate>>; employee: string; statusList: Item[] } = $props();
+	}: { data: SuperValidated<Reinstate>; employee: string; statusList: Item[] } = $props();
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {});
-	import { toast } from 'svelte-sonner';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
+	const { form, errors, enhance, delayed, allErrors } = createForm(data, reinstate);
 </script>
 
 <DialogComp

@@ -1,14 +1,14 @@
 <script lang="ts">
+	import { createForm } from '$lib/forms/createForm';
 	import { type Item } from '$lib/global.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import { superForm } from 'sveltekit-superforms/client';
-	import { type EditEmployment } from './schema';
+	import { editPersonal, type EditPersonal } from './schema';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import { SquarePen, Save } from '@lucide/svelte';
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	const maritalStatuses = ['single', 'married', 'widowed', 'divorced', 'other'].map((v) => ({
 		value: v,
 		name: v.charAt(0).toUpperCase() + v.slice(1)
@@ -23,24 +23,16 @@
 		martialStatus,
 		bloodType
 	}: {
-		data: SuperValidated<Infer<EditEmployment>>;
+		// Was typed as the employment schema while posting to `editPersonal`, so the fields it
+		// binds were checked against a shape this dialog does not submit.
+		data: SuperValidated<EditPersonal>;
 		tinNo: string;
 		martialStatus: string;
 		bloodType?: string;
 	} = $props();
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
+	const { form, errors, enhance, delayed, allErrors } = createForm(data, editPersonal, {
 		resetForm: false
-	});
-	import { toast } from 'svelte-sonner';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
 	});
 
 	$form.tinNo = tinNo;

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { createForm } from '$lib/forms/createForm';
 	import { renderComponent } from '$lib/components/ui/data-table/index.js';
 	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
@@ -10,15 +11,14 @@
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
-	import { superForm } from 'sveltekit-superforms/client';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 
 	import { Plus } from '@lucide/svelte';
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	import type { Item } from '$lib/global.svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte';
-	import type { EditExperience, AddExperience } from './schema';
+	import { addExperience, type EditExperience, type AddExperience } from './schema';
 
 	let {
 		data,
@@ -27,8 +27,8 @@
 		canDelete = false
 	}: {
 		data: any;
-		form: SuperValidated<Infer<EditExperience>>;
-		addForm: SuperValidated<Infer<AddExperience>>;
+		form: SuperValidated<EditExperience>;
+		addForm: SuperValidated<AddExperience>;
 		/** Only a super admin gets the per-row delete button. */
 		canDelete?: boolean;
 	} = $props();
@@ -173,19 +173,8 @@
 		}
 	];
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(addForm, {
+	const { form, errors, enhance, delayed, allErrors } = createForm(addForm, addExperience, {
 		resetForm: false
-	});
-	import { toast } from 'svelte-sonner';
-
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
 	});
 </script>
 

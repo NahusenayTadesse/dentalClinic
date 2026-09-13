@@ -463,12 +463,23 @@ more ceremony than it removes.
 `taintedMessage: confirmLeave` for forms long enough that losing one matters. Not by default: on
 a two-field dialog it is an interruption, and a prompt people learn to dismiss protects nothing.
 
-**Six pages are migrated; seventy-three are not.** Of those, fifty call `superForm` in a shape
-this could not rewrite mechanically, sixteen pass no zod validator, and seven toast something
-other than the standard message. They move over when their feature is next touched. Nine more
-were migrated and reverted: their pages hand-roll `$form[name]` field snippets, and the sharper
-form type that `createForm` gives them turns that indexing into errors — those want their fields
-moved onto `InputComp` first, which now does the `aria-invalid` wiring they were hand-rolling.
+**Twenty-eight forms are on it; fifty-nine are not.** The employee detail page's twenty dialogs
+moved over together, along with add-employee and the pages migrated first. The rest move when
+their feature is next touched. A page that hand-rolls `$form[name]` field snippets wants those
+fields on `InputComp` first — `createForm` gives the form its real type, and dynamic indexing
+into a real type is an error the old untyped form hid.
+
+**Type the prop `SuperValidated<EditThing>`, not `SuperValidated<Infer<EditThing>>`.** The schema
+files export `type EditThing = z.infer<typeof editThing>`, which is already the inferred object;
+superforms' `Infer<>` expects the schema itself, rejects the object, and leaves `$form` typed as
+`{}` — so every `$form.field` in the dialog is an error and no field name is checked. Fixing it
+across the twenty employee dialogs removed 104 type errors at once. About twenty files elsewhere
+still spell it the old way.
+
+**A client validator is the schema the form posts to, not the schema its type names.**
+`editPersonal.svelte` was typed against the employment schema while posting to `editPersonal`;
+wiring the validator from the type would have checked personal details against the wrong shape
+and blocked valid saves. `createForm`'s second argument is chosen from the `action`.
 
 ---
 

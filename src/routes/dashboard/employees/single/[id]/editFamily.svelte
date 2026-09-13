@@ -1,12 +1,12 @@
 <script lang="ts">
+	import { createForm } from '$lib/forms/createForm';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import { SquarePen, Plus, Save } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import type { EditFamily } from './schema';
+	import { editFamily, type EditFamily } from './schema';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
-	import { superForm } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	import Errors from '$lib/formComponents/Errors.svelte';
 
 	type Gender = 'male' | 'female';
@@ -63,7 +63,7 @@
 		otherRelationship,
 		status = true
 	}: {
-		data: SuperValidated<Infer<EditFamily>>;
+		data: SuperValidated<EditFamily>;
 		id: number;
 		name: string;
 		gender: string;
@@ -76,8 +76,12 @@
 		status: boolean;
 	} = $props();
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
-		resetForm: false
+	const { form, errors, enhance, delayed, allErrors } = createForm(data, editFamily, {
+		resetForm: false,
+		// Closed only on success, so a rejected save keeps the dialog and its errors on screen.
+		onUpdated({ form }) {
+			if (form.message?.type === 'success') open = false;
+		}
 	});
 
 	let open = $state(false);
@@ -92,18 +96,7 @@
 	$form.otherRelationship = otherRelationship;
 	$form.status = status;
 
-	import { toast } from 'svelte-sonner';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-				open = false;
-			}
-		}
-	});
 </script>
 
 <DialogComp title="Edit {name}" variant="ghost" bind:open triggerClass="justify-self-start p-0!">

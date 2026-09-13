@@ -1,11 +1,11 @@
 <script lang="ts">
+	import { createForm } from '$lib/forms/createForm';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import { SquarePen, Plus, Save } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
-	import { superForm } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	const isActives = [
@@ -21,7 +21,7 @@
 		status,
 		icon
 	}: {
-		data: SuperValidated<Infer<EditContact>>;
+		data: SuperValidated<EditContact>;
 		id: number;
 		contactType: string;
 		contactDetail: string;
@@ -29,21 +29,11 @@
 		icon: boolean;
 	} = $props();
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
+	const { form, errors, enhance, delayed, allErrors } = createForm(data, editContact, {
 		resetForm: false,
 		invalidateAll: true
 	});
-	import { toast } from 'svelte-sonner';
-	import type { EditContact } from './schema';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
+	import { editContact, type EditContact } from './schema';
 	$form.id = id;
 	$form.contactType = contactType;
 	$form.contactDetail = contactDetail;

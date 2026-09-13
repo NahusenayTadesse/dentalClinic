@@ -1,12 +1,12 @@
 <script lang="ts">
+	import { createForm } from '$lib/forms/createForm';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import { superForm } from 'sveltekit-superforms/client';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import { Plus } from '@lucide/svelte';
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 
 	const relationShips = [
 		{ value: 'mother', name: 'Mother' },
@@ -19,31 +19,21 @@
 		{ value: 'other', name: 'Other' }
 	];
 
-	import { type AddGuarantor } from './schema';
+	import { addGuarantor, type AddGuarantor } from './schema';
 
 	let {
 		data,
 		subcityList
 	}: {
-		data: SuperValidated<Infer<AddGuarantor>>;
+		data: SuperValidated<AddGuarantor>;
 		subcityList: Item[];
 	} = $props();
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
+	const { form, errors, enhance, delayed, allErrors } = createForm(data, addGuarantor, {
 		resetForm: false,
 		invalidateAll: true
 	});
-	import { toast } from 'svelte-sonner';
 	import type { Item } from '$lib/global.svelte';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
 </script>
 
 <DialogComp title="Add Guarantor" variant="default" IconComp={Plus}>

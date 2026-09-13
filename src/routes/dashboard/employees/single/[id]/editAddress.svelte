@@ -1,14 +1,14 @@
 <script lang="ts">
+	import { createForm } from '$lib/forms/createForm';
 	import { type Item } from '$lib/global.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import { superForm } from 'sveltekit-superforms/client';
-	import { type EditAddress } from './schema';
+	import { editAddress, type EditAddress } from './schema';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import { SquarePen, Save } from '@lucide/svelte';
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 
 	type Address = {
 		id: number | null;
@@ -28,24 +28,14 @@
 		address,
 		subcityList
 	}: {
-		data: SuperValidated<Infer<EditAddress>>;
+		data: SuperValidated<EditAddress>;
 		address: Address;
 		subcityList: Item[];
 	} = $props();
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
+	const { form, errors, enhance, delayed, allErrors } = createForm(data, editAddress, {
 		resetForm: false, // Resets form to initial 'data' after successful submit
 		invalidateAll: true
-	});
-	import { toast } from 'svelte-sonner';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
 	});
 	// Optional like every line below it. Without the `?.` an employee with no address on file —
 	// any imported or seeded record — turned the whole detail page into a 500.

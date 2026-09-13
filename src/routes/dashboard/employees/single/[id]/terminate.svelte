@@ -1,27 +1,17 @@
 <script lang="ts">
+	import { createForm } from '$lib/forms/createForm';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import { superForm } from 'sveltekit-superforms/client';
-	import { type Terminate } from './schema';
+	import { terminate, type Terminate } from './schema';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import { X } from '@lucide/svelte';
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 
-	let { data, employee }: { data: SuperValidated<Infer<Terminate>>; employee: string } = $props();
+	let { data, employee }: { data: SuperValidated<Terminate>; employee: string } = $props();
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {});
-	import { toast } from 'svelte-sonner';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
+	const { form, errors, enhance, delayed, allErrors } = createForm(data, terminate);
 </script>
 
 <DialogComp

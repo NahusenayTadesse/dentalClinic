@@ -1,13 +1,13 @@
 <script lang="ts">
+	import { createForm } from '$lib/forms/createForm';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import { SquarePen, Plus, Save } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
-	import { superForm } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	import Errors from '$lib/formComponents/Errors.svelte';
-	import type { EditQualification } from './schema';
+	import { editQualification, type EditQualification } from './schema';
 
 	let {
 		data,
@@ -20,7 +20,7 @@
 		certificate,
 		icon = false
 	}: {
-		data: SuperValidated<Infer<EditQualification>>;
+		data: SuperValidated<EditQualification>;
 		id: number;
 		field: string;
 		schoolName: string;
@@ -31,8 +31,12 @@
 		icon: boolean;
 	} = $props();
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
-		resetForm: false
+	const { form, errors, enhance, delayed, allErrors } = createForm(data, editQualification, {
+		resetForm: false,
+		// Closed only on success, so a rejected save keeps the dialog and its errors on screen.
+		onUpdated({ form }) {
+			if (form.message?.type === 'success') open = false;
+		}
 	});
 
 	let open = $state(false);
@@ -43,19 +47,8 @@
 	$form.educationLevel = educationLevel;
 	$form.graduationDate = graduationDate?.toLocaleDateString('en-CA');
 
-	import { toast } from 'svelte-sonner';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import type { Item } from '$lib/global.svelte';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-				open = false;
-			}
-		}
-	});
 </script>
 
 <DialogComp title="Edit {field}" variant="ghost" bind:open triggerClass="justify-self-start p-0!">

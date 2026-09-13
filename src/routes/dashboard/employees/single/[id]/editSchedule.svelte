@@ -1,14 +1,14 @@
 <script lang="ts">
+	import { createForm } from '$lib/forms/createForm';
 	import { getWeekdayName } from '$lib/global.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import { SquarePen, Save } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
-	import { superForm } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	import Errors from '$lib/formComponents/Errors.svelte';
-	import { type EditSchedule } from './schema';
+	import { editSchedule, type EditSchedule } from './schema';
 	const weekDays = [
 		{ value: 0, name: 'Monday' },
 		{ value: 1, name: 'Tuesday' },
@@ -28,7 +28,7 @@
 		status,
 		icon = false
 	}: {
-		data: SuperValidated<Infer<EditSchedule>>;
+		data: SuperValidated<EditSchedule>;
 		id: number;
 		startTime: string;
 		endTime: string;
@@ -37,8 +37,12 @@
 		icon: boolean;
 	} = $props();
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
-		resetForm: false
+	const { form, errors, enhance, delayed, allErrors } = createForm(data, editSchedule, {
+		resetForm: false,
+		// Closed only on success, so a rejected save keeps the dialog and its errors on screen.
+		onUpdated({ form }) {
+			if (form.message?.type === 'success') open = false;
+		}
 	});
 
 	let open = $state(false);
@@ -49,19 +53,8 @@
 	$form.endTime = endTime;
 	$form.status = status;
 
-	import { toast } from 'svelte-sonner';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import type { Item } from '$lib/global.svelte';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-				open = false;
-			}
-		}
-	});
 </script>
 
 <DialogComp

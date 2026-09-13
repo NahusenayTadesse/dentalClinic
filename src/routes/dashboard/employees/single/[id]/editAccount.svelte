@@ -1,16 +1,15 @@
 <script lang="ts">
+	import { createForm } from '$lib/forms/createForm';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import { SquarePen, Save } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
-	import { superForm } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
-	import { toast } from 'svelte-sonner';
 	import type { Item } from '$lib/global.svelte';
-	import type { EditAccount } from './schema';
+	import { editAccount, type EditAccount } from './schema';
 
 	const isActives = [
 		{ value: true, name: 'Active' },
@@ -27,7 +26,7 @@
 		status,
 		icon
 	}: {
-		data: SuperValidated<Infer<EditAccount>>;
+		data: SuperValidated<EditAccount>;
 		id: number;
 		name: string;
 		paymentMethods: Item[];
@@ -37,7 +36,7 @@
 		icon: boolean;
 	} = $props();
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
+	const { form, errors, enhance, delayed, allErrors } = createForm(data, editAccount, {
 		resetForm: false,
 		invalidateAll: true
 	});
@@ -59,16 +58,6 @@
 				disabled = false;
 			}
 			prevPaymentMethod = current;
-		}
-	});
-
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
 		}
 	});
 

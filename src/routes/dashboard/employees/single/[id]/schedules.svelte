@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { createForm } from '$lib/forms/createForm';
 	import { renderComponent } from '$lib/components/ui/data-table/index.js';
 	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
@@ -10,12 +11,11 @@
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
-	import { superForm } from 'sveltekit-superforms/client';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 
 	import { Plus } from '@lucide/svelte';
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 
 	const weekDays = [
 		{ value: 0, name: 'Monday' },
@@ -45,8 +45,8 @@
 		canDelete = false
 	}: {
 		data: any;
-		form: SuperValidated<Infer<EditSchedule>>;
-		addForm: SuperValidated<Infer<AddSchedule>>;
+		form: SuperValidated<EditSchedule>;
+		addForm: SuperValidated<AddSchedule>;
 		/** Only a super admin gets the per-row delete button. */
 		canDelete?: boolean;
 	} = $props();
@@ -164,23 +164,13 @@
 		}
 	];
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(addForm, {
+	const { form, errors, enhance, delayed, allErrors } = createForm(addForm, addSchedule, {
 		resetForm: false
 	});
 
-	import { toast } from 'svelte-sonner';
-	import type { AddFamily, AddSchedule } from './schema';
+	import { addSchedule, type AddFamily, type AddSchedule } from './schema';
 	import EditFamily from './editFamily.svelte';
 	import type EditSchedule from './editSchedule.svelte';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
 </script>
 
 <DialogComp variant="default" title="Add New Schedule" IconComp={Plus}>

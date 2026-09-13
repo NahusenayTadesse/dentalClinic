@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { createForm } from '$lib/forms/createForm';
 	import { renderComponent } from '$lib/components/ui/data-table/index.js';
 	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
@@ -10,14 +11,13 @@
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
-	import { superForm } from 'sveltekit-superforms/client';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 
 	import { Plus } from '@lucide/svelte';
-	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import type { SuperValidated } from 'sveltekit-superforms';
 
-	import type { EditAccount, AddAccount } from './schema';
+	import { addAccount, type EditAccount, type AddAccount } from './schema';
 	const isActives = [
 		{ value: true, name: 'Active' },
 		{ value: false, name: 'Inactive' }
@@ -31,8 +31,8 @@
 		canDelete = false
 	}: {
 		data: any;
-		form: SuperValidated<Infer<EditAccount>>;
-		addForm: SuperValidated<Infer<AddAccount>>;
+		form: SuperValidated<EditAccount>;
+		addForm: SuperValidated<AddAccount>;
 		paymentMethods: Item[];
 		/** Only a super admin gets the per-row delete button. */
 		canDelete?: boolean;
@@ -141,7 +141,7 @@
 	];
 	let disabled = $state(false);
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(addForm, {
+	const { form, errors, enhance, delayed, allErrors } = createForm(addForm, addAccount, {
 		resetForm: false
 		// onChange() {
 		// 	if ($form.paymentMethodId === 8) {
@@ -171,18 +171,7 @@
 			prevPaymentMethod = current;
 		}
 	});
-	import { toast } from 'svelte-sonner';
 	import type { Item } from '$lib/global.svelte';
-
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
 </script>
 
 <DialogComp variant="default" title="Add Account" IconComp={Plus}>
