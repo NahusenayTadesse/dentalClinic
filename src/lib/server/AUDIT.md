@@ -120,9 +120,9 @@ same as a patient record:
 
 ## Not done yet
 
-- **Only the patient pages write through it so far.** `patient` and its five editable children
-  are audited; the other tables on the list are audited when their screens are built or next
-  touched. The closed `AuditedTable` union already names all of them.
+- **Only the patient and appointment pages write through it so far.** `patient`, its five editable
+  children and `appointment` are audited; the other tables on the list are audited when their
+  screens are built or next touched. The closed `AuditedTable` union already names all of them.
 - **Not audited yet on purpose: `patient_access_log` inserts**, which are reads, and the employee
   child sections, whose tables are not on the list.
 - **61 direct write call sites** across 15 route files bypass every chokepoint. They predate this

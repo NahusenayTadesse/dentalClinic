@@ -86,3 +86,25 @@ export function concatWith(separator: string, ...parts: Expr[]): SQL<string> {
 export function groupConcat(column: Expr, separator = ', '): SQL<string> {
 	return sql<string>`GROUP_CONCAT(${column} SEPARATOR ${separator})`;
 }
+
+/**
+ * `column + n minutes`, where n may itself be a column — an appointment's end is its start plus
+ * its duration. `start + (n * interval '1 minute')` on Postgres, `datetime(start, '+' || n || '
+ * minutes')` on SQLite.
+ */
+export function addMinutes(column: Expr, minutes: Expr | number): SQL<string> {
+	return sql<string>`DATE_ADD(${column}, INTERVAL ${minutes} MINUTE)`;
+}
+
+/**
+ * An instant as a `datetime` column stores it, for comparing against an *expression*.
+ *
+ * Drizzle converts a `Date` to the column's UTC wall clock when the other side of a comparison is a
+ * column (`gt(appointment.startsAt, date)`). When the other side is an expression —
+ * `addMinutes(startsAt, duration) > date` — there is no column to borrow that mapping from, and the
+ * driver serialises the `Date` in the server process's own timezone instead: three hours off in
+ * Addis Ababa. The appointment overlap check let a dentist be double-booked because of exactly that.
+ */
+export function storedInstant(instant: Date): SQL<string> {
+	return sql<string>`${instant.toISOString().slice(0, 19).replace('T', ' ')}`;
+}

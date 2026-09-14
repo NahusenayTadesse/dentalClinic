@@ -44,6 +44,8 @@ import {
 } from '$lib/server/patients';
 import { editHistory, editIdentity, editReach } from '../schema';
 import { SECTIONS } from './sections';
+import { appointmentQuery } from '$lib/server/appointments';
+import { BOOK_PERMISSION } from '$lib/server/appointmentActions';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
 
 /**
@@ -162,46 +164,56 @@ export const load: PageServerLoad = async (event) => {
 
 	await logView(id, locals, getClientAddress, locals.branch.active);
 
-	const [sections, options, summary, flags, recentViews, identityForm, reachForm, historyForm] =
-		await Promise.all([
-			loadSections(id),
-			loadOptions(),
-			loadSummary(id),
-			flagsFor([id]),
-			hasPermission(locals, 'audit_logs.view') ? loadRecentViews(id) : Promise.resolve(null),
-			superValidate(
-				{
-					fileNo: record.fileNo ?? undefined,
-					name: record.name,
-					fatherName: record.fatherName,
-					grandFatherName: record.grandFatherName ?? undefined,
-					sex: record.sex,
-					knowsBirthDate: Boolean(record.birthDate) && !record.birthDateEstimated,
-					birthDate: record.birthDate ?? undefined,
-					ageYears:
-						record.birthDateEstimated && record.age !== null ? Number(record.age) : undefined,
-					bloodType: record.bloodType ?? undefined
-				},
-				zod4(editIdentity),
-				{ errors: false }
-			),
-			superValidate(
-				{
-					phone: record.phone ?? undefined,
-					altPhone: record.altPhone ?? undefined,
-					referralSourceId: record.referralSourceId ?? undefined,
-					referredBy: record.referredBy ?? undefined,
-					customerId: record.customerId ?? undefined
-				},
-				zod4(editReach),
-				{ errors: false }
-			),
-			superValidate(
-				{ medicalNotes: record.medicalNotes ?? undefined, markTaken: false },
-				zod4(editHistory),
-				{ errors: false }
-			)
-		]);
+	const [
+		sections,
+		options,
+		summary,
+		flags,
+		recentViews,
+		identityForm,
+		reachForm,
+		historyForm,
+		appointments
+	] = await Promise.all([
+		loadSections(id),
+		loadOptions(),
+		loadSummary(id),
+		flagsFor([id]),
+		hasPermission(locals, 'audit_logs.view') ? loadRecentViews(id) : Promise.resolve(null),
+		superValidate(
+			{
+				fileNo: record.fileNo ?? undefined,
+				name: record.name,
+				fatherName: record.fatherName,
+				grandFatherName: record.grandFatherName ?? undefined,
+				sex: record.sex,
+				knowsBirthDate: Boolean(record.birthDate) && !record.birthDateEstimated,
+				birthDate: record.birthDate ?? undefined,
+				ageYears: record.birthDateEstimated && record.age !== null ? Number(record.age) : undefined,
+				bloodType: record.bloodType ?? undefined
+			},
+			zod4(editIdentity),
+			{ errors: false }
+		),
+		superValidate(
+			{
+				phone: record.phone ?? undefined,
+				altPhone: record.altPhone ?? undefined,
+				referralSourceId: record.referralSourceId ?? undefined,
+				referredBy: record.referredBy ?? undefined,
+				customerId: record.customerId ?? undefined
+			},
+			zod4(editReach),
+			{ errors: false }
+		),
+		superValidate(
+			{ medicalNotes: record.medicalNotes ?? undefined, markTaken: false },
+			zod4(editHistory),
+			{ errors: false }
+		),
+		// Every branch's: the chart is the patient's, not this branch's (§15). Latest first.
+		appointmentQuery(eq(appointment.patientId, id)).orderBy(desc(appointment.startsAt)).limit(15)
+	]);
 
 	const mergedFrom = Number(event.url.searchParams.get('mergedFrom')) || null;
 
@@ -215,6 +227,7 @@ export const load: PageServerLoad = async (event) => {
 		sections,
 		options,
 		summary,
+		appointments,
 		recentViews,
 		forms: { identity: identityForm, reach: reachForm, history: historyForm },
 		mergedFrom,
@@ -225,7 +238,8 @@ export const load: PageServerLoad = async (event) => {
 		can: {
 			edit: hasPermission(locals, 'patients.edit'),
 			clinical: hasPermission(locals, 'patients.clinical'),
-			seeViews: recentViews !== null
+			seeViews: recentViews !== null,
+			book: hasPermission(locals, BOOK_PERMISSION)
 		}
 	};
 };

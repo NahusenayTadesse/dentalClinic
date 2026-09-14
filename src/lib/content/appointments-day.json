@@ -1,0 +1,45 @@
+{
+	"path": "/dashboard/appointments",
+	"languages": {
+		"en": {
+			"title": "Appointments — day view",
+			"summary": "One day at the branch chosen in the top bar, with a column for each chair.",
+			"sections": [
+				{
+					"heading": "Booking",
+					"body": "Click an empty time in a chair's column, or press Book. Search for the patient by name, file number or phone, pick what the visit is for and the dentist, and book. The chair and the dentist are checked for clashes, and a day the clinic is closed is refused.\n\nWalk-in adds a patient who is already here: the appointment starts now and is marked arrived."
+				},
+				{
+					"heading": "Moving the day along",
+					"body": "Click an appointment to open it.\n• Mark confirmed — after the reminder call\n• Mark arrived — they appear under Waiting, with minutes waited\n• Seat in chair — they move to In the chair\n• Complete visit — when they leave\n• Mark no-show or Cancel (a reason is required)\n\nOnly an appointment that has not started can be moved. A finished or cancelled appointment is not reopened — book a new one."
+				},
+				{
+					"heading": "Reading the grid",
+					"body": "The coloured stripe is the appointment type's colour. A red warning sign means a severe allergy or a medicine that changes treatment — open the appointment to see which. An amber ring is a patient who has arrived; a blue ring is a patient in the chair. Cancelled and no-show appointments are faded and narrow: the slot is free again. The red line is now.\n\nTimes are on the international clock; opening an appointment shows the Ethiopian time too."
+				}
+			],
+			"links": [
+				{ "label": "Full guide — Appointments", "href": "/dashboard/help#section-appointments" }
+			]
+		},
+		"am": {
+			"title": "ቀጠሮዎች — የቀን እይታ",
+			"summary": "በላይኛው አሞሌ በተመረጠው ቅርንጫፍ የአንድ ቀን ቀጠሮዎች፣ ለእያንዳንዱ ወንበር አንድ ዓምድ።",
+			"sections": [
+				{
+					"heading": "ቀጠሮ መያዝ",
+					"body": "በወንበሩ ዓምድ ውስጥ ባዶ ሰዓት ላይ ይጫኑ ወይም \"Book\" ን ይጫኑ። ታካሚውን በስም፣ በፋይል ቁጥር ወይም በስልክ ይፈልጉ፣ የጉብኝቱን ዓይነትና ሐኪሙን ይምረጡ። ወንበሩና ሐኪሙ ቀድሞ የተያዙ እንደሆነ ይረጋገጣል፤ ክሊኒኩ የተዘጋበት ቀን አይፈቀድም።\n\n\"Walk-in\" አሁን የመጣ ታካሚን ይጨምራል፤ ቀጠሮው አሁን ይጀምራል፣ እንደደረሰም ይመዘገባል።"
+				},
+				{
+					"heading": "ቀኑን ማስኬድ",
+					"body": "ቀጠሮውን ለመክፈት ይጫኑ።\n• ተረጋግጧል — ከማስታወሻ ጥሪ በኋላ\n• ደርሷል — በመጠባበቅ ላይ ከቆዩበት ደቂቃ ጋር ይታያሉ\n• ወንበር ላይ — ሕክምና ሲጀምር\n• ተጠናቋል — ሲወጡ\n• አልመጣም ወይም ተሰርዟል (ምክንያት ያስፈልጋል)\n\nያልጀመረ ቀጠሮ ብቻ ሊዛወር ይችላል። የተጠናቀቀ ወይም የተሰረዘ ቀጠሮ እንደገና አይከፈትም — አዲስ ይያዙ።"
+				},
+				{
+					"heading": "ሰንጠረዡን ማንበብ",
+					"body": "ቀለሙ የቀጠሮው ዓይነት ቀለም ነው። ቀይ የማስጠንቀቂያ ምልክት ከባድ አለርጂ ወይም ሕክምናን የሚቀይር መድኃኒት ማለት ነው። የተሰረዙና ያልመጡ ቀጠሮዎች ደብዝዘውና ጠበው ይታያሉ። ቀዩ መስመር አሁን ያለንበት ሰዓት ነው።\n\nሰዓቶቹ በዓለም አቀፍ ሰዓት ናቸው፤ ቀጠሮውን ሲከፍቱ የኢትዮጵያ ሰዓትም ይታያል።"
+				}
+			],
+			"links": [{ "label": "ሙሉ መመሪያ — ቀጠሮዎች", "href": "/dashboard/help#section-appointments" }]
+		}
+	}
+}

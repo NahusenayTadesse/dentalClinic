@@ -46,6 +46,7 @@ export const SUPER_ADMIN_ROLE = 'Super Admin';
  *   `branches.view_all`  — switch branches, and see across them (`server/branchScope.ts`)
  *   `patients.edit`      — change who a patient is and how to reach them (`patients/[id]`)
  *   `patients.clinical`  — change allergies, conditions, medicines and history (`patients/[id]`)
+ *   `appointments.book`  — book, move, cancel and check in appointments (`appointmentActions.ts`)
  *
  * Everything else is derived from `routeRules`, which is the single source of truth for route
  * gating (CLAUDE.md §9). Deriving rather than restating means a new gated route cannot ship
@@ -56,7 +57,8 @@ const CODE_ONLY_PERMISSIONS = [
 	'rejections.reopen',
 	'branches.view_all',
 	'patients.edit',
-	'patients.clinical'
+	'patients.clinical',
+	'appointments.book'
 ] as const;
 
 /** Human wording for the permission list in the admin panel. */
@@ -64,6 +66,8 @@ const DESCRIPTIONS: Record<string, string> = {
 	'approvals.approve': 'Approve or reject records waiting in a queue',
 	'approvals.override': 'Release a record you requested yourself — recorded as an override',
 	'approvals.view': 'See what is waiting for approval',
+	'appointments.book': 'Book, move and cancel appointments, and check patients in',
+	'appointments.view': 'See the appointment diary',
 	'attendance.manage': 'Record and correct attendance',
 	'audit_logs.view': 'Read the audit trail',
 	'branches.view_all': 'See data from every branch, and switch between them',

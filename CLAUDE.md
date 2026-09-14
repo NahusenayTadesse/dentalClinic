@@ -47,6 +47,7 @@ thing, give it a new optional prop — do not fork it and leave the old one behi
 | A whole admin-panel lookup screen   | `components/lookup/LookupPage.svelte`                                   | 13            |
 | One child table on a detail page    | `components/lookup/LookupSection.svelte` + `lookup/actions.ts`          | 5             |
 | A card on a detail page             | `components/Section.svelte`                                             | 3             |
+| Choosing a patient in a form        | `components/PatientPicker.svelte` — searches, never loads the roster    | 1             |
 | The logo                            | `components/Logo.svelte` — `static/newLogo.png`, never an `<img>` of it | 5             |
 
 `InputComp` dispatches on `type` to file, select, date, combo, checkbox and password variants.
@@ -65,6 +66,9 @@ any button, dialog, popover, or menu.
 | Recording a change to audited data | `recordAudit` — `server/audit.ts`, in the write's own transaction (§11)                     |
 | Getting an id back from an insert  | `insertReturningId` — `server/db/insert.ts` (§10)                                           |
 | Finding patients, and their alerts | `server/patients.ts` — search, age bands, alerts, duplicates                                |
+| Booking rules and the day's diary  | `server/appointments.ts` (`bookingProblems`) · `server/appointmentActions.ts` (the writes)  |
+| Clock time at the clinic           | `$lib/clinicTime.ts` — never `getHours()` or `new Date(y, m, d, h)` on a `datetime` (§9)    |
+| An appointment's next status       | `$lib/appointmentStatus.ts` — the server checks and the buttons are drawn from one table    |
 | List filtering + pagination        | `parseTableQuery` / `buildWhere` / `pagination` / `currentQuery` — `server/queryFilters.ts` |
 | Exclude deleted rows               | `notDeleted()` — `server/softDelete.ts` (118 files)                                         |
 | Cascading delete                   | the `softDelete*` family — `server/softDelete.ts`                                           |
@@ -329,7 +333,12 @@ Not style. These carry patient data.
 - **Money is `decimal` with `mode: 'number'`.** Never float. Without the mode Drizzle hands back
   strings, and your arithmetic silently becomes string concatenation.
 - **`datetime`, not `timestamp`,** for anything that must not timezone-shift or hit the 2038
-  ceiling.
+  ceiling. Drizzle stores a `datetime` as the instant's **UTC** wall clock, so a clinic time goes
+  in and out through `$lib/clinicTime.ts` — `fromClinic(date, 'HH:mm')`, `clinicClock(instant)`,
+  `clinicDayRange(date)` — and never through the server's or browser's own timezone. Comparing
+  a `datetime` against an _expression_ rather than a column needs `storedInstant(date)`: without a
+  column Drizzle does not convert, the driver uses local time, and the appointment overlap check
+  let a dentist be double-booked three hours off.
 - **Permission strings live only in `lib/routeAccess.ts`.** They are also rows in the
   `permissions` table — renaming one is a data migration, so get it right the first time.
 - **Errors: loud in the server log, quiet to the client.** Sign-in and password reset must give

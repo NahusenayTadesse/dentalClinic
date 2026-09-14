@@ -1,0 +1,37 @@
+{
+	"path": "/dashboard/appointments/list",
+	"languages": {
+		"en": {
+			"title": "Appointment list",
+			"summary": "Every appointment at the branch chosen in the top bar — or at all branches.",
+			"sections": [
+				{
+					"heading": "Finding appointments",
+					"body": "Search by the patient's names in any order, their file number or any phone. The column headers filter by status, what the visit was for, dentist and chair; Flags narrows to first visits or short-notice patients; Date narrows to a window. Charts draws the same counts — useful for no-shows by dentist."
+				},
+				{
+					"heading": "Opening one",
+					"body": "Click the date to open the appointment on its day in the day view, where it can be moved, checked in or cancelled."
+				}
+			],
+			"links": [
+				{ "label": "Full guide — Appointments", "href": "/dashboard/help#section-appointments" }
+			]
+		},
+		"am": {
+			"title": "የቀጠሮ ዝርዝር",
+			"summary": "በላይኛው አሞሌ በተመረጠው ቅርንጫፍ — ወይም በሁሉም ቅርንጫፎች — ያሉ ቀጠሮዎች በሙሉ።",
+			"sections": [
+				{
+					"heading": "ቀጠሮዎችን መፈለግ",
+					"body": "በታካሚው ስሞች፣ በፋይል ቁጥር ወይም በስልክ ይፈልጉ። የዓምድ ራሶቹ በሁኔታ፣ በጉብኝት ዓይነት፣ በሐኪምና በወንበር ያጣራሉ፤ \"Date\" በቀን ክልል ያጣራል። ቻርቶቹ ተመሳሳይ ቁጥሮችን ያሳያሉ።"
+				},
+				{
+					"heading": "አንዱን መክፈት",
+					"body": "ቀጠሮውን በቀኑ እይታ ለመክፈት ቀኑን ይጫኑ፤ እዚያ ማዛወር፣ መመዝገብ ወይም መሰረዝ ይቻላል።"
+				}
+			],
+			"links": [{ "label": "ሙሉ መመሪያ — ቀጠሮዎች", "href": "/dashboard/help#section-appointments" }]
+		}
+	}
+}

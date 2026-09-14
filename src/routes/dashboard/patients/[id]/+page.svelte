@@ -11,6 +11,11 @@
 	import Eye from '@lucide/svelte/icons/eye';
 	import MapPinned from '@lucide/svelte/icons/map-pinned';
 	import GitMerge from '@lucide/svelte/icons/git-merge';
+	import CalendarDays from '@lucide/svelte/icons/calendar-days';
+	import CalendarPlus from '@lucide/svelte/icons/calendar-plus';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { clinicClock, clinicDate } from '$lib/clinicTime';
+	import { STATUS_LABEL, isAppointmentStatus } from '$lib/appointmentStatus';
 
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import Section from '$lib/components/Section.svelte';
@@ -378,6 +383,44 @@
 				readonly={!data.can.edit}
 				canDelete={data.can.edit}
 			/>
+		</Section>
+
+		<Section title="Appointments" IconComp={CalendarDays} style="systemIcon" class="lg:col-span-3">
+			{#snippet editDialog()}
+				{#if data.can.book}
+					<Button size="sm" class="ml-auto" href="/dashboard/appointments?book={p.id}">
+						<CalendarPlus class="size-4" /> Book appointment
+					</Button>
+				{/if}
+			{/snippet}
+			{#if data.appointments.length}
+				<ul class="flex flex-col divide-y text-sm">
+					{#each data.appointments as a (a.id)}
+						<li class="flex flex-wrap items-center justify-between gap-2 py-2">
+							<a
+								class="underline-offset-2 hover:underline"
+								href="/dashboard/appointments?date={clinicDate(a.startsAt)}&open={a.id}"
+							>
+								{dateOf(a.startsAt)} · {clinicClock(a.startsAt)}
+							</a>
+							<span class="text-muted-foreground">
+								{a.type ?? 'Appointment'}{a.provider ? ` · ${a.provider}` : ''}{a.chair
+									? ` · ${a.chair}`
+									: ''}
+							</span>
+							<Badge
+								variant={a.status === 'cancelled' || a.status === 'noShow'
+									? 'outline'
+									: 'secondary'}
+							>
+								{isAppointmentStatus(a.status) ? STATUS_LABEL[a.status].label : a.status}
+							</Badge>
+						</li>
+					{/each}
+				</ul>
+			{:else}
+				<p class="text-sm text-muted-foreground">No appointments yet.</p>
+			{/if}
 		</Section>
 
 		<Section

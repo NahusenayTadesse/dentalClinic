@@ -1,0 +1,393 @@
+/**
+ * The four things that change an appointment, as form actions any page can spread in.
+ *
+ *     export const actions = { ...appointmentActions };
+ *
+ * The day view, the appointment list and the patient chart all book, move, cancel and change the
+ * status of appointments. Written once so the three cannot disagree about what is allowed — which
+ * is the job this repo keeps relearning (CLAUDE.md §2).
+ *
+ * Every one of them:
+ *
+ *   - requires `appointments.book` in the action, whatever page it is posted to (§9) — the patient
+ *     chart is gated by `patients.view`, and reading a chart does not make you a booker
+ *   - finds the appointment **within the working branch** (`branchFilter`), so an id from another
+ *     branch matches nothing (§15)
+ *   - checks the move against `appointmentStatus.ts`, the same table the buttons are drawn from
+ *   - writes and audits in one transaction (§11)
+ */
+import type { RequestEvent } from '@sveltejs/kit';
+import { and, eq } from 'drizzle-orm';
+import { message, superValidate } from 'sveltekit-superforms';
+import { zod4 } from 'sveltekit-superforms/adapters';
+
+import { db } from '$lib/server/db';
+import { appointment, patient } from '$lib/server/db/schema';
+import { insertReturningId } from '$lib/server/db/insert';
+import { recordAudit } from '$lib/server/audit';
+import { requirePermission } from '$lib/server/permissions';
+import { branchFilter } from '$lib/server/branchScope';
+import { notDeleted } from '$lib/server/softDelete';
+import { livePatient } from '$lib/server/patients';
+import { bookingProblems, sanePeriod } from '$lib/server/appointments';
+import {
+	STATUS_LABEL,
+	canMove,
+	isAppointmentStatus,
+	isMovable,
+	type AppointmentStatus
+} from '$lib/appointmentStatus';
+import { fromClinic } from '$lib/clinicTime';
+import {
+	bookAppointment,
+	cancelAppointment,
+	changeStatus,
+	moveAppointment
+} from '$lib/forms/appointmentSchemas';
+
+/** The permission every appointment write needs. */
+export const BOOK_PERMISSION = 'appointments.book';
+
+const invalid = { type: 'error' as const, text: 'Please check the form for errors' };
+const failed = { type: 'error' as const, text: 'Could not save. Please try again.' };
+
+/** The appointment `id` names, if it is at the working branch and not deleted. */
+async function findHere(
+	tx: Parameters<Parameters<typeof db.transaction>[0]>[0],
+	event: RequestEvent,
+	id: number
+) {
+	const [row] = await tx
+		.select()
+		.from(appointment)
+		.where(
+			and(
+				eq(appointment.id, id),
+				notDeleted(appointment),
+				branchFilter(appointment.branchId, event.locals.branch)
+			)
+		)
+		.limit(1);
+	return row ?? null;
+}
+
+/** Now, rounded down to five minutes — a walk-in's start, drawn on the grid where people expect. */
+function nowRounded(): Date {
+	const step = 5 * 60_000;
+	return new Date(Math.floor(Date.now() / step) * step);
+}
+
+/**
+ * The timestamps a move into `to` stamps. Only ever set the first time: re-marking a patient
+ * arrived must not reset how long they have been waiting.
+ */
+function stampsFor(
+	to: AppointmentStatus,
+	row: typeof appointment.$inferSelect,
+	now: Date
+): Partial<typeof appointment.$inferInsert> {
+	switch (to) {
+		case 'confirmed':
+			return { confirmedAt: row.confirmedAt ?? now };
+		case 'arrived':
+			return { arrivedAt: row.arrivedAt ?? now };
+		case 'inChair':
+			return { arrivedAt: row.arrivedAt ?? now, seatedAt: row.seatedAt ?? now };
+		case 'completed':
+			return { arrivedAt: row.arrivedAt ?? now, dismissedAt: row.dismissedAt ?? now };
+		// Undoing a mistaken arrival: the arrival did not happen, so its time goes too.
+		case 'scheduled':
+			return { arrivedAt: null };
+		default:
+			return {};
+	}
+}
+
+export const appointmentActions = {
+	bookAppointment: async (event: RequestEvent) => {
+		requirePermission(event.locals, BOOK_PERMISSION);
+		const form = await superValidate(event.request, zod4(bookAppointment));
+		if (!form.valid) return message(form, invalid, { status: 400 });
+
+		const branchId = event.locals.branch.active;
+		if (branchId === null) {
+			return message(
+				form,
+				{
+					type: 'error',
+					text: 'Choose a branch in the top bar first — an appointment is at one branch.'
+				},
+				{ status: 400 }
+			);
+		}
+
+		const data = form.data;
+		/*
+		 * Only a walk-in starts now. A booking without a date and time is refused rather than quietly
+		 * placed at the current moment, which is what this did while the date picker was dropping
+		 * the date — the appointment saved, just on the wrong day.
+		 */
+		if (!data.walkIn && (!data.date || !data.time)) {
+			return message(form, { type: 'error', text: 'Pick a date and a time.' }, { status: 400 });
+		}
+		const startsAt =
+			data.walkIn || !data.date || !data.time ? nowRounded() : fromClinic(data.date, data.time);
+		const durationMinutes = sanePeriod(data.durationMinutes);
+
+		try {
+			const result = await db.transaction(async (tx) => {
+				const [owner] = await tx
+					.select({ id: patient.id })
+					.from(patient)
+					.where(and(eq(patient.id, data.patientId), livePatient()))
+					.limit(1);
+				if (!owner)
+					return {
+						problems: ['That patient no longer exists, or was merged into another record.']
+					};
+
+				const problems = await bookingProblems(tx, {
+					branchId,
+					startsAt,
+					durationMinutes,
+					operatoryId: data.operatoryId ?? null,
+					providerId: data.providerId ?? null
+				});
+				if (problems.length) return { problems };
+
+				const now = new Date();
+				const id = await insertReturningId(tx, appointment, {
+					patientId: data.patientId,
+					branchId,
+					startsAt,
+					durationMinutes,
+					appointmentTypeId: data.appointmentTypeId ?? null,
+					providerId: data.providerId ?? null,
+					operatoryId: data.operatoryId ?? null,
+					note: data.note ?? null,
+					isNewPatient: data.isNewPatient,
+					isAsap: data.isAsap,
+					status: data.walkIn ? 'arrived' : 'scheduled',
+					arrivedAt: data.walkIn ? now : null,
+					createdBy: event.locals.user?.id
+				});
+				await recordAudit(tx, event, {
+					table: 'appointment',
+					recordId: id,
+					action: 'create',
+					detail: data.walkIn ? { walkIn: true } : undefined
+				});
+				return { problems: [] };
+			});
+
+			if (result.problems.length) {
+				return message(form, { type: 'error', text: result.problems.join(' ') }, { status: 409 });
+			}
+			return message(form, {
+				type: 'success',
+				text: data.walkIn ? 'Walk-in added and marked arrived' : 'Appointment booked'
+			});
+		} catch (err: unknown) {
+			console.error('[appointments] book failed:', err);
+			return message(form, failed, { status: 500 });
+		}
+	},
+
+	changeAppointmentStatus: async (event: RequestEvent) => {
+		requirePermission(event.locals, BOOK_PERMISSION);
+		const form = await superValidate(event.request, zod4(changeStatus));
+		if (!form.valid) return message(form, invalid, { status: 400 });
+
+		const { id, to } = form.data;
+
+		try {
+			const outcome = await db.transaction(async (tx) => {
+				const row = await findHere(tx, event, id);
+				if (!row) return 'missing' as const;
+				if (!isAppointmentStatus(row.status) || !canMove(row.status, to)) return 'refused' as const;
+				// Cancelling needs a reason, so it has its own action.
+				if (to === 'cancelled') return 'refused' as const;
+
+				const values = {
+					status: to,
+					...stampsFor(to, row, new Date()),
+					updatedBy: event.locals.user?.id
+				};
+				await tx.update(appointment).set(values).where(eq(appointment.id, id));
+				await recordAudit(tx, event, {
+					table: 'appointment',
+					recordId: id,
+					action: 'update',
+					before: row,
+					after: values
+				});
+				return 'saved' as const;
+			});
+
+			if (outcome === 'missing') {
+				return message(
+					form,
+					{ type: 'error', text: 'That appointment no longer exists here.' },
+					{ status: 404 }
+				);
+			}
+			if (outcome === 'refused') {
+				return message(
+					form,
+					{
+						type: 'error',
+						text: `It cannot be marked “${STATUS_LABEL[to].label}” from where it is now.`
+					},
+					{ status: 409 }
+				);
+			}
+			return message(form, {
+				type: 'success',
+				text: `Marked ${STATUS_LABEL[to].label.toLowerCase()}`
+			});
+		} catch (err: unknown) {
+			console.error('[appointments] status failed:', err);
+			return message(form, failed, { status: 500 });
+		}
+	},
+
+	cancelAppointment: async (event: RequestEvent) => {
+		requirePermission(event.locals, BOOK_PERMISSION);
+		const form = await superValidate(event.request, zod4(cancelAppointment));
+		if (!form.valid) return message(form, invalid, { status: 400 });
+
+		try {
+			const outcome = await db.transaction(async (tx) => {
+				const row = await findHere(tx, event, form.data.id);
+				if (!row) return 'missing' as const;
+				if (!isAppointmentStatus(row.status) || !canMove(row.status, 'cancelled')) {
+					return 'refused' as const;
+				}
+
+				const values = {
+					status: 'cancelled' as const,
+					cancelReason: form.data.reason,
+					cancelledAt: new Date(),
+					cancelledBy: event.locals.user?.id ?? null,
+					updatedBy: event.locals.user?.id
+				};
+				await tx.update(appointment).set(values).where(eq(appointment.id, row.id));
+				await recordAudit(tx, event, {
+					table: 'appointment',
+					recordId: row.id,
+					action: 'update',
+					before: row,
+					after: values
+				});
+				return 'saved' as const;
+			});
+
+			if (outcome === 'missing') {
+				return message(
+					form,
+					{ type: 'error', text: 'That appointment no longer exists here.' },
+					{ status: 404 }
+				);
+			}
+			if (outcome === 'refused') {
+				return message(
+					form,
+					{ type: 'error', text: 'A visit that has started cannot be cancelled.' },
+					{ status: 409 }
+				);
+			}
+			return message(form, { type: 'success', text: 'Appointment cancelled' });
+		} catch (err: unknown) {
+			console.error('[appointments] cancel failed:', err);
+			return message(form, failed, { status: 500 });
+		}
+	},
+
+	moveAppointment: async (event: RequestEvent) => {
+		requirePermission(event.locals, BOOK_PERMISSION);
+		const form = await superValidate(event.request, zod4(moveAppointment));
+		if (!form.valid) return message(form, invalid, { status: 400 });
+
+		const data = form.data;
+		const startsAt = fromClinic(data.date, data.time);
+		const durationMinutes = sanePeriod(data.durationMinutes);
+
+		try {
+			const result = await db.transaction(async (tx) => {
+				const row = await findHere(tx, event, data.id);
+				if (!row)
+					return { status: 404 as const, problems: ['That appointment no longer exists here.'] };
+				if (!isAppointmentStatus(row.status) || !isMovable(row.status)) {
+					return {
+						status: 409 as const,
+						problems: [
+							'Only an appointment that has not started can be moved. Book a new one instead.'
+						]
+					};
+				}
+
+				const problems = await bookingProblems(tx, {
+					// Moved within its own branch: a move to another branch is a new booking there.
+					branchId: row.branchId ?? event.locals.branch.active ?? 0,
+					startsAt,
+					durationMinutes,
+					operatoryId: data.operatoryId ?? null,
+					providerId: data.providerId ?? null,
+					excludeId: row.id
+				});
+				if (problems.length) return { status: 409 as const, problems };
+
+				const values = {
+					startsAt,
+					durationMinutes,
+					operatoryId: data.operatoryId ?? null,
+					providerId: data.providerId ?? null,
+					updatedBy: event.locals.user?.id
+				};
+				await tx.update(appointment).set(values).where(eq(appointment.id, row.id));
+				await recordAudit(tx, event, {
+					table: 'appointment',
+					recordId: row.id,
+					action: 'update',
+					before: row,
+					after: values
+				});
+				// `status` is only read when there are problems.
+				return { status: 409 as const, problems: [] };
+			});
+
+			if (result.problems.length) {
+				return message(
+					form,
+					{ type: 'error', text: result.problems.join(' ') },
+					{ status: result.status }
+				);
+			}
+			return message(form, { type: 'success', text: 'Appointment moved' });
+		} catch (err: unknown) {
+			console.error('[appointments] move failed:', err);
+			return message(form, failed, { status: 500 });
+		}
+	}
+};
+
+/** The empty forms the four actions post, for a load to hand its page. */
+export async function appointmentForms(prefill: { patientId?: number } = {}) {
+	const [book, move, status, cancel] = await Promise.all([
+		superValidate(
+			{
+				patientId: prefill.patientId,
+				durationMinutes: 30,
+				walkIn: false,
+				isNewPatient: false,
+				isAsap: false
+			},
+			zod4(bookAppointment),
+			{ errors: false }
+		),
+		superValidate(zod4(moveAppointment)),
+		superValidate(zod4(changeStatus)),
+		superValidate(zod4(cancelAppointment))
+	]);
+	return { book, move, status, cancel };
+}

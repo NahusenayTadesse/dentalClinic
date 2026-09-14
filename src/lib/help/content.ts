@@ -374,6 +374,72 @@ export const HELP_SECTIONS: HelpSection[] = [
 
 	/* ------------------------------------------------------------------ */
 	{
+		id: 'appointments',
+		title: 'Appointments',
+		blurb: 'Booking the chairs, checking patients in, and keeping the day moving.',
+		topics: [
+			{
+				id: 'booking-appointments',
+				title: 'Booking an appointment',
+				summary:
+					'Click an empty time in a chair’s column, or press Book. The chair and the dentist are checked for clashes and closed days are refused.',
+				where: 'Menu → **Appointments → Day View** → `/dashboard/appointments`',
+				permission: 'appointments.book',
+				steps: [
+					'Choose the branch in the top bar — the day view shows one branch’s chairs.',
+					'Click the chair and time, or press **Book**.',
+					'Search for the patient by name, file number or phone. Severe allergies show beside each result.',
+					'Pick what the visit is for — the length fills in from the appointment type — and, if you know them, the dentist.',
+					'Book. If the chair or dentist is already taken, or the clinic is closed that day, you are told why and nothing is saved.'
+				],
+				notes: [
+					'**Walk-in** is for a patient already standing at the desk: the appointment starts now and is marked arrived.',
+					'Times are shown on the international clock with the Ethiopian time beside them — 9:00 is ጠዋት 3:00.',
+					'A patient chart has a **Book appointment** button that opens the booking form with the patient already chosen.',
+					'Cancelled and no-show appointments free their slot, and stay on the day faded so the history is visible.'
+				],
+				keywords: ['book', 'schedule', 'diary', 'calendar', 'walk-in', 'chair', 'slot']
+			},
+			{
+				id: 'running-the-day',
+				title: 'Running the day',
+				summary:
+					'Open an appointment to move it along: confirmed, arrived, in the chair, completed — or no-show or cancelled.',
+				where: '`/dashboard/appointments`',
+				permission: 'appointments.book',
+				steps: [
+					'**Mark confirmed** after the reminder call.',
+					'**Mark arrived** when the patient reaches the desk. They appear under **Waiting**, with how long they have waited — red past half an hour.',
+					'**Seat in chair** when treatment starts, and **Complete visit** when they leave.',
+					'**Mark no-show** for a patient who never came; **Cancel** asks for a reason.'
+				],
+				notes: [
+					'Only an appointment that has not started can be moved. Once a patient has arrived, a new time is a new appointment.',
+					'A finished, cancelled or no-show appointment cannot be reopened, so the history stays true.',
+					'**Could come earlier** lists patients marked short-notice who are booked later that day — the first people to call when a slot frees up.',
+					'Every change is recorded in the audit trail.'
+				],
+				keywords: ['check in', 'arrived', 'waiting room', 'no-show', 'cancel', 'reschedule', 'move']
+			},
+			{
+				id: 'appointment-list',
+				title: 'Finding appointments',
+				summary:
+					'The appointment list searches by patient and filters by date, status, what for, dentist, chair, first visit and short notice.',
+				where: 'Menu → **Appointments → Appointment List** → `/dashboard/appointments/list`',
+				permission: 'appointments.view',
+				notes: [
+					'It shows the branch chosen in the top bar, or every branch when all are selected.',
+					'Click a date to open that appointment on its day.',
+					'Chairs are managed under **Admin Panel → Chairs**. A branch with no chairs has an empty day view.'
+				],
+				keywords: ['no-show report', 'history', 'search appointments']
+			}
+		]
+	},
+
+	/* ------------------------------------------------------------------ */
+	{
 		id: 'patients',
 		title: 'Patients',
 		blurb:
@@ -1297,6 +1363,30 @@ export const ROUTE_MAP: RouteEntry[] = [
 		purpose: 'Rejected records of one kind, with their reasons.',
 		permission: 'rejections.view',
 		group: 'Approvals'
+	},
+
+	// Appointments
+	{
+		path: '/dashboard/appointments',
+		title: 'Appointments — day view',
+		purpose: 'One day at one branch, a column per chair: book, check in, seat, finish, cancel.',
+		permission: 'appointments.view',
+		group: 'Appointments'
+	},
+	{
+		path: '/dashboard/appointments/list',
+		title: 'Appointment list',
+		purpose:
+			'Every appointment, searchable by patient and filterable by status, dentist, chair and date.',
+		permission: 'appointments.view',
+		group: 'Appointments'
+	},
+	{
+		path: '/dashboard/admin-panel/chairs',
+		title: 'Chairs',
+		purpose: 'The dental chairs at each branch — the columns of the appointment day view.',
+		permission: 'settings.manage',
+		group: 'Admin panel'
 	},
 
 	// Patients

@@ -4,6 +4,7 @@
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import { cn } from '$lib/utils.js';
 	import { CalendarDate, getLocalTimeZone, today, parseDate } from '@internationalized/date';
+	import { untrack } from 'svelte';
 	import { CalendarIcon } from '@lucide/svelte';
 
 	let {
@@ -20,12 +21,30 @@
 
 	const todayDate = $derived(oldDays ? undefined : today(getLocalTimeZone()));
 
-	let form = $state(
-		parseDate(data || todayDate?.toString() || new Date().toISOString().split('T')[0])
-	);
+	/** A `YYYY-MM-DD` as a calendar date, or null when it is empty or not a date. */
+	function parsed(value: string | undefined): CalendarDate | null {
+		if (!value) return null;
+		try {
+			return parseDate(value);
+		} catch {
+			return null;
+		}
+	}
 
+	/*
+	 * `data` is the only copy of the date; the calendar reads it and writes it back.
+	 *
+	 * This used to keep its own `$state` copy, seeded from `data` once and pushed back into `data`
+	 * by an effect. A value written from outside after mounting was then overwritten with the
+	 * picker's stale copy, depending on which effect flushed first: the appointment booking dialog
+	 * prefilled the day being viewed, and every booking silently landed on today.
+	 */
+	const value = $derived(parsed(data) ?? todayDate ?? today(getLocalTimeZone()));
+
+	// An empty field still starts at today, as it always has — but only when it is empty, so it
+	// can never replace a date somebody set.
 	$effect(() => {
-		data = form.toString();
+		if (!data) untrack(() => (data = value.toString()));
 	});
 
 	const formatEthiopianDate = (date: CalendarDate | undefined): string => {
@@ -40,7 +59,7 @@
 
 		return formatter.format(date.toDate(getLocalTimeZone()));
 	};
-	const displayDate = $derived(form ? formatEthiopianDate(form) : formatEthiopianDate(todayDate));
+	const displayDate = $derived(formatEthiopianDate(value));
 </script>
 
 <Popover.Root>
@@ -49,8 +68,7 @@
 			buttonVariants({
 				variant: 'outline',
 				class: 'justify-between '
-			}),
-			!form && 'text-muted-foreground'
+			})
 		)}
 	>
 		<div class="flex items-center gap-2">
@@ -70,7 +88,7 @@
 			captionLayout={year ? 'dropdown-years' : 'label'}
 			minValue={todayDate}
 			maxValue={futureDays ? today(getLocalTimeZone()) : undefined}
-			bind:value={form}
+			bind:value={() => value, (next) => next && (data = next.toString())}
 		/>
 		{#each [{ label: 'Today', value: 0 }, { label: 'Tomorrow', value: 1 }, { label: 'In 3 days', value: 3 }, { label: 'In a week', value: 7 }, { label: 'In 2 weeks', value: 14 }] as preset (preset.value)}
 			<Button
@@ -78,7 +96,7 @@
 				size="sm"
 				class="flex-1"
 				onclick={() => {
-					form = today(getLocalTimeZone()).add({ days: preset.value });
+					data = today(getLocalTimeZone()).add({ days: preset.value }).toString();
 				}}
 			>
 				{preset.label}

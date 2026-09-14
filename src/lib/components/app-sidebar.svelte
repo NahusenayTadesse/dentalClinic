@@ -7,6 +7,7 @@
 		SquareChartGantt,
 		IdCardLanyard,
 		HeartPulse,
+		CalendarDays,
 		UserPlus,
 		LayoutDashboard,
 		GraduationCap,
@@ -144,6 +145,24 @@
 					title: 'Payroll Runs',
 					url: '/dashboard/rejections/payroll-runs',
 					icon: CircleX
+				}
+			]
+		},
+
+		{
+			title: 'Appointments',
+			url: '/dashboard/appointments',
+			icon: CalendarDays,
+			items: [
+				{
+					title: 'Day View',
+					url: '/dashboard/appointments',
+					icon: CalendarDays
+				},
+				{
+					title: 'Appointment List',
+					url: '/dashboard/appointments/list',
+					icon: List
 				}
 			]
 		},

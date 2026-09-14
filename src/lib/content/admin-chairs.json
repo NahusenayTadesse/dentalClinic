@@ -1,0 +1,37 @@
+{
+	"path": "/dashboard/admin-panel/chairs",
+	"languages": {
+		"en": {
+			"title": "Chairs",
+			"summary": "The dental chairs at each branch. Each active chair is a column in the appointment day view.",
+			"sections": [
+				{
+					"heading": "Adding and ordering chairs",
+					"body": "Give each chair a name the staff use — Chair 1, Surgery A — and the branch it is at. Order sets the left-to-right order of the columns. A branch with no chairs has an empty day view."
+				},
+				{
+					"heading": "Retiring a chair",
+					"body": "Set it Inactive. Its column disappears from the day view, and appointments already booked into it keep saying where they happened."
+				}
+			],
+			"links": [
+				{ "label": "Full guide — Appointments", "href": "/dashboard/help#section-appointments" }
+			]
+		},
+		"am": {
+			"title": "ወንበሮች",
+			"summary": "በእያንዳንዱ ቅርንጫፍ ያሉ የጥርስ ሕክምና ወንበሮች። እያንዳንዱ ንቁ ወንበር በቀጠሮ የቀን እይታ ውስጥ አንድ ዓምድ ነው።",
+			"sections": [
+				{
+					"heading": "ወንበሮችን መጨመርና ማደራጀት",
+					"body": "ለእያንዳንዱ ወንበር ሠራተኞች የሚጠሩበትን ስምና ያለበትን ቅርንጫፍ ይስጡ። \"Order\" የዓምዶቹን ቅደም ተከተል ከግራ ወደ ቀኝ ይወስናል። ወንበር የሌለው ቅርንጫፍ ባዶ የቀን እይታ አለው።"
+				},
+				{
+					"heading": "ወንበርን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ዓምዱ ከቀን እይታው ይጠፋል፤ ቀደም ብለው የተያዙ ቀጠሮዎች ግን የት እንደተካሄዱ ይዘው ይቆያሉ።"
+				}
+			],
+			"links": [{ "label": "ሙሉ መመሪያ — ቀጠሮዎች", "href": "/dashboard/help#section-appointments" }]
+		}
+	}
+}
