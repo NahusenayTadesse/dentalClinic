@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { lookupColumns } from './columns';
-import type { LookupConfig, LookupForm } from './types';
+import type { LookupConfig } from './types';
+import type { LookupForm } from './columns';
 
 /**
  * The descriptor is the contract between a lookup route and its screen. These assertions pin

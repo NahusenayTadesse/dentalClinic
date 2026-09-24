@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { Plus } from '@lucide/svelte';
-	import { superForm } from 'sveltekit-superforms/client';
-	import { toast } from 'svelte-sonner';
 
 	import { Button } from '$lib/components/ui/button/index';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import Errors from '$lib/formComponents/Errors.svelte';
 	import LookupFields from './LookupFields.svelte';
 	import { lookupColumns } from './columns';
+	import { createForm } from '$lib/forms/createForm';
 	import type { LookupConfig, LookupOptions, LookupRow } from './types';
-	import type { LookupForm } from './columns';
+	import type { LookupForm, LookupSchema } from './columns';
 
 	/**
 	 * A whole admin-panel lookup screen: add dialog, table, per-row edit and delete.
@@ -21,7 +21,8 @@
 	 */
 	let {
 		data,
-		config
+		config,
+		schemas
 	}: {
 		/**
 		 * The route's load: `addForm`, `editForm`, `rows`, `isSuperAdmin` from the layout, and one
@@ -34,9 +35,26 @@
 			isSuperAdmin?: boolean;
 		} & Record<string, unknown>;
 		config: LookupConfig;
+		/**
+		 * The schemas the two forms post to, so a field is checked before the round trip. Optional
+		 * only because the server validates regardless; a new screen should pass them.
+		 */
+		schemas?: { add?: LookupSchema; edit?: LookupSchema };
 	} = $props();
 
-	const { form, errors, enhance, delayed, message } = superForm(data.addForm, {});
+	let open = $state(false);
+
+	// An add form starts from the load's empty form once; after a save superforms resets it.
+	// svelte-ignore state_referenced_locally
+	const { form, errors, enhance, delayed, allErrors } = createForm(data.addForm, schemas?.add, {
+		// Empty again after a save, so reopening does not show the row just added.
+		resetForm: true,
+		// Closed only on success: a refused save keeps the dialog and its errors on screen. Every
+		// one of these dialogs used to stay open on success, showing what had just been saved.
+		onUpdated({ form }) {
+			if (form.message?.type === 'success') open = false;
+		}
+	});
 
 	/**
 	 * Picker options, re-keyed from the load's names (`regionList`) to the field's own name
@@ -51,26 +69,22 @@
 	);
 
 	const columns = $derived(
-		lookupColumns(config, { editForm: data.editForm, canDelete: data.isSuperAdmin, options })
+		lookupColumns(config, {
+			editForm: data.editForm,
+			canDelete: data.isSuperAdmin,
+			options,
+			editSchema: schemas?.edit
+		})
 	);
-
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
 </script>
 
 <svelte:head>
 	<title>{config.plural}</title>
 </svelte:head>
 
-<DialogComp title="+ Add New {config.entity}" variant="default">
+<DialogComp bind:open title="+ Add New {config.entity}" variant="default">
 	<form action="?/add" use:enhance id="main" class="flex flex-col gap-4" method="post">
+		<Errors allErrors={$allErrors} />
 		<LookupFields fields={config.fields} {form} {errors} entity={config.entity} {options} />
 
 		<Button type="submit" form="main">

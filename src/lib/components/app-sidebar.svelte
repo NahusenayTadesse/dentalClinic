@@ -7,6 +7,7 @@
 		SquareChartGantt,
 		IdCardLanyard,
 		HeartPulse,
+		Stethoscope,
 		CalendarDays,
 		UserPlus,
 		LayoutDashboard,
@@ -163,6 +164,11 @@
 					title: 'Appointment List',
 					url: '/dashboard/appointments/list',
 					icon: List
+				},
+				{
+					title: 'Dentists',
+					url: '/dashboard/providers',
+					icon: Stethoscope
 				}
 			]
 		},

@@ -44,7 +44,7 @@ thing, give it a new optional prop — do not fork it and leave the old one behi
 | Ethiopian month/year picker         | `formComponents/MonthYear.svelte`                                       | 26            |
 | Delete confirmation                 | `components/DeleteEntity.svelte`                                        | 48            |
 | Detail page shell · key/value table | `SingleView.svelte` · `SingleTable.svelte`                              | 8 · 8         |
-| A whole admin-panel lookup screen   | `components/lookup/LookupPage.svelte`                                   | 13            |
+| A whole admin-panel lookup screen   | `components/lookup/LookupPage.svelte`                                   | 14            |
 | One child table on a detail page    | `components/lookup/LookupSection.svelte` + `lookup/actions.ts`          | 5             |
 | A card on a detail page             | `components/Section.svelte`                                             | 3             |
 | Choosing a patient in a form        | `components/PatientPicker.svelte` — searches, never loads the roster    | 1             |
@@ -161,7 +161,13 @@ A new lookup table is a `LookupConfig` and a twenty-line server file. **Never wr
 hand.**
 
 - A foreign key is a `reference` field plus a matching `references` entry on `contentCrud` —
-  that one entry joins the table for the list _and_ loads the picker's options.
+  that one entry joins the table for the list _and_ loads the picker's options. `nameColumn` on
+  that entry shows something other than the referenced table's `name` — an employee's full name,
+  say, rather than their given name alone.
+- **The screen's field is `status`; a `secureFields` table's column is `isActive`.** `contentCrud`
+  renames it in both directions. It only did so on the way in until the providers screen was
+  built, so every such screen showed "Inactive" for every row — twelve active allergens read as
+  thirteen inactive — and an edit dialog seeded from that missing key saved the row switched off.
 - Something the descriptor cannot express goes in `extraColumns`. Reach for it twice for the
   same shape and it should have been a field type instead.
 - To extend: add an optional property to `LookupField`, honour it in `LookupFields.svelte`

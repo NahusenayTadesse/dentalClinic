@@ -77,6 +77,7 @@ const DESCRIPTIONS: Record<string, string> = {
 	'patients.clinical': 'Change a patient’s allergies, conditions, medicines and medical history',
 	'patients.edit': 'Change a patient’s details, contacts and billing',
 	'patients.register': 'Register new patients',
+	'providers.manage': 'Maintain dentists and their licences',
 	'patients.view': 'Find patients and open their charts',
 	'rejections.reopen': 'Put a rejected record back into its queue',
 	'rejections.view': 'See rejected records',

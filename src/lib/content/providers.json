@@ -1,0 +1,45 @@
+{
+	"path": "/dashboard/providers",
+	"languages": {
+		"en": {
+			"title": "Dentists",
+			"summary": "The clinicians who can be booked, with their licences.",
+			"sections": [
+				{
+					"heading": "Adding a dentist",
+					"body": "Choose the member of staff — they must already exist as an employee. Add their title, specialty, licence number, who issued it and when it expires. One member of staff can have only one dentist record; choosing somebody who already has one is refused."
+				},
+				{
+					"heading": "Licences",
+					"body": "The Licence column shows when the licence runs out: red once it has expired, amber inside the last 60 days, and a plain date otherwise. The line above the table counts how many are expired, expiring or have no expiry recorded."
+				},
+				{
+					"heading": "Bookable and prescribing",
+					"body": "Only bookable dentists appear in the appointment booking form. Turn Bookable off for a clinician who no longer sees patients — their past appointments stay attached to them. Usual slot sets the default length of their appointments, and Colour paints their appointments in the day view when the appointment type has no colour of its own."
+				}
+			],
+			"links": [
+				{ "label": "Full guide — Appointments", "href": "/dashboard/help#section-appointments" }
+			]
+		},
+		"am": {
+			"title": "ሐኪሞች",
+			"summary": "ቀጠሮ ሊያዝላቸው የሚችሉ ባለሙያዎችና ፈቃዳቸው።",
+			"sections": [
+				{
+					"heading": "ሐኪም መጨመር",
+					"body": "ሠራተኛውን ይምረጡ — አስቀድሞ በሠራተኞች ውስጥ መመዝገብ አለበት። ማዕረግ፣ የሙያ ዘርፍ፣ የፈቃድ ቁጥር፣ ፈቃዱን የሰጠውን አካልና የሚያበቃበትን ቀን ይጨምሩ። አንድ ሠራተኛ አንድ የሐኪም መዝገብ ብቻ ነው የሚኖረው።"
+				},
+				{
+					"heading": "ፈቃዶች",
+					"body": "የፈቃድ ዓምድ ፈቃዱ የሚያበቃበትን ያሳያል፦ ካበቃ ቀይ፣ በ60 ቀናት ውስጥ የሚያበቃ ከሆነ ብርቱካናማ። ከሠንጠረዡ በላይ ያለው መስመር ስንቱ እንዳበቃ፣ ስንቱ ሊያበቃ እንደሆነ ይቆጥራል።"
+				},
+				{
+					"heading": "ቀጠሮና ማዘዣ",
+					"body": "\"Bookable\" የሆኑ ሐኪሞች ብቻ በቀጠሮ ቅጽ ውስጥ ይታያሉ። ታካሚ የማያዩ ከሆነ ያጥፉት፤ ያለፉ ቀጠሮዎቻቸው እንደተያያዙ ይቀራሉ። \"Usual slot\" የቀጠሮአቸውን መደበኛ ርዝመት ይወስናል።"
+				}
+			],
+			"links": [{ "label": "ሙሉ መመሪያ — ቀጠሮዎች", "href": "/dashboard/help#section-appointments" }]
+		}
+	}
+}

@@ -104,6 +104,7 @@
 			type={field.type}
 			placeholder={field.placeholder ?? ''}
 			required={field.required ?? true}
+			year={field.type === 'date'}
 		/>
 	{/if}
 {/each}

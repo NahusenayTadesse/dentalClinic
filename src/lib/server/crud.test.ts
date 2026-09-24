@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { drizzle } from 'drizzle-orm/mysql2';
 import { and, asc, eq, isNull } from 'drizzle-orm';
 
-import { city, region, educationalLevel } from './db/schema';
+import { allergen, city, region, educationalLevel } from './db/schema';
 
 /**
  * The SQL `contentCrud` builds for a lookup list.
@@ -24,8 +24,15 @@ import { city, region, educationalLevel } from './db/schema';
  */
 const db = drizzle.mock();
 
+/**
+ * The projection as Drizzle's `select()` wants it. A table spread carries more than columns at the
+ * type level, so the cast is named here once rather than at each call (CLAUDE.md §3).
+ */
+type Projection = Parameters<typeof db.select>[0];
+
 const listSql = (projection?: Record<string, unknown>) => {
-	let q = (projection ? db.select(projection) : db.select()).from(city).$dynamic();
+	const fields = projection as Projection;
+	let q = (fields ? db.select(fields) : db.select()).from(city).$dynamic();
 	q = q.leftJoin(region, and(eq(region.id, city.regionId), isNull(region.deletedAt)));
 	return q.where(isNull(city.deletedAt)).orderBy(asc(city.id)).toSQL().sql;
 };
@@ -56,6 +63,24 @@ describe('contentCrud list query', () => {
 
 	it('always excludes deleted rows of the table itself', () => {
 		expect(listSql()).toContain('`city`.`deleted_at` is null');
+	});
+
+	/*
+	 * The read half of the `status`/`isActive` rename. Without it every screen on a `secureFields`
+	 * table showed "Inactive" for every row — twelve active allergens read as thirteen inactive —
+	 * and the edit dialog then saved that `false` back, switching rows off on an unrelated save.
+	 */
+	it('aliases isActive to status for tables that call it that', () => {
+		const projection: Record<string, unknown> = { ...allergen, status: allergen.isActive };
+		const sql = db
+			.select(projection as Projection)
+			.from(allergen)
+			.toSQL().sql;
+
+		// The column is selected twice — once under its own name, once as the alias the row is
+		// keyed by — which is exactly what makes `row.status` exist for a `secureFields` table.
+		expect(sql.split('`is_active`').length - 1).toBe(2);
+		expect(Object.keys(projection)).toContain('status');
 	});
 
 	it('spreads a Drizzle table to exactly its columns', () => {

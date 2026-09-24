@@ -27,7 +27,8 @@ import {
 	condition,
 	contactTypes,
 	referralSource,
-	medicine
+	medicine,
+	providerSpecialty
 } from '$lib/server/db/schema/';
 
 export async function cities() {
@@ -390,4 +391,13 @@ export async function medicines() {
 		value: m.value,
 		name: [m.generic, m.strength, m.brand && `(${m.brand})`].filter(Boolean).join(' ')
 	}));
+}
+
+/** Clinician specialties, for the provider picker. */
+export async function specialties() {
+	return db
+		.select({ value: providerSpecialty.id, name: providerSpecialty.name })
+		.from(providerSpecialty)
+		.where(and(eq(providerSpecialty.isActive, true), notDeleted(providerSpecialty)))
+		.orderBy(asc(providerSpecialty.sortOrder), asc(providerSpecialty.name));
 }

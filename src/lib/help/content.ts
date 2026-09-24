@@ -422,6 +422,25 @@ export const HELP_SECTIONS: HelpSection[] = [
 				keywords: ['check in', 'arrived', 'waiting room', 'no-show', 'cancel', 'reschedule', 'move']
 			},
 			{
+				id: 'dentists',
+				title: 'Dentists and their licences',
+				summary:
+					'A dentist is a member of staff with a clinical record: a licence, a specialty, and whether they can be booked or prescribe.',
+				where: 'Menu → **Appointments → Dentists** → `/dashboard/providers`',
+				permission: 'providers.manage',
+				steps: [
+					'Add a dentist by choosing the member of staff — they must already be an employee.',
+					'Record the licence number, who issued it and when it expires.',
+					'Leave **Bookable** on for anyone who takes appointments; turn it off for a clinician who no longer sees patients but whose past work must stay attached to them.'
+				],
+				notes: [
+					'The licence column counts down: red once expired, amber inside the last two months, and the line above the table says how many of each. Treating on an expired licence is a legal problem, not an administrative one.',
+					'One member of staff has at most one dentist record; choosing somebody who already has one is refused.',
+					'Only bookable dentists appear in the booking form. Removing a dentist leaves their past appointments standing.'
+				],
+				keywords: ['provider', 'dentist', 'licence', 'license', 'specialty', 'prescribe']
+			},
+			{
 				id: 'appointment-list',
 				title: 'Finding appointments',
 				summary:
@@ -1366,6 +1385,14 @@ export const ROUTE_MAP: RouteEntry[] = [
 	},
 
 	// Appointments
+	{
+		path: '/dashboard/providers',
+		title: 'Dentists',
+		purpose:
+			'The clinicians who can be booked and prescribe, with their licences and expiry dates.',
+		permission: 'providers.manage',
+		group: 'Appointments'
+	},
 	{
 		path: '/dashboard/appointments',
 		title: 'Appointments — day view',

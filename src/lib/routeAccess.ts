@@ -80,6 +80,15 @@ export const routeRules: RouteRule[] = [
 	 * Registering is its own page and its own rule, so it must come before the general prefix.
 	 */
 	/*
+	 * The clinicians. Their licences decide who may legally treat, so this sits with the people who
+	 * manage staff rather than with the front desk that books them.
+	 */
+	{
+		prefix: '/dashboard/providers',
+		permission: 'providers.manage'
+	},
+
+	/*
 	 * The diary. Opening it is `appointments.view`; booking, moving, cancelling and changing a
 	 * status is `appointments.book`, checked in each action (code-only, like the patient writes) —
 	 * those actions are also posted from the patient chart, which this rule does not cover.

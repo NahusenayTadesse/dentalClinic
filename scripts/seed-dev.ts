@@ -446,13 +446,24 @@ async function seedScheduling() {
 			.limit(6);
 		if (dentists.length) {
 			await db.insert(provider).values(
-				dentists.map((d, i) => ({
-					employeeId: d.id,
-					title: 'Dr',
-					canPrescribe: true,
-					defaultAppointmentMinutes: 30,
-					licenceNumber: `SEED-LIC-${i + 1}`
-				}))
+				/*
+				 * Licence expiries spread across the three states the providers screen colours —
+				 * expired, expiring inside the warning window, and comfortably valid — so the screen
+				 * can be read at a glance in development.
+				 */
+				dentists.map((d, i) => {
+					const inDays = [-40, 20, 200, 500, -5, 90][i % 6];
+					const expires = new Date(Date.now() + inDays * 86_400_000);
+					return {
+						employeeId: d.id,
+						title: 'Dr',
+						canPrescribe: true,
+						defaultAppointmentMinutes: 30,
+						licenceNumber: `SEED-LIC-${i + 1}`,
+						licenceBody: 'Ministry of Health',
+						licenceExpiresOn: expires.toISOString().slice(0, 10)
+					};
+				})
 			);
 		}
 	}

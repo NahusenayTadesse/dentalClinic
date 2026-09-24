@@ -63,6 +63,13 @@ export interface CrudReference {
 	table: AnyTable;
 	/** Key on each returned row carrying the referenced name — `'region'`. */
 	as: string;
+	/**
+	 * What to show instead of the referenced table's `name` column.
+	 *
+	 * For tables whose display name is not one column: `employee.name` is only the given name, so a
+	 * provider's staff member read "Labrittany" rather than "Labrittany Corrigan".
+	 */
+	nameColumn?: MySqlColumn | SQL;
 	/** Loads the picker's options. A `fastData` helper, normally. */
 	options: () => Promise<{ value: number; name: string }[]>;
 	/** Key in the returned load data for those options — `'regionList'`. */
@@ -199,12 +206,26 @@ export function contentCrud<T extends AnyTable>({
 		 * — because Drizzle widens a joined `select()` into `{ table: {...}, region: {...} }`,
 		 * and the list components expect one flat row.
 		 */
-		const projection = references.length
-			? {
-					...(table as Record<string, MySqlColumn>),
-					...Object.fromEntries(references.map((ref) => [ref.as, ref.table.name]))
-				}
-			: undefined;
+		/*
+		 * `status` is the read half of the rename the write half has done since the beginning: forms
+		 * and `LookupConfig`s call the active flag `status`, `secureFields` tables call the column
+		 * `isActive`. Without it every one of those screens showed "Inactive" for every row —
+		 * twelve active allergens read as thirteen inactive ones — and, worse, the edit dialog
+		 * seeded `status` from the missing key and saved `false`, switching a row off on a save
+		 * that changed nothing else.
+		 */
+		const aliasStatus = !('status' in table) && 'isActive' in table;
+
+		const projection =
+			references.length || aliasStatus
+				? {
+						...(table as Record<string, MySqlColumn>),
+						...(aliasStatus ? { status: table.isActive as MySqlColumn } : {}),
+						...Object.fromEntries(
+							references.map((ref) => [ref.as, ref.nameColumn ?? ref.table.name])
+						)
+					}
+				: undefined;
 
 		// `$dynamic()` is what lets the joins and the `where` be added in a loop; without it each
 		// `leftJoin` returns a differently-shaped builder that cannot be reassigned.

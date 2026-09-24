@@ -12,32 +12,35 @@
 		items,
 		name,
 		value = $bindable(),
-		required = false
+		required = false,
+		label = undefined
 	}: {
 		items: Item[];
 		name: string;
 		value: string | number | boolean | undefined;
 		required: boolean;
+		/**
+		 * What the trigger and the search box call this field. Without it both are built from the
+		 * column name, so a foreign key read "Select Employee Id" and "Search Employee Id…".
+		 */
+		label?: string;
 	} = $props();
 	let open = $state(false);
 	let triggerRef = $state<HTMLButtonElement>(null!);
 
-	const selectedValue = $derived(items.find((f) => f.value === value)?.name);
+	/** The field's own words, or the column name de-camel-cased as a fallback. */
+	const fieldName = $derived(label ?? name.replace(/([a-z0-9])([A-Z])/g, '$1 $2'));
 
-	// const triggerContent = $derived(
-	// 	items.find((f: Item) => f.value === value)?.name ??
-	// 		'Select ' + name.replace(/([a-z])([A-Z])/g, '$1 $2')
-	// );
-	//
-	const triggerContent = $derived(
-		// Use String coercion to ensure "1" matches 1
-		items.find((f: Item) => String(f.value) === String(value))?.name ??
-			'Select ' + name.replace(/([a-z])([A-Z])/g, '$1 $2')
+	/** Title case for the search box only, which is how it has always been spelled there. */
+	const searchName = $derived(
+		label ?? fieldName.replace(/\b\w/g, (char: string) => char.toUpperCase())
 	);
 
-	function getNameByValue(items: Item[], value: Item['value']): string | undefined {
-		return items.find((item) => item.value === value)?.name.replace(/([a-z])([A-Z])/g, '$1 $2');
-	}
+	const triggerContent = $derived(
+		// Use String coercion to ensure "1" matches 1
+		items.find((f: Item) => String(f.value) === String(value))?.name ?? 'Select ' + fieldName
+	);
+
 	// We want to refocus the trigger button when the user selects
 	// an item from the list so users can continue navigating the
 	// rest of the form with the keyboard.
@@ -68,15 +71,11 @@
 
 	<Popover.Content class="w-full p-0">
 		<Command.Root>
-			<Command.Input
-				placeholder="Search {name
-					.replace(/([a-z0-9])([A-Z])/g, '$1 $2')
-					.replace(/\b\w/g, (char) => char.toUpperCase())}..."
-			/>
+			<Command.Input placeholder="Search {searchName}..." />
 			<Command.List>
 				<Command.Empty>No {name.replace(/([a-z])([A-Z])/g, '$1 $2')} found.</Command.Empty>
 				<Command.Group>
-					{#each items as item}
+					{#each items as item (item.value)}
 						<Command.Item
 							value={item.name}
 							keywords={[item.name]}

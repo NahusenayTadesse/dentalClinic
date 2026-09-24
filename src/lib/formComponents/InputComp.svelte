@@ -178,15 +178,15 @@
 	{:else if type === 'file'}
 		<FileUpload {name} {form} {image} {placeholder} />
 	{:else if type === 'select'}
-		<SelectComp {name} bind:value={$form[name]} {items} />
+		<SelectComp {name} {label} bind:value={$form[name]} {items} />
 	{:else if type === 'date'}
-		<DatePicker bind:data={$form[name]} {oldDays} {year} {futureDays} />
+		<DatePicker bind:data={$form[name]} {oldDays} {year} {futureDays} allowEmpty={!required} />
 		<input type="hidden" {name} bind:value={$form[name]} />
 	{:else if type === 'dateMultiple'}
 		<DateRangePicker bind:data={$form[name]} {oldDays} {year} {futureDays} />
 		<input type="hidden" {name} bind:value={$form[name]} />
 	{:else if type === 'combo'}
-		<ComboboxComp {name} bind:value={$form[name]} {items} {required} />
+		<ComboboxComp {name} {label} bind:value={$form[name]} {items} {required} />
 	{:else if type === 'checkbox'}
 		<CheckboxComp {items} bind:checkedValues={$form[name]} />
 		<input type="hidden" {name} bind:value={$form[name]} />
