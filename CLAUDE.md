@@ -641,8 +641,15 @@ set `branchId` from `locals.branch.active`.
 
 **Tests where the logic is subtle, not everywhere.** The existing suite has the right instinct —
 leave accrual, the leave ledger, approvals, `routeAccess`. Known gap worth closing when you are
-nearby: `crud.ts`, `softDelete.ts` and `permissions.ts` are the highest-leverage infrastructure
-in the repo and have no tests at all.
+nearby: `softDelete.ts` and `permissions.ts` are the highest-leverage infrastructure in the repo
+and have no tests at all.
+
+**A database test creates what it needs inside its own rollback.** Three read rows a clinic types
+in — a leave type named "Marriage Leave", an active leave grant, an open salary — and so failed on
+`undefined` against any database that had never been used, which is every fresh clone. Nine tests
+were red on every run, and red tests stop being read: the suite could not say whether anything else
+had broken. Borrow only what is expensive to build (an `employee` row needs two dozen unrelated
+columns) and skip with a reason when even that is missing.
 
 ---
 

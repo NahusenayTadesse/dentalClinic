@@ -7,7 +7,7 @@ const fields = {
 	address: z.string().max(255).optional(),
 	typicalTurnaroundDays: z.coerce.number().int().min(0).max(365).optional(),
 	notes: z.string().max(255).optional(),
-	status: z.boolean('Status is required')
+	status: z.boolean('Status is required').default(true)
 };
 
 export const add = z.object(fields);

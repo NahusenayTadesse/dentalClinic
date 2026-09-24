@@ -8,6 +8,6 @@ export const add = z.object({
 export const edit = z.object({
 	id: z.coerce.string(),
 	name: z.string('Name of Payment Method is required').min(2).max(50),
-	status: z.boolean('Status is required')
+	status: z.boolean('Status is required').default(true)
 });
 export type Edit = z.infer<typeof edit>;

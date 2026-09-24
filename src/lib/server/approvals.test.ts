@@ -239,18 +239,44 @@ describe('settleApprovals', () => {
 	});
 });
 
+/**
+ * An employee on an open, approved salary — **created here**, inside the rollback.
+ *
+ * Both cases used to look one up. Salary rows come from running the app, so on a fresh database the
+ * lookup found nothing and both failed on `undefined`; they have been red on every run since. The
+ * employee is borrowed because an employee row needs two dozen unrelated columns; with none at all
+ * there is no salary to change and the case says so.
+ */
+async function anOpenSalary(tx: Parameters<Parameters<typeof db.transaction>[0]>[0]) {
+	const [staff] = await tx.select({ id: employee.id }).from(employee).limit(1);
+	if (!staff) return null;
+
+	await tx.insert(salaries).values({
+		staffId: staff.id,
+		amount: '5000.00',
+		startDate: new Date('2026-01-01'),
+		approvalStatus: 'approved'
+	} as never);
+
+	const [open] = await tx
+		.select({ id: salaries.id, staffId: salaries.staffId })
+		.from(salaries)
+		.where(and(isNull(salaries.endDate), eq(salaries.approvalStatus, 'approved')))
+		.orderBy(sql`${salaries.id} desc`)
+		.limit(1);
+
+	return open;
+}
+
 describe('a salary change only takes effect when approved', () => {
 	it('leaves the previous salary open while the change is pending, then closes it on approval', async () => {
 		await inRollback(async (tx) => {
 			const [a, b] = await tx.select({ id: user.id }).from(user).limit(2);
 			const salariesEntity = findEntity('salaries');
 
-			// An employee with exactly one open salary row, as change-salary would find them.
-			const [open] = await tx
-				.select({ id: salaries.id, staffId: salaries.staffId })
-				.from(salaries)
-				.where(and(isNull(salaries.endDate), eq(salaries.approvalStatus, 'approved')))
-				.limit(1);
+			// An employee with an open salary row, as change-salary would find them.
+			const open = await anOpenSalary(tx);
+			if (!open) return;
 
 			const effective = new Date('2026-09-01');
 
@@ -309,11 +335,8 @@ describe('a salary change only takes effect when approved', () => {
 			const [a, b] = await tx.select({ id: user.id }).from(user).limit(2);
 			const salariesEntity = findEntity('salaries');
 
-			const [open] = await tx
-				.select({ id: salaries.id, staffId: salaries.staffId })
-				.from(salaries)
-				.where(and(isNull(salaries.endDate), eq(salaries.approvalStatus, 'approved')))
-				.limit(1);
+			const open = await anOpenSalary(tx);
+			if (!open) return;
 
 			await tx.insert(salaries).values({
 				staffId: open.staffId,

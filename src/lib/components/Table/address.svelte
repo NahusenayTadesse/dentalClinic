@@ -1,25 +1,6 @@
 <script lang="ts">
-	import { Popover, PopoverContent, PopoverTrigger } from '$lib/components/ui/popover';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
-	import {
-		MapPinIcon,
-		FlagIcon,
-		BuildingIcon,
-		MapIcon,
-		LandmarkIcon,
-		House,
-		Building,
-		Building2
-	} from '@lucide/svelte';
-
-	type Address = {
-		subcity?: string | null;
-		street?: string | null;
-		kebele?: string | null;
-		buildingNumber?: string | number | null;
-		floor?: string | number | null;
-		houseNumber?: string | number | null;
-	};
+	import { MapPinIcon, MapIcon, LandmarkIcon, House, Building, Building2 } from '@lucide/svelte';
 
 	interface Props {
 		subcity?: string | null;
@@ -37,22 +18,7 @@
 	);
 	let addressForMap = $derived(`${subcity ? `${subcity}, ` : ''}${street ? `${street}, ` : ''}`);
 
-	// Filter out empty address fields
-	const addressFields = $derived.by(() => {
-		const fields: { label: string; value: string }[] = [];
-		if (subcity) fields.push({ label: 'Subcity', value: subcity });
-		if (street) fields.push({ label: 'Street', value: street });
-		if (kebele) fields.push({ label: 'Kebele', value: kebele });
-		if (buildingNumber) fields.push({ label: 'Building', value: buildingNumber });
-		if (floor) fields.push({ label: 'Floor', value: floor });
-		if (houseNumber) fields.push({ label: 'House Number', value: houseNumber });
-		return fields;
-	});
-
-	const hasAddress = $derived(addressFields.length > 0);
-	let open = $state(false);
-
-	function truncate(str, maxLength = 15) {
+	function truncate(str: string | number | null | undefined, maxLength = 15) {
 		// Ensure str exists and is treated as a string
 		const safeStr = String(str || '');
 
@@ -63,44 +29,49 @@
 		`https://maps.google.com/maps?q=${encodeURIComponent(addressForMap)}&t=&z=13&ie=UTF8&iwloc=&output=embed`
 	);
 
-	const hierarchyItems = $derived([
-		{
-			label: 'Subcity',
-			value: subcity,
-			icon: MapIcon,
-			color: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20'
-		},
-		{
-			label: 'Street',
-			value: street,
-			icon: LandmarkIcon,
-			color: 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20'
-		},
-		{
-			label: 'Kebele',
-			value: kebele,
-			icon: House,
-			color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20'
-		},
-		{
-			label: 'Building Number',
-			value: buildingNumber,
-			icon: Building,
-			color: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20'
-		},
-		{
-			label: 'Floor',
-			value: floor,
-			icon: Building2,
-			color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20'
-		},
-		{
-			label: 'House Number or Office Number',
-			value: houseNumber,
-			icon: House,
-			color: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
-		}
-	]);
+	/**
+	 * The lines of the panel — only the fields that were actually given.
+	 *
+	 * The filtering used to live in a second `addressFields` array that the template never rendered,
+	 * so an address with a subcity and a street still listed Kebele, Building, Floor and House
+	 * Number with nothing under them. One list, and it is the one on screen.
+	 */
+	const addressFields = $derived(
+		[
+			{
+				label: 'Subcity',
+				value: subcity,
+				icon: MapIcon
+			},
+			{
+				label: 'Street',
+				value: street,
+				icon: LandmarkIcon
+			},
+			{
+				label: 'Kebele',
+				value: kebele,
+				icon: House
+			},
+			{
+				label: 'Building Number',
+				value: buildingNumber,
+				icon: Building
+			},
+			{
+				label: 'Floor',
+				value: floor,
+				icon: Building2
+			},
+			{
+				label: 'House Number or Office Number',
+				value: houseNumber,
+				icon: House
+			}
+		].filter((item) => item.value !== null && item.value !== undefined && item.value !== '')
+	);
+
+	const hasAddress = $derived(addressFields.length > 0);
 </script>
 
 <DialogComp
@@ -113,15 +84,15 @@
 		<div class="space-y-3">
 			<h4 class="text-sm font-semibold">Address Details</h4>
 			<div class="flex flex-col gap-2">
-				{#each hierarchyItems as item, index (item.label)}
+				{#each addressFields as item, index (item.label)}
 					<div class="relative flex items-start gap-3">
 						<!-- Connecting line -->
-						{#if index < hierarchyItems.length - 1}
+						{#if index < addressFields.length - 1}
 							<div class="absolute top-8 left-3.75 h-6 w-0.5 bg-border"></div>
 						{/if}
 
 						<!-- Icon -->
-						<div class={['shrink-0 rounded-md border p-1.5', item.color]}>
+						<div class="shrink-0 rounded-md border bg-muted p-1.5 text-muted-foreground">
 							<item.icon class="size-4" />
 						</div>
 

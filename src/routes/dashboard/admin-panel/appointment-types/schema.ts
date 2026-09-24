@@ -11,7 +11,7 @@ const fields = {
 		.or(z.literal('')),
 	description: z.string().max(255).optional(),
 	sortOrder: z.coerce.number().int().min(0).default(0),
-	status: z.boolean('Status is required')
+	status: z.boolean('Status is required').default(true)
 };
 
 export const add = z.object(fields);

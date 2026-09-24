@@ -32,14 +32,11 @@ describe('Table/address.svelte', () => {
 		await expect.element(page.getByText('B-12', { exact: true })).toBeInTheDocument();
 	});
 
-	// KNOWN BUG: address.svelte computes a filtered `addressFields` array (only fields
-	// that actually have a value) via $derived, but the template never renders it —
-	// it renders the unfiltered `hierarchyItems` array instead, which always lists all
-	// six fields regardless of whether they were provided. So `addressFields`/`hasAddress`
-	// end up only gating whether the panel is shown at all, not which rows appear in it.
-	// This test asserts the sensible behavior (omit fields that were never provided) and
-	// is expected to FAIL until the template is switched to use `addressFields`.
-	it('omits fields that are not provided (currently broken)', async () => {
+	/*
+	 * The filtered list is the one the panel renders now. It was computed and then ignored — the
+	 * template listed all six fields, so an address with two of them showed four empty rows.
+	 */
+	it('omits fields that are not provided', async () => {
 		render(Address, { subcity: 'Bole', street: 'Main Street' });
 
 		await userEvent.click(page.getByRole('button'));

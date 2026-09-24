@@ -29,6 +29,6 @@ export const edit = z.object({
 	buildingNumber: z.string().optional(),
 	floor: z.string().nullable(),
 	houseNumber: z.string().optional(),
-	status: z.boolean('Status is required')
+	status: z.boolean('Status is required').default(true)
 });
 export type Edit = z.infer<typeof edit>;

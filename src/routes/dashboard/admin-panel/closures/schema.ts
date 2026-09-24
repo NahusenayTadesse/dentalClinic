@@ -7,7 +7,7 @@ const fields = {
 	/** Empty means every branch — see the table comment on `clinic_closure`. */
 	branchId: z.coerce.string().optional(),
 	note: z.string().max(255).optional(),
-	status: z.boolean('Status is required')
+	status: z.boolean('Status is required').default(true)
 };
 
 export const add = z.object(fields);

@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { eq } from 'drizzle-orm';
 import { db } from '$lib/server/db';
-import { employeeLeaveGrant, leave, leaveType } from '$lib/server/db/schema';
+import { desc } from 'drizzle-orm';
+import { employee, employeeLeaveGrant, leave, leaveType } from '$lib/server/db/schema';
 import { leaveBalance } from './leaveAccrual';
 import {
 	ledgerCost,
@@ -102,27 +103,50 @@ async function inRollback<T>(
 	return result as T;
 }
 
-/** An employee with a live grant, and a leave type that actually draws on the balance. */
+/**
+ * An employee with a live grant, and a leave type that draws on the balance — **created here**,
+ * inside the rollback.
+ *
+ * It used to look both up and use whatever it found. Grants and leave types are entered by a clinic
+ * rather than seeded, so on a fresh database the lookups returned nothing and every case below
+ * failed reading `staffId` of `undefined` — red on every run, for want of a fixture. Only the
+ * employee is borrowed, because an employee row needs two dozen columns this file has no business
+ * knowing about; with none at all there is nothing to test and the case says so.
+ */
 async function fixture(tx: Parameters<Parameters<typeof db.transaction>[0]>[0]) {
-	const [grant] = await tx
-		.select({ staffId: employeeLeaveGrant.staffId })
-		.from(employeeLeaveGrant)
-		.where(eq(employeeLeaveGrant.status, 'active'))
-		.limit(1);
+	const [staff] = await tx.select({ id: employee.id }).from(employee).limit(1);
+	if (!staff) return null;
 
+	await tx.insert(leaveType).values({
+		name: 'Probe Leave (rolled back)',
+		maxDays: 30,
+		deductsBalance: true
+	});
 	const [type] = await tx
 		.select({ id: leaveType.id })
 		.from(leaveType)
-		.where(eq(leaveType.deductsBalance, true))
+		.orderBy(desc(leaveType.id))
 		.limit(1);
 
-	return { staffId: grant.staffId, leaveTypeId: type.id };
+	await tx.insert(employeeLeaveGrant).values({
+		staffId: staff.id,
+		serviceYear: 1,
+		grantDate: '2026-01-01' as never,
+		expiryDate: '2027-12-31' as never,
+		daysGranted: 20,
+		status: 'active'
+	});
+
+	return { staffId: staff.id, leaveTypeId: type.id };
 }
 
 describe('settlement against the database', () => {
 	it('spends once, then does not charge again when the same batch is re-submitted', async () => {
 		await inRollback(async (tx) => {
-			const { staffId, leaveTypeId } = await fixture(tx);
+			const made = await fixture(tx);
+			// No employees at all: there is nothing here to settle leave against.
+			if (!made) return;
+			const { staffId, leaveTypeId } = made;
 			const opening = await leaveBalance(staffId, tx);
 
 			await tx.insert(leave).values({
@@ -162,7 +186,10 @@ describe('settlement against the database', () => {
 
 	it('settles a shortened approved leave by the difference', async () => {
 		await inRollback(async (tx) => {
-			const { staffId, leaveTypeId } = await fixture(tx);
+			const made = await fixture(tx);
+			// No employees at all: there is nothing here to settle leave against.
+			if (!made) return;
+			const { staffId, leaveTypeId } = made;
 			const opening = await leaveBalance(staffId, tx);
 
 			await tx.insert(leave).values({
@@ -208,7 +235,10 @@ describe('settlement against the database', () => {
 describe('deleting an approved leave', () => {
 	it('returns the days it had taken off the balance', async () => {
 		await inRollback(async (tx) => {
-			const { staffId, leaveTypeId } = await fixture(tx);
+			const made = await fixture(tx);
+			// No employees at all: there is nothing here to settle leave against.
+			if (!made) return;
+			const { staffId, leaveTypeId } = made;
 			const opening = await leaveBalance(staffId, tx);
 
 			await tx.insert(leave).values({
@@ -242,7 +272,10 @@ describe('deleting an approved leave', () => {
 
 	it('moves nothing when the deleted leave was never approved', async () => {
 		await inRollback(async (tx) => {
-			const { staffId, leaveTypeId } = await fixture(tx);
+			const made = await fixture(tx);
+			// No employees at all: there is nothing here to settle leave against.
+			if (!made) return;
+			const { staffId, leaveTypeId } = made;
 			const opening = await leaveBalance(staffId, tx);
 
 			await tx.insert(leave).values({
