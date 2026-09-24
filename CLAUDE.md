@@ -256,6 +256,11 @@ Two qualifications, so this rule does not fight the others:
   content and `db/schema/staff.ts` (639) is table definitions. Split them when a _section_ earns
   its own file, not because a line count says so.
 
+The development seed is the worked example of splitting one: `scripts/seed-dev.ts` holds the
+guards and the order, and each step lives in `scripts/seed/` beside it — reference lists, staff,
+patients, scheduling, supplies, the clinical record, operations. Every step skips itself when its
+own table already has rows, so `npm run db:seed` tops a database up rather than duplicating it.
+
 Everything else over 500 is a real target. Current offenders:
 `reports/details.server.ts` (1,518), `employees/single/[id]/+page.server.ts` (830, down from 1,296),
 `app-sidebar.svelte` (639), `salary/add-payroll/**/+page.server.ts` (588/586),
@@ -662,6 +667,7 @@ node scripts/check-budget.mjs   # what CI gates on — type and lint counts must
 npm run check        # svelte-check — the real signal
 npm run lint         # prettier --check + eslint
 npm run test         # vitest, both projects (browser + node)
+npm run db:seed -- --yes        # fill a development database; --fresh empties first
 npm run db:push      # push schema (safe while the DB has no production data)
 npm run db:studio    # drizzle studio
 ```
