@@ -1,0 +1,45 @@
+{
+	"path": "/dashboard/admin-panel/dental-labs",
+	"languages": {
+		"en": {
+			"title": "Dental Labs",
+			"summary": "The laboratories the clinic sends work to — crowns, bridges, dentures.",
+			"sections": [
+				{
+					"heading": "Turnaround",
+					"body": "Turnaround is what the lab promises, in days. Record the name, phone and contact person the front desk actually rings."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Admin panel",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		},
+		"am": {
+			"title": "የጥርስ ላቦራቶሪዎች",
+			"summary": "ክሊኒኩ ሥራ የሚልክባቸው ላቦራቶሪዎች — ዘውዶች፣ ድልድዮች፣ ሰው ሠራሽ ጥርሶች።",
+			"sections": [
+				{
+					"heading": "የመመለሻ ጊዜ",
+					"body": "ላቦራቶሪው በቀናት የሚሰጠው ቃል ነው። የፊት ዴስክ የሚደውልለትን ስም፣ ስልክና ተጠሪ ይመዝግቡ።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — የአስተዳደር ፓነል",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,45 @@
+{
+	"path": "/dashboard/admin-panel/regions",
+	"languages": {
+		"en": {
+			"title": "Regions",
+			"summary": "The regions every address is built from.",
+			"sections": [
+				{
+					"heading": "How addresses fit together",
+					"body": "An address is a region, a city in it, and a subcity in that city. Add them in that order: a city cannot be added before its region exists."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Admin panel",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		},
+		"am": {
+			"title": "ክልሎች",
+			"summary": "እያንዳንዱ አድራሻ የሚገነባባቸው ክልሎች።",
+			"sections": [
+				{
+					"heading": "አድራሻዎች እንዴት እንደሚያያዙ",
+					"body": "አድራሻ ክልል፣ በውስጡ ያለ ከተማ እና በዚያ ከተማ ውስጥ ያለ ክፍለ ከተማ ነው። በዚህ ቅደም ተከተል ይጨምሩ፦ ክልሉ ሳይኖር ከተማ ሊጨመር አይችልም።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — የአስተዳደር ፓነል",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		}
+	}
+}

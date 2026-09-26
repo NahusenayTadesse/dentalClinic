@@ -1,0 +1,45 @@
+{
+	"path": "/dashboard/admin-panel/department",
+	"languages": {
+		"en": {
+			"title": "Departments",
+			"summary": "The departments staff belong to.",
+			"sections": [
+				{
+					"heading": "Office staff",
+					"body": "Tick \"Office staff\" for a department whose employees work in the system: only employees in a ticked department can be given a user account, and they are the ones offered when a payslip is adjusted."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Employees and leave",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		},
+		"am": {
+			"title": "የሥራ ክፍሎች",
+			"summary": "ሠራተኞች የሚመደቡባቸው የሥራ ክፍሎች።",
+			"sections": [
+				{
+					"heading": "የቢሮ ሠራተኞች",
+					"body": "ሠራተኞቹ ሲስተሙን ለሚጠቀሙበት የሥራ ክፍል \"Office staff\"ን ምልክት ያድርጉ፦ የተጠቃሚ መለያ ሊሰጣቸው የሚችለው ምልክት በተደረገበት ክፍል ያሉ ሠራተኞች ብቻ ናቸው፤ የደመወዝ ወረቀት ሲስተካከልም የሚቀርቡት እነሱ ናቸው።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሠራተኞችና ፈቃድ",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		}
+	}
+}

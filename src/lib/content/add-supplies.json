@@ -3,11 +3,11 @@
 	"languages": {
 		"en": {
 			"title": "Add Supply",
-			"summary": "Register an item, or a new purchase of one you already hold.",
+			"summary": "Register an item the clinic stocks. The stock itself is added afterwards, on the item's own page.",
 			"sections": [
 				{
 					"heading": "What to fill in",
-					"body": "• Name and description\n• Type — from Admin Panel → Supply Types. If the type you need is missing, add it there first.\n• Quantity and unit cost\n• Supplier\n• Reorder level — the point at which the item starts appearing on the dashboard"
+					"body": "• Name and description\n• Type — from Supplies → Supply Types. If the type you need is missing, add it there first.\n• Unit — piece, gram, millilitre and so on; every quantity of this item is in it\n• Returnable — tick it for instruments that come back to the store after use\n• Reorder level — the point at which the item starts appearing on the dashboard\n\nThen open the item, press Change Quantity and choose Add to record the delivery: the quantity, the cost per unit, and the account it was paid from."
 				},
 				{
 					"heading": "Setting the reorder level",
@@ -15,23 +15,23 @@
 				},
 				{
 					"heading": "After saving",
-					"body": "The item appears in Stock Levels with its four figures: on hand, reserved, leased out and available. Reserved and leased out are worked out from the leases, so they will be zero until the item is leased to a site."
+					"body": "The item appears in Stock Levels with the quantity in store. Every delivery is kept as its own lot, and stock is taken from the lot that expires first, so the oldest composite or anaesthetic is used before it goes off."
 				}
 			],
 			"links": [
 				{
-					"label": "Full guide — Supplies and leases",
+					"label": "Full guide — Supplies",
 					"href": "/dashboard/help#section-supplies"
 				}
 			]
 		},
 		"am": {
 			"title": "ግብዓት መጨመር",
-			"summary": "አዲስ ዕቃ ወይም አስቀድመው የያዙትን ዕቃ አዲስ ግዢ መመዝገቢያ።",
+			"summary": "ክሊኒኩ የሚያከማቸውን ዕቃ ይመዝግቡ። ክምችቱ ራሱ ከዚያ በኋላ በዕቃው ገጽ ላይ ይጨመራል።",
 			"sections": [
 				{
 					"heading": "የሚሞላው",
-					"body": "• ስምና መግለጫ\n• ዓይነት — ከAdmin Panel → Supply Types። የሚፈልጉት ዓይነት ከሌለ መጀመሪያ እዚያ ይጨምሩት።\n• መጠንና የአንዱ ዋጋ\n• አቅራቢ\n• የዳግም ትዕዛዝ ደረጃ — ዕቃው በዳሽቦርድ ላይ መታየት የሚጀምርበት ነጥብ"
+					"body": "• ስምና መግለጫ\n• ምድብ — ከSupplies → Supply Types። የሚፈልጉት ምድብ ከሌለ መጀመሪያ እዚያ ይጨምሩት።\n• መለኪያ — ቁራጭ፣ ግራም፣ ሚሊ ሊትር ወዘተ፤ የዚህ ዕቃ ማንኛውም መጠን በዚህ ይለካል\n• ተመላሽ — ከጥቅም በኋላ ወደ መጋዘን ለሚመለሱ መሣሪያዎች ምልክት ያድርጉ\n• የዳግም ትዕዛዝ ደረጃ — ዕቃው በዳሽቦርድ ላይ መታየት የሚጀምርበት ነጥብ\n\nከዚያ ዕቃውን ከፍተው \"Change Quantity\"ን ይጫኑ፤ ርክክቡን ለመመዝገብ \"Add\"ን ይምረጡ፦ መጠኑ፣ የአንዱ ዋጋና የተከፈለበት ሂሳብ።"
 				},
 				{
 					"heading": "የዳግም ትዕዛዝ ደረጃ ማስቀመጥ",
@@ -39,12 +39,12 @@
 				},
 				{
 					"heading": "ካስቀመጡ በኋላ",
-					"body": "ዕቃው በክምችት ደረጃ ውስጥ ከአራቱ አኃዞቹ ጋር ይታያል፦ በእጅ ያለ፣ የተያዘ፣ የተከራየና ነፃ። የተያዘውና የተከራየው ከኪራዮች ስለሚሰሉ ዕቃው ለጣቢያ እስኪከራይ ድረስ ዜሮ ይሆናሉ።"
+					"body": "ዕቃው በክምችት ደረጃ ውስጥ በመጋዘን ካለው መጠን ጋር ይታያል። እያንዳንዱ ርክክብ እንደ ራሱ ሎት ይቀመጣል፤ ክምችትም ቀድሞ ከሚያልቀው ሎት ይወሰዳል፤ ስለዚህ የቆየው ኮምፖዚት ወይም ማደንዘዣ ጊዜው ከማለፉ በፊት ጥቅም ላይ ይውላል።"
 				}
 			],
 			"links": [
 				{
-					"label": "ሙሉ መመሪያ — ግብዓቶችና ኪራዮች",
+					"label": "ሙሉ መመሪያ — ግብዓቶች",
 					"href": "/dashboard/help#section-supplies"
 				}
 			]

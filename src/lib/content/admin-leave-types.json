@@ -1,0 +1,45 @@
+{
+	"path": "/dashboard/admin-panel/leave-types",
+	"languages": {
+		"en": {
+			"title": "Leave Types",
+			"summary": "The kinds of leave staff can take — annual, sick, maternity.",
+			"sections": [
+				{
+					"heading": "The two settings",
+					"body": "• Maximum Days Allowed — the most that can be taken in one request.\n• Drawn From Accrued Balance — tick it for annual leave, which spends the days staff have earned. Leave that is not ticked, like sick leave, is recorded without touching the balance."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Employees and leave",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		},
+		"am": {
+			"title": "የፈቃድ ዓይነቶች",
+			"summary": "ሠራተኞች ሊወስዷቸው የሚችሉ የፈቃድ ዓይነቶች — ዓመታዊ፣ ሕመም፣ ወሊድ።",
+			"sections": [
+				{
+					"heading": "ሁለቱ ቅንብሮች",
+					"body": "• Maximum Days Allowed — በአንድ ጥያቄ ሊወሰድ የሚችለው ከፍተኛ ቀን።\n• Drawn From Accrued Balance — ሠራተኞች ያጠራቀሙትን ቀን ለሚጠቀመው ዓመታዊ ፈቃድ ምልክት ያድርጉ። ምልክት ያልተደረገበት ፈቃድ፣ እንደ ሕመም ፈቃድ፣ ቀሪውን ሳይነካ ይመዘገባል።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሠራተኞችና ፈቃድ",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		}
+	}
+}

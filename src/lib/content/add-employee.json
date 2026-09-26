@@ -15,7 +15,7 @@
 				},
 				{
 					"heading": "Address, employment and salary",
-					"body": "Address: Subcity, Street, Kebele, Building, Floor, House Number.\n\nEmployment: Department, Position, Employment Status, Site, Hire Date, Educational Level, and Office Commission with its percentage where it applies.\n\nSalary: Basic Salary plus Transport, Housing, Non-Tax and Positional allowances. The gross shown at the bottom is the sum of all of them, and it is what payroll will use.\n\nGet the hire date right — leave accrual and length-of-service entitlements are counted from it."
+					"body": "Address: Subcity, Street, Kebele, Building, Floor, House Number.\n\nEmployment: Department, Position, Employment Status, Hire Date, Educational Level, and Office Commission with its percentage where it applies. The employee is filed under the branch you are working at, chosen in the top bar.\n\nSalary: Basic Salary plus Transport, Housing, Non-Tax and Positional allowances. The gross shown at the bottom is the sum of all of them, and it is what payroll will use.\n\nGet the hire date right — leave accrual and length-of-service entitlements are counted from it."
 				},
 				{
 					"heading": "After you save",
@@ -43,7 +43,7 @@
 				},
 				{
 					"heading": "አድራሻ፣ ቅጥርና ደመወዝ",
-					"body": "አድራሻ፦ ክፍለ ከተማ፣ መንገድ፣ ቀበሌ፣ ሕንፃ፣ ፎቅ፣ የቤት ቁጥር።\n\nቅጥር፦ ክፍል፣ የሥራ መደብ፣ የቅጥር ሁኔታ፣ ጣቢያ፣ የቅጥር ቀን፣ የትምህርት ደረጃ፤ አስፈላጊ ሲሆንም የቢሮ ኮሚሽንና መቶኛው።\n\nደመወዝ፦ መሠረታዊ ደመወዝ ከትራንስፖርት፣ ከቤት፣ ከግብር ነፃ እና ከሥራ መደብ አበሎች ጋር። ከታች የሚታየው ጠቅላላ ድምር ነው፤ ደመወዝ ሲሰላም የሚያገለግለው ይኸው ነው።\n\nየቅጥር ቀኑን በትክክል ያስገቡ — የፈቃድ ክምችትና የአገልግሎት ዘመን መብቶች ከዚያ ይቆጠራሉ።"
+					"body": "አድራሻ፦ ክፍለ ከተማ፣ መንገድ፣ ቀበሌ፣ ሕንፃ፣ ፎቅ፣ የቤት ቁጥር።\n\nቅጥር፦ ክፍል፣ የሥራ መደብ፣ የቅጥር ሁኔታ፣ የቅጥር ቀን፣ የትምህርት ደረጃ፤ አስፈላጊ ሲሆንም የቢሮ ኮሚሽንና መቶኛው። ሠራተኛው በላይኛው አሞሌ በመረጡት፣ እየሠሩበት ባለው ቅርንጫፍ ስር ይመዘገባል።\n\nደመወዝ፦ መሠረታዊ ደመወዝ ከትራንስፖርት፣ ከቤት፣ ከግብር ነፃ እና ከሥራ መደብ አበሎች ጋር። ከታች የሚታየው ጠቅላላ ድምር ነው፤ ደመወዝ ሲሰላም የሚያገለግለው ይኸው ነው።\n\nየቅጥር ቀኑን በትክክል ያስገቡ — የፈቃድ ክምችትና የአገልግሎት ዘመን መብቶች ከዚያ ይቆጠራሉ።"
 				},
 				{
 					"heading": "ካስቀመጡ በኋላ",

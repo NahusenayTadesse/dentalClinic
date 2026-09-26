@@ -101,7 +101,7 @@
 			{errors}
 			label={field.label}
 			name={field.name}
-			type={field.type}
+			type={field.type === 'money' ? 'number' : field.type}
 			placeholder={field.placeholder ?? ''}
 			required={field.required ?? true}
 			year={field.type === 'date'}

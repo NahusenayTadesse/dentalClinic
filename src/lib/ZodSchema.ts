@@ -324,6 +324,21 @@ export const inventoryAdjustmentFormSchema = z.object({
 	reason: z.string().max(255).optional(),
 
 	/**
+	 * The delivery's own details, for a receipt: the lot number on the box, the date it expires,
+	 * and who supplied it. Each lands on the lot `moveStock` creates. The expiry date is required
+	 * for an item that tracks expiry — the action checks, since only it knows the item.
+	 *
+	 * Strings that parse to themselves, per CLAUDE.md §13: a validator that rewrites a value loops
+	 * against the field bound to it.
+	 */
+	batchNumber: z.string().max(64).optional(),
+	expiryDate: z
+		.string()
+		.regex(/^(\d{4}-\d{2}-\d{2})?$/, 'Choose a date')
+		.optional(),
+	supplierId: z.coerce.string().nullable().optional(),
+
+	/**
 	 * Bank account the stock was paid from. Optional because removing stock costs
 	 * nothing; the action requires it whenever there is money to move.
 	 */

@@ -3,15 +3,11 @@
 	"languages": {
 		"en": {
 			"title": "Dashboard Overview",
-			"summary": "The three things that need you today: contracts about to expire, the day's figures, and stock that has run low.",
+			"summary": "Today at a glance: the day's figures, and the supplies that have run low.",
 			"sections": [
 				{
-					"heading": "Urgent: expiring contracts",
-					"body": "The red panel at the top lists every contract ending within 30 days, most urgent first. Each card shows the site, the days left, and the monthly amount.\n\n• Click a card to open the contract and renew it.\n• \"Expired\" means the end date has already passed. The system marks a contract inactive by itself on its end date, with the reason \"Automatic Expiration of Contract By System\".\n• Check the payment history before renewing — a site that has not paid for months is a decision, not a formality.\n• A contract still waiting for approval is not counted here. It is not in force yet."
-				},
-				{
 					"heading": "Today's report",
-					"body": "The daily summary for today only: services rendered, products sold, daily income, daily expenses, staff paid, transactions and booked appointments.\n\nIf a figure looks wrong, it is the entries behind it that need checking — the report is calculated, never typed."
+					"body": "The daily summary for today only: appointments booked, services rendered, products sold, daily income, daily expenses, staff paid, and the day's net.\n\nIf a figure looks wrong, it is the entries behind it that need checking — the report is calculated, never typed."
 				},
 				{
 					"heading": "Supplies to reorder",
@@ -31,15 +27,11 @@
 		},
 		"am": {
 			"title": "ዳሽቦርድ",
-			"summary": "ዛሬ ትኩረት የሚሹ ሦስት ነገሮች፦ ሊያበቁ የተቃረቡ ኮንትራቶች፣ የዕለቱ አኃዞች እና ያለቁ ግብዓቶች።",
+			"summary": "የዛሬው ሁኔታ በአጭሩ፦ የዕለቱ አኃዞች እና ያለቁ ግብዓቶች።",
 			"sections": [
 				{
-					"heading": "አስቸኳይ፦ የሚያበቁ ኮንትራቶች",
-					"body": "ከላይ ያለው ቀይ ክፍል በ30 ቀናት ውስጥ የሚያበቁ ኮንትራቶችን በአስቸኳይነት ቅደም ተከተል ያሳያል። እያንዳንዱ ካርድ ጣቢያውን፣ የቀሩትን ቀናት እና ወርሃዊ መጠኑን ያሳያል።\n\n• ኮንትራቱን ለማደስ ካርዱን ይጫኑ።\n• \"Expired\" ማለት የመጨረሻው ቀን አልፏል ማለት ነው። ሲስተሙ በመጨረሻው ቀን ኮንትራቱን ራሱ ወደ ንቁ ያልሆነ ይለውጠዋል።\n• ከማደስዎ በፊት የክፍያ ታሪኩን ይመልከቱ — ለወራት ያልከፈለ ጣቢያ ማደስ ውሳኔ እንጂ መደበኛ ተግባር አይደለም።\n• ገና ያልጸደቀ ኮንትራት እዚህ አይቆጠርም። ገና ሥራ ላይ አልዋለም።"
-				},
-				{
 					"heading": "የዕለቱ ሪፖርት",
-					"body": "ለዛሬ ብቻ የሚሆን ማጠቃለያ፦ የተሰጡ አገልግሎቶች፣ የተሸጡ ምርቶች፣ የዕለት ገቢ፣ የዕለት ወጪ፣ የተከፈላቸው ሠራተኞች እና ግብይቶች።\n\nአንድ አኃዝ ስህተት መስሎ ከታየ ከበስተጀርባ ያሉት መዝገቦች ናቸው መታየት ያለባቸው — ሪፖርቱ የሚሰላ እንጂ የሚተየብ አይደለም።"
+					"body": "ለዛሬ ብቻ የሚሆን ማጠቃለያ፦ የተያዙ ቀጠሮዎች፣ የተሰጡ አገልግሎቶች፣ የተሸጡ ምርቶች፣ የዕለት ገቢ፣ የዕለት ወጪ፣ የተከፈላቸው ሠራተኞች እና የዕለቱ ትርፍ ወይም ኪሳራ።\n\nአንድ አኃዝ ስህተት መስሎ ከታየ ከበስተጀርባ ያሉት መዝገቦች ናቸው መታየት ያለባቸው — ሪፖርቱ የሚሰላ እንጂ የሚተየብ አይደለም።"
 				},
 				{
 					"heading": "እንደገና መታዘዝ ያለባቸው ግብዓቶች",

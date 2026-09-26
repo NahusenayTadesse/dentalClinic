@@ -7,7 +7,7 @@
 			"sections": [
 				{
 					"heading": "The sections on this page",
-					"body": "• Identity — ID number, government ID, signature and pension card, each viewable\n• Contact Information, Address\n• Employment — site, department, position, status, hire date\n• Personal Details — birth date, gender, marital status, blood type, nationality\n• Bank Accounts — where the salary is paid\n• Guarantor — the reference person, with their own ID on file\n• Family Members, Schedule, Qualifications, Work Experiences\n• Office Commission — the percentage, where it applies\n• System Information — who entered the record, who approved it, and who changed it last\n\nEach section has its own edit button, so a correction never means retyping the whole record."
+					"body": "• Identity — ID number, government ID, signature and pension card, each viewable\n• Contact Information, Address\n• Employment — branch, department, position, status, hire date\n• Personal Details — birth date, gender, marital status, blood type, nationality\n• Bank Accounts — where the salary is paid\n• Guarantor — the reference person, with their own ID on file\n• Family Members, Schedule, Qualifications, Work Experiences\n• Office Commission — the percentage, where it applies\n• System Information — who entered the record, who approved it, and who changed it last\n\nEach section has its own edit button, so a correction never means retyping the whole record."
 				},
 				{
 					"heading": "Salary",
@@ -35,7 +35,7 @@
 			"sections": [
 				{
 					"heading": "በዚህ ገጽ ላይ ያሉ ክፍሎች",
-					"body": "• ማንነት — መታወቂያ ቁጥር፣ የመንግሥት መታወቂያ፣ ፊርማና የጡረታ ካርድ፤ እያንዳንዱን ማየት ይቻላል\n• የመገናኛ መረጃ፣ አድራሻ\n• ቅጥር — ጣቢያ፣ ክፍል፣ የሥራ መደብ፣ ሁኔታ፣ የቅጥር ቀን\n• የግል መረጃ — የልደት ቀን፣ ጾታ፣ የጋብቻ ሁኔታ፣ የደም ዓይነት፣ ዜግነት\n• የባንክ ሒሳቦች — ደመወዙ የሚከፈልበት\n• ዋስ — ዋስትና ሰጪው ሰው ከመታወቂያው ጋር\n• የቤተሰብ አባላት፣ የሥራ መርሐግብር፣ የትምህርት ማስረጃ፣ የሥራ ልምድ\n• የቢሮ ኮሚሽን — አግባብ ሲኖረው መቶኛው\n• የሲስተም መረጃ — መዝገቡን ማን እንዳስገባ፣ ማን እንዳጸደቀውና በመጨረሻ ማን እንደለወጠው\n\nእያንዳንዱ ክፍል የራሱ የማስተካከያ ቁልፍ አለው፤ ስለዚህ አንድ ስህተት ለማረም ሙሉውን መዝገብ መድገም አያስፈልግም።"
+					"body": "• ማንነት — መታወቂያ ቁጥር፣ የመንግሥት መታወቂያ፣ ፊርማና የጡረታ ካርድ፤ እያንዳንዱን ማየት ይቻላል\n• የመገናኛ መረጃ፣ አድራሻ\n• ቅጥር — ቅርንጫፍ፣ ክፍል፣ የሥራ መደብ፣ ሁኔታ፣ የቅጥር ቀን\n• የግል መረጃ — የልደት ቀን፣ ጾታ፣ የጋብቻ ሁኔታ፣ የደም ዓይነት፣ ዜግነት\n• የባንክ ሒሳቦች — ደመወዙ የሚከፈልበት\n• ዋስ — ዋስትና ሰጪው ሰው ከመታወቂያው ጋር\n• የቤተሰብ አባላት፣ የሥራ መርሐግብር፣ የትምህርት ማስረጃ፣ የሥራ ልምድ\n• የቢሮ ኮሚሽን — አግባብ ሲኖረው መቶኛው\n• የሲስተም መረጃ — መዝገቡን ማን እንዳስገባ፣ ማን እንዳጸደቀውና በመጨረሻ ማን እንደለወጠው\n\nእያንዳንዱ ክፍል የራሱ የማስተካከያ ቁልፍ አለው፤ ስለዚህ አንድ ስህተት ለማረም ሙሉውን መዝገብ መድገም አያስፈልግም።"
 				},
 				{
 					"heading": "ደመወዝ",

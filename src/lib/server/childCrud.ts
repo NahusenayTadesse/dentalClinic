@@ -74,6 +74,8 @@ export interface ChildCrudOptions {
 	 * On an edit, `before` is the row as it stands, read in the write's own transaction — for a
 	 * column that should change only when something else does, like a resolved date that is set
 	 * the first time a condition is marked resolved and left alone on every save after.
+	 *
+	 * Throw `WriteRefused` to turn the write down with a reason; nothing is written.
 	 */
 	transform?: (
 		values: WritableRow,
@@ -96,6 +98,32 @@ export interface ChildCrudOptions {
 	 * it — and the action is reachable by anyone who can POST to the page, so it is checked here.
 	 */
 	permission?: string;
+}
+
+/**
+ * Thrown by a `transform` to refuse a write with a reason the user can act on.
+ *
+ * A transform is where the server checks what the form cannot: that a filling names the surfaces
+ * it was on, when only the database knows the chosen service is charted on surfaces. Before this,
+ * the only way out of a transform was an ordinary throw, which the action reports as "Could not
+ * add" with a 500, so a rule the user broke read as a fault in the system.
+ *
+ * `field` puts the message under that input; `null` shows it as a message on the form alone.
+ */
+export class WriteRefused extends Error {
+	constructor(
+		readonly field: string | null,
+		message: string
+	) {
+		super(message);
+		this.name = 'WriteRefused';
+	}
+}
+
+/** The form's response to a `WriteRefused`: the reason under its field, and a 400. */
+function refused(form: Parameters<typeof message>[0], err: WriteRefused) {
+	if (err.field) setError(form, err.field as never, err.message);
+	return message(form, { type: 'error', text: err.message }, { status: 400 });
 }
 
 /** Every child action needs the row and, on edit and delete, which row. */
@@ -210,6 +238,7 @@ export function childCrud({
 					}
 					return message(form, { type: 'success', text: `${label} added` });
 				} catch (err) {
+					if (err instanceof WriteRefused) return refused(form, err);
 					if (isDuplicateKey(err)) {
 						setError(form, 'name' as never, `That ${label.toLowerCase()} already exists.`);
 						return message(
@@ -278,6 +307,7 @@ export function childCrud({
 								{ status: 404 }
 							);
 				} catch (err) {
+					if (err instanceof WriteRefused) return refused(form, err);
 					console.error(`Failed to update ${label}:`, err);
 					return message(
 						form,

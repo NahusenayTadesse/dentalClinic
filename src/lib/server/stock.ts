@@ -26,6 +26,7 @@
 import { and, asc, eq, isNull, sql } from 'drizzle-orm';
 import { supplies } from './db/schema/inventory';
 import { supplyBatch } from './db/schema/batches';
+import { clinicToday } from '../clinicTime';
 import type { MySqlTransaction } from 'drizzle-orm/mysql-core';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -83,7 +84,8 @@ export async function moveStock(
 		userId?: string;
 		/** Only for receipts, and only what the form actually collected. */
 		batchNumber?: string | null;
-		expiryDate?: Date | null;
+		/** A calendar day, `YYYY-MM-DD`. */
+		expiryDate?: string | null;
 		unitCost?: number | null;
 		supplierId?: number | null;
 	}
@@ -103,7 +105,8 @@ export async function moveStock(
 				receivedQuantity: delta,
 				unitCost: options.unitCost ?? null,
 				supplierId: options.supplierId ?? null,
-				receivedOn: new Date(),
+				// The clinic's day, not the server's (CLAUDE.md §9).
+				receivedOn: clinicToday(),
 				createdBy: userId
 			})
 			.$returningId();

@@ -1,0 +1,37 @@
+{
+	"path": "/dashboard/admin-panel/vat-withhold",
+	"languages": {
+		"en": {
+			"title": "VAT and Withholding",
+			"summary": "The clinic’s VAT rate and withholding rate, as percentages.",
+			"sections": [
+				{
+					"heading": "What they are",
+					"body": "VAT is the percentage added to taxable sales, 15% under the VAT proclamation; withholding is the percentage withheld on qualifying payments, 2% by default. Both are single figures for the whole clinic, and saving replaces the old ones.\n\nNothing calculates with them yet. Invoices will read them when billing is built."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Finance",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		},
+		"am": {
+			"title": "ተ.እ.ታ እና ተቀናሽ",
+			"summary": "የክሊኒኩ የተጨማሪ እሴት ታክስ መጠንና የተቀናሽ መጠን፣ በመቶኛ።",
+			"sections": [
+				{
+					"heading": "ምንድን ናቸው",
+					"body": "ተ.እ.ታ ታክስ በሚከፈልበት ሽያጭ ላይ የሚጨመር መቶኛ ነው፤ በተ.እ.ታ አዋጅ 15%። ተቀናሽ ብቁ በሆኑ ክፍያዎች ላይ የሚያዝ መቶኛ ነው፤ በነባሪ 2%። ሁለቱም ለክሊኒኩ በሙሉ አንድ አኃዝ ናቸው፤ ማስቀመጥ የቀደሙትን ይተካል።\n\nእስካሁን በእነሱ የሚሰላ ነገር የለም። የክፍያ መጠየቂያ ሲገነባ ደረሰኞች ያነቧቸዋል።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ፋይናንስ",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		}
+	}
+}

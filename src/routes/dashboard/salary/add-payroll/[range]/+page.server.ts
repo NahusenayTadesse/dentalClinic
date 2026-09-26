@@ -14,7 +14,7 @@ import {
 	bonuses,
 	employmentStatuses,
 	taxType,
-	penality,
+	pensionRate,
 	payrollRuns,
 	payrollReceipts,
 	payrollEntries,
@@ -22,14 +22,14 @@ import {
 	transactions
 } from '$lib/server/db/schema';
 import { asRequested, isApproved, unapprovedEmployeeIds } from '$lib/server/approvals';
-import { and, count, desc, or, lte, gte, asc, eq, isNull, sql } from 'drizzle-orm';
+import { and, count, or, lte, gte, eq, isNull, sql } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
 import { paymentMethods as paymentMethodList } from '$lib/server/fastData';
+import { incomeTaxSql, pensionRates } from '$lib/server/payrollMath';
 
 import { payrollSchema, type EmployeeFormType } from './schema';
 import type { PageServerLoad, Actions } from '../$types';
-import { setFlash, redirect } from 'sveltekit-flash-message/server';
-import { superValidate, setError, message } from 'sveltekit-superforms';
+import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { getMonthNumber, ethiopianRange } from '$lib/global.svelte';
 
@@ -48,18 +48,13 @@ export const load: PageServerLoad = async ({ params }) => {
 	const start = `${startDate.year}-${startDate.month}-${startDate.day}`;
 	const end = `${endDate.year}-${endDate.month}-${endDate.day}`;
 
-	// Fetch active penalties
-	const penalties = await db.select().from(penality).where(eq(penality.status, true));
-
-	// Identify specific penalties (assuming names are 'Pen(Em)' and 'Pen(Org)')
-	const penEm = penalties[0];
-	const penOrg = penalties[1];
-
-	const penEmRate = penEm ? Number(penEm.rate) : 0;
-	const penOrgRate = penOrg ? Number(penOrg.rate) : 0;
-
-	// const penEmExpression = sql<number>`COALESCE(${salaries.amount}, 0) * ${penEmRate}`;
-	// const penOrgExpression = sql<number>`COALESCE(${salaries.amount}, 0) * ${penOrgRate}`;
+	// The two pension shares, found by who pays them — see `pensionRate` for why not by position.
+	const rates = pensionRates(
+		await db
+			.select({ party: pensionRate.party, rate: pensionRate.rate })
+			.from(pensionRate)
+			.where(and(eq(pensionRate.status, true), notDeleted(pensionRate)))
+	);
 
 	const otSub = db
 		.select({
@@ -101,11 +96,10 @@ export const load: PageServerLoad = async ({ params }) => {
 		.groupBy(missingDays.staffId)
 		.as('missing_sub');
 
-	const taxBrackets = await db
-		.select()
+	const taxBands = await db
+		.select({ threshold: taxType.threshold, rate: taxType.rate, deduction: taxType.deduction })
 		.from(taxType)
-		.where(eq(taxType.status, true))
-		.orderBy(asc(taxType.threshold));
+		.where(and(eq(taxType.status, true), notDeleted(taxType)));
 	const salarySub = db
 		.select({
 			staffId: salaries.staffId,
@@ -144,10 +138,9 @@ export const load: PageServerLoad = async ({ params }) => {
 		.groupBy(salaries.staffId)
 		.as('salary_sub');
 
-	// Expressions for cleaner SQL
-	// Penalties based on the pro-rated amount for the month
-	const penEmExpression = sql<number>`COALESCE(${salarySub.proRatedAmount}, 0) * ${penEmRate}`;
-	const penOrgExpression = sql<number>`COALESCE(${salarySub.proRatedAmount}, 0) * ${penOrgRate}`;
+	// Pension on the pro-rated basic salary: each share is a percentage of it (`payrollMath.ts`).
+	const penEmExpression = sql<number>`ROUND(COALESCE(${salarySub.proRatedAmount}, 0) * ${rates.employee} / 100, 2)`;
+	const penOrgExpression = sql<number>`ROUND(COALESCE(${salarySub.proRatedAmount}, 0) * ${rates.employer} / 100, 2)`;
 
 	const grossExpression = sql<number>`
     COALESCE(${salarySub.proRatedAmount}, 0) +
@@ -163,16 +156,8 @@ export const load: PageServerLoad = async ({ params }) => {
     - (COALESCE(${salarySub.proRatedNonTax}, 0)
     + (COALESCE(${missingSub.missedCount}, 0) * (COALESCE(${salarySub.proRatedAmount}, 0) / 30)))
 `;
-	let taxSql = sql`0`;
-	if (taxBrackets.length > 0) {
-		taxSql = sql`CASE `;
-		taxBrackets.forEach((bracket) => {
-			taxSql.append(sql`
-                WHEN (${taxableIncomeExpression}) <= ${bracket.threshold}
-                THEN ((${taxableIncomeExpression}) * ${bracket.rate}) - ${bracket.deduction} `);
-		});
-		taxSql.append(sql`ELSE 0 END`);
-	}
+	// The one rule for income tax, shared with the payslip adjustment and tested against it.
+	const taxSql = incomeTaxSql(taxableIncomeExpression, taxBands);
 
 	const netPayExpression = sql<number>`
   (${grossExpression}) - (
@@ -287,7 +272,7 @@ export const actions: Actions = {
 		const monthName = m;
 		const year = y;
 
-		const calculateTotal = (employees: any[], key: keyof EmployeeFormType): number => {
+		const calculateTotal = (employees: EmployeeFormType[], key: keyof EmployeeFormType): number => {
 			// If employees hasn't been populated by the effect yet, return 0
 			if (!employees || !Array.isArray(employees)) return 0;
 
@@ -316,7 +301,7 @@ export const actions: Actions = {
 		// 1. Check for the existing record
 		try {
 			const recieptLink = reciept ? await saveUploadedFile(reciept) : null;
-			const result = await db.transaction(async (tx) => {
+			await db.transaction(async (tx) => {
 				// 1. Check or Create Payroll Run
 				let payrollId: number;
 				const existingPayroll = await tx
@@ -360,7 +345,8 @@ export const actions: Actions = {
 						totalDeductions: sql`${payrollRuns.totalDeductions} + ${calculateTotal(employees, 'deductions')}`,
 						totalTax: sql`${payrollRuns.totalTax} + ${calculateTotal(employees, 'taxAmount')}`,
 						penEm: sql`${payrollRuns.penEm} + ${calculateTotal(employees, 'penEm')}`,
-						penOrg: sql`${payrollRuns.totalTax} + ${calculateTotal(employees, 'penOrg')}`,
+						// Was `totalTax + …`: the employer's pension total was built on the tax total.
+						penOrg: sql`${payrollRuns.penOrg} + ${calculateTotal(employees, 'penOrg')}`,
 
 						updatedBy: locals?.user?.id
 					})

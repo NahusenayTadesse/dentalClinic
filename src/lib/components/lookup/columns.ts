@@ -6,7 +6,7 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import Statuses from '$lib/components/Table/statuses.svelte';
 import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 import LookupEdit from './LookupEdit.svelte';
-import { formatEthiopianDate } from '$lib/global.svelte';
+import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 import type { createForm } from '$lib/forms/createForm';
 import type { LookupConfig, LookupField, LookupOptions, LookupRow } from './types';
 
@@ -145,6 +145,20 @@ export function lookupColumns(
 					};
 				}
 
+				// Blank rather than "ETB 0.00" for no value — see the `money` field type.
+				if (field.type === 'money') {
+					return {
+						accessorKey: field.name,
+						header: sortableHeader(field.label),
+						cell: ({ row }) => {
+							const value = row.original[field.name];
+							return value === null || value === undefined || value === ''
+								? ''
+								: formatETB(Number(value));
+						}
+					};
+				}
+
 				// A reference sorts and reads on the *name*, never the raw id.
 				if (field.type === 'reference') {
 					return {
@@ -176,13 +190,16 @@ export function lookupColumns(
 	];
 
 	function actionColumns(): ColumnDef<LookupRow>[] {
+		const edit: ColumnDef<LookupRow> = {
+			id: 'edit',
+			header: 'Edit',
+			enableSorting: false,
+			cell: ({ row }) => editDialog(row.original, true)
+		};
+		if (config.fixedRows) return [edit];
+
 		return [
-			{
-				id: 'edit',
-				header: 'Edit',
-				enableSorting: false,
-				cell: ({ row }) => editDialog(row.original, true)
-			},
+			edit,
 
 			{
 				id: 'delete',

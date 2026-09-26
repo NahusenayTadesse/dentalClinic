@@ -1,0 +1,53 @@
+{
+	"path": "/dashboard/admin-panel/tax-types",
+	"languages": {
+		"en": {
+			"title": "Tax Bands",
+			"summary": "The monthly income-tax bands payroll taxes salaries by.",
+			"sections": [
+				{
+					"heading": "How a band works",
+					"body": "Income up to the band’s limit is taxed at its rate, less its deduction — the \"quick deduction\" form the Ministry of Revenues publishes the bands in. Rate is a percentage: type 15 for 15%. Leave Up To empty on the top band; it taxes everything above the others."
+				},
+				{
+					"heading": "Keep them current",
+					"body": "Enter the bands exactly as the current proclamation gives them. Payroll uses whatever is here on the day it runs, so a stale band taxes every payslip wrongly without any warning."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Finance",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		},
+		"am": {
+			"title": "የግብር ደረጃዎች",
+			"summary": "ደመወዝ የሚታክስባቸው ወርሃዊ የገቢ ግብር ደረጃዎች።",
+			"sections": [
+				{
+					"heading": "ደረጃ እንዴት እንደሚሠራ",
+					"body": "እስከ ደረጃው ገደብ ያለ ገቢ በደረጃው መጠን ይታክሳል፤ ከዚያ ተቀናሹ ይቀነሳል — የገቢዎች ሚኒስቴር ደረጃዎቹን የሚያወጣበት \"ፈጣን ተቀናሽ\" ዘዴ። መጠኑ መቶኛ ነው፦ ለ15% 15 ይጻፉ። የላይኛውን ደረጃ \"Up To\" ባዶ ይተዉት፤ ከሌሎቹ በላይ ያለውን ሁሉ ይታክሳል።"
+				},
+				{
+					"heading": "ወቅታዊ ያድርጓቸው",
+					"body": "ደረጃዎቹን የአሁኑ አዋጅ እንደሚሰጣቸው በትክክል ያስገቡ። ደመወዝ በሚሠራበት ቀን እዚህ ያለውን ይጠቀማል፤ ስለዚህ ያረጀ ደረጃ ያለምንም ማስጠንቀቂያ እያንዳንዱን የደመወዝ ወረቀት በስህተት ይታክሳል።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ፋይናንስ",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		}
+	}
+}

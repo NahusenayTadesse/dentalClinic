@@ -197,6 +197,34 @@
       "when": 1789289973409,
       "tag": "0027_rename_employee_termination",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "5",
+      "when": 1790416455931,
+      "tag": "0028_drop_erp_leftovers_price_services",
+      "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "5",
+      "when": 1790416727989,
+      "tag": "0029_services_removes_tooth",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "5",
+      "when": 1790454883450,
+      "tag": "0030_drop_penality",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "5",
+      "when": 1790454905469,
+      "tag": "0031_pension_rate",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,53 @@
+{
+	"path": "/dashboard/admin-panel/annual-leave-entitlements",
+	"languages": {
+		"en": {
+			"title": "Annual Leave Entitlements",
+			"summary": "How many days of annual leave a person earns each year, by length of service.",
+			"sections": [
+				{
+					"heading": "Setting the steps",
+					"body": "Each row covers a span of service years and the days granted per year within it — say years 1 to 5 at 16 days, 6 to 10 at 17. Leave To empty on the last row so it covers everyone beyond it. Spans must not overlap."
+				},
+				{
+					"heading": "When it takes effect",
+					"body": "Days are granted by the leave accrual job, on each work anniversary. Changing a step changes future grants, not ones already given."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Employees and leave",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		},
+		"am": {
+			"title": "የዓመት ፈቃድ መብቶች",
+			"summary": "አንድ ሰው በአገልግሎት ዘመኑ መሠረት በየዓመቱ የሚያገኘው የዓመት ፈቃድ ቀናት።",
+			"sections": [
+				{
+					"heading": "ደረጃዎቹን ማስቀመጥ",
+					"body": "እያንዳንዱ መስመር የአገልግሎት ዓመታት ክልልንና በዚያ ውስጥ በየዓመቱ የሚሰጡ ቀናትን ይሸፍናል — ለምሳሌ ከ1 እስከ 5 ዓመት 16 ቀን፣ ከ6 እስከ 10 ዓመት 17 ቀን። ከዚያ በላይ ያሉትን ሁሉ እንዲሸፍን የመጨረሻውን መስመር \"To\" ባዶ ይተዉት። ክልሎቹ መደራረብ የለባቸውም።"
+				},
+				{
+					"heading": "መቼ ተግባራዊ እንደሚሆን",
+					"body": "ቀናቱ የሚሰጡት በፈቃድ ማጠራቀሚያ ሥራው በእያንዳንዱ የሥራ ዓመት መታሰቢያ ነው። ደረጃን መቀየር የወደፊት ስጦታዎችን ይቀይራል እንጂ የተሰጡትን አይደለም።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሠራተኞችና ፈቃድ",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		}
+	}
+}

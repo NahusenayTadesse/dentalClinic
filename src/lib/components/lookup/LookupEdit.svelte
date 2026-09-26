@@ -52,6 +52,13 @@
 	// Seeded once per row: the dialog is rendered per row, so there is no later value to follow.
 	// svelte-ignore state_referenced_locally
 	const { form, errors, enhance, delayed, message, allErrors } = createForm(data, schema, {
+		/*
+		 * One id per dialog. Every row's dialogs were built from the same `editForm`, so they shared
+		 * its id — two per row, twenty on an allergy list — and superforms delivers a save's reply to
+		 * every form with the id it came from. The id is posted with the form and echoed back, so a
+		 * unique one is what keeps a save on one row from landing in the others.
+		 */
+		id: `${action}-${row.id}-${icon ? 'column' : 'name'}`,
 		resetForm: false,
 		// Closed only on success, so a refused save keeps the dialog and its errors on screen.
 		onUpdated({ form }) {

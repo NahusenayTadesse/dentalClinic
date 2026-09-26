@@ -1,0 +1,45 @@
+{
+	"path": "/dashboard/admin-panel/leave-expiry-policy",
+	"languages": {
+		"en": {
+			"title": "Leave Expiry Policy",
+			"summary": "How long unused annual leave lasts before it lapses.",
+			"sections": [
+				{
+					"heading": "The rule",
+					"body": "Unused Leave Expires After (Years) is how long a year’s grant can still be taken. Past that, the leave accrual job marks what is left of it expired, and it no longer counts in the balance."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Employees and leave",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		},
+		"am": {
+			"title": "የፈቃድ ማብቂያ ፖሊሲ",
+			"summary": "ያልተወሰደ የዓመት ፈቃድ ከማለፉ በፊት ምን ያህል ጊዜ እንደሚቆይ።",
+			"sections": [
+				{
+					"heading": "ደንቡ",
+					"body": "\"Unused Leave Expires After (Years)\" የአንድ ዓመት ስጦታ አሁንም ሊወሰድ የሚችልበት ጊዜ ነው። ከዚያ በኋላ የፈቃድ ማጠራቀሚያ ሥራው የቀረውን ጊዜው እንዳለፈ ምልክት ያደርጋል፤ በቀሪው ውስጥም አይቆጠርም።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሠራተኞችና ፈቃድ",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		}
+	}
+}

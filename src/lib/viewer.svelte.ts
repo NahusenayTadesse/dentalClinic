@@ -41,3 +41,14 @@ export function setViewer(get: () => string[] | undefined | null) {
 export function viewerPermissions(): string[] {
 	return getContext<Viewer | undefined>(KEY)?.permList ?? [];
 }
+
+/**
+ * The viewer itself, for reading `permList` inside a `$derived` so it follows the layout's data.
+ *
+ * `viewerPermissions()` returns the list as it is at the moment of the call, which is right for a
+ * table cell rendered once and wrong for a menu that must change when the data does. This hands
+ * back the getter instead. Call it during component setup, as with any context.
+ */
+export function viewer(): { readonly permList: string[] } {
+	return getContext<Viewer | undefined>(KEY) ?? { permList: [] };
+}

@@ -18,6 +18,8 @@ import {
 	appointmentForms
 } from '$lib/server/appointmentActions';
 import { addClinicDays, clinicDayRange, clinicToday, isIsoDate } from '$lib/clinicTime';
+import { canMove, isAppointmentStatus } from '$lib/appointmentStatus';
+import { visitWork } from '$lib/server/procedures';
 import type { PageServerLoad } from './$types';
 
 /**
@@ -68,7 +70,8 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		types,
 		bookPatient: bookPatient ?? null,
 		openId,
-		canBook: hasPermission(locals, BOOK_PERMISSION)
+		canBook: hasPermission(locals, BOOK_PERMISSION),
+		canChart: hasPermission(locals, 'patients.clinical')
 	};
 
 	if (branchId === null) {
@@ -89,8 +92,22 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		).orderBy(appointment.startsAt)
 	]);
 
+	/*
+	 * The work each visit that can be completed now could record (see `visitWork`). Only for someone
+	 * who may both close a visit and read a patient's record: planned treatment is clinical, and the
+	 * diary is readable with `appointments.view` alone.
+	 */
+	const completable = rows.filter(
+		(r) => isAppointmentStatus(r.status) && canMove(r.status, 'completed')
+	);
+	const showWork =
+		shared.canBook && hasPermission(locals, 'patients.view') && completable.length > 0;
+
 	// The alerts a clinician needs on the block itself: who not to give penicillin, who bleeds.
-	const flags = await flagsFor([...new Set(rows.map((r) => r.patientId))]);
+	const [flags, work] = await Promise.all([
+		flagsFor([...new Set(rows.map((r) => r.patientId))]),
+		visitWork(showWork ? completable : [])
+	]);
 
 	return {
 		...shared,
@@ -103,7 +120,8 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 				...row,
 				severeAllergies:
 					f?.allergies.filter((a) => a.severity === 'severe').map((a) => a.name) ?? [],
-				medicineAlerts: f?.medicineAlerts ?? []
+				medicineAlerts: f?.medicineAlerts ?? [],
+				work: work.get(row.id) ?? null
 			};
 		})
 	};

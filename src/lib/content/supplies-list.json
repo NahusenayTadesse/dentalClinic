@@ -3,11 +3,11 @@
 	"languages": {
 		"en": {
 			"title": "Stock Levels",
-			"summary": "What the company owns, what is spoken for, and what you can still promise to somebody.",
+			"summary": "What the clinic holds, how much of it is in store, and what needs reordering.",
 			"sections": [
 				{
-					"heading": "Four numbers, and only two are stored",
-					"body": "• On hand — what is physically in the store\n• Reserved — promised to a lease that is approved but not yet issued. Still on the shelf, but already spoken for.\n• Leased out — physically at a site right now\n• Available — what you can actually promise to somebody new: on hand, less what is reserved\n• Total owned — everything the company owns, wherever it is\n\nReserved and leased out are worked out from the leases every time they are shown, never stored on the item. That is why they can never drift out of step with the leases themselves."
+					"heading": "The columns",
+					"body": "• In Store — the quantity on the shelf, in the item's own unit\n• Kind — Returnable for instruments that come back to the store after use, Consumable for what is used up\n• Type and description\n\nThe quantity is the sum of the item's lots, one per delivery, and stock is always taken from the lot that expires first."
 				},
 				{
 					"heading": "Reordering",
@@ -15,27 +15,27 @@
 				},
 				{
 					"heading": "Adding stock",
-					"body": "Add Supply registers an item or a new purchase: name, type, quantity, unit cost, supplier and reorder level.\n\n• Supply types come from Admin Panel → Supply Types. The Supplies menu links straight to it because that is where it is used.\n• Damage and loss are recorded against the item, so shrinkage shows up in the stock report rather than hiding inside a quantity that quietly changed."
+					"body": "Add Supply registers the item: name, type, unit, whether it is returnable, and its reorder level. Stock comes in on the item's own page — the quantity, the cost per item and how it was paid — and a purchase is recorded as money out at the same time.\n\n• Supply types come from Supplies → Supply Types.\n• Damage and loss are recorded against the item, so shrinkage shows up in the stock report rather than hiding inside a quantity that quietly changed."
 				},
 				{
 					"heading": "The advanced filter",
-					"body": "Press Advanced filter for questions the filter menus cannot answer: \"available under 5\", \"reserved above zero\", \"type is cleaning and on hand is between 10 and 50\".\n\nChoose a field, an operator and a value, and add as many conditions as you need. It filters what is on screen and changes nothing stored."
+					"body": "Press Advanced filter to narrow by supply type, by kind, by stock status — in stock, at or below reorder, out of stock — and by unit. It filters what is on screen and changes nothing stored."
 				}
 			],
 			"links": [
 				{
-					"label": "Full guide — Supplies and leases",
+					"label": "Full guide — Supplies",
 					"href": "/dashboard/help#section-supplies"
 				}
 			]
 		},
 		"am": {
 			"title": "የክምችት ደረጃ",
-			"summary": "ድርጅቱ የያዘው፣ ቀድሞ የተያዘውና አሁንም ለሌላ ሰው ሊሰጡት የሚችሉት።",
+			"summary": "ክሊኒኩ የያዘው፣ በመጋዘን ያለው መጠንና እንደገና መታዘዝ ያለበት።",
 			"sections": [
 				{
-					"heading": "አራት አኃዞች፤ ሁለቱ ብቻ ይቀመጣሉ",
-					"body": "• በእጅ ያለ — በመጋዘን በአካል ያለው\n• የተያዘ — ጸድቆ ገና ላልወጣ ኪራይ የተመደበ። አሁንም በመደርደሪያ ላይ ነው፤ ግን ቀድሞ ተይዟል።\n• የተከራየ — አሁን በጣቢያ ላይ በአካል ያለ\n• ነፃ — ለአዲስ ሰው በእርግጥ ሊሰጡት የሚችሉት፦ በእጅ ካለው የተያዘው ሲቀነስ\n• ጠቅላላ ንብረት — ድርጅቱ የያዘው ሁሉ፣ የትም ይሁን የት\n\nየተያዘውና የተከራየው በየጊዜው ከኪራዮቹ ተሰልተው ይታያሉ እንጂ በዕቃው ላይ አይቀመጡም። ከኪራዮቹ ጋር ሊለያዩ የማይችሉትም ለዚህ ነው።"
+					"heading": "ዓምዶቹ",
+					"body": "• በመጋዘን — በመደርደሪያ ላይ ያለው መጠን፣ በዕቃው የራሱ መለኪያ\n• ዓይነት (Kind) — ከጥቅም በኋላ ወደ መጋዘን ለሚመለሱ መሣሪያዎች ተመላሽ (Returnable)፣ ለሚያልቁ ደግሞ የሚያልቅ (Consumable)\n• ምድብና መግለጫ\n\nመጠኑ የዕቃው ሎቶች ድምር ነው — በእያንዳንዱ ርክክብ አንድ — ክምችትም ሁልጊዜ ቀድሞ ከሚያልቀው ሎት ይወሰዳል።"
 				},
 				{
 					"heading": "ዳግም ትዕዛዝ",
@@ -43,16 +43,16 @@
 				},
 				{
 					"heading": "ክምችት መጨመር",
-					"body": "Add Supply አዲስ ዕቃ ወይም አዲስ ግዢ ይመዘግባል፦ ስም፣ ዓይነት፣ መጠን፣ የአንዱ ዋጋ፣ አቅራቢና የዳግም ትዕዛዝ ደረጃ።\n\n• የግብዓት ዓይነቶች ከAdmin Panel → Supply Types ይመጣሉ። የግብዓቶች ማውጫ በቀጥታ ወደዚያ የሚያገናኘውም ጥቅም ላይ የሚውለው እዚህ ስለሆነ ነው።\n• ጉዳትና ብክነት በዕቃው ላይ ይመዘገባል፤ ስለዚህ በክምችት ሪፖርት ውስጥ ይታያል እንጂ በዝም ብሎ በተቀየረ መጠን ውስጥ አይሸሸግም።"
+					"body": "Add Supply ዕቃውን ይመዘግባል፦ ስም፣ ምድብ፣ መለኪያ፣ ተመላሽ መሆኑና የዳግም ትዕዛዝ ደረጃው። ክምችት የሚገባው በዕቃው ገጽ ላይ ነው — መጠኑ፣ የአንዱ ዋጋና እንዴት እንደተከፈለ — ግዢውም በዚያው ጊዜ እንደ ወጪ ይመዘገባል።\n\n• የግብዓት ምድቦች ከSupplies → Supply Types ይመጣሉ።\n• ጉዳትና ብክነት በዕቃው ላይ ይመዘገባል፤ ስለዚህ በክምችት ሪፖርት ውስጥ ይታያል እንጂ በዝም ብሎ በተቀየረ መጠን ውስጥ አይሸሸግም።"
 				},
 				{
 					"heading": "የላቀ ማጣሪያ",
-					"body": "የማጣሪያ ምናሌዎች መመለስ የማይችሏቸውን ጥያቄዎች ለመጠየቅ Advanced filter ይጫኑ፦ \"ነፃው ከ5 በታች\"፣ \"የተያዘው ከዜሮ በላይ\"፣ \"ዓይነቱ ጽዳት ሆኖ በእጅ ያለው ከ10 እስከ 50\"።\n\nመስክ፣ ኦፕሬተርና እሴት ይምረጡ፤ የፈለጉትን ያህል ሁኔታ ይጨምሩ። በማያ ገጹ ላይ ያለውን ያጣራል እንጂ የተቀመጠውን አይለውጥም።"
+					"body": "በግብዓት ምድብ፣ በዓይነት፣ በክምችት ሁኔታ — ያለ፣ በዳግም ትዕዛዝ ደረጃ ወይም በታች፣ ያለቀ — እና በመለኪያ ለማጣራት Advanced filter ይጫኑ። በማያ ገጹ ላይ ያለውን ያጣራል እንጂ የተቀመጠውን አይለውጥም።"
 				}
 			],
 			"links": [
 				{
-					"label": "ሙሉ መመሪያ — ግብዓቶችና ኪራዮች",
+					"label": "ሙሉ መመሪያ — ግብዓቶች",
 					"href": "/dashboard/help#section-supplies"
 				}
 			]

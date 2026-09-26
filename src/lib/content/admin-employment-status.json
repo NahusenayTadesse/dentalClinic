@@ -1,0 +1,45 @@
+{
+	"path": "/dashboard/admin-panel/employment-status",
+	"languages": {
+		"en": {
+			"title": "Employment Status",
+			"summary": "The terms staff are employed on — permanent, contract, probation.",
+			"sections": [
+				{
+					"heading": "The two flags",
+					"body": "• Remove From Employee Lists — staff with this status are left out of the employee pickers on forms, so nobody chooses them by mistake.\n• Assigned to Terminated Employees — the status an employee is given when terminated. Only one status can carry it."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Employees and leave",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		},
+		"am": {
+			"title": "የቅጥር ሁኔታ",
+			"summary": "ሠራተኞች የተቀጠሩበት ሁኔታ — ቋሚ፣ ኮንትራት፣ የሙከራ ጊዜ።",
+			"sections": [
+				{
+					"heading": "ሁለቱ ምልክቶች",
+					"body": "• Remove From Employee Lists — ይህ ሁኔታ ያላቸው ሠራተኞች በቅጾች ላይ ካሉ የሠራተኛ መምረጫዎች ይወጣሉ፤ ማንም በስህተት እንዳይመርጣቸው።\n• Assigned to Terminated Employees — ሠራተኛ ሲሰናበት የሚሰጠው ሁኔታ። ሊይዘው የሚችለው አንድ ሁኔታ ብቻ ነው።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሠራተኞችና ፈቃድ",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		}
+	}
+}

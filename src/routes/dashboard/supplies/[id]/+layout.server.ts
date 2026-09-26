@@ -13,12 +13,18 @@ import {
 	supplyTypes,
 	supplySuppliers,
 	suppliesAdjustments,
+	supplyBatch,
 	user
 } from '$lib/server/db/schema';
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, gt, sql } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
 import type { LayoutServerLoad } from './$types';
-import { employees, paymentMethods, supplyCategories } from '$lib/server/fastData';
+import {
+	employees,
+	paymentMethods,
+	supplyCategories,
+	suppliers as supplierOptions
+} from '$lib/server/fastData';
 import { onHand } from '$lib/server/stock';
 
 export const load: LayoutServerLoad = async ({ params }) => {
@@ -39,6 +45,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 			unitOfMeasure: supplies.unitOfMeasure,
 			reorderLevel: supplies.reorderLevel,
 			returnable: supplies.returnable,
+			tracksExpiry: supplies.tracksExpiry,
 			createdBy: user.name,
 			createdById: sql<string | null>`CASE WHEN ${user.deletedAt} IS NULL THEN ${user.id} END`,
 			createdAt: supplies.createdAt
@@ -52,6 +59,39 @@ export const load: LayoutServerLoad = async ({ params }) => {
 	const employeesList = await employees();
 	const typeList = await supplyCategories();
 	const paymentMethodList = await paymentMethods();
+	const supplierList = await supplierOptions();
+
+	/*
+	 * The lots still holding stock, in the order they will be used: soonest expiry first, undated
+	 * last — the same order `moveStock` takes them in, so the top row is the next box to open.
+	 */
+	const lots = await db
+		.select({
+			id: supplyBatch.id,
+			batchNumber: supplyBatch.batchNumber,
+			expiryDate: supplyBatch.expiryDate,
+			quantity: supplyBatch.quantity,
+			receivedOn: supplyBatch.receivedOn,
+			supplier: supplySuppliers.name
+		})
+		.from(supplyBatch)
+		.leftJoin(
+			supplySuppliers,
+			and(eq(supplySuppliers.id, supplyBatch.supplierId), notDeleted(supplySuppliers))
+		)
+		.where(
+			and(
+				eq(supplyBatch.supplyId, Number(id)),
+				eq(supplyBatch.status, 'active'),
+				gt(supplyBatch.quantity, 0),
+				notDeleted(supplyBatch)
+			)
+		)
+		.orderBy(
+			sql`${supplyBatch.expiryDate} IS NULL`,
+			asc(supplyBatch.expiryDate),
+			asc(supplyBatch.id)
+		);
 
 	const suppliers = await db
 		.selectDistinct({
@@ -79,6 +119,8 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		damagedForm,
 		employeesList,
 		suppliers,
+		supplierList,
+		lots,
 		typeList,
 		paymentMethods: paymentMethodList
 	};

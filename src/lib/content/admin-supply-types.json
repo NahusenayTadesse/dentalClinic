@@ -1,0 +1,45 @@
+{
+	"path": "/dashboard/admin-panel/supply-types",
+	"languages": {
+		"en": {
+			"title": "Supply Types",
+			"summary": "The groups supplies are filed under — consumables, instruments, medicines.",
+			"sections": [
+				{
+					"heading": "Keep them few",
+					"body": "A type is for finding and reporting: Stock Levels and the stock report filter by it. A handful of broad types reports better than many narrow ones."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Supplies",
+					"href": "/dashboard/help#section-supplies"
+				}
+			]
+		},
+		"am": {
+			"title": "የግብዓት ምድቦች",
+			"summary": "ግብዓቶች የሚመደቡባቸው ቡድኖች — የሚያልቁ፣ መሣሪያዎች፣ መድኃኒቶች።",
+			"sections": [
+				{
+					"heading": "ጥቂት ያድርጓቸው",
+					"body": "ምድብ ለመፈለግና ለሪፖርት ነው፦ የክምችት ደረጃና የክምችት ሪፖርቱ በእሱ ያጣራሉ። ብዙ ጠባብ ምድቦች ከመኖር ጥቂት ሰፋ ያሉ ለሪፖርት ይቀላሉ።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ግብዓቶች",
+					"href": "/dashboard/help#section-supplies"
+				}
+			]
+		}
+	}
+}

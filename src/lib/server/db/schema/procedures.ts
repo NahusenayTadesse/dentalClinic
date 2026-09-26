@@ -18,6 +18,8 @@ import { provider } from './providers';
 import { services } from './services';
 import { tooth } from './teeth';
 import { appointment } from './scheduling';
+// Relative, not `$lib/…`: drizzle-kit loads the schema without SvelteKit's aliases.
+import { PROCEDURE_STATUSES } from '../../../procedureStatus';
 
 /**
  * One procedure: planned, done, or found already present.
@@ -70,9 +72,10 @@ export const procedures = mysqlTable(
 		 * service has been hard-deleted cannot say what it was, which is worse than not existing.
 		 *
 		 * `services` is reused rather than a dental-specific `procedure_code` table being added.
-		 * It already carries name, category and soft delete, it is already what `staff_services`
-		 * and `transaction_services` point at, and a second catalogue would mean pricing lived in
-		 * two places. American systems key this to ADA CDT codes; those exist for insurance claims
+		 * It already carries name, category, price and soft delete, it is already what
+		 * `transaction_services` points at, and a second catalogue would mean pricing lived in two
+		 * places. `services.area` says whether the work is charted on a tooth, its surfaces, a
+		 * span of teeth or the whole mouth. American systems key this to ADA CDT codes; those exist for insurance claims
 		 * that nobody files here.
 		 */
 		serviceId: int('service_id')
@@ -102,16 +105,7 @@ export const procedures = mysqlTable(
 		 * cannot record the decay that has not been treated yet, which is most of what a first
 		 * examination finds.
 		 */
-		status: mysqlEnum('status', [
-			'planned',
-			'completed',
-			'existing',
-			'referred',
-			'condition',
-			'cancelled'
-		])
-			.notNull()
-			.default('planned'),
+		status: mysqlEnum('status', PROCEDURE_STATUSES).notNull().default('planned'),
 
 		/**
 		 * The FDI code, as a foreign key into `tooth`. Null for whole-mouth work — an examination,
@@ -147,8 +141,15 @@ export const procedures = mysqlTable(
 		 */
 		fee: decimal('fee', { precision: 10, scale: 2, mode: 'number' }),
 
-		/** When it was done. Null while planned; `createdAt` is when it was proposed. */
-		completedOn: date('completed_on'),
+		/**
+		 * When it was done, as the clinic's calendar day. Null while planned; `createdAt` is when it
+		 * was proposed.
+		 *
+		 * `mode: 'string'`: a day, read and written as `'YYYY-MM-DD'`. As a JavaScript `Date` the
+		 * driver hands it back as the server's local midnight, which converted through the clinic's
+		 * time zone is the day before on any server east of Addis Ababa.
+		 */
+		completedOn: date('completed_on', { mode: 'string' }),
 
 		note: varchar('note', { length: 500 }),
 

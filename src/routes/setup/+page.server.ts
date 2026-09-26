@@ -12,6 +12,8 @@ import {
 	seedAllergens,
 	seedAppointmentTypes,
 	seedClinicBasics,
+	seedPensionRates,
+	seedTaxBands,
 	seedClinicClosures,
 	seedConditions,
 	seedContactTypes,
@@ -78,6 +80,8 @@ export const actions: Actions = {
 			await seedContactTypes();
 			await seedAllergens();
 			await seedClinicBasics();
+			await seedPensionRates();
+			await seedTaxBands();
 			await seedSpecialties();
 			await seedAppointmentTypes();
 			await seedMedicines();

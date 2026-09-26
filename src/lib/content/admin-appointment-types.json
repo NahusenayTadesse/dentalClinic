@@ -1,0 +1,53 @@
+{
+	"path": "/dashboard/admin-panel/appointment-types",
+	"languages": {
+		"en": {
+			"title": "Appointment Types",
+			"summary": "What a visit can be for — a check-up, an extraction, a root canal.",
+			"sections": [
+				{
+					"heading": "Default minutes",
+					"body": "How long this kind of visit usually takes. Choosing the type while booking fills in the length, so the person booking does not have to know how long an extraction runs."
+				},
+				{
+					"heading": "Colour",
+					"body": "Optional. A colour code such as #2563eb. Appointments of this type are drawn in it on the day view; without one, the dentist's colour is used."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Appointments",
+					"href": "/dashboard/help#section-appointments"
+				}
+			]
+		},
+		"am": {
+			"title": "የቀጠሮ ዓይነቶች",
+			"summary": "ጉብኝት ለምን ሊሆን እንደሚችል — ምርመራ፣ ጥርስ መንቀል፣ የስር ቦይ ሕክምና።",
+			"sections": [
+				{
+					"heading": "ነባሪ ደቂቃዎች",
+					"body": "እንዲህ ዓይነቱ ጉብኝት ብዙውን ጊዜ የሚወስደው ጊዜ። ቀጠሮ ሲያዝ ዓይነቱን መምረጥ ርዝመቱን ይሞላል።"
+				},
+				{
+					"heading": "ቀለም",
+					"body": "አማራጭ። እንደ #2563eb ያለ የቀለም ኮድ። የዚህ ዓይነት ቀጠሮዎች በቀን እይታው ላይ በዚህ ቀለም ይሳላሉ፤ ከሌለ የሐኪሙ ቀለም ይጠቀማል።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ቀጠሮዎች",
+					"href": "/dashboard/help#section-appointments"
+				}
+			]
+		}
+	}
+}

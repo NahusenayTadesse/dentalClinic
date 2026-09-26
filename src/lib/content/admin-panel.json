@@ -6,8 +6,8 @@
 			"summary": "The lists every dropdown in the system chooses from, plus the accounts and roles of the people using it.",
 			"sections": [
 				{
-					"heading": "The four groups",
-					"body": "• Locations — Regions, Cities, Subcities. These cascade: a city belongs to a region, a subcity to a city, so add them in that order.\n• Organization — Departments, Positions, Educational Levels, Employment Status, Leave Types, Annual Leave Entitlements, Leave Expiry Policy, Run Leave Accrual, Services.\n• User Management — Users and Roles.\n• Finance — Payment Methods, Tax Types, Overtime Types, Pensions, Vat and Withhold, Bank Amount.\n\nIf a form does not offer the value you need, this is where you add it — then go back to the form."
+					"heading": "The six sections",
+					"body": "• Clinic setup — Branches, Chairs, Closures, Appointment Types, Services and their categories, Specialties, Dental Labs, Allergens, Conditions, Medicines, Referral Sources, Contact Types. What the diary and the patient chart offer.\n• People and leave — Departments, Positions, Educational Levels, Employment Status and the leave rules.\n• Money — Payment Methods, Tax Types, Overtime Types, Pensions, VAT and withholding.\n• Locations — Regions, Cities, Subcities. These cascade: a city belongs to a region, a subcity to a city, so add them in that order.\n• Stock — Supply Types.\n• Access — Users and Roles.\n\nThe same screens are in the side menu, under Clinic Setup and Admin Panel. You see only the sections your permissions open."
 				},
 				{
 					"heading": "These lists are shared",
@@ -15,7 +15,7 @@
 				},
 				{
 					"heading": "Users and roles",
-					"body": "• Users — create accounts, assign a role, add a special permission for a one-off responsibility, reset a password. One account per person, always: every approval in the system names a person, and a shared login makes that name worthless.\n• Roles — a named bundle of permissions. Change the bundle and everyone holding it changes with it.\n\nKeep the approving permissions away from the entering ones. Giving one person both \"create\" and \"approve\" for the same thing quietly cancels the check the whole system is built around."
+					"body": "• Users — create accounts, assign a role, add a special permission for a one-off responsibility, correct an email. A forgotten password is reset by its owner from the login screen. One account per person, always: every approval in the system names a person, and a shared login makes that name worthless.\n• Roles — a named bundle of permissions. Change the bundle and everyone holding it changes with it.\n\nKeep the approving permissions away from the entering ones. Giving one person both \"create\" and \"approve\" for the same thing quietly cancels the check the whole system is built around."
 				},
 				{
 					"heading": "Leave configuration",
@@ -34,8 +34,8 @@
 			"summary": "በሲስተሙ ውስጥ ያሉ ምርጫዎች ሁሉ የሚመጡባቸው ዝርዝሮች፤ እንዲሁም የተጠቃሚዎች ሒሳቦችና ሚናዎች።",
 			"sections": [
 				{
-					"heading": "አራቱ ቡድኖች",
-					"body": "• ቦታዎች — ክልሎች፣ ከተሞች፣ ክፍለ ከተሞች። እነዚህ ተያያዥ ናቸው፦ ከተማ በክልል ሥር፣ ክፍለ ከተማ በከተማ ሥር ነው፤ ስለዚህ በዚያ ቅደም ተከተል ይጨምሩ።\n• ድርጅት — ክፍሎች፣ የሥራ መደቦች፣ የትምህርት ደረጃዎች፣ የቅጥር ሁኔታ፣ የፈቃድ ዓይነቶች፣ ዓመታዊ የፈቃድ መብት፣ የፈቃድ ማብቂያ ፖሊሲ፣ የፈቃድ ክምችት ማስኬጃ፣ አገልግሎቶች።\n• የተጠቃሚ አስተዳደር — ተጠቃሚዎችና ሚናዎች።\n• ፋይናንስ — የክፍያ ዘዴዎች፣ የግብር ዓይነቶች፣ የትርፍ ሰዓት ዓይነቶች፣ ጡረታ፣ ተጨማሪ እሴት ታክስና ተቀናሽ ግብር፣ የባንክ ሒሳብ።\n\nአንድ ቅጽ የሚፈልጉትን አማራጭ ካላቀረበ እዚህ ይጨምሩት፤ ከዚያ ወደ ቅጹ ይመለሱ።"
+					"heading": "ስድስቱ ክፍሎች",
+					"body": "• የክሊኒክ ዝግጅት — ቅርንጫፎች፣ ወንበሮች፣ የመዝጊያ ቀናት፣ የቀጠሮ ዓይነቶች፣ አገልግሎቶችና ምድቦቻቸው፣ ልዩ ሙያዎች፣ የጥርስ ላቦራቶሪዎች፣ አለርጂ አምጪዎች፣ የጤና ሁኔታዎች፣ መድኃኒቶች፣ የሪፈራል ምንጮች፣ የመገናኛ ዓይነቶች። የቀጠሮ መዝገቡና የታካሚው ቻርት የሚያቀርቡት።\n• ሠራተኞችና ፈቃድ — የሥራ ክፍሎች፣ የሥራ መደቦች፣ የትምህርት ደረጃዎች፣ የቅጥር ሁኔታ እና የፈቃድ ደንቦች።\n• ገንዘብ — የክፍያ ዘዴዎች፣ የግብር ዓይነቶች፣ የትርፍ ሰዓት ዓይነቶች፣ ጡረታ፣ ተ.እ.ታ እና ተቀናሽ።\n• አካባቢዎች — ክልሎች፣ ከተሞች፣ ክፍለ ከተሞች። እርስ በርሳቸው ይያያዛሉ፦ ከተማ የክልል፣ ክፍለ ከተማ የከተማ ነው፤ በዚህ ቅደም ተከተል ይጨምሩ።\n• ክምችት — የአቅርቦት ዓይነቶች።\n• መዳረሻ — ተጠቃሚዎችና ሚናዎች።\n\nእነዚሁ ማያዎች በጎን ምናሌው ውስጥ በ\"Clinic Setup\" እና \"Admin Panel\" ስር አሉ። የሚያዩት ፈቃዶችዎ የሚከፍቷቸውን ክፍሎች ብቻ ነው።"
 				},
 				{
 					"heading": "እነዚህ ዝርዝሮች የጋራ ናቸው",
@@ -43,7 +43,7 @@
 				},
 				{
 					"heading": "ተጠቃሚዎችና ሚናዎች",
-					"body": "• ተጠቃሚዎች — ሒሳብ መፍጠር፣ ሚና መስጠት፣ ለልዩ ኃላፊነት ተጨማሪ ፈቃድ መስጠት፣ የይለፍ ቃል መቀየር። ሁሌም ለአንድ ሰው አንድ ሒሳብ፦ በሲስተሙ ውስጥ እያንዳንዱ ማጽደቅ ሰው ይሰይማል፤ የጋራ ሒሳብ ያንን ስም ዋጋ ቢስ ያደርገዋል።\n• ሚናዎች — ስም የተሰጠው የፈቃዶች ጥምር። ጥምሩን ሲቀይሩ የያዙት ሁሉ አብረው ይቀየራሉ።\n\nየማጽደቅ ፈቃዶችን ከማስገቢያ ፈቃዶች ይለዩ። ለአንድ ሰው በአንድ ጉዳይ ላይ \"መፍጠር\"ንም \"ማጽደቅ\"ንም መስጠት ሲስተሙ የተመሠረተበትን ቁጥጥር በዝምታ ይሰርዘዋል።"
+					"body": "• ተጠቃሚዎች — ሒሳብ መፍጠር፣ ሚና መስጠት፣ ለልዩ ኃላፊነት ተጨማሪ ፈቃድ መስጠት፣ ኢሜይል ማረም። የተረሳ የይለፍ ቃል በባለቤቱ ከመግቢያ ገጹ ይቀየራል። ሁሌም ለአንድ ሰው አንድ ሒሳብ፦ በሲስተሙ ውስጥ እያንዳንዱ ማጽደቅ ሰው ይሰይማል፤ የጋራ ሒሳብ ያንን ስም ዋጋ ቢስ ያደርገዋል።\n• ሚናዎች — ስም የተሰጠው የፈቃዶች ጥምር። ጥምሩን ሲቀይሩ የያዙት ሁሉ አብረው ይቀየራሉ።\n\nየማጽደቅ ፈቃዶችን ከማስገቢያ ፈቃዶች ይለዩ። ለአንድ ሰው በአንድ ጉዳይ ላይ \"መፍጠር\"ንም \"ማጽደቅ\"ንም መስጠት ሲስተሙ የተመሠረተበትን ቁጥጥር በዝምታ ይሰርዘዋል።"
 				},
 				{
 					"heading": "የፈቃድ ውቅር",

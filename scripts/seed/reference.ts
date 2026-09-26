@@ -18,6 +18,7 @@ import {
 	annualLeaveEntitlement,
 	leaveExpiryPolicy,
 	overTimeType,
+	pensionRate,
 	taxType
 } from '../../src/lib/server/db/schema/staff';
 import { region, city, subcity, address } from '../../src/lib/server/db/schema/locations';
@@ -28,6 +29,8 @@ import {
 	vatAndWithHold
 } from '../../src/lib/server/db/schema/finance';
 import { isEmpty, money, type SeedDb } from './util';
+import type { ServiceArea } from '../../src/lib/serviceAreas';
+import { CURRENT_TAX_BANDS, DEFAULT_PENSION_RATES } from '../../src/lib/server/payrollMath';
 
 const REGIONS = ['Addis Ababa', 'Oromia'];
 
@@ -145,52 +148,20 @@ export async function seedHrReference(db: SeedDb) {
 		]);
 	}
 
+	// The bands in force (Proclamation 1395/2025), the same list /setup seeds.
 	if (await isEmpty(db, taxType, 'tax_type')) {
-		/*
-		 * The federal employment income tax bands. Seeded with their real figures because invented
-		 * ones would make every payroll figure in development quietly wrong — and confirm them
-		 * against the current proclamation before any real payroll run.
-		 */
-		await db.insert(taxType).values([
-			{ name: 'Band 1 (0 – 600)', threshold: money(600), rate: money(0), deduction: money(0) },
-			{
-				name: 'Band 2 (601 – 1,650)',
-				threshold: money(1650),
-				rate: money(10),
-				deduction: money(60)
-			},
-			{
-				name: 'Band 3 (1,651 – 3,200)',
-				threshold: money(3200),
-				rate: money(15),
-				deduction: money(142.5)
-			},
-			{
-				name: 'Band 4 (3,201 – 5,250)',
-				threshold: money(5250),
-				rate: money(20),
-				deduction: money(302.5)
-			},
-			{
-				name: 'Band 5 (5,251 – 7,800)',
-				threshold: money(7800),
-				rate: money(25),
-				deduction: money(565)
-			},
-			{
-				name: 'Band 6 (7,801 – 10,900)',
-				threshold: money(10900),
-				rate: money(30),
-				deduction: money(955)
-			},
-			{ name: 'Band 7 (above 10,900)', threshold: null, rate: money(35), deduction: money(1500) }
-		]);
+		await db.insert(taxType).values([...CURRENT_TAX_BANDS]);
 	}
 
 	console.log('Seeded HR reference data.');
 }
 
 export async function seedFinanceReference(db: SeedDb) {
+	// The same defaults /setup seeds; payroll takes a missing share as zero.
+	if (await isEmpty(db, pensionRate, 'pension_rate')) {
+		await db.insert(pensionRate).values([...DEFAULT_PENSION_RATES]);
+	}
+
 	if (await isEmpty(db, paymentMethods, 'payment_methods')) {
 		await db
 			.insert(paymentMethods)
@@ -224,26 +195,101 @@ export async function seedFinanceReference(db: SeedDb) {
 	console.log('Seeded finance reference data.');
 }
 
-const SERVICE_CATALOGUE: Record<string, string[]> = {
-	Diagnostic: ['Consultation', 'Periapical radiograph', 'Panoramic radiograph'],
-	Preventive: ['Scaling and polishing', 'Fluoride application', 'Fissure sealant'],
-	Restorative: ['Composite filling', 'Amalgam filling', 'Temporary filling'],
-	Surgical: ['Simple extraction', 'Surgical extraction', 'Incision and drainage'],
-	Endodontic: ['Root canal — anterior', 'Root canal — molar', 'Pulpotomy'],
-	Prosthetic: ['Complete denture', 'Partial denture', 'Crown — metal ceramic']
+/**
+ * The treatments a small Addis Ababa practice offers, with a fee in birr and what each is charted
+ * on (`$lib/serviceAreas.ts`). `null` is a real fee: orthodontics is quoted case by case.
+ */
+const SERVICE_CATALOGUE: Record<
+	string,
+	[name: string, price: number | null, area: ServiceArea, removesTooth?: boolean][]
+> = {
+	Diagnostic: [
+		['Consultation', 300, 'mouth'],
+		['Periapical radiograph', 200, 'tooth'],
+		['Panoramic radiograph', 800, 'mouth']
+	],
+	Preventive: [
+		['Scaling and polishing', 1500, 'mouth'],
+		['Fluoride application', 500, 'mouth'],
+		['Fissure sealant', 600, 'tooth']
+	],
+	Restorative: [
+		['Composite filling', 2000, 'surface'],
+		['Amalgam filling', 1200, 'surface'],
+		['Temporary filling', 500, 'tooth']
+	],
+	Surgical: [
+		['Simple extraction', 800, 'tooth', true],
+		['Surgical extraction', 3000, 'tooth', true],
+		['Incision and drainage', 1000, 'tooth']
+	],
+	Endodontic: [
+		['Root canal — anterior', 5000, 'tooth'],
+		['Root canal — molar', 9000, 'tooth'],
+		['Pulpotomy', 2500, 'tooth']
+	],
+	Prosthetic: [
+		['Complete denture', 25000, 'mouth'],
+		['Partial denture', 12000, 'range'],
+		['Crown — metal ceramic', 12000, 'tooth'],
+		['Bridge — three unit metal ceramic', 36000, 'range']
+	],
+	Orthodontic: [['Orthodontic treatment', null, 'mouth']],
+	/*
+	 * What an examination finds, charted with status `condition`. Services because a procedure
+	 * must name one, unpriced because a finding is not a charge: the treatment planned for it
+	 * carries the fee.
+	 */
+	Findings: [
+		['Caries', null, 'surface'],
+		['Fractured tooth', null, 'tooth'],
+		['Periapical lesion', null, 'tooth'],
+		['Retained root', null, 'tooth']
+	]
 };
 
+/**
+ * The catalogue, topped up rather than skipped when it already exists.
+ *
+ * `price` and `area` arrived after the first seed, so a database seeded before them holds every
+ * service as an unpriced whole-mouth treatment: the chart would never ask for a tooth. A category or
+ * service that is missing is added, and an existing service gets the catalogue's price and area only
+ * while its price is still empty, so a fee somebody has since typed in is never overwritten.
+ * `removesTooth` is set on the extractions either way: it is a fact about the treatment, not a
+ * choice anybody makes.
+ */
 export async function seedServices(db: SeedDb) {
-	if (!(await isEmpty(db, serviceCategories, 'service_categories'))) return;
-
-	for (const [categoryName, names] of Object.entries(SERVICE_CATALOGUE)) {
-		await db.insert(serviceCategories).values({ name: categoryName });
-		const [{ id: categoryId }] = await db
+	for (const [categoryName, entries] of Object.entries(SERVICE_CATALOGUE)) {
+		let [category] = await db
 			.select({ id: serviceCategories.id })
 			.from(serviceCategories)
 			.where(eq(serviceCategories.name, categoryName));
+		if (!category) {
+			await db.insert(serviceCategories).values({ name: categoryName });
+			[category] = await db
+				.select({ id: serviceCategories.id })
+				.from(serviceCategories)
+				.where(eq(serviceCategories.name, categoryName));
+		}
 
-		await db.insert(services).values(names.map((name) => ({ name, categoryId })));
+		for (const [name, price, area, removesTooth = false] of entries) {
+			const [existing] = await db
+				.select({ id: services.id, price: services.price })
+				.from(services)
+				.where(eq(services.name, name));
+			if (!existing) {
+				await db
+					.insert(services)
+					.values({ name, categoryId: category.id, price, area, removesTooth });
+				continue;
+			}
+			if (existing.price === null) {
+				await db.update(services).set({ price, area }).where(eq(services.id, existing.id));
+			}
+			if (removesTooth) {
+				await db.update(services).set({ removesTooth }).where(eq(services.id, existing.id));
+			}
+		}
 	}
 
 	console.log('Seeded service categories and services.');

@@ -1,22 +1,21 @@
 <script lang="ts">
-	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { edit as schema } from './schema';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import { columns } from './columns';
+	import { createForm } from '$lib/forms/createForm';
+	import SupplyFields from '../SupplyFields.svelte';
+	import { columns, lotColumns } from './columns';
+	import Section from '$lib/components/Section.svelte';
 	let { data } = $props();
 
 	import SingleTable from '$lib/components/SingleTable.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { superForm } from 'sveltekit-superforms/client';
 
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import { ArrowLeft, Pencil, Save, History } from '@lucide/svelte';
+	import { ArrowLeft, Pencil, Save, History, Boxes } from '@lucide/svelte';
 	import type { Snapshot } from '@sveltejs/kit';
 
 	import SingleView from '$lib/components/SingleView.svelte';
 	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte.js';
-	import { fly } from 'svelte/transition';
 
 	/**
 	 * The company owns this stock wherever it sits, so all four figures are
@@ -28,6 +27,10 @@
 		{ name: 'Name', value: data.supply?.name },
 		{ name: 'In Store', value: data.supply?.quantity },
 		{ name: 'Kind', value: data.supply?.returnable ? 'Returnable' : 'Consumable' },
+		{
+			name: 'Expires',
+			value: data.supply?.tracksExpiry ? 'Yes — lots carry an expiry date' : 'No'
+		},
 		{ name: 'Unit of Measurement', value: data.supply?.unitOfMeasure },
 		{ name: 'Product Description', value: data.supply?.description },
 		{ name: 'Reorder Notification Quantity', value: data.supply?.reorderLevel },
@@ -40,20 +43,8 @@
 		}
 	]);
 
-	const { form, errors, enhance, delayed, capture, restore, message } = superForm(data.form, {
-		validators: zod4Client(schema),
+	const { form, errors, enhance, delayed, capture, restore } = createForm(data.form, schema, {
 		resetForm: false
-	});
-
-	import { toast } from 'svelte-sonner';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
 	});
 
 	// `description`, `unit_of_measure` and `reorder_level` are all nullable in the
@@ -70,6 +61,7 @@
 		$form.reorderLevel = data.supply.reorderLevel;
 	}
 	$form.returnable = Boolean(data.supply?.returnable);
+	$form.tracksExpiry = Boolean(data.supply?.tracksExpiry);
 
 	export const snapshot: Snapshot = { capture, restore };
 
@@ -110,6 +102,8 @@
 			name={data.supply?.name}
 			employees={data.employeesList}
 			paymentMethods={data.paymentMethods}
+			suppliers={data.supplierList}
+			tracksExpiry={data.supply?.tracksExpiry ?? false}
 		/>
 		<Damaged data={data.damagedForm} name={data.supply?.name} employees={data.employeesList} />
 		<Button href="/dashboard/supplies/{data.supply.id}/ranges/{getCurrentMonthRange()}">
@@ -118,86 +112,27 @@
 	</div>
 	{#if edit === false}
 		<div class="w-full p-4"><SingleTable {singleTable} /></div>
+		<div class="w-full p-4">
+			<Section title="Stock by lot" IconComp={Boxes} style="identityIcon">
+				{#if data.lots.length}
+					<DataTable
+						data={data.lots}
+						columns={lotColumns}
+						search={false}
+						fileName="{data.supply?.name} lots"
+					/>
+				{:else}
+					<p class="text-sm text-muted-foreground">
+						Nothing in store. Receive a delivery to add a lot.
+					</p>
+				{/if}
+			</Section>
+		</div>
 	{/if}
 	{#if edit}
 		<div class="w-full p-4">
 			<form action="?/editSupply" use:enhance class="flex flex-col gap-4" id="edit" method="post">
-				<InputComp
-					label="Item Name"
-					name="name"
-					type="text"
-					required
-					placeholder="Enter Supply Name"
-					{errors}
-					{form}
-				/>
-
-				<InputComp
-					label="Item Type"
-					name="supplyType"
-					type="select"
-					placeholder="Enter Item Type"
-					{errors}
-					{form}
-					items={data?.typeList}
-				/>
-
-				<InputComp
-					label="Item Description"
-					name="description"
-					type="textarea"
-					placeholder="Enter Supply Description"
-					{errors}
-					{form}
-				/>
-
-				<InputComp
-					label="Unit of Measurement"
-					name="unitOfMeasurement"
-					type="select"
-					placeholder="Enter Unit of Measurement"
-					{errors}
-					{form}
-					items={[
-						{ value: 'kg', name: 'Kilogram' },
-						{ value: 'g', name: 'Gram' },
-						{ value: 'ml', name: 'Milliliter' },
-						{ value: 'l', name: 'Liter' },
-						{ value: 'pcs', name: 'Piece' },
-						{ value: 'other', name: 'Other' }
-					]}
-				/>
-
-				{#if $form.unitOfMeasurement === 'other'}
-					<div transition:fly={{ x: -20, duration: 300 }}>
-						<InputComp
-							label="Enter Other Unit of Measurement"
-							name="otherUnitOfMeasurement"
-							type="text"
-							placeholder="Enter Other Unit of Measurement"
-							{errors}
-							{form}
-						/>
-					</div>
-				{/if}
-
-				<InputComp
-					label="Expected Back"
-					name="returnable"
-					type="checkboxSingle"
-					placeholder="Chased for return once issued — instruments and equipment, not consumables"
-					{errors}
-					{form}
-				/>
-
-				<InputComp
-					label="Reorder Notify Level"
-					name="reorderLevel"
-					type="number"
-					placeholder="Enter when you want to be notified"
-					{errors}
-					{form}
-				/>
+				<SupplyFields {form} {errors} typeList={data.typeList} />
 
 				<Button form="edit" type="submit" class="mt-4">
 					{#if $delayed}

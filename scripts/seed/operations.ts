@@ -18,8 +18,7 @@ import {
 	employeeTermination,
 	missingDays,
 	overTime,
-	overTimeType,
-	penality
+	overTimeType
 } from '../../src/lib/server/db/schema/staff';
 import {
 	expenses,
@@ -50,14 +49,6 @@ export async function seedPayrollInputs(db: SeedDb) {
 	if (!staff.length) return;
 
 	const { pick, chance, between } = randomness(20260929);
-
-	if (await isEmpty(db, penality, 'penality')) {
-		await db.insert(penality).values([
-			{ name: 'Late arrival', rate: money(50) },
-			{ name: 'Unexcused absence', rate: money(200) },
-			{ name: 'Uniform breach', rate: money(30) }
-		]);
-	}
 
 	const types = await db.select({ id: overTimeType.id }).from(overTimeType);
 

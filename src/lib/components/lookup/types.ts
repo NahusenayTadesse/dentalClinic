@@ -28,6 +28,12 @@ export type LookupFieldType =
 	| 'textarea'
 	/** Numeric input; rendered right-aligned in the table. */
 	| 'number'
+	/**
+	 * An amount in birr. A number in the form; `formatETB` in the table, so a price reads
+	 * "ETB 1,500.00" rather than `1500`. An empty value stays empty in the table rather than
+	 * becoming "ETB 0.00": a service with no standard fee is not a free one.
+	 */
+	| 'money'
 	/** A true/false choice shown as a dropdown, and as a status badge in the table. */
 	| 'boolean'
 	/** A true/false choice shown as a single checkbox, and as a status badge in the table. */
@@ -124,6 +130,12 @@ export type LookupConfig = {
 	 * page. If you find yourself using it twice for the same shape, that is a new field type.
 	 */
 	extraColumns?: ColumnDef<LookupRow>[];
+	/**
+	 * The rows are a fixed set that is edited, never added to or removed from — the two pension
+	 * shares, say. Hides the add dialog and the delete column; the route should export no `add` or
+	 * `delete` action either, since a hidden button is not a control (CLAUDE.md §9).
+	 */
+	fixedRows?: boolean;
 };
 
 /** A row of a lookup table. Columns vary per table, so this is as narrow as it can honestly be. */

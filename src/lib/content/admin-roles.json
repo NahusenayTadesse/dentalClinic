@@ -11,7 +11,7 @@
 				},
 				{
 					"heading": "Keep entering and approving apart",
-					"body": "The whole system rests on the maker–checker rule: whoever enters a record is not the person who releases it.\n\nGiving one person both \"create\" and \"approve\" for the same thing — payment_requests.create and payment_requests.approve, say — quietly cancels that check. The system will not stop you; this is the moment to notice."
+					"body": "The whole system rests on the maker–checker rule: whoever enters a record is not the person who releases it.\n\nThe system enforces it: nobody can approve their own request, even holding both the permission to enter a salary change and approvals.approve. The one way round it is approvals.override — so that is the permission to give sparingly, not the pair."
 				},
 				{
 					"heading": "The permissions worth thinking twice about",
@@ -35,7 +35,7 @@
 				},
 				{
 					"heading": "ማስገባትንና ማጽደቅን ይለያዩ",
-					"body": "ሲስተሙ በሙሉ የሚመሠረተው መዝገብ ያስገባው ሰው የሚለቀውም ሰው አይደለም በሚለው ደንብ ላይ ነው።\n\nለአንድ ሰው በአንድ ጉዳይ ላይ \"መፍጠር\"ንም \"ማጽደቅ\"ንም መስጠት ያንን ቁጥጥር በዝምታ ይሰርዘዋል። ሲስተሙ አያግድዎትም፤ ማስተዋል ያለብዎት አሁን ነው።"
+					"body": "ሲስተሙ በሙሉ የሚመሠረተው መዝገብ ያስገባው ሰው የሚለቀውም ሰው አይደለም በሚለው ደንብ ላይ ነው።\n\nሲስተሙ ራሱ ያስፈጽመዋል፦ የደመወዝ ለውጥ የማስገባት ፈቃድና approvals.approve ሁለቱም ቢኖሩትም ማንም የራሱን ጥያቄ ማጽደቅ አይችልም። ብቸኛው መውጫ approvals.override ነው — ስለዚህ በጥንቃቄ መሰጠት ያለበት እሱ ነው።"
 				},
 				{
 					"heading": "ሁለት ጊዜ ሊታሰብባቸው የሚገቡ ፈቃዶች",

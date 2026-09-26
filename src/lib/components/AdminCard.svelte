@@ -6,31 +6,23 @@
 		CardDescription,
 		CardContent
 	} from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import { ArrowRightIcon, MapPinIcon, Building2Icon, UsersIcon, Banknote } from '@lucide/svelte';
+	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
+	import type { Component } from 'svelte';
+	import type { IconProps } from '@lucide/svelte';
+	import type { NavItem } from '$lib/navigation';
 
-	interface NavItem {
-		name: string;
-		href: string;
-	}
-
+	/**
+	 * One section of the admin panel's index: a title, a line saying what is in it, and a link per
+	 * screen. The sections and their screens come from `settingsSections` in `$lib/navigation.ts`.
+	 */
 	interface Props {
 		title: string;
 		description: string;
-		icon: 'MapPin' | 'Building2' | 'Users' | 'BankNote';
+		icon: Component<IconProps>;
 		items: NavItem[];
 	}
 
-	const { title, description, icon, items }: Props = $props();
-
-	const iconMap = {
-		MapPin: MapPinIcon,
-		Building2: Building2Icon,
-		Users: UsersIcon,
-		BankNote: Banknote
-	};
-
-	const IconComponent = iconMap[icon];
+	const { title, description, icon: IconComponent, items }: Props = $props();
 </script>
 
 <Card
@@ -53,13 +45,13 @@
 		</CardHeader>
 
 		<CardContent class="flex flex-col gap-2">
-			{#each items as item (item.href)}
+			{#each items as item (item.url)}
 				<a
-					href={item.href}
+					href={item.url}
 					class="group/link flex items-center justify-between rounded-lg px-4 py-3 transition-all duration-200 hover:bg-primary/10"
 				>
 					<span class="font-medium text-foreground/80 group-hover/link:text-foreground"
-						>{item.name}</span
+						>{item.title}</span
 					>
 					<ArrowRightIcon
 						class="size-4 text-muted-foreground opacity-0 transition-all duration-200

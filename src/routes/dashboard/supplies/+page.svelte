@@ -112,10 +112,6 @@
 			</div>
 
 			<div class="flex flex-col gap-2">
-				<Label class="text-sm font-medium">Where It Is</Label>
-			</div>
-
-			<div class="flex flex-col gap-2">
 				<Label class="text-sm font-medium">Unit</Label>
 				<Select
 					type="single"

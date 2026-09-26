@@ -82,20 +82,22 @@
 	<title>{config.plural}</title>
 </svelte:head>
 
-<DialogComp bind:open title="+ Add New {config.entity}" variant="default">
-	<form action="?/add" use:enhance id="main" class="flex flex-col gap-4" method="post">
-		<Errors allErrors={$allErrors} />
-		<LookupFields fields={config.fields} {form} {errors} entity={config.entity} {options} />
+{#if !config.fixedRows}
+	<DialogComp bind:open title="+ Add New {config.entity}" variant="default">
+		<form action="?/add" use:enhance id="main" class="flex flex-col gap-4" method="post">
+			<Errors allErrors={$allErrors} />
+			<LookupFields fields={config.fields} {form} {errors} entity={config.entity} {options} />
 
-		<Button type="submit" form="main">
-			{#if $delayed}
-				<LoadingBtn name="Adding {config.entity}" />
-			{:else}
-				<Plus /> Add {config.entity}
-			{/if}
-		</Button>
-	</form>
-</DialogComp>
+			<Button type="submit" form="main">
+				{#if $delayed}
+					<LoadingBtn name="Adding {config.entity}" />
+				{:else}
+					<Plus /> Add {config.entity}
+				{/if}
+			</Button>
+		</form>
+	</DialogComp>
+{/if}
 
 {#key data.rows}
 	<DataTable {columns} data={data.rows} search={true} fileName={config.plural} />

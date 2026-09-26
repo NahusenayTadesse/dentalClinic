@@ -1,8 +1,7 @@
-import { readdirSync } from 'node:fs';
-import { join, sep } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { canVisit, permissionForPath, ruleForPath, routeRules } from './routeAccess';
 import { permissionNames, permissionsMissingDescriptions } from './server/seedPermissions';
+import { dashboardRoutes } from './testing/routes';
 
 describe('route access', () => {
 	it('takes the first matching prefix, so a specific rule beats the general one', () => {
@@ -94,30 +93,7 @@ describe('route access', () => {
 	 * declared `permission: null` on purpose.
 	 */
 	it('has a rule for every page under /dashboard', () => {
-		const root = join(process.cwd(), 'src', 'routes', 'dashboard');
-
-		function pagePaths(dir: string): string[] {
-			const found: string[] = [];
-
-			for (const entry of readdirSync(dir, { withFileTypes: true })) {
-				const full = join(dir, entry.name);
-
-				if (entry.isDirectory()) {
-					found.push(...pagePaths(full));
-				} else if (entry.name === '+page.svelte' || entry.name === '+server.ts') {
-					// `src/routes/dashboard/foo/+page.svelte` -> `/dashboard/foo`
-					const url = dir
-						.slice(join(process.cwd(), 'src', 'routes').length)
-						.split(sep)
-						.join('/');
-					found.push(url === '' ? '/' : url);
-				}
-			}
-
-			return found;
-		}
-
-		const uncovered = [...new Set(pagePaths(root))].filter((path) => !ruleForPath(path));
+		const uncovered = dashboardRoutes({ endpoints: true }).filter((path) => !ruleForPath(path));
 
 		expect(uncovered, `add a routeRules entry for:\n  ${uncovered.join('\n  ')}`).toEqual([]);
 	});

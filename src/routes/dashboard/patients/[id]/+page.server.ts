@@ -1,7 +1,5 @@
-import { error, redirect } from '@sveltejs/kit';
 import { superValidate, message, setError } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { alias } from 'drizzle-orm/mysql-core';
 import { and, count, desc, eq, gt, inArray, max, min, ne, sql, sum } from 'drizzle-orm';
 
 import { db } from '$lib/server/db';
@@ -9,7 +7,6 @@ import {
 	appointment,
 	branch,
 	clinicalNote,
-	customers,
 	invoice,
 	invoicePayment,
 	patient,
@@ -17,16 +14,15 @@ import {
 	patientConsent,
 	patientFile,
 	prescription,
-	referralSource,
 	treatmentPlan,
 	user
 } from '$lib/server/db/schema';
 import { notDeleted } from '$lib/server/softDelete';
-import { hasPermission, requirePermission } from '$lib/server/permissions';
+import { requirePermission } from '$lib/server/permissions';
 import { recordAudit } from '$lib/server/audit';
 import { isDuplicateKey } from '$lib/server/dbErrors';
 import { childActions } from '$lib/server/childCrud';
-import { isoDate, nowExpr, yearsSince } from '$lib/server/db/dialect';
+import { nowExpr } from '$lib/server/db/dialect';
 import {
 	allergens,
 	conditions,
@@ -35,140 +31,30 @@ import {
 	medicines,
 	referralSources
 } from '$lib/server/fastData';
-import {
-	HISTORY_STALE_DAYS,
-	birthDateFrom,
-	flagsFor,
-	livePatient,
-	patientFullName
-} from '$lib/server/patients';
+import { birthDateFrom, livePatientId, logPatientView } from '$lib/server/patients';
 import { editHistory, editIdentity, editReach } from '../schema';
 import { SECTIONS } from './sections';
 import { appointmentQuery } from '$lib/server/appointments';
-import { BOOK_PERMISSION } from '$lib/server/appointmentActions';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
 
 /**
- * One patient's chart.
+ * The chart's overview tab: who the patient is, how to reach them, their medical history, and a
+ * count of everything else on the record.
  *
- * **Readable from any branch.** A patient registered at one location is treated at another without
- * being registered twice (CLAUDE.md §15), so the chart is not branch scoped; it says when the
- * patient belongs elsewhere instead.
- *
- * **Every open is logged**, in `patient_access_log` — who looked at whose record is the question
- * a clinic is asked after a leak, and it cannot be answered afterwards. At most once per person,
- * patient and ten minutes: every save on this page re-runs the load, and a row per save would bury
- * the one view that matters under forty that do not.
- *
- * **Reading and changing are separate permissions.** The route gate is `patients.view`. Each
- * action checks its own: `patients.edit` for identity, phones and billing; `patients.clinical` for
- * the medical history and the clinical sections. See `sections.ts`.
- *
- * Non-goals, each waiting on its own screen: merging duplicates, booking, treatment, billing,
- * files and notes. The chart shows their counts so it is honest about what exists.
+ * The patient row, the alerts and the permissions come from `+layout.server.ts`, which every tab
+ * shares. What is here is what only this tab shows, and the actions that change it.
  */
-
-/** How long one person's repeated opens of one chart count as a single view. */
-const VIEW_WINDOW_MINUTES = 10;
-
-const createdBy = alias(user, 'created_by_user');
-const updatedBy = alias(user, 'updated_by_user');
-const historyBy = alias(user, 'history_by_user');
-
-/** The patient's id from the URL, as a positive integer, or a 404. */
-function idFrom(event: Pick<RequestEvent, 'params'>): number {
-	const id = Number(event.params.id);
-	if (!Number.isInteger(id) || id <= 0) error(404, 'Patient not found');
-	return id;
-}
-
-/**
- * The owner of a write: a patient who exists and is not a merge tombstone.
- *
- * Checked before every child write rather than left to the foreign key, which would accept a row
- * filed under a merged record — the exact stranded-allergy case merging exists to end.
- */
-async function livePatientId(event: RequestEvent): Promise<number> {
-	const id = idFrom(event);
-	const [row] = await db
-		.select({ id: patient.id })
-		.from(patient)
-		.where(and(eq(patient.id, id), livePatient()))
-		.limit(1);
-	if (!row) error(404, 'Patient not found');
-	return row.id;
-}
 
 export const load: PageServerLoad = async (event) => {
-	const { locals, getClientAddress } = event;
-	const id = idFrom(event);
+	const { patient: record, can } = await event.parent();
+	const id = record.id;
 
-	const [record] = await db
-		.select({
-			id: patient.id,
-			fileNo: patient.fileNo,
-			name: patient.name,
-			fatherName: patient.fatherName,
-			grandFatherName: patient.grandFatherName,
-			fullName: patientFullName,
-			sex: patient.sex,
-			birthDate: isoDate(patient.birthDate),
-			birthDateEstimated: patient.birthDateEstimated,
-			age: yearsSince(patient.birthDate),
-			phone: patient.phone,
-			altPhone: patient.altPhone,
-			bloodType: patient.bloodType,
-			medicalNotes: patient.medicalNotes,
-			historyTakenAt: patient.historyTakenAt,
-			historyTakenBy: historyBy.name,
-			referralSourceId: patient.referralSourceId,
-			referral: referralSource.name,
-			referredBy: patient.referredBy,
-			customerId: patient.customerId,
-			customer: customers.name,
-			branchId: patient.branchId,
-			branch: branch.name,
-			mergedIntoId: patient.mergedIntoId,
-			deletedAt: patient.deletedAt,
-			createdAt: patient.createdAt,
-			updatedAt: patient.updatedAt,
-			createdBy: createdBy.name,
-			createdById: createdBy.id,
-			updatedBy: updatedBy.name,
-			updatedById: updatedBy.id
-		})
-		.from(patient)
-		.leftJoin(
-			referralSource,
-			and(eq(referralSource.id, patient.referralSourceId), notDeleted(referralSource))
-		)
-		.leftJoin(customers, and(eq(customers.id, patient.customerId), notDeleted(customers)))
-		.leftJoin(branch, and(eq(branch.id, patient.branchId), notDeleted(branch)))
-		// Attribution joins are not filtered: a deleted user still did what they did (§9).
-		.leftJoin(createdBy, eq(createdBy.id, patient.createdBy))
-		.leftJoin(updatedBy, eq(updatedBy.id, patient.updatedBy))
-		.leftJoin(historyBy, eq(historyBy.id, patient.historyTakenBy))
-		.where(eq(patient.id, id))
-		.limit(1);
-
-	if (!record || record.deletedAt) error(404, 'Patient not found');
-
-	/*
-	 * A merged record is a tombstone whose only job is to lead to the survivor — an old file number
-	 * on a paper chart or a receipt still has to arrive at the right person. So it forwards, and
-	 * says where it came from.
-	 */
-	if (record.mergedIntoId) {
-		redirect(303, `/dashboard/patients/${record.mergedIntoId}?mergedFrom=${record.id}`);
-	}
-
-	await logView(id, locals, getClientAddress, locals.branch.active);
+	await logPatientView(id, 'summary', event);
 
 	const [
 		sections,
 		options,
 		summary,
-		flags,
 		recentViews,
 		identityForm,
 		reachForm,
@@ -178,8 +64,7 @@ export const load: PageServerLoad = async (event) => {
 		loadSections(id),
 		loadOptions(),
 		loadSummary(id),
-		flagsFor([id]),
-		hasPermission(locals, 'audit_logs.view') ? loadRecentViews(id) : Promise.resolve(null),
+		can.seeViews ? loadRecentViews(id) : Promise.resolve(null),
 		superValidate(
 			{
 				fileNo: record.fileNo ?? undefined,
@@ -189,7 +74,7 @@ export const load: PageServerLoad = async (event) => {
 				sex: record.sex,
 				knowsBirthDate: Boolean(record.birthDate) && !record.birthDateEstimated,
 				birthDate: record.birthDate ?? undefined,
-				ageYears: record.birthDateEstimated && record.age !== null ? Number(record.age) : undefined,
+				ageYears: record.birthDateEstimated && record.age !== null ? record.age : undefined,
 				bloodType: record.bloodType ?? undefined
 			},
 			zod4(editIdentity),
@@ -215,82 +100,15 @@ export const load: PageServerLoad = async (event) => {
 		appointmentQuery(eq(appointment.patientId, id)).orderBy(desc(appointment.startsAt)).limit(15)
 	]);
 
-	const mergedFrom = Number(event.url.searchParams.get('mergedFrom')) || null;
-
 	return {
-		patient: {
-			...record,
-			age: record.age === null ? null : Number(record.age),
-			historyState: historyState(record.historyTakenAt)
-		},
-		flags: flags.get(id) ?? { allergies: [], conditions: [], medicineAlerts: [] },
 		sections,
 		options,
 		summary,
 		appointments,
 		recentViews,
-		forms: { identity: identityForm, reach: reachForm, history: historyForm },
-		mergedFrom,
-		fromOtherBranch:
-			locals.branch.active !== null &&
-			record.branchId !== null &&
-			record.branchId !== locals.branch.active,
-		can: {
-			edit: hasPermission(locals, 'patients.edit'),
-			clinical: hasPermission(locals, 'patients.clinical'),
-			seeViews: recentViews !== null,
-			book: hasPermission(locals, BOOK_PERMISSION)
-		}
+		forms: { identity: identityForm, reach: reachForm, history: historyForm }
 	};
 };
-
-/** "never", "stale" or "current" — the same three states the list filters by. */
-function historyState(takenAt: Date | null): 'never' | 'stale' | 'current' {
-	if (!takenAt) return 'never';
-	const ageDays = (Date.now() - new Date(takenAt).getTime()) / 86_400_000;
-	return ageDays > HISTORY_STALE_DAYS ? 'stale' : 'current';
-}
-
-/** Records that this user opened this chart, unless they already did in the last few minutes. */
-async function logView(
-	patientId: number,
-	locals: App.Locals,
-	getClientAddress: () => string,
-	branchId: number | null
-) {
-	const userId = locals.user?.id;
-	if (!userId) return;
-
-	const since = new Date(Date.now() - VIEW_WINDOW_MINUTES * 60_000);
-	const [recent] = await db
-		.select({ id: patientAccessLog.id })
-		.from(patientAccessLog)
-		.where(
-			and(
-				eq(patientAccessLog.patientId, patientId),
-				eq(patientAccessLog.userId, userId),
-				gt(patientAccessLog.viewedAt, since)
-			)
-		)
-		.limit(1);
-	if (recent) return;
-
-	let ipAddress: string | null = null;
-	try {
-		ipAddress = getClientAddress().slice(0, 45);
-	} catch {
-		// No address from this adapter; the view is still worth recording.
-	}
-
-	await db.insert(patientAccessLog).values({
-		patientId,
-		userId,
-		recordType: 'summary',
-		action: 'view',
-		ipAddress,
-		branchId
-	});
-}
 
 async function loadSections(id: number) {
 	const [allergy, condition, medication, contact, emergency] = await Promise.all([

@@ -9,6 +9,7 @@ import { edit as schema } from './schema';
 
 import { db } from '$lib/server/db';
 import { moveStock } from '$lib/server/stock';
+import { clinicToday } from '$lib/clinicTime';
 import {
 	supplies,
 	deductions,
@@ -91,7 +92,8 @@ export const actions: Actions = {
 			unitOfMeasurement,
 			otherUnitOfMeasurement,
 			reorderLevel,
-			returnable
+			returnable,
+			tracksExpiry
 		} = form.data;
 
 		try {
@@ -107,15 +109,18 @@ export const actions: Actions = {
 					unitOfMeasure: unitOfMeasurement === 'other' ? otherUnitOfMeasurement : unitOfMeasurement,
 					reorderLevel,
 					returnable,
+					tracksExpiry,
 					updatedBy: locals?.user?.id
 				})
 				.where(eq(supplies.id, Number(id)));
 
 			// Stay on the same page and set a flash message
 			return message(form, { type: 'success', text: 'Supply updated successfully' });
-		} catch (err) {
-			console.error(err?.message);
-			return message(form, { type: `error', text: 'Unexpected Error: ${err?.message}` });
+		} catch (err: unknown) {
+			// Loud in the log, quiet to the client (CLAUDE.md §9). This line was a single mangled
+			// template string, so the toast's type was the whole sentence and it never showed red.
+			console.error('editSupply failed', err);
+			return message(form, { type: 'error', text: 'The item could not be saved.' });
 		}
 	},
 	adjust: async ({ request, params, locals }) => {
@@ -130,12 +135,38 @@ export const actions: Actions = {
 		}
 
 		const { intent, quantity, costPerItem, reason, reciept, paymentMethod } = form.data;
+		const expiryDate = form.data.expiryDate || null;
+		const supplierId = Number(form.data.supplierId) || null;
 
 		if (!id) {
 			return message(form, { type: 'error', text: 'Unexpected Error: Supply ID not provided' });
 		}
 
 		const adjustment = intent === 'add' ? Number(quantity) : -Number(quantity);
+
+		/*
+		 * A delivery of something that expires must say when. `tracksExpiry` is set on the item, so
+		 * this is the only place that knows to ask; without it the lot would be undated and used
+		 * last, which is the opposite of what expiry tracking is for. Stock already past its date is
+		 * refused outright — it should never enter the store.
+		 */
+		if (intent === 'add') {
+			const [item] = await db
+				.select({ tracksExpiry: supplies.tracksExpiry })
+				.from(supplies)
+				.where(eq(supplies.id, id))
+				.limit(1);
+			if (item?.tracksExpiry && !expiryDate) {
+				return setError(form, 'expiryDate', 'This item expires — enter the date on the box.');
+			}
+			if (expiryDate && expiryDate <= clinicToday()) {
+				return setError(
+					form,
+					'expiryDate',
+					'That date has passed — expired stock is not received.'
+				);
+			}
+		}
 		const total = adjustment * Number(costPerItem ?? 0);
 
 		// Buying stock spends money, so it has to come out of a named account.
@@ -184,7 +215,11 @@ export const actions: Actions = {
 					supplyId: id,
 					delta: adjustment,
 					userId: locals.user?.id,
-					unitCost: costPerItem ?? null
+					unitCost: costPerItem ?? null,
+					// Only a receipt creates a lot; an issue ignores these.
+					batchNumber: form.data.batchNumber?.trim() || null,
+					expiryDate,
+					supplierId
 				});
 
 				const moved = touched.reduce((sum, lot) => sum + lot.quantity, 0);

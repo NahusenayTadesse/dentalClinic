@@ -1,5 +1,5 @@
 /**
- * The four things that change an appointment, as form actions any page can spread in.
+ * The five things that change an appointment, as form actions any page can spread in.
  *
  *     export const actions = { ...appointmentActions };
  *
@@ -25,7 +25,9 @@ import { db } from '$lib/server/db';
 import { appointment, patient } from '$lib/server/db/schema';
 import { insertReturningId } from '$lib/server/db/insert';
 import { recordAudit } from '$lib/server/audit';
-import { requirePermission } from '$lib/server/permissions';
+import { hasPermission, requirePermission } from '$lib/server/permissions';
+import { WriteRefused } from '$lib/server/childCrud';
+import { recordVisitWork } from '$lib/server/procedures';
 import { branchFilter } from '$lib/server/branchScope';
 import { notDeleted } from '$lib/server/softDelete';
 import { livePatient } from '$lib/server/patients';
@@ -42,6 +44,7 @@ import {
 	bookAppointment,
 	cancelAppointment,
 	changeStatus,
+	completeVisit,
 	moveAppointment
 } from '$lib/forms/appointmentSchemas';
 
@@ -205,8 +208,9 @@ export const appointmentActions = {
 				const row = await findHere(tx, event, id);
 				if (!row) return 'missing' as const;
 				if (!isAppointmentStatus(row.status) || !canMove(row.status, to)) return 'refused' as const;
-				// Cancelling needs a reason, so it has its own action.
-				if (to === 'cancelled') return 'refused' as const;
+				// Cancelling needs a reason and completing records the visit's work, so each has its
+				// own action; a plain status change to either would skip what the other exists for.
+				if (to === 'cancelled' || to === 'completed') return 'refused' as const;
 
 				const values = {
 					status: to,
@@ -247,6 +251,89 @@ export const appointmentActions = {
 			});
 		} catch (err: unknown) {
 			console.error('[appointments] status failed:', err);
+			return message(form, failed, { status: 500 });
+		}
+	},
+
+	/**
+	 * Finishing a visit and recording what was done at it, as one transaction: the appointment
+	 * completed, planned work marked done, the type's usual services added — or none of it.
+	 *
+	 * Completing needs `appointments.book`, as every status change does. Recording work also needs
+	 * `patients.clinical`, the permission the dental chart's own writes need: whoever may close a
+	 * visit at the desk may not thereby write a patient's clinical record.
+	 */
+	completeVisit: async (event: RequestEvent) => {
+		requirePermission(event.locals, BOOK_PERMISSION);
+		const form = await superValidate(event.request, zod4(completeVisit));
+		if (!form.valid) return message(form, invalid, { status: 400 });
+
+		const { id, procedureIds, serviceIds } = form.data;
+		if (
+			(procedureIds.length || serviceIds.length) &&
+			!hasPermission(event.locals, 'patients.clinical')
+		) {
+			return message(
+				form,
+				{
+					type: 'error',
+					text: 'Recording the work needs clinical access. Complete the visit without it, or ask the dentist.'
+				},
+				{ status: 403 }
+			);
+		}
+
+		try {
+			const outcome = await db.transaction(async (tx) => {
+				const row = await findHere(tx, event, id);
+				if (!row) return { kind: 'missing' as const };
+				if (!isAppointmentStatus(row.status) || !canMove(row.status, 'completed')) {
+					return { kind: 'refused' as const };
+				}
+
+				const values = {
+					status: 'completed' as const,
+					...stampsFor('completed', row, new Date()),
+					updatedBy: event.locals.user?.id
+				};
+				await tx.update(appointment).set(values).where(eq(appointment.id, id));
+				await recordAudit(tx, event, {
+					table: 'appointment',
+					recordId: id,
+					action: 'update',
+					before: row,
+					after: values
+				});
+
+				const recorded = await recordVisitWork(tx, event, row, { procedureIds, serviceIds });
+				return { kind: 'saved' as const, recorded };
+			});
+
+			if (outcome.kind === 'missing') {
+				return message(
+					form,
+					{ type: 'error', text: 'That appointment no longer exists here.' },
+					{ status: 404 }
+				);
+			}
+			if (outcome.kind === 'refused') {
+				return message(
+					form,
+					{ type: 'error', text: 'Only a visit that has started can be completed.' },
+					{ status: 409 }
+				);
+			}
+			const work =
+				outcome.recorded === 0
+					? ''
+					: ` · ${outcome.recorded} ${outcome.recorded === 1 ? 'procedure' : 'procedures'} recorded`;
+			return message(form, { type: 'success', text: `Visit completed${work}` });
+		} catch (err: unknown) {
+			// Thrown inside the transaction, so the completion rolled back with the work.
+			if (err instanceof WriteRefused) {
+				return message(form, { type: 'error', text: err.message }, { status: 400 });
+			}
+			console.error('[appointments] complete failed:', err);
 			return message(form, failed, { status: 500 });
 		}
 	},
@@ -371,9 +458,9 @@ export const appointmentActions = {
 	}
 };
 
-/** The empty forms the four actions post, for a load to hand its page. */
+/** The empty forms the five actions post, for a load to hand its page. */
 export async function appointmentForms(prefill: { patientId?: number } = {}) {
-	const [book, move, status, cancel] = await Promise.all([
+	const [book, move, status, cancel, complete] = await Promise.all([
 		superValidate(
 			{
 				patientId: prefill.patientId,
@@ -387,7 +474,8 @@ export async function appointmentForms(prefill: { patientId?: number } = {}) {
 		),
 		superValidate(zod4(moveAppointment)),
 		superValidate(zod4(changeStatus)),
-		superValidate(zod4(cancelAppointment))
+		superValidate(zod4(cancelAppointment)),
+		superValidate(zod4(completeVisit))
 	]);
-	return { book, move, status, cancel };
+	return { book, move, status, cancel, complete };
 }

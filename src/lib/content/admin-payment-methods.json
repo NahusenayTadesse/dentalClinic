@@ -1,0 +1,45 @@
+{
+	"path": "/dashboard/admin-panel/payment-methods",
+	"languages": {
+		"en": {
+			"title": "Payment Methods",
+			"summary": "The accounts money moves through — each bank account, Telebirr, and cash.",
+			"sections": [
+				{
+					"heading": "What it is used for",
+					"body": "Every payment in and out names one: salaries, expenses and stock purchases. Name each account the way the accountant reconciles it, so a transaction list can be checked against the statement."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Finance",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		},
+		"am": {
+			"title": "የክፍያ ዘዴዎች",
+			"summary": "ገንዘብ የሚንቀሳቀስባቸው ሂሳቦች — እያንዳንዱ የባንክ ሂሳብ፣ ቴሌብር እና ጥሬ ገንዘብ።",
+			"sections": [
+				{
+					"heading": "ጥቅሙ",
+					"body": "እያንዳንዱ ገቢና ወጪ አንዱን ይጠቅሳል፦ ደመወዝ፣ ወጪዎችና የክምችት ግዢዎች። የግብይቶች ዝርዝር ከመግለጫው ጋር እንዲመሳከር እያንዳንዱን ሂሳብ የሂሳብ ባለሙያው በሚያስታርቅበት ስም ይሰይሙት።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ፋይናንስ",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		}
+	}
+}

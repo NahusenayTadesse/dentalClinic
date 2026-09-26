@@ -7,11 +7,11 @@
 			"sections": [
 				{
 					"heading": "The columns",
-					"body": "• Name — the employee, and a link to their full profile\n• Department, Position, Site — where they sit and where they work\n• Education — highest qualification on file\n• Status — their employment status\n• Years — years of service, counted from the hire date\n• Missing information — \"Complete\" once the employee has both a guarantor and a bank account on file; \"Incomplete\" until then\n• Actions — open, edit or act on the row"
+					"body": "• Name — the employee, and a link to their full profile\n• Department, Position, Branch — where they sit and which branch they belong to\n• Education — highest qualification on file\n• Status — their employment status\n• Years — years of service, counted from the hire date\n• Missing information — \"Complete\" once the employee has both a guarantor and a bank account on file; \"Incomplete\" until then\n• Actions — open, edit or act on the row"
 				},
 				{
 					"heading": "Finding somebody",
-					"body": "1. Type in the search box above the table. It looks across every visible column at once.\n2. Use the filter menus to narrow by site, department, position, education or status.\n3. Click a column heading to sort by it; click again to reverse.\n4. Use the columns dropdown to hide what you do not need.\n\nNone of this changes any data — it only changes what you are looking at."
+					"body": "1. Type in the search box above the table. It looks across every visible column at once.\n2. Use the filter menus to narrow by department, position or status.\n3. Click a column heading to sort by it; click again to reverse.\n4. Use the columns dropdown to hide what you do not need.\n\nNone of this changes any data — it only changes what you are looking at."
 				},
 				{
 					"heading": "Chase \"Incomplete\" rows",
@@ -19,7 +19,7 @@
 				},
 				{
 					"heading": "Printing and exporting",
-					"body": "Filter and sort the table first, hide the columns you do not need, then use the download button above it:\n\n• Export to CSV — opens in Excel\n• Print — opens the print dialog, where \"Save as PDF\" writes a file\n\nThe export takes the table exactly as it stands, so a site roster is one filter and one button."
+					"body": "Filter and sort the table first, hide the columns you do not need, then use the download button above it:\n\n• Export to CSV — opens in Excel\n• Print — opens the print dialog, where \"Save as PDF\" writes a file\n\nThe export takes the table exactly as it stands, so a department roster is one filter and one button."
 				}
 			],
 			"links": [
@@ -35,11 +35,11 @@
 			"sections": [
 				{
 					"heading": "ዓምዶቹ",
-					"body": "• ስም — ሠራተኛው፤ ወደ ሙሉ መገለጫው የሚወስድ አገናኝ\n• ክፍል፣ የሥራ መደብ፣ ጣቢያ — የት እንደሚመደቡና የት እንደሚሠሩ\n• ትምህርት — በመዝገብ ላይ ያለው ከፍተኛ የትምህርት ደረጃ\n• ሁኔታ — የቅጥር ሁኔታቸው\n• ዓመታት — ከተቀጠሩበት ቀን ጀምሮ ያለው የአገልግሎት ዘመን\n• የጎደለ መረጃ — ዋስ እና የባንክ ሒሳብ ሁለቱም ሲኖሩ \"Complete\"፤ እስከዚያ ድረስ \"Incomplete\"\n• እርምጃዎች — መዝገቡን መክፈት ወይም ማስተካከል"
+					"body": "• ስም — ሠራተኛው፤ ወደ ሙሉ መገለጫው የሚወስድ አገናኝ\n• ክፍል፣ የሥራ መደብ፣ ቅርንጫፍ — የት እንደሚመደቡና የየትኛው ቅርንጫፍ እንደሆኑ\n• ትምህርት — በመዝገብ ላይ ያለው ከፍተኛ የትምህርት ደረጃ\n• ሁኔታ — የቅጥር ሁኔታቸው\n• ዓመታት — ከተቀጠሩበት ቀን ጀምሮ ያለው የአገልግሎት ዘመን\n• የጎደለ መረጃ — ዋስ እና የባንክ ሒሳብ ሁለቱም ሲኖሩ \"Complete\"፤ እስከዚያ ድረስ \"Incomplete\"\n• እርምጃዎች — መዝገቡን መክፈት ወይም ማስተካከል"
 				},
 				{
 					"heading": "ሰው መፈለግ",
-					"body": "1. ከሠንጠረዡ በላይ ባለው የፍለጋ ሳጥን ይጻፉ። በሁሉም ዓምዶች በአንድ ጊዜ ይፈልጋል።\n2. በጣቢያ፣ በክፍል፣ በሥራ መደብ፣ በትምህርት ወይም በሁኔታ ለማጥበብ የማጣሪያ ምናሌዎችን ይጠቀሙ።\n3. በዓምድ ርዕስ ላይ ጠቅ በማድረግ ይደርድሩ፤ እንደገና ጠቅ ሲያደርጉ ይገለበጣል።\n4. የማይፈልጓቸውን ዓምዶች ለመደበቅ የዓምዶች ምናሌን ይጠቀሙ።\n\nይህ ሁሉ መረጃውን አይለውጥም — የሚያዩትን ብቻ ነው የሚቀይረው።"
+					"body": "1. ከሠንጠረዡ በላይ ባለው የፍለጋ ሳጥን ይጻፉ። በሁሉም ዓምዶች በአንድ ጊዜ ይፈልጋል።\n2. በክፍል፣ በሥራ መደብ ወይም በሁኔታ ለማጥበብ የማጣሪያ ምናሌዎችን ይጠቀሙ።\n3. በዓምድ ርዕስ ላይ ጠቅ በማድረግ ይደርድሩ፤ እንደገና ጠቅ ሲያደርጉ ይገለበጣል።\n4. የማይፈልጓቸውን ዓምዶች ለመደበቅ የዓምዶች ምናሌን ይጠቀሙ።\n\nይህ ሁሉ መረጃውን አይለውጥም — የሚያዩትን ብቻ ነው የሚቀይረው።"
 				},
 				{
 					"heading": "\"Incomplete\" የተባሉትን ያሟሉ",
@@ -47,7 +47,7 @@
 				},
 				{
 					"heading": "ማተምና ወደ ኤክሴል ማውጣት",
-					"body": "መጀመሪያ ሠንጠረዡን ያጣሩና ይደርድሩ፣ የማይፈለጉ ዓምዶችን ይደብቁ፤ ከዚያ ከላይ ያለውን የማውረጃ ቁልፍ ይጠቀሙ፦\n\n• Export to CSV — በኤክሴል ይከፈታል\n• Print — የህትመት መስኮት ይከፍታል፤ \"Save as PDF\" ፋይል ይሠራል\n\nወደ ውጭ የሚወጣው ሠንጠረዡ እንዳለ ነው፤ ስለዚህ የአንድ ጣቢያ ዝርዝር በአንድ ማጣሪያና በአንድ ቁልፍ ይገኛል።"
+					"body": "መጀመሪያ ሠንጠረዡን ያጣሩና ይደርድሩ፣ የማይፈለጉ ዓምዶችን ይደብቁ፤ ከዚያ ከላይ ያለውን የማውረጃ ቁልፍ ይጠቀሙ፦\n\n• Export to CSV — በኤክሴል ይከፈታል\n• Print — የህትመት መስኮት ይከፍታል፤ \"Save as PDF\" ፋይል ይሠራል\n\nወደ ውጭ የሚወጣው ሠንጠረዡ እንዳለ ነው፤ ስለዚህ የአንድ ክፍል ዝርዝር በአንድ ማጣሪያና በአንድ ቁልፍ ይገኛል።"
 				}
 			],
 			"links": [

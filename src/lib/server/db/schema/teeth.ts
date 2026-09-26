@@ -1,5 +1,7 @@
 // teeth.ts - The teeth themselves, as reference data.
 import { mysqlTable, mysqlEnum, smallint, tinyint, varchar } from 'drizzle-orm/mysql-core';
+// Relative, not `$lib/…`: drizzle-kit loads the schema without SvelteKit's aliases.
+import { teethInQuadrant, toothName, toothType } from '../../../teeth';
 
 /**
  * One tooth, identified by its FDI (ISO 3950) two-digit code.
@@ -40,38 +42,6 @@ export const tooth = mysqlTable('tooth', {
 	toothType: mysqlEnum('tooth_type', ['incisor', 'canine', 'premolar', 'molar']).notNull()
 });
 
-/** Quadrant names, indexed by the code's first digit. */
-const QUADRANT = {
-	1: 'Upper right',
-	2: 'Upper left',
-	3: 'Lower left',
-	4: 'Lower right',
-	5: 'Upper right',
-	6: 'Upper left',
-	7: 'Lower left',
-	8: 'Lower right'
-} as const;
-
-const PERMANENT_POSITION = [
-	'central incisor',
-	'lateral incisor',
-	'canine',
-	'first premolar',
-	'second premolar',
-	'first molar',
-	'second molar',
-	'third molar'
-] as const;
-
-/** A child has no premolars: positions 4 and 5 are molars in the primary dentition. */
-const PRIMARY_POSITION = [
-	'central incisor',
-	'lateral incisor',
-	'canine',
-	'first molar',
-	'second molar'
-] as const;
-
 export type ToothRow = typeof tooth.$inferInsert;
 
 /**
@@ -85,25 +55,15 @@ export function allTeeth(): ToothRow[] {
 	const rows: ToothRow[] = [];
 
 	for (const quadrant of [1, 2, 3, 4, 5, 6, 7, 8] as const) {
-		const isPrimary = quadrant >= 5;
-		const names = isPrimary ? PRIMARY_POSITION : PERMANENT_POSITION;
-
-		for (let position = 1; position <= names.length; position++) {
-			const label = names[position - 1];
-
+		for (let position = 1; position <= teethInQuadrant(quadrant); position++) {
+			const id = quadrant * 10 + position;
 			rows.push({
-				id: quadrant * 10 + position,
-				name: `${QUADRANT[quadrant]} ${label}`,
+				id,
+				name: toothName(id),
 				quadrant,
 				position,
-				dentition: isPrimary ? 'primary' : 'permanent',
-				toothType: label.includes('incisor')
-					? 'incisor'
-					: label.includes('canine')
-						? 'canine'
-						: label.includes('premolar')
-							? 'premolar'
-							: 'molar'
+				dentition: quadrant >= 5 ? 'primary' : 'permanent',
+				toothType: toothType(id)
 			});
 		}
 	}

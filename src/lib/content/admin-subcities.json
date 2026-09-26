@@ -1,0 +1,45 @@
+{
+	"path": "/dashboard/admin-panel/subcities",
+	"languages": {
+		"en": {
+			"title": "Subcities",
+			"summary": "The subcities inside each city — the last part of an address picked from a list.",
+			"sections": [
+				{
+					"heading": "Adding a subcity",
+					"body": "Give it its name and choose its city. Kebele, street and house number are typed on each address, not listed here."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Admin panel",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		},
+		"am": {
+			"title": "ክፍለ ከተሞች",
+			"summary": "በእያንዳንዱ ከተማ ውስጥ ያሉ ክፍለ ከተሞች — ከዝርዝር የሚመረጠው የአድራሻ የመጨረሻ ክፍል።",
+			"sections": [
+				{
+					"heading": "ክፍለ ከተማ መጨመር",
+					"body": "ስሙን ይስጡና ከተማውን ይምረጡ። ቀበሌ፣ መንገድና የቤት ቁጥር በእያንዳንዱ አድራሻ ላይ ይጻፋሉ እንጂ እዚህ አይዘረዘሩም።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — የአስተዳደር ፓነል",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		}
+	}
+}

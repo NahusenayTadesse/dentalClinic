@@ -7,11 +7,11 @@
 			"sections": [
 				{
 					"heading": "What it covers",
-					"body": "Ledgers: Employees, Hires, Terminations.\n\nHeadcount, who joined, who left, and the shape of the workforce by department, position, site, employment status, education and gender."
+					"body": "Ledgers: Employees, Hires, Terminations.\n\nHeadcount, who joined, who left, and the shape of the workforce by department, branch, position, employment status, education, gender, age and length of service."
 				},
 				{
 					"heading": "Using it",
-					"body": "Filter to a site and take the Employees ledger for a roster you can hand to a customer. Filter to a range and take Hires and Terminations for turnover.\n\nNeeds the reports.hr permission."
+					"body": "Filter to a branch or a department and take the Employees ledger for a roster. Filter to a range and take Hires and Terminations for turnover.\n\nNeeds the reports.hr permission."
 				},
 				{
 					"heading": "Every report works the same way",
@@ -31,11 +31,11 @@
 			"sections": [
 				{
 					"heading": "የሚሸፍነው",
-					"body": "መዝገቦች፦ ሠራተኞች፣ አዲስ ተቀጣሪዎች፣ የተሰናበቱ።\n\nየሠራተኛ ብዛት፣ የገቡና የወጡ፣ እንዲሁም በክፍል፣ በሥራ መደብ፣ በጣቢያ፣ በቅጥር ሁኔታ፣ በትምህርትና በጾታ ያለው ስብጥር።"
+					"body": "መዝገቦች፦ ሠራተኞች፣ አዲስ ተቀጣሪዎች፣ የተሰናበቱ።\n\nየሠራተኛ ብዛት፣ የገቡና የወጡ፣ እንዲሁም በክፍል፣ በቅርንጫፍ፣ በሥራ መደብ፣ በቅጥር ሁኔታ፣ በትምህርት፣ በጾታ፣ በዕድሜና በአገልግሎት ዘመን ያለው ስብጥር።"
 				},
 				{
 					"heading": "አጠቃቀም",
-					"body": "ለደንበኛ የሚሰጥ ዝርዝር ለማግኘት በጣቢያ አጣርተው የሠራተኞችን መዝገብ ይውሰዱ። የሠራተኛ እንቅስቃሴ ለማየት ደግሞ በጊዜ ክልል አጣርተው አዲስ ተቀጣሪዎችንና የተሰናበቱትን ይውሰዱ።\n\nየreports.hr ፈቃድ ይፈልጋል።"
+					"body": "ዝርዝር ለማግኘት በቅርንጫፍ ወይም በክፍል አጣርተው የሠራተኞችን መዝገብ ይውሰዱ። የሠራተኛ እንቅስቃሴ ለማየት ደግሞ በጊዜ ክልል አጣርተው አዲስ ተቀጣሪዎችንና የተሰናበቱትን ይውሰዱ።\n\nየreports.hr ፈቃድ ይፈልጋል።"
 				},
 				{
 					"heading": "ሁሉም ሪፖርቶች በአንድ መንገድ ይሠራሉ",

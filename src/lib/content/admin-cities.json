@@ -1,0 +1,45 @@
+{
+	"path": "/dashboard/admin-panel/cities",
+	"languages": {
+		"en": {
+			"title": "Cities",
+			"summary": "The cities inside each region.",
+			"sections": [
+				{
+					"heading": "Adding a city",
+					"body": "Give it its name and choose the region it is in. If the region is missing, add it under Regions first."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Admin panel",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		},
+		"am": {
+			"title": "ከተሞች",
+			"summary": "በእያንዳንዱ ክልል ውስጥ ያሉ ከተሞች።",
+			"sections": [
+				{
+					"heading": "ከተማ መጨመር",
+					"body": "ስሙን ይስጡና ያለበትን ክልል ይምረጡ። ክልሉ ከሌለ መጀመሪያ በRegions ስር ይጨምሩት።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — የአስተዳደር ፓነል",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		}
+	}
+}

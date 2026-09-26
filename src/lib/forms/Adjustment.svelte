@@ -4,12 +4,12 @@
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
-	import { superForm } from 'sveltekit-superforms';
 	// `Infer<>` needs the zod schema itself; importing the already inferred type
 	// and wrapping it again leaves every `$form.x` untyped.
-	import type { inventoryAdjustmentFormSchema } from '$lib/ZodSchema';
+	import { inventoryAdjustmentFormSchema } from '$lib/ZodSchema';
+	import { createForm } from '$lib/forms/createForm';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import { toast } from 'svelte-sonner';
+	import Errors from '$lib/formComponents/Errors.svelte';
 	import type { Item } from '$lib/global.svelte';
 
 	type PaymentMethodOption = { value: number; name: string | null; balance: string | null };
@@ -20,31 +20,37 @@
 		data,
 		name = 'product',
 		employees,
-		paymentMethods = []
+		paymentMethods = [],
+		suppliers = [],
+		tracksExpiry = false
 	}: {
 		data: SuperValidated<Infer<typeof inventoryAdjustmentFormSchema>>;
 		name: string;
 		employees?: Item[];
 		/** Accounts a purchase can be paid from, with their recorded balances. */
 		paymentMethods?: PaymentMethodOption[];
+		/** Who a delivery can have come from. */
+		suppliers?: Item[];
+		/** The item carries an expiry date on every delivery; the date is then required. */
+		tracksExpiry?: boolean;
 	} = $props();
 
-	const { form, errors, enhance, delayed, message } = superForm(data, {});
+	// Seeded once from the load; the toast comes from `createForm` (CLAUDE.md §13).
+	// svelte-ignore state_referenced_locally
+	const { form, errors, enhance, delayed, allErrors } = createForm(
+		data,
+		inventoryAdjustmentFormSchema,
+		{
+			onUpdated({ form }) {
+				if (form.message?.type === 'success') isOpen = false;
+			}
+		}
+	);
 
 	/** What this purchase costs. Only an `add` with a unit cost spends money. */
 	let cost = $derived(
 		$form.intent === 'add' ? Number($form.quantity ?? 0) * Number($form.costPerItem ?? 0) : 0
 	);
-
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
 </script>
 
 <DialogComp title="Change Quantity of {name}" variant="default" IconComp={Pen} bind:open={isOpen}>
@@ -57,6 +63,7 @@
 			class="flex w-full flex-col gap-3"
 			enctype="multipart/form-data"
 		>
+			<Errors allErrors={$allErrors} />
 			<InputComp
 				label="Add or Remove"
 				name="intent"
@@ -109,6 +116,36 @@
 					placeholder="Enter Cost per Unit"
 					required={true}
 				/>
+
+				<!-- The delivery itself: what lands on the lot this receipt creates. -->
+				<InputComp
+					label={tracksExpiry ? 'Expiry date' : 'Expiry date, if it has one'}
+					name="expiryDate"
+					type="date"
+					{form}
+					{errors}
+					required={tracksExpiry}
+					oldDays={false}
+				/>
+				<InputComp
+					label="Lot or batch number"
+					name="batchNumber"
+					{form}
+					{errors}
+					placeholder="As printed on the box"
+					required={false}
+				/>
+				{#if suppliers.length}
+					<InputComp
+						label="Supplier"
+						name="supplierId"
+						type="select"
+						{form}
+						{errors}
+						items={suppliers}
+						required={false}
+					/>
+				{/if}
 
 				{#if cost > 0}
 					<InputComp

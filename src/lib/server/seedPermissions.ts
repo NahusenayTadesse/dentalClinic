@@ -10,6 +10,8 @@ import {
 	contactTypes,
 	medicine,
 	operatory,
+	pensionRate,
+	taxType,
 	permissions,
 	providerSpecialty,
 	referralSource,
@@ -19,6 +21,7 @@ import {
 	tooth
 } from '$lib/server/db/schema';
 import { allTeeth } from '$lib/server/db/schema/teeth';
+import { CURRENT_TAX_BANDS, DEFAULT_PENSION_RATES } from '$lib/server/payrollMath';
 import { MAIN_BRANCH_ID } from '$lib/server/db/schema/branches';
 import { routeRules } from '$lib/routeAccess';
 import { toEthiopian, toGregorian } from 'ethiopian-calendar-new';
@@ -278,6 +281,32 @@ export async function seedAllergens() {
 		{ name: 'Acrylic / methacrylate', category: 'material', sortOrder: 23 },
 		{ name: 'Eugenol', category: 'material', sortOrder: 24 }
 	]);
+}
+
+/**
+ * The two pension contribution rates, where a share has none yet.
+ *
+ * Payroll cannot be right without them — a missing share is taken as zero — and unlike tax bands
+ * they are the same for every private clinic, so they are seeded rather than left for somebody to
+ * find. Tax bands are not: they change with each proclamation, and a guessed band would tax staff
+ * wrongly without anyone noticing, so the accountant enters them.
+ */
+export async function seedPensionRates() {
+	const existing = await db.select({ party: pensionRate.party }).from(pensionRate);
+	const missing = DEFAULT_PENSION_RATES.filter((d) => !existing.some((e) => e.party === d.party));
+	if (missing.length) await db.insert(pensionRate).values([...missing]);
+}
+
+/**
+ * The income-tax bands in force, onto an empty table only.
+ *
+ * Without bands every payslip is taxed at nothing. These are Proclamation 1395/2025's (see
+ * `CURRENT_TAX_BANDS`); a clinic that already has bands keeps its own, and updates them in the admin
+ * panel when the law next changes.
+ */
+export async function seedTaxBands() {
+	const [any] = await db.select({ id: taxType.id }).from(taxType).limit(1);
+	if (!any) await db.insert(taxType).values([...CURRENT_TAX_BANDS]);
 }
 
 /**

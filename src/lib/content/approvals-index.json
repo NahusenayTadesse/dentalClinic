@@ -7,11 +7,11 @@
 			"sections": [
 				{
 					"heading": "The rule behind this page",
-					"body": "Whoever enters a record is not the person who releases it.\n\n1. You create a record. It is saved immediately as pending, stamped with your name as the requester.\n2. It appears in the queue for that kind of record.\n3. Somebody else approves or rejects it.\n4. Only then does it count: it appears in listings, joins the reports, and can be paid or acted on.\n\nA pending record is not invisible — you can see it and correct it. It just does not count yet. A pending contract is not chased for renewal; a pending employee cannot be paid."
+					"body": "Whoever enters a record is not the person who releases it.\n\n1. You create a record. It is saved immediately as pending, stamped with your name as the requester.\n2. It appears in the queue for that kind of record.\n3. Somebody else approves or rejects it.\n4. Only then does it count: it appears in listings, joins the reports, and can be paid or acted on.\n\nA pending record is not invisible — you can see it and correct it. It just does not count yet. A pending employee cannot be paid; a pending payroll run pays nobody."
 				},
 				{
 					"heading": "The queues",
-					"body": "Employees, Salary changes, Expenses, Payroll runs, Payroll adjustments, Customers, Customer contracts, Sites and Site contracts.\n\nThis page shows how much is waiting in each. Open the one you are responsible for to settle it."
+					"body": "Employees, Salary changes, Expenses, Payroll runs, Payroll adjustments, Customers, Discounts and voids on invoices, and Refunds.\n\nThis page shows how much is waiting in each. Open the one you are responsible for to settle it."
 				},
 				{
 					"heading": "Two permissions, on purpose",
@@ -31,11 +31,11 @@
 			"sections": [
 				{
 					"heading": "ከዚህ ገጽ ጀርባ ያለው ደንብ",
-					"body": "መዝገብ ያስገባው ሰው የሚለቀውም ሰው አይደለም።\n\n1. መዝገብ ይፈጥራሉ። ወዲያውኑ በመጠባበቅ ላይ ሆኖ ይቀመጣል፤ ስምዎም እንደ ጠያቂ ይመዘገባል።\n2. ለዚያ ዓይነት መዝገብ በተዘጋጀው ወረፋ ውስጥ ይታያል።\n3. ሌላ ሰው ያጸድቀዋል ወይም ውድቅ ያደርገዋል።\n4. ከዚያ በኋላ ብቻ ይቆጠራል፦ በዝርዝሮች ውስጥ ይታያል፣ በሪፖርቶች ይካተታል፣ ክፍያም ሊፈጸምበት ይችላል።\n\nበመጠባበቅ ላይ ያለ መዝገብ አይሰወርም — ማየትና ማስተካከል ይችላሉ። ገና አልተቆጠረም ብቻ ነው። በመጠባበቅ ላይ ያለ ኮንትራት ለዕድሳት አይጠየቅም፤ ያልጸደቀ ሠራተኛም ክፍያ አይፈጸምለትም።"
+					"body": "መዝገብ ያስገባው ሰው የሚለቀውም ሰው አይደለም።\n\n1. መዝገብ ይፈጥራሉ። ወዲያውኑ በመጠባበቅ ላይ ሆኖ ይቀመጣል፤ ስምዎም እንደ ጠያቂ ይመዘገባል።\n2. ለዚያ ዓይነት መዝገብ በተዘጋጀው ወረፋ ውስጥ ይታያል።\n3. ሌላ ሰው ያጸድቀዋል ወይም ውድቅ ያደርገዋል።\n4. ከዚያ በኋላ ብቻ ይቆጠራል፦ በዝርዝሮች ውስጥ ይታያል፣ በሪፖርቶች ይካተታል፣ ክፍያም ሊፈጸምበት ይችላል።\n\nበመጠባበቅ ላይ ያለ መዝገብ አይሰወርም — ማየትና ማስተካከል ይችላሉ። ገና አልተቆጠረም ብቻ ነው። ያልጸደቀ ሠራተኛ ክፍያ አይፈጸምለትም፤ ያልጸደቀ የደመወዝ ክፍያም ለማንም አይከፍልም።"
 				},
 				{
 					"heading": "ወረፋዎቹ",
-					"body": "ሠራተኞች፣ የደመወዝ ለውጦች፣ ወጪዎች፣ የደመወዝ ክፍያዎች፣ የደመወዝ ማስተካከያዎች፣ ደንበኞች፣ የደንበኛ ኮንትራቶች፣ ጣቢያዎችና የጣቢያ ኮንትራቶች።\n\nይህ ገጽ በእያንዳንዱ ውስጥ ስንት እንደሚጠብቅ ያሳያል። ኃላፊነት የሚሰማዎትን ከፍተው ይጨርሱት።"
+					"body": "ሠራተኞች፣ የደመወዝ ለውጦች፣ ወጪዎች፣ የደመወዝ ክፍያዎች፣ የደመወዝ ማስተካከያዎች፣ ደንበኞች፣ በደረሰኞች ላይ ቅናሾችና ስረዛዎች፣ እና ተመላሽ ክፍያዎች።\n\nይህ ገጽ በእያንዳንዱ ውስጥ ስንት እንደሚጠብቅ ያሳያል። ኃላፊነት የሚሰማዎትን ከፍተው ይጨርሱት።"
 				},
 				{
 					"heading": "ሁለት ፈቃዶች፤ ሆን ተብሎ",

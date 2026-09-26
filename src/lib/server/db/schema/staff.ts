@@ -1,4 +1,4 @@
-// staff.ts - Handles staff profiles, types, contacts, services they provide, schedules, and compensation (salaries, bonuses, commissions)
+// staff.ts - Handles staff profiles, types, contacts, schedules, and compensation (salaries, bonuses, commissions)
 import { relations } from 'drizzle-orm';
 import {
 	mysqlTable,
@@ -13,14 +13,12 @@ import {
 	boolean,
 	uniqueIndex,
 	tinyint,
-	check,
-	year
+	check
 } from 'drizzle-orm/mysql-core';
 import { sql } from 'drizzle-orm';
 import { secureFields, lesserFields, approvalFields } from './secureFields';
 import { user } from './user';
-import { paymentMethods, transactionServices } from './finance';
-import { services } from './services';
+import { paymentMethods } from './finance';
 import { branchRef } from './branches';
 import { address } from './locations';
 
@@ -170,14 +168,25 @@ export const employeeGuarantor = mysqlTable('employee_guarantor', {
 		.notNull(),
 	...secureFields
 });
+/**
+ * One band of monthly income tax, in the "quick deduction" form the Ministry of Revenues publishes:
+ * income up to `threshold` is taxed at `rate` percent, less `deduction` birr.
+ *
+ * `rate` is a **percentage** — 15 for 15%, as it is typed from the proclamation. The band with no
+ * `threshold` is everything above the others. `payrollMath.ts` owns the arithmetic; payroll used to
+ * multiply the percentage as a fraction and to skip the open-ended band, which is why that module
+ * exists.
+ *
+ * `mode: 'number'` per CLAUDE.md §9.
+ */
 export const taxType = mysqlTable(
 	'tax_type',
 	{
 		id: int('id').autoincrement().primaryKey(),
 		name: varchar('name', { length: 255 }).notNull(),
-		threshold: decimal('threshold', { precision: 12, scale: 2 }),
-		rate: decimal('rate', { precision: 15, scale: 2 }).notNull(),
-		deduction: decimal('deduction', { precision: 12, scale: 2 }).notNull(),
+		threshold: decimal('threshold', { precision: 12, scale: 2, mode: 'number' }),
+		rate: decimal('rate', { precision: 15, scale: 2, mode: 'number' }).notNull(),
+		deduction: decimal('deduction', { precision: 12, scale: 2, mode: 'number' }).notNull(),
 		...lesserFields
 	},
 	(table) => [
@@ -189,16 +198,28 @@ export const taxType = mysqlTable(
 	]
 );
 
-export const penality = mysqlTable(
-	'penality',
-	{
-		id: int('id').autoincrement().primaryKey(),
-		name: varchar('name', { length: 255 }).notNull(),
-		rate: decimal('rate', { precision: 15, scale: 2 }).notNull(),
-		...lesserFields
-	},
-	(table) => [index('name_idx').on(table.name), index('rate_idx').on(table.rate)]
-);
+/** Who pays a pension contribution. */
+export const PENSION_PARTIES = ['employee', 'employer'] as const;
+
+/**
+ * The two pension contribution rates, as percentages of basic salary: the employee's share, taken
+ * from their pay, and the employer's, paid by the clinic on top of it.
+ *
+ * **Keyed by `party`, one row each.** It replaced a table named `penality` that payroll read by
+ * position — its first row as the employee's rate, its second as the employer's — which held two
+ * disciplinary fines, so a payroll run would have charged pension at fifty and two hundred times
+ * salary. Nothing about the old rows said which was which; `party` does, and the unique index means
+ * there is only ever one answer.
+ *
+ * `mode: 'number'` per CLAUDE.md §9.
+ */
+export const pensionRate = mysqlTable('pension_rate', {
+	id: int('id').autoincrement().primaryKey(),
+	name: varchar('name', { length: 100 }).notNull(),
+	party: mysqlEnum('party', PENSION_PARTIES).notNull().unique(),
+	rate: decimal('rate', { precision: 5, scale: 2, mode: 'number' }).notNull(),
+	...lesserFields
+});
 
 export const leaveType = mysqlTable(
 	'leave_type',
@@ -445,17 +466,6 @@ export const overTimeType = mysqlTable('over_time_type', {
 	name: varchar('name', { length: 255 }).notNull(),
 	rate: decimal('rate', { precision: 10, scale: 2 }).notNull(),
 	maxhours: int('max_hours'),
-	...secureFields
-});
-
-export const staffServices = mysqlTable('staff_services', {
-	id: int('id').autoincrement().primaryKey(),
-	staffId: int('staff_id')
-		.notNull()
-		.references(() => employee.id, { onDelete: 'cascade' }),
-	serviceId: int('service_id')
-		.notNull()
-		.references(() => services.id, { onDelete: 'cascade' }),
 	...secureFields
 });
 

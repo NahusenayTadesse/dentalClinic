@@ -3,41 +3,41 @@
 	"languages": {
 		"en": {
 			"title": "Add Customer",
-			"summary": "Register an organisation you have signed with. It starts pending.",
+			"summary": "Register an organisation that pays for patients' care. It starts pending.",
 			"sections": [
 				{
 					"heading": "What to fill in",
-					"body": "• Name — as it should appear on invoices\n• TIN — enter it carefully; it goes onto the invoices and the withholding paperwork, and correcting it later means reissuing documents\n• Phone and email\n• Region, City, Subcity and the address details\n\nRegion, city and subcity come from Admin Panel and cascade — if the one you need is missing, add it there first, region before city before subcity."
+					"body": "Name as it should appear on paperwork, TIN, phone, email and address. Region, city and subcity come from the lists in the Admin Panel; if the one you need is missing, add it there first."
 				},
 				{
 					"heading": "After saving",
-					"body": "The customer is created as pending and waits for somebody else to approve it. Sites and contracts cannot be written against it until then.\n\nOnce approved, add the customer's sites, then a contract for each service at each site."
+					"body": "The customer waits in the Customers approval queue until it is approved — normally by somebody other than the person who added it."
 				}
 			],
 			"links": [
 				{
-					"label": "Full guide — Customers, sites and contracts",
-					"href": "/dashboard/help#section-commercial"
+					"label": "Full guide — Finance",
+					"href": "/dashboard/help#section-finance"
 				}
 			]
 		},
 		"am": {
 			"title": "ደንበኛ መጨመር",
-			"summary": "ውል የተዋዋሉበትን ድርጅት መመዝገቢያ። በመጠባበቅ ላይ ሆኖ ይጀምራል።",
+			"summary": "ለታካሚዎች ሕክምና የሚከፍል ድርጅት ይመዝግቡ። በመጠባበቅ ላይ ሆኖ ይጀምራል።",
 			"sections": [
 				{
 					"heading": "የሚሞላው",
-					"body": "• ስም — በደረሰኞች ላይ መውጣት እንዳለበት\n• ቲን ቁጥር — በጥንቃቄ ያስገቡ፤ በደረሰኞችና በተቀናሽ ግብር ሰነዶች ላይ ስለሚወጣ በኋላ ማረም ሰነዶችን እንደገና ማውጣት ያስከትላል\n• ስልክና ኢሜይል\n• ክልል፣ ከተማ፣ ክፍለ ከተማና የአድራሻ ዝርዝር\n\nክልል፣ ከተማና ክፍለ ከተማ ከAdmin Panel ይመጣሉ፤ ተያያዥም ናቸው — የሚፈልጉት ከሌለ መጀመሪያ እዚያ ይጨምሩት፤ ክልል ከከተማ በፊት፣ ከተማ ከክፍለ ከተማ በፊት።"
+					"body": "በሰነዶች ላይ መታየት ያለበት ስም፣ TIN፣ ስልክ፣ ኢሜይልና አድራሻ። ክልል፣ ከተማና ክፍለ ከተማ ከአስተዳደር ፓነል ዝርዝሮች ይመጣሉ፤ የሚፈልጉት ከሌለ መጀመሪያ እዚያ ይጨምሩት።"
 				},
 				{
 					"heading": "ካስቀመጡ በኋላ",
-					"body": "ደንበኛው በመጠባበቅ ላይ ሆኖ ይፈጠራል፤ የሌላ ሰው ማጽደቅም ይጠብቃል። እስከዚያ ድረስ ጣቢያና ኮንትራት ሊጻፍለት አይችልም።\n\nከጸደቀ በኋላ የደንበኛውን ጣቢያዎች ይጨምሩ፤ ከዚያ በእያንዳንዱ ጣቢያ ለእያንዳንዱ አገልግሎት ኮንትራት ይጻፉ።"
+					"body": "ደንበኛው እስኪጸድቅ ድረስ በደንበኞች የማጽደቂያ ወረፋ ውስጥ ይጠብቃል — ብዙውን ጊዜ የሚያጸድቀው የጨመረው ሰው ሳይሆን ሌላ ሰው ነው።"
 				}
 			],
 			"links": [
 				{
-					"label": "ሙሉ መመሪያ — ደንበኞች፣ ጣቢያዎችና ኮንትራቶች",
-					"href": "/dashboard/help#section-commercial"
+					"label": "ሙሉ መመሪያ — ፋይናንስ",
+					"href": "/dashboard/help#section-finance"
 				}
 			]
 		}

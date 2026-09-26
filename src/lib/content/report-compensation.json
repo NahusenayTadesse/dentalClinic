@@ -11,7 +11,7 @@
 				},
 				{
 					"heading": "Using it",
-					"body": "Overtime rates come from the overtime type, set in Admin Panel → Overtime Types, so a figure that looks wrong is usually the type rather than the entry.\n\nFilter to a site or a department to see where the overtime is actually being worked.\n\nNeeds the reports.finance permission."
+					"body": "Overtime rates come from the overtime type, set in Admin Panel → Overtime Types, so a figure that looks wrong is usually the type rather than the entry.\n\nFilter to a branch or a department to see where the overtime is actually being worked.\n\nNeeds the reports.finance permission."
 				},
 				{
 					"heading": "Every report works the same way",
@@ -35,7 +35,7 @@
 				},
 				{
 					"heading": "አጠቃቀም",
-					"body": "የትርፍ ሰዓት መጠኖች ከትርፍ ሰዓት ዓይነቱ ይመጣሉ፤ እሱም በAdmin Panel → Overtime Types ይቀመጣል፤ ስለዚህ ስህተት የመሰለ አኃዝ አብዛኛውን ጊዜ የመዝገቡ ሳይሆን የዓይነቱ ጉዳይ ነው።\n\nትርፍ ሰዓቱ በእርግጥ የት እየተሠራ እንደሆነ ለማየት በጣቢያ ወይም በክፍል ያጣሩ።\n\nየreports.finance ፈቃድ ይፈልጋል።"
+					"body": "የትርፍ ሰዓት መጠኖች ከትርፍ ሰዓት ዓይነቱ ይመጣሉ፤ እሱም በAdmin Panel → Overtime Types ይቀመጣል፤ ስለዚህ ስህተት የመሰለ አኃዝ አብዛኛውን ጊዜ የመዝገቡ ሳይሆን የዓይነቱ ጉዳይ ነው።\n\nትርፍ ሰዓቱ በእርግጥ የት እየተሠራ እንደሆነ ለማየት በቅርንጫፍ ወይም በክፍል ያጣሩ።\n\nየreports.finance ፈቃድ ይፈልጋል።"
 				},
 				{
 					"heading": "ሁሉም ሪፖርቶች በአንድ መንገድ ይሠራሉ",

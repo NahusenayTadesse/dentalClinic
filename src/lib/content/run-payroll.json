@@ -16,10 +16,6 @@
 				{
 					"heading": "If it refuses or looks short",
 					"body": "• Unapproved employees are refused and the message names how many. Approve them in the Employees queue, then run again for the remainder.\n• A total that looks light is usually a missing overtime or deduction entry, or an employee still pending.\n• Once the run exists it waits in the Payroll Runs approval queue before it counts."
-				},
-				{
-					"heading": "By site",
-					"body": "UnPaid Salaries by Site is the same sheet, one site at a time, so one site's payroll can be closed while another is still being checked. Overtime and deductions can be entered per site from there too."
 				}
 			],
 			"links": [
@@ -44,10 +40,6 @@
 				{
 					"heading": "ካልተቀበለ ወይም ያነሰ ከመሰለ",
 					"body": "• ያልጸደቁ ሠራተኞች አይካተቱም፤ መልእክቱም ስንት እንደሆኑ ይነግርዎታል። በሠራተኞች ወረፋ ውስጥ አጽድቀው ለቀሪው እንደገና ያስኪዱ።\n• ያነሰ የመሰለ ድምር አብዛኛውን ጊዜ ያልገባ ትርፍ ሰዓት ወይም ተቀናሽ፣ ወይም ገና ያልጸደቀ ሠራተኛ ነው።\n• ክፍያው ከተፈጠረ በኋላ ከመቆጠሩ በፊት በደመወዝ ማጽደቅ ወረፋ ውስጥ ይጠብቃል።"
-				},
-				{
-					"heading": "በጣቢያ",
-					"body": "UnPaid Salaries by Site ያው ሉህ ሆኖ በአንድ ጊዜ አንድ ጣቢያ ነው፤ ስለዚህ የአንዱ ጣቢያ ደመወዝ ሲዘጋ ሌላው እየተመረመረ ሊሆን ይችላል። ትርፍ ሰዓትና ተቀናሾችም ከዚያ በጣቢያ ሊገቡ ይችላሉ።"
 				}
 			],
 			"links": [

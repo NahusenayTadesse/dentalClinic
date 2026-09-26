@@ -1,0 +1,53 @@
+{
+	"path": "/dashboard/admin-panel/closures",
+	"languages": {
+		"en": {
+			"title": "Closures",
+			"summary": "Days the clinic is shut. Nothing can be booked on a closed day.",
+			"sections": [
+				{
+					"heading": "Adding a closure",
+					"body": "Give it a name, and the first and last day it covers. Leave Branch empty for a closure that applies everywhere, such as a public holiday; choose a branch for one location only."
+				},
+				{
+					"heading": "Holidays that move",
+					"body": "Fasika, Eid al-Fitr, Eid al-Adha and Mawlid fall on different dates every year, so enter them each year once the dates are announced. The booking check reads this list and nothing else."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Appointments",
+					"href": "/dashboard/help#section-appointments"
+				}
+			]
+		},
+		"am": {
+			"title": "የመዝጊያ ቀናት",
+			"summary": "ክሊኒኩ የሚዘጋባቸው ቀናት። በተዘጋ ቀን ምንም ቀጠሮ ሊያዝ አይችልም።",
+			"sections": [
+				{
+					"heading": "መዝጊያ መጨመር",
+					"body": "ስም፣ እና የሚሸፍነውን የመጀመሪያና የመጨረሻ ቀን ይስጡ። ለሁሉም ቦታ ለሚሆን መዝጊያ — እንደ ሕዝባዊ በዓል — ቅርንጫፉን ባዶ ይተዉት፤ ለአንድ ቦታ ብቻ ከሆነ ቅርንጫፉን ይምረጡ።"
+				},
+				{
+					"heading": "የሚንቀሳቀሱ በዓላት",
+					"body": "ፋሲካ፣ ኢድ አል-ፈጥር፣ ኢድ አል-አድሃና መውሊድ በየዓመቱ በተለያየ ቀን ይውላሉ፤ ቀኖቹ ሲታወቁ በየዓመቱ ያስገቧቸው። የቀጠሮ ማረጋገጫው የሚያነበው ይህን ዝርዝር ብቻ ነው።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ቀጠሮዎች",
+					"href": "/dashboard/help#section-appointments"
+				}
+			]
+		}
+	}
+}

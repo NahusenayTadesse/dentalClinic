@@ -264,6 +264,7 @@
 			providers={data.providers}
 			chairs={data.chairs}
 			canBook={data.canBook}
+			canChart={data.canChart}
 		/>
 	{/key}
 {/if}

@@ -1,6 +1,7 @@
 /**
- * What a completed visit leaves behind: the work done, a note, a bill, and sometimes a plan, a
- * prescription or a recall.
+ * What a completed visit leaves behind: the work done, charted on the teeth it was done to, a
+ * note, a bill, and sometimes a plan, a prescription or a recall — plus what the examination found
+ * and what the patient arrived with.
  *
  * The patient chart shows all of this as counts and totals, and with no rows every chart read
  * "0 · 0 · 0" and "ETB 0.00 billed" — which looks the same whether the feature works or not. These
@@ -28,8 +29,37 @@ import { recall } from '../../src/lib/server/db/schema/recalls';
 import { patientConsent } from '../../src/lib/server/db/schema/consents';
 import { services } from '../../src/lib/server/db/schema/services';
 import { isEmpty, localDate, money, randomness, type SeedDb } from './util';
+import { backTooth, mouthFor, placeFor } from './chart';
+import { dentitionForAge } from '../../src/lib/teeth';
+import { patient } from '../../src/lib/server/db/schema/patients';
 
-/** What each service costs, roughly, so a bill is not a round number every time. */
+/**
+ * What a child is treated with. No dentures, bridges or crowns, no root canals on teeth that will
+ * fall out anyway (a pulpotomy instead), and fissure sealants and fluoride, which are mostly for
+ * children.
+ */
+const CHILD_TREATMENTS = new Set([
+	'Consultation',
+	'Periapical radiograph',
+	'Fluoride application',
+	'Fissure sealant',
+	'Scaling and polishing',
+	'Composite filling',
+	'Temporary filling',
+	'Pulpotomy'
+]);
+
+/** Whole years between a birth date and a visit, or null when the birth date was never recorded. */
+function ageAt(birthDate: Date | null, visit: Date): number | null {
+	if (!birthDate) return null;
+	const years = visit.getFullYear() - birthDate.getFullYear();
+	const hadBirthday =
+		visit.getMonth() > birthDate.getMonth() ||
+		(visit.getMonth() === birthDate.getMonth() && visit.getDate() >= birthDate.getDate());
+	return hadBirthday ? years : years - 1;
+}
+
+/** A fee for work whose service has no standard price — orthodontics, quoted case by case. */
 const FEES = [300, 450, 600, 800, 1200, 1500, 2500, 4000];
 
 export async function seedClinicalRecord(db: SeedDb) {
@@ -41,9 +71,11 @@ export async function seedClinicalRecord(db: SeedDb) {
 			patientId: appointment.patientId,
 			providerId: appointment.providerId,
 			branchId: appointment.branchId,
-			startsAt: appointment.startsAt
+			startsAt: appointment.startsAt,
+			birthDate: patient.birthDate
 		})
 		.from(appointment)
+		.innerJoin(patient, eq(patient.id, appointment.patientId))
 		.where(and(eq(appointment.status, 'completed'), isNull(appointment.deletedAt)))
 		.limit(400);
 
@@ -53,7 +85,15 @@ export async function seedClinicalRecord(db: SeedDb) {
 	}
 
 	const [serviceList, medicines] = await Promise.all([
-		db.select({ id: services.id, name: services.name }).from(services),
+		db
+			.select({
+				id: services.id,
+				name: services.name,
+				price: services.price,
+				area: services.area,
+				removesTooth: services.removesTooth
+			})
+			.from(services),
 		db.select({ id: medicine.id }).from(medicine).limit(20)
 	]);
 
@@ -62,33 +102,97 @@ export async function seedClinicalRecord(db: SeedDb) {
 		return;
 	}
 
-	const { pick, chance, between } = randomness(20260928);
+	const random = randomness(20260928);
+	const { pick, chance, between } = random;
+	// Findings are charted, never billed: a visit's work is drawn from the treatments.
+	const treatments = serviceList.filter((s) => s.price !== null && !s.removesTooth);
+	const childTreatments = treatments.filter((s) => CHILD_TREATMENTS.has(s.name));
+	const extractions = serviceList.filter((s) => s.removesTooth);
+	const byName = (name: string) => serviceList.find((s) => s.name === name);
+	const caries = byName('Caries');
+	const filling = byName('Composite filling');
+	const oldFilling = byName('Amalgam filling');
+	const lostTooth = byName('Simple extraction');
 	let invoices = 0;
 	let paid = 0;
 
 	for (const visit of done) {
 		const issuedOn = visit.startsAt.toISOString().slice(0, 10);
+		const dentition = dentitionForAge(ageAt(visit.birthDate, visit.startsAt));
+		const mouth = mouthFor(dentition);
+		const child = dentition !== 'permanent';
+		const menu = child && childTreatments.length ? childTreatments : treatments;
 		const lines = between(1, 3);
-		const chosen = Array.from({ length: lines }, () => ({
-			service: pick(serviceList),
-			fee: pick(FEES)
-		}));
+		const chosen = Array.from({ length: lines }, () => {
+			const service = chance(0.08) && extractions.length ? pick(extractions) : pick(menu);
+			const place = placeFor(service.area, random, mouth);
+			return { service, fee: service.price ?? pick(FEES), place };
+		});
 		const subtotal = chosen.reduce((sum, line) => sum + line.fee, 0);
 		// Dental treatment is VAT-exempt in many clinics here; the seed bills without it.
 		const total = subtotal;
 
+		const procedureIds: number[] = [];
 		for (const line of chosen) {
-			await db.insert(procedures).values({
-				patientId: visit.patientId,
-				appointmentId: visit.id,
-				serviceId: line.service.id,
-				providerId: visit.providerId,
-				branchId: visit.branchId,
-				status: 'completed',
-				fee: line.fee,
-				completedOn: issuedOn as never,
-				note: 'Seed procedure'
-			});
+			const [row] = await db
+				.insert(procedures)
+				.values({
+					patientId: visit.patientId,
+					appointmentId: visit.id,
+					serviceId: line.service.id,
+					providerId: visit.providerId,
+					branchId: visit.branchId,
+					status: 'completed',
+					...line.place,
+					fee: line.fee,
+					completedOn: issuedOn
+				})
+				.$returningId();
+			procedureIds.push(row.id);
+		}
+
+		/*
+		 * What the examination at a first visit found and did not treat that day: decay charted as
+		 * a finding, with the filling for it planned on the same tooth and surfaces. Most charts
+		 * carry some, and a chart with none cannot show the difference between the two.
+		 */
+		if (caries && filling && chance(0.45)) {
+			for (let i = between(1, 2); i > 0; i--) {
+				const place = placeFor('surface', random, mouth, backTooth(random, mouth));
+				const common = {
+					patientId: visit.patientId,
+					providerId: visit.providerId,
+					branchId: visit.branchId,
+					...place
+				};
+				await db
+					.insert(procedures)
+					.values({ ...common, serviceId: caries.id, status: 'condition', fee: null });
+				await db
+					.insert(procedures)
+					.values({ ...common, serviceId: filling.id, status: 'planned', fee: filling.price });
+			}
+		}
+
+		/*
+		 * Work the patient arrived with: old fillings, and teeth already lost. Never billed here.
+		 * An adult's alone — a child's missing tooth is usually just a baby tooth that came out.
+		 */
+		if (oldFilling && lostTooth && !child && chance(0.35)) {
+			const arrivedWith = [
+				{ service: oldFilling, place: placeFor('surface', random, mouth) },
+				...(chance(0.5) ? [{ service: lostTooth, place: placeFor('tooth', random, mouth) }] : [])
+			];
+			for (const { service, place } of arrivedWith) {
+				await db.insert(procedures).values({
+					patientId: visit.patientId,
+					serviceId: service.id,
+					branchId: visit.branchId,
+					status: 'existing',
+					...place,
+					fee: null
+				});
+			}
 		}
 
 		const [inv] = await db
@@ -111,6 +215,8 @@ export async function seedClinicalRecord(db: SeedDb) {
 		await db.insert(invoiceLine).values(
 			chosen.map((line, i) => ({
 				invoiceId: inv.id,
+				procedureId: procedureIds[i],
+				toothId: line.place.toothId,
 				description: line.service.name,
 				quantity: 1,
 				unitPrice: line.fee,
@@ -176,8 +282,8 @@ export async function seedClinicalRecord(db: SeedDb) {
 				})
 				.$returningId();
 
-			const item = pick(serviceList);
-			const fee = pick(FEES);
+			const item = pick(menu);
+			const fee = item.price ?? pick(FEES);
 			await db.insert(treatmentPlanItem).values({
 				treatmentPlanId: plan.id,
 				description: item.name,

@@ -2,7 +2,6 @@ import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import { formatETB } from '$lib/global.svelte';
-import type { ColumnDef } from '@tanstack/table-core';
 import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 
 export const columns2 = [
@@ -271,7 +270,7 @@ export const columns = [
 		accessorKey: 'penEm',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Pen (Em) (0.7)',
+				name: 'Pension, employee',
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {
@@ -283,7 +282,7 @@ export const columns = [
 		accessorKey: 'penOrgAmount',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Pen (Org) (0.11)',
+				name: 'Pension, employer',
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {

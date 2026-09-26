@@ -14,12 +14,19 @@
 					"body": "Click an appointment to open it.\n• Mark confirmed — after the reminder call\n• Mark arrived — they appear under Waiting, with minutes waited\n• Seat in chair — they move to In the chair\n• Complete visit — when they leave\n• Mark no-show or Cancel (a reason is required)\n\nOnly an appointment that has not started can be moved. A finished or cancelled appointment is not reopened — book a new one."
 				},
 				{
+					"heading": "Completing a visit",
+					"body": "Complete visit opens a short list: the whole-mouth services usual for this kind of visit, already ticked, and the work planned for this patient. Tick what was done and press Complete visit. The ticked work is recorded as done on the day of the visit, at this visit, by its dentist — and shows on the dental chart.\n\nWork on a tooth that was never planned, such as a filling found and done the same day, is charted on the patient's dental chart instead, where the tooth is chosen.\n\nRecording work needs clinical access. Without it the list cannot be ticked, and the visit is simply completed."
+				},
+				{
 					"heading": "Reading the grid",
 					"body": "The coloured stripe is the appointment type's colour. A red warning sign means a severe allergy or a medicine that changes treatment — open the appointment to see which. An amber ring is a patient who has arrived; a blue ring is a patient in the chair. Cancelled and no-show appointments are faded and narrow: the slot is free again. The red line is now.\n\nTimes are on the international clock; opening an appointment shows the Ethiopian time too."
 				}
 			],
 			"links": [
-				{ "label": "Full guide — Appointments", "href": "/dashboard/help#section-appointments" }
+				{
+					"label": "Full guide — Appointments",
+					"href": "/dashboard/help#section-appointments"
+				}
 			]
 		},
 		"am": {
@@ -35,11 +42,20 @@
 					"body": "ቀጠሮውን ለመክፈት ይጫኑ።\n• ተረጋግጧል — ከማስታወሻ ጥሪ በኋላ\n• ደርሷል — በመጠባበቅ ላይ ከቆዩበት ደቂቃ ጋር ይታያሉ\n• ወንበር ላይ — ሕክምና ሲጀምር\n• ተጠናቋል — ሲወጡ\n• አልመጣም ወይም ተሰርዟል (ምክንያት ያስፈልጋል)\n\nያልጀመረ ቀጠሮ ብቻ ሊዛወር ይችላል። የተጠናቀቀ ወይም የተሰረዘ ቀጠሮ እንደገና አይከፈትም — አዲስ ይያዙ።"
 				},
 				{
+					"heading": "ጉብኝትን ማጠናቀቅ",
+					"body": "\"Complete visit\" አጭር ዝርዝር ይከፍታል፦ ለዚህ ዓይነት ጉብኝት የተለመዱ የሙሉ አፍ አገልግሎቶች ቀድመው ምልክት ተደርጎባቸው፣ እና ለዚህ ታካሚ የታቀደው ሥራ። የተሠራውን ምልክት አድርገው \"Complete visit\"ን ይጫኑ። ምልክት የተደረገበት ሥራ በጉብኝቱ ቀን፣ በዚህ ጉብኝት፣ በሐኪሙ እንደተሠራ ይመዘገባል — በጥርስ ቻርቱም ላይ ይታያል።\n\nያልታቀደ በጥርስ ላይ የሚሠራ ሥራ፣ ለምሳሌ በዚያው ቀን ተገኝቶ የተሞላ ጥርስ፣ ጥርሱ በሚመረጥበት በታካሚው የጥርስ ቻርት ላይ ይመዘገባል።\n\nሥራን መመዝገብ የሕክምና ፈቃድ ይጠይቃል። ያለሱ ዝርዝሩ ምልክት ሊደረግበት አይችልም፤ ጉብኝቱ ብቻ ይጠናቀቃል።"
+				},
+				{
 					"heading": "ሰንጠረዡን ማንበብ",
 					"body": "ቀለሙ የቀጠሮው ዓይነት ቀለም ነው። ቀይ የማስጠንቀቂያ ምልክት ከባድ አለርጂ ወይም ሕክምናን የሚቀይር መድኃኒት ማለት ነው። የተሰረዙና ያልመጡ ቀጠሮዎች ደብዝዘውና ጠበው ይታያሉ። ቀዩ መስመር አሁን ያለንበት ሰዓት ነው።\n\nሰዓቶቹ በዓለም አቀፍ ሰዓት ናቸው፤ ቀጠሮውን ሲከፍቱ የኢትዮጵያ ሰዓትም ይታያል።"
 				}
 			],
-			"links": [{ "label": "ሙሉ መመሪያ — ቀጠሮዎች", "href": "/dashboard/help#section-appointments" }]
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ቀጠሮዎች",
+					"href": "/dashboard/help#section-appointments"
+				}
+			]
 		}
 	}
 }

@@ -7,7 +7,7 @@
 			"sections": [
 				{
 					"heading": "Entering it",
-					"body": "1. Pick the period. The date range is part of the address, so a screen you have open can be bookmarked or sent to a colleague and it opens on the same period.\n2. Mark the days for each person on the roster.\n3. Save.\n\nAttendance is taken per site. Employees by Site → a site → Attendance is the same screen reached the way a supervisor thinks about it."
+					"body": "1. Pick the period. The date range is part of the address, so a screen you have open can be bookmarked or sent to a colleague and it opens on the same period.\n2. Mark the days for each person on the roster.\n3. Save.\n\nEveryone is on one roster for the period. Filter it by department or branch to take one team's attendance at a time."
 				},
 				{
 					"heading": "Do it before payroll",
@@ -15,7 +15,7 @@
 				},
 				{
 					"heading": "Where it shows up",
-					"body": "The Time & Leave report carries the attendance ledger for any range and any site, filtered and exportable — that is the copy to print for a customer or a file."
+					"body": "The Time & Leave report carries the attendance ledger for any range and any branch, filtered and exportable — that is the copy to print for a file."
 				}
 			],
 			"links": [
@@ -31,7 +31,7 @@
 			"sections": [
 				{
 					"heading": "እንዴት እንደሚገባ",
-					"body": "1. ጊዜውን ይምረጡ። የቀን ክልሉ የአድራሻው አካል ነው፤ ስለዚህ የከፈቱትን ገጽ ማስቀመጥ ወይም ለባልደረባ መላክ ይችላሉ፤ በተመሳሳይ ጊዜ ላይ ይከፈታል።\n2. ለእያንዳንዱ ሠራተኛ ቀኖቹን ምልክት ያድርጉ።\n3. ያስቀምጡ።\n\nየመገኘት መዝገብ በጣቢያ ይያዛል። Employees by Site → ጣቢያ → Attendance ተቆጣጣሪ በሚያስብበት መንገድ የተደረሰበት ተመሳሳይ ገጽ ነው።"
+					"body": "1. ጊዜውን ይምረጡ። የቀን ክልሉ የአድራሻው አካል ነው፤ ስለዚህ የከፈቱትን ገጽ ማስቀመጥ ወይም ለባልደረባ መላክ ይችላሉ፤ በተመሳሳይ ጊዜ ላይ ይከፈታል።\n2. ለእያንዳንዱ ሠራተኛ ቀኖቹን ምልክት ያድርጉ።\n3. ያስቀምጡ።\n\nሁሉም ሠራተኞች ለጊዜው በአንድ ዝርዝር ላይ ናቸው። የአንድን ቡድን መገኘት በአንድ ጊዜ ለመያዝ በክፍል ወይም በቅርንጫፍ ያጣሩ።"
 				},
 				{
 					"heading": "ከደመወዝ በፊት ይሙሉት",
@@ -39,7 +39,7 @@
 				},
 				{
 					"heading": "የት እንደሚታይ",
-					"body": "የጊዜና ፈቃድ ሪፖርት የመገኘትን መዝገብ ለማንኛውም ክልልና ጣቢያ ተጣርቶና ወደ ውጭ ሊወጣ በሚችል መልኩ ይይዛል — ለደንበኛ ወይም ለመዝገብ የሚታተመው ያ ነው።"
+					"body": "የጊዜና ፈቃድ ሪፖርት የመገኘትን መዝገብ ለማንኛውም የጊዜ ክልልና ቅርንጫፍ ተጣርቶና ወደ ውጭ ሊወጣ በሚችል መልኩ ይይዛል — ለመዝገብ የሚታተመው ያ ነው።"
 				}
 			],
 			"links": [

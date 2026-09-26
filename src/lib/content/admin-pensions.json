@@ -1,0 +1,37 @@
+{
+	"path": "/dashboard/admin-panel/pensions",
+	"languages": {
+		"en": {
+			"title": "Pension Rates",
+			"summary": "The two pension contributions, as percentages of basic salary.",
+			"sections": [
+				{
+					"heading": "The two rates",
+					"body": "• Employee contribution — taken from the employee’s pay, 7% by default.\n• Employer contribution — paid by the clinic on top of pay, 11% by default. It is never taken from what the employee receives.\n\nThere are always exactly these two, so they are edited here but never added or deleted. Change a rate only when the law or the clinic’s scheme changes it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Finance",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		},
+		"am": {
+			"title": "የጡረታ መጠኖች",
+			"summary": "ሁለቱ የጡረታ መዋጮዎች፣ ከመሠረታዊ ደመወዝ በመቶኛ።",
+			"sections": [
+				{
+					"heading": "ሁለቱ መጠኖች",
+					"body": "• የሠራተኛ መዋጮ — ከሠራተኛው ደመወዝ የሚቀነስ፣ በነባሪ 7%።\n• የአሠሪ መዋጮ — ክሊኒኩ ከደመወዙ በላይ የሚከፍለው፣ በነባሪ 11%። ሠራተኛው ከሚቀበለው ፈጽሞ አይቀነስም።\n\nሁልጊዜ እነዚህ ሁለቱ ብቻ ናቸው፤ ስለዚህ እዚህ ይስተካከላሉ እንጂ አይጨመሩም አይሰረዙም። መጠንን የሚቀይሩት ሕጉ ወይም የክሊኒኩ ዕቅድ ሲቀይረው ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ፋይናንስ",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		}
+	}
+}

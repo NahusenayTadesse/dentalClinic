@@ -6,6 +6,7 @@ import {
 	patientMedications
 } from '$lib/server/db/schema';
 import { childCrud } from '$lib/server/childCrud';
+import { clinicToday } from '$lib/clinicTime';
 import {
 	addAllergy,
 	addCondition,
@@ -38,10 +39,9 @@ import {
 function settledOn(settled: boolean, existing: unknown): unknown {
 	if (!settled) return null;
 	if (existing) return existing;
-	// The local date, not `toISOString()`'s UTC one — three hours behind here, which files anything
-	// saved before 3 a.m. under yesterday.
-	const now = new Date();
-	return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+	// The clinic's date, not the server's: `toISOString()` is UTC, three hours behind here, and the
+	// server's own local date is only right if the server happens to run in Addis Ababa time.
+	return clinicToday();
 }
 
 export const SECTIONS = {

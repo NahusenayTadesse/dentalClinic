@@ -47,7 +47,13 @@ const MAX_MINUTES = 12 * 60;
 /** Statuses that free the slot again. */
 export const NOT_LIVE = ['cancelled', 'noShow'] as const;
 
-const providerEmployee = alias(employee, 'provider_employee');
+/**
+ * The employee behind a provider, joined under its own name so a query can also join `employee`
+ * for something else. Exported with `providerName`, which reads from it: a query using the name
+ * must join this alias, and spelling it again elsewhere would be a second alias the name does not
+ * know about.
+ */
+export const providerEmployee = alias(employee, 'provider_employee');
 
 /** A provider's name as the diary shows it: "Dr Abebe Kebede", or the name alone. */
 export const providerName = concatWith(
@@ -166,6 +172,14 @@ export async function chairsAt(branchId: number) {
  * list, is what stops them being in two places at once.
  */
 export async function bookableProviders() {
+	return providerOptions({ bookableOnly: true });
+}
+
+/**
+ * Active providers for a picker. `bookableOnly` narrows it to those the diary may book; charting
+ * work done wants everyone licensed to have done it, including a radiographer nobody books.
+ */
+export async function providerOptions({ bookableOnly = false }: { bookableOnly?: boolean } = {}) {
 	return db
 		.select({
 			value: provider.id,
@@ -178,7 +192,13 @@ export async function bookableProviders() {
 			providerEmployee,
 			and(eq(providerEmployee.id, provider.employeeId), notDeleted(providerEmployee))
 		)
-		.where(and(eq(provider.isBookable, true), eq(provider.isActive, true), notDeleted(provider)))
+		.where(
+			and(
+				bookableOnly ? eq(provider.isBookable, true) : undefined,
+				eq(provider.isActive, true),
+				notDeleted(provider)
+			)
+		)
 		.orderBy(providerEmployee.name);
 }
 

@@ -52,7 +52,6 @@ export const providerSpecialty = mysqlTable('provider_specialty', {
  * Non-goals, each already owned by something else and deliberately not repeated here:
  *
  *   qualifications and education  `qualification` — field, level, school, graduation, certificate
- *   which treatments they perform `staff_services`
  *   which days and hours they work `staff_schedule` — weekday, start and end time, already
  *                                 CHECK-constrained to real days. A provider's bookable hours are
  *                                 their working hours; a second availability table would be the

@@ -1,0 +1,53 @@
+{
+	"path": "/dashboard/admin-panel/conditions",
+	"languages": {
+		"en": {
+			"title": "Conditions",
+			"summary": "The medical and dental conditions a patient's history can record.",
+			"sections": [
+				{
+					"heading": "Dental or medical",
+					"body": "Tick Dental for conditions a dentist charts in the mouth. Leave it unticked for medical history — diabetes, hypertension, a heart condition. The flag decides which list each part of the chart offers, so a wrong tick hides the condition from the person looking for it."
+				},
+				{
+					"heading": "Codes",
+					"body": "HMIS Code is the Ministry of Health's national disease classification number, which statutory reports are built from. ICD Code is the international one. Both are optional; leave a code empty rather than guess, because a wrong code files a wrong report without any warning."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Patients",
+					"href": "/dashboard/help#section-patients"
+				}
+			]
+		},
+		"am": {
+			"title": "የጤና ሁኔታዎች",
+			"summary": "በታካሚው የሕክምና ታሪክ ውስጥ ሊመዘገቡ የሚችሉ የሕክምናና የጥርስ ሁኔታዎች።",
+			"sections": [
+				{
+					"heading": "የጥርስ ወይስ የሕክምና",
+					"body": "የጥርስ ሐኪም በአፍ ውስጥ ለሚመዘግባቸው ሁኔታዎች \"Dental\"ን ምልክት ያድርጉ። ለሕክምና ታሪክ — ስኳር፣ የደም ግፊት፣ የልብ ሕመም — ምልክት ሳያደርጉ ይተዉት። ይህ ምልክት እያንዳንዱ የቻርቱ ክፍል የትኛውን ዝርዝር እንደሚያቀርብ ይወስናል።"
+				},
+				{
+					"heading": "ኮዶች",
+					"body": "\"HMIS Code\" የጤና ሚኒስቴር ብሔራዊ የበሽታ ምደባ ቁጥር ነው፤ ሪፖርቶች የሚዘጋጁት ከእሱ ነው። \"ICD Code\" ዓለም አቀፉ ነው። ሁለቱም አማራጭ ናቸው፤ ከመገመት ባዶ ይተዉት፣ የተሳሳተ ኮድ ያለ ማስጠንቀቂያ የተሳሳተ ሪፖርት ያስገባልና።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ታካሚዎች",
+					"href": "/dashboard/help#section-patients"
+				}
+			]
+		}
+	}
+}

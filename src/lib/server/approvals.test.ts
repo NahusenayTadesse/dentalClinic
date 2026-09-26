@@ -1,3 +1,4 @@
+import { inRollback, type TestTx } from '../testing/rollback';
 import { describe, expect, it } from 'vitest';
 import { and, eq, isNull, sql } from 'drizzle-orm';
 import { db } from '$lib/server/db';
@@ -10,27 +11,10 @@ import {
 	unapprovedEmployeeIds
 } from './approvals';
 
-/** Runs `body` in a transaction that is always rolled back. */
-async function inRollback<T>(
-	body: (tx: Parameters<Parameters<typeof db.transaction>[0]>[0]) => Promise<T>
-) {
-	const sentinel = new Error('rollback');
-	let result: T | undefined;
-	try {
-		await db.transaction(async (tx) => {
-			result = await body(tx);
-			throw sentinel;
-		});
-	} catch (err) {
-		if (err !== sentinel) throw err;
-	}
-	return result as T;
-}
-
 const employees = findEntity('employees');
 
 /** One employee row parked in the queue as `requester`'s request. */
-async function pendingEmployee(tx: any, requester: string) {
+async function pendingEmployee(tx: TestTx, requester: string) {
 	const [row] = await tx.select({ id: employee.id }).from(employee).limit(1);
 	await tx
 		.update(employee)
@@ -41,10 +25,10 @@ async function pendingEmployee(tx: any, requester: string) {
 			approvalOverridden: false
 		})
 		.where(eq(employee.id, row.id));
-	return row.id as number;
+	return row.id;
 }
 
-async function statusOf(tx: any, id: number) {
+async function statusOf(tx: TestTx, id: number) {
 	const [r] = await tx
 		.select({
 			status: employee.approvalStatus,

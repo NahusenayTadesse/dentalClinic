@@ -52,7 +52,8 @@ export const supplyBatch = mysqlTable(
 		 * The date on the box. The reason this table exists, and indexed for the two questions a
 		 * clinic asks of it: what has expired, and what expires next month.
 		 */
-		expiryDate: date('expiry_date'),
+		// `mode: 'string'`: a calendar day, never converted through a time zone on its way in or out.
+		expiryDate: date('expiry_date', { mode: 'string' }),
 
 		/** What remains. Decimal because materials come in millilitres and grams, not just boxes. */
 		quantity: decimal('quantity', { precision: 10, scale: 2, mode: 'number' }).notNull().default(0),
@@ -64,7 +65,7 @@ export const supplyBatch = mysqlTable(
 		unitCost: decimal('unit_cost', { precision: 10, scale: 2, mode: 'number' }),
 
 		supplierId: int('supplier_id').references(() => supplySuppliers.id, { onDelete: 'set null' }),
-		receivedOn: date('received_on'),
+		receivedOn: date('received_on', { mode: 'string' }),
 
 		/**
 		 * `active`      — usable

@@ -1,0 +1,69 @@
+{
+	"path": "/dashboard/admin-panel/services",
+	"languages": {
+		"en": {
+			"title": "Services",
+			"summary": "What the clinic does for patients, grouped into categories. This is the catalogue treatment and billing will draw from.",
+			"sections": [
+				{
+					"heading": "Adding a service",
+					"body": "Give it the name used at the chair and on a bill, and choose its category. If the category is missing, add it under Service Categories first."
+				},
+				{
+					"heading": "Price",
+					"body": "The standard fee in birr. A procedure charted with this service starts from it, and it is copied at that moment: changing a price here never changes a quote or a bill already given. Leave it empty for work quoted case by case, such as orthodontics."
+				},
+				{
+					"heading": "Charted on",
+					"body": "What the dental chart asks for when this service is recorded. Whole mouth: an examination, a scale and polish. One tooth: an extraction, a root canal, a crown. Tooth surfaces: a filling. Several teeth: a bridge, a partial denture."
+				},
+				{
+					"heading": "Removes the tooth",
+					"body": "Tick it for extractions. Once one is done, or recorded as already present, the chart draws the tooth as missing."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Admin panel",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		},
+		"am": {
+			"title": "አገልግሎቶች",
+			"summary": "ክሊኒኩ ለታካሚዎች የሚሰጣቸው አገልግሎቶች፣ በምድብ የተከፋፈሉ። ሕክምናና ክፍያ የሚወስዱት ከዚህ ካታሎግ ነው።",
+			"sections": [
+				{
+					"heading": "አገልግሎት መጨመር",
+					"body": "በሕክምና ወንበሩና በደረሰኝ ላይ የሚጠራበትን ስም ይስጡ፣ ምድቡን ይምረጡ። ምድቡ ከሌለ መጀመሪያ በአገልግሎት ምድቦች ስር ይጨምሩት።"
+				},
+				{
+					"heading": "ዋጋ",
+					"body": "መደበኛ ክፍያ በብር። በዚህ አገልግሎት የሚመዘገብ ሕክምና ከዚህ ይጀምራል፣ በዚያው ቅጽበትም ይገለበጣል፦ እዚህ ዋጋ መቀየር የተሰጠን ዋጋ ወይም ደረሰኝ ፈጽሞ አይቀይርም። በየጉዳዩ ዋጋ ለሚወጣለት ሥራ፣ እንደ ኦርቶዶንቲክስ፣ ባዶ ይተዉት።"
+				},
+				{
+					"heading": "የሚመዘገብበት",
+					"body": "ይህ አገልግሎት ሲመዘገብ የጥርስ ቻርቱ የሚጠይቀው። ሙሉ አፍ፦ ምርመራ፣ ማጽዳት። አንድ ጥርስ፦ ጥርስ መንቀል፣ የስር ቦይ ሕክምና፣ ዘውድ። የጥርስ ገጾች፦ ሙሌት። በርካታ ጥርሶች፦ ድልድይ፣ ከፊል ሰው ሠራሽ ጥርስ።"
+				},
+				{
+					"heading": "ጥርሱን ያስወግዳል",
+					"body": "ለጥርስ መንቀል ምልክት ያድርጉ። አንዴ ከተሠራ ወይም ቀድሞ እንደነበረ ከተመዘገበ ቻርቱ ጥርሱን እንደሌለ ይስለዋል።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — የአስተዳደር ፓነል",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		}
+	}
+}

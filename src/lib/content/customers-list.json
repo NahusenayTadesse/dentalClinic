@@ -3,49 +3,41 @@
 	"languages": {
 		"en": {
 			"title": "Customers",
-			"summary": "The organisations you have signed with. A customer owns sites; a site holds contracts.",
+			"summary": "Organisations that pay for patients' care — an employer, an insurer, an NGO. A patient can be linked to one on their chart.",
 			"sections": [
 				{
-					"heading": "How this fits together",
-					"body": "Customer → Site → Contract, and everything downstream hangs off the contract.\n\n• A customer is the organisation you signed with.\n• A site is a physical location where the work happens. One customer can have many sites — a bank with twelve branches is one customer and twelve sites.\n• A contract is one service at one site, for a period, at a monthly amount.\n\nGet this right when you set a customer up. Moving a site to a different customer after a year of invoices is a great deal of work."
-				},
-				{
 					"heading": "The columns",
-					"body": "• Name, Phone, Email, TIN\n• Sites — how many locations they have\n• Contracts — how many contracts across those sites\n• Joined on — when they were added\n• Added by — who entered them\n\nClick a customer to open their page and see their sites, contracts and history."
+					"body": "Name, phone, email and TIN, who added the customer, and when. Click a name to open the customer."
 				},
 				{
 					"heading": "Adding a customer",
-					"body": "1. Press Add Customer.\n2. Fill in the name, TIN, phone, email and address. Region, city and subcity come from the lists in Admin Panel — if the one you need is missing, add it there first.\n3. Save. The customer is created as pending.\n4. Somebody else approves it, and only then can sites and contracts be written against it.\n\nEnter the TIN carefully. It goes onto the invoices and the withholding paperwork, and correcting it later means reissuing documents."
+					"body": "Press Add Customer. A new customer waits for someone else to approve it before it can be used."
 				}
 			],
 			"links": [
 				{
-					"label": "Full guide — Customers, sites and contracts",
-					"href": "/dashboard/help#section-commercial"
+					"label": "Full guide — Finance",
+					"href": "/dashboard/help#section-finance"
 				}
 			]
 		},
 		"am": {
 			"title": "ደንበኞች",
-			"summary": "ውል የተዋዋሉባቸው ድርጅቶች። ደንበኛ ጣቢያዎች አሉት፤ ጣቢያ ደግሞ ኮንትራቶች ይይዛል።",
+			"summary": "ለታካሚዎች ሕክምና የሚከፍሉ ድርጅቶች — አሠሪ፣ መድን ሰጪ፣ መንግሥታዊ ያልሆነ ድርጅት። ታካሚ በቻርቱ ላይ ከአንዱ ጋር ሊገናኝ ይችላል።",
 			"sections": [
 				{
-					"heading": "አገናኝነታቸው",
-					"body": "ደንበኛ → ጣቢያ → ኮንትራት፤ ቀሪው ሁሉ በኮንትራቱ ላይ ይመሠረታል።\n\n• ደንበኛ ማለት ውል የተዋዋሉበት ድርጅት ነው።\n• ጣቢያ ማለት ሥራው የሚከናወንበት ቦታ ነው። አንድ ደንበኛ ብዙ ጣቢያዎች ሊኖሩት ይችላሉ — አሥራ ሁለት ቅርንጫፍ ያለው ባንክ አንድ ደንበኛና አሥራ ሁለት ጣቢያ ነው።\n• ኮንትራት ማለት በአንድ ጣቢያ ላይ አንድ አገልግሎት፣ ለተወሰነ ጊዜ፣ በወርሃዊ መጠን ነው።\n\nደንበኛ ሲመዘገብ ይህን በትክክል ያስቀምጡ። ከዓመት ደረሰኞች በኋላ ጣቢያን ወደ ሌላ ደንበኛ ማዛወር በጣም አድካሚ ነው።"
-				},
-				{
 					"heading": "ዓምዶቹ",
-					"body": "• ስም፣ ስልክ፣ ኢሜይል፣ ቲን ቁጥር\n• ጣቢያዎች — ስንት ቦታዎች እንዳሏቸው\n• ኮንትራቶች — በእነዚያ ጣቢያዎች ላይ ስንት ኮንትራት እንዳለ\n• የተቀላቀሉበት ቀን\n• ያስገባው ሰው\n\nጣቢያዎቻቸውን፣ ኮንትራቶቻቸውንና ታሪካቸውን ለማየት ደንበኛውን ይጫኑ።"
+					"body": "ስም፣ ስልክ፣ ኢሜይልና የግብር ከፋይ መለያ ቁጥር (TIN)፣ ማን እንደጨመረውና መቼ። ደንበኛውን ለመክፈት ስሙን ይጫኑ።"
 				},
 				{
 					"heading": "ደንበኛ መጨመር",
-					"body": "1. Add Customer የሚለውን ይጫኑ።\n2. ስም፣ ቲን ቁጥር፣ ስልክ፣ ኢሜይልና አድራሻ ይሙሉ። ክልል፣ ከተማና ክፍለ ከተማ ከAdmin Panel ዝርዝሮች ይመጣሉ — የሚፈልጉት ከሌለ መጀመሪያ እዚያ ይጨምሩት።\n3. ያስቀምጡ። ደንበኛው በመጠባበቅ ላይ ሆኖ ይፈጠራል።\n4. ሌላ ሰው ያጸድቀዋል፤ ከዚያ በኋላ ብቻ ጣቢያና ኮንትራት ሊጻፍለት ይችላል።\n\nቲን ቁጥሩን በጥንቃቄ ያስገቡ። በደረሰኞችና በተቀናሽ ግብር ሰነዶች ላይ ስለሚወጣ በኋላ ማረም ሰነዶችን እንደገና ማውጣት ያስከትላል።"
+					"body": "\"Add Customer\"ን ይጫኑ። አዲስ ደንበኛ ጥቅም ላይ ከመዋሉ በፊት ሌላ ሰው እስኪያጸድቀው ይጠብቃል።"
 				}
 			],
 			"links": [
 				{
-					"label": "ሙሉ መመሪያ — ደንበኞች፣ ጣቢያዎችና ኮንትራቶች",
-					"href": "/dashboard/help#section-commercial"
+					"label": "ሙሉ መመሪያ — ፋይናንስ",
+					"href": "/dashboard/help#section-finance"
 				}
 			]
 		}

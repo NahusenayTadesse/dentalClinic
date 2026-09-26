@@ -1,0 +1,45 @@
+{
+	"path": "/dashboard/admin-panel/specialties",
+	"languages": {
+		"en": {
+			"title": "Specialties",
+			"summary": "What a clinician is licensed as. Chosen on each dentist's record.",
+			"sections": [
+				{
+					"heading": "Use the licence's wording",
+					"body": "Name each specialty the way it appears on the licence in the clinician's file, so the record and the document agree."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Appointments",
+					"href": "/dashboard/help#section-appointments"
+				}
+			]
+		},
+		"am": {
+			"title": "ልዩ ሙያዎች",
+			"summary": "ሐኪሙ ፈቃድ ያገኘበት ሙያ። በእያንዳንዱ የጥርስ ሐኪም መዝገብ ላይ ይመረጣል።",
+			"sections": [
+				{
+					"heading": "የፈቃዱን አጻጻፍ ይጠቀሙ",
+					"body": "መዝገቡና ሰነዱ እንዲስማሙ እያንዳንዱን ሙያ በሐኪሙ ፋይል ውስጥ ባለው ፈቃድ ላይ እንደተጻፈው ይሰይሙት።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ቀጠሮዎች",
+					"href": "/dashboard/help#section-appointments"
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,45 @@
+{
+	"path": "/dashboard/admin-panel/educational-level",
+	"languages": {
+		"en": {
+			"title": "Educational Levels",
+			"summary": "The levels of education an employee record can show.",
+			"sections": [
+				{
+					"heading": "Keep the list short",
+					"body": "Diploma, degree, master’s — a handful of levels is what the People report can group by usefully."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Employees and leave",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		},
+		"am": {
+			"title": "የትምህርት ደረጃዎች",
+			"summary": "የሠራተኛ መዝገብ ሊያሳያቸው የሚችሉ የትምህርት ደረጃዎች።",
+			"sections": [
+				{
+					"heading": "ዝርዝሩን አጭር ያድርጉ",
+					"body": "ዲፕሎማ፣ ዲግሪ፣ ማስተርስ — የሰዎች ሪፖርት በጥቅም ሊያቧድን የሚችለው ጥቂት ደረጃዎችን ነው።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሠራተኞችና ፈቃድ",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		}
+	}
+}

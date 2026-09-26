@@ -1,32 +1,25 @@
 import { contentCrud } from '$lib/server/crud';
-import { penality } from '$lib/server/db/schema/';
-import { lookupDeleteAction } from '$lib/server/lookupDelete';
+import { pensionRate } from '$lib/server/db/schema/';
 import { add, edit } from './schema';
 
-// NOTE: this page is titled Pensions but has always read and written the `penality` table.
-// Preserved as-is by the move to `contentCrud`; `pension_type` is a separate table.
-
 /**
- * A plain lookup table: list, add, edit, soft delete. Everything but the delete comes from
- * `contentCrud`, which is why there is nothing here but the table and its schemas.
+ * The pension rates: two rows, edited in place.
+ *
+ * No `add` or `delete` action on purpose. Payroll finds each rate by `party`, which is unique, so a
+ * third row cannot exist and a deleted one would leave that share at zero on every payslip. The rows
+ * are created by `/setup` (`seedPensionRates`).
  */
 const crud = contentCrud({
-	table: penality,
-	label: 'Pension Type',
+	table: pensionRate,
+	label: 'Pension rate',
 	addSchema: add,
 	editSchema: edit
 });
 
 /*
  * Deliberately unannotated. Adding `: PageServerLoad` widens the return to the generic
- * signature, and `PageData` then loses `addForm`/`editForm`/`rows` — every consumer in
- * `+page.svelte` falls back to `{}`. Letting TypeScript infer keeps the page typed.
+ * signature, and `PageData` then loses `addForm`/`editForm`/`rows`.
  */
 export const load = crud.load;
 
-export const actions = {
-	add: crud.actions.add,
-	edit: crud.actions.edit,
-	/** Soft delete, super admin only. See `lookupDeleteAction`. */
-	delete: lookupDeleteAction(penality, 'pension type')
-};
+export const actions = { edit: crud.actions.edit };

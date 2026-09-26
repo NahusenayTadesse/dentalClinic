@@ -14,7 +14,7 @@ import {
 	taxType
 } from '$lib/server/db/schema';
 import { asRequested } from '$lib/server/approvals';
-import { and, asc, count, desc, eq, getTableColumns, inArray, isNull, sql } from 'drizzle-orm';
+import { and, count, eq, getTableColumns, inArray, sql } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
 
 import type { PageServerLoad } from '../$types';
@@ -24,24 +24,8 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import { adjust, adjustableFields, finalizePayroll } from './schema';
 import { saveUploadedFile } from '$lib/server/upload';
 import { contentCrud } from '$lib/server/crud';
+import { incomeTax, netPay } from '$lib/server/payrollMath';
 import { paymentMethods as bankList, officeEmployees as employeeList } from '$lib/server/fastData';
-
-/**
- * Same "quick deduction" bracket lookup add-payroll uses: the first
- * threshold the taxable income falls under wins, taxed at that bracket's
- * flat rate minus its deduction. Brackets must be ascending by threshold.
- */
-const calculateTax = (
-	taxable: number,
-	brackets: { threshold: string | null; rate: string; deduction: string }[]
-) => {
-	for (const bracket of brackets) {
-		if (bracket.threshold !== null && taxable <= Number(bracket.threshold)) {
-			return taxable * Number(bracket.rate) - Number(bracket.deduction);
-		}
-	}
-	return 0;
-};
 
 /** The pay-component columns that make up gross pay (nonTaxableAllowance included; excluded only from the taxable base). */
 const grossFields = adjustableFields.filter((field) => field !== 'deductions');
@@ -59,7 +43,7 @@ const payrollRunCrud = contentCrud({
 	})
 });
 
-export const load: PageServerLoad = async ({ params, locals }) => {
+export const load: PageServerLoad = async ({ params }) => {
 	const { month_year } = params;
 	const form = await superValidate(zod4(adjust));
 
@@ -237,11 +221,10 @@ export const actions = {
 
 			const entries = await db.select().from(payrollEntries).where(inArray(payrollEntries.id, id));
 
-			const taxBrackets = await db
-				.select()
+			const taxBands = await db
+				.select({ threshold: taxType.threshold, rate: taxType.rate, deduction: taxType.deduction })
 				.from(taxType)
-				.where(eq(taxType.status, true))
-				.orderBy(asc(taxType.threshold));
+				.where(and(eq(taxType.status, true), notDeleted(taxType)));
 
 			let totalNetDelta = 0;
 
@@ -272,15 +255,21 @@ export const actions = {
 						grossAmount - updated.nonTaxableAllowance - Number(entry.attendancePenality ?? 0),
 						0
 					);
-					const taxAmount = calculateTax(taxableIncome, taxBrackets);
+					const taxAmount = incomeTax(taxableIncome, taxBands);
 					const amountDelta = sign * amount;
+					/*
+					 * The run's own formula (`netPay`). This used to subtract the employer's pension and
+					 * leave out the absence deduction, so adjusting a payslip moved its net pay by an
+					 * amount that had nothing to do with the adjustment.
+					 */
 					const netAmount =
-						grossAmount -
-						taxAmount -
-						updated.deductions -
-						Number(entry.penEm ?? 0) -
-						Number(entry.penOrg ?? 0) +
-						amountDelta;
+						netPay({
+							gross: grossAmount,
+							tax: taxAmount,
+							absenceDeduction: Number(entry.attendancePenality ?? 0),
+							deductions: updated.deductions,
+							employeePension: Number(entry.penEm ?? 0)
+						}) + amountDelta;
 
 					const netDelta = netAmount - Number(entry.netAmount ?? 0);
 					totalNetDelta += netDelta;

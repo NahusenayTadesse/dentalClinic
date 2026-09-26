@@ -194,7 +194,7 @@ export const columns: ColumnDef<RowData>[] = [
 		accessorKey: 'penEm',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Pen (Em) (0.7)',
+				name: 'Pension, employee',
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {
@@ -206,7 +206,7 @@ export const columns: ColumnDef<RowData>[] = [
 		accessorKey: 'penOrgAmount',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
-				name: 'Pen (Org) (0.11)',
+				name: 'Pension, employer',
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {

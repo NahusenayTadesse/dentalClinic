@@ -16,6 +16,7 @@
  * Non-goals: branch scope, which is `patientScope` in `branchScope.ts` and deliberately a separate
  * decision (CLAUDE.md §15); and anything clinical beyond the alert summary, which is the chart's.
  */
+import { error } from '@sveltejs/kit';
 import { and, eq, exists, gt, inArray, isNull, like, lte, or, sql, type SQL } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import {
@@ -27,7 +28,8 @@ import {
 	patientConditions,
 	patientContacts,
 	patientEmergencyContacts,
-	patientMedications
+	patientMedications,
+	patientAccessLog
 } from '$lib/server/db/schema';
 import { notDeleted } from '$lib/server/softDelete';
 import { concatWith } from '$lib/server/db/dialect';
@@ -511,4 +513,86 @@ export function birthDateFrom(input: {
 	}
 
 	return { birthDate: null, birthDateEstimated: false };
+}
+
+/* ── One chart, several tabs ───────────────────────────────────────────────────────────────── */
+
+/** The patient id in a chart URL, as a positive integer, or a 404. */
+export function patientIdParam(raw: string | undefined): number {
+	const id = Number(raw);
+	if (!Number.isInteger(id) || id <= 0) error(404, 'Patient not found');
+	return id;
+}
+
+/**
+ * The owner of a write on a chart tab: a patient who exists and is not a merge tombstone.
+ *
+ * Checked before every child write rather than left to the foreign key, which would accept a row
+ * filed under a merged record — the exact stranded-allergy case merging exists to end. Shared by
+ * every tab, so a tab added later cannot quietly skip it.
+ */
+export async function livePatientId(event: { params: { id?: string } }): Promise<number> {
+	const id = patientIdParam(event.params.id);
+	const [row] = await db
+		.select({ id: patient.id })
+		.from(patient)
+		.where(and(eq(patient.id, id), livePatient()))
+		.limit(1);
+	if (!row) error(404, 'Patient not found');
+	return row.id;
+}
+
+/** How long one person's repeated opens of one part of a chart count as a single view. */
+const VIEW_WINDOW_MINUTES = 10;
+
+/** The part of the record a view was of — the closed list on `patient_access_log.record_type`. */
+type ViewedRecord = (typeof patientAccessLog.recordType.enumValues)[number];
+
+/**
+ * Records that this user opened this part of this patient's chart, unless they already did in the
+ * last few minutes.
+ *
+ * Who looked at whose record is the question a clinic is asked after a leak, and it cannot be
+ * answered afterwards. Per tab, so "opened the dental chart" and "opened the summary" stay
+ * distinct; at most once per window, because every save re-runs the load and a row per save would
+ * bury the one view that matters under forty that do not.
+ */
+export async function logPatientView(
+	patientId: number,
+	recordType: ViewedRecord,
+	event: { locals: App.Locals; getClientAddress: () => string }
+) {
+	const userId = event.locals.user?.id;
+	if (!userId) return;
+
+	const since = new Date(Date.now() - VIEW_WINDOW_MINUTES * 60_000);
+	const [recent] = await db
+		.select({ id: patientAccessLog.id })
+		.from(patientAccessLog)
+		.where(
+			and(
+				eq(patientAccessLog.patientId, patientId),
+				eq(patientAccessLog.userId, userId),
+				eq(patientAccessLog.recordType, recordType),
+				gt(patientAccessLog.viewedAt, since)
+			)
+		)
+		.limit(1);
+	if (recent) return;
+
+	let ipAddress: string | null = null;
+	try {
+		ipAddress = event.getClientAddress().slice(0, 45);
+	} catch {
+		// No address from this adapter; the view is still worth recording.
+	}
+
+	await db.insert(patientAccessLog).values({
+		patientId,
+		userId,
+		recordType,
+		action: 'view',
+		ipAddress,
+		branchId: event.locals.branch.active
+	});
 }

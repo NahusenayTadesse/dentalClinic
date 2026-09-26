@@ -15,7 +15,7 @@
 				},
 				{
 					"heading": "Where the totals come from",
-					"body": "The Payroll report holds the same ground for any range: payroll runs, payslips, adjustments, receipts and salary changes, filtered by site, department or person and exportable.\n\nA payroll run's totals are the sum of the payslips under it — if the two disagree, an adjustment is usually the reason."
+					"body": "The Payroll report holds the same ground for any range: payroll runs, payslips, adjustments, receipts and salary changes, filtered by branch, department or person and exportable.\n\nA payroll run's totals are the sum of the payslips under it — if the two disagree, an adjustment is usually the reason."
 				}
 			],
 			"links": [
@@ -39,7 +39,7 @@
 				},
 				{
 					"heading": "ድምሮቹ ከየት እንደሚመጡ",
-					"body": "የደመወዝ ሪፖርት ለማንኛውም ክልል ተመሳሳይ መረጃ ይይዛል፦ የደመወዝ ክፍያዎች፣ ወረቀቶች፣ ማስተካከያዎች፣ ደረሰኞችና የደመወዝ ለውጦች፤ በጣቢያ፣ በክፍል ወይም በሰው ተጣርተውና ወደ ውጭ ሊወጡ በሚችሉበት ሁኔታ።\n\nየአንድ ክፍያ ድምር በሱ ሥር ያሉት ወረቀቶች ድምር ነው — ሁለቱ ካልተስማሙ ምክንያቱ አብዛኛውን ጊዜ ማስተካከያ ነው።"
+					"body": "የደመወዝ ሪፖርት ለማንኛውም ክልል ተመሳሳይ መረጃ ይይዛል፦ የደመወዝ ክፍያዎች፣ ወረቀቶች፣ ማስተካከያዎች፣ ደረሰኞችና የደመወዝ ለውጦች፤ በቅርንጫፍ፣ በክፍል ወይም በሰው ተጣርተውና ወደ ውጭ ሊወጡ በሚችሉበት ሁኔታ።\n\nየአንድ ክፍያ ድምር በሱ ሥር ያሉት ወረቀቶች ድምር ነው — ሁለቱ ካልተስማሙ ምክንያቱ አብዛኛውን ጊዜ ማስተካከያ ነው።"
 				}
 			],
 			"links": [

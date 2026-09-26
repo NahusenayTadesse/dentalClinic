@@ -9,7 +9,7 @@ import { add, edit } from './schema';
  */
 const crud = contentCrud({
 	table: taxType,
-	label: 'Tax Type',
+	label: 'Tax band',
 	addSchema: add,
 	editSchema: edit
 });
@@ -25,5 +25,5 @@ export const actions = {
 	add: crud.actions.add,
 	edit: crud.actions.edit,
 	/** Soft delete, super admin only. See `lookupDeleteAction`. */
-	delete: lookupDeleteAction(taxType, 'tax type')
+	delete: lookupDeleteAction(taxType, 'tax band')
 };

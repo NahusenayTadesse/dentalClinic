@@ -1,0 +1,53 @@
+{
+	"path": "/dashboard/admin-panel/overtime-types",
+	"languages": {
+		"en": {
+			"title": "Overtime Types",
+			"summary": "The kinds of overtime and what each pays.",
+			"sections": [
+				{
+					"heading": "Rate and hours",
+					"body": "Rate multiplies the hourly pay — 1.5 is time and a half. Hourly pay is basic salary divided by 192. Max Hours, if set, is the most that can be entered of this type at once."
+				},
+				{
+					"heading": "Where it is used",
+					"body": "Overtime is entered for the month under Finance → All OverTime, or on one employee’s salary page, and the month’s payroll picks it up."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Finance",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		},
+		"am": {
+			"title": "የትርፍ ሰዓት ዓይነቶች",
+			"summary": "የትርፍ ሰዓት ዓይነቶችና እያንዳንዱ የሚከፍለው።",
+			"sections": [
+				{
+					"heading": "መጠንና ሰዓት",
+					"body": "\"Rate\" የሰዓት ክፍያውን ያባዛል — 1.5 አንድ ተኩል እጥፍ ነው። የሰዓት ክፍያ መሠረታዊ ደመወዝ በ192 ሲካፈል ነው። \"Max Hours\" ከተቀመጠ በአንድ ጊዜ ሊገባ የሚችለው ከፍተኛ ሰዓት ነው።"
+				},
+				{
+					"heading": "የት ጥቅም ላይ እንደሚውል",
+					"body": "ትርፍ ሰዓት በFinance → All OverTime ወይም በአንድ ሠራተኛ የደመወዝ ገጽ ላይ ለወሩ ይገባል፤ የወሩ ደመወዝም ይወስደዋል።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ፋይናንስ",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		}
+	}
+}

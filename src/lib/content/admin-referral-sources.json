@@ -1,0 +1,45 @@
+{
+	"path": "/dashboard/admin-panel/referral-sources",
+	"languages": {
+		"en": {
+			"title": "Referral Sources",
+			"summary": "How patients find the clinic. Chosen at registration.",
+			"sections": [
+				{
+					"heading": "Why it is a list",
+					"body": "A list can be counted and a typed answer cannot. Keep the entries few and distinct — word of mouth, another clinic, the sign outside, social media — so the count says where new patients really come from."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Patients",
+					"href": "/dashboard/help#section-patients"
+				}
+			]
+		},
+		"am": {
+			"title": "የሪፈራል ምንጮች",
+			"summary": "ታካሚዎች ክሊኒኩን እንዴት እንደሚያገኙት። በምዝገባ ወቅት ይመረጣል።",
+			"sections": [
+				{
+					"heading": "ለምን ዝርዝር ሆነ",
+					"body": "ዝርዝር ሊቆጠር ይችላል፤ የተጻፈ መልስ ግን አይችልም። መግቢያዎቹን ጥቂትና የተለዩ ያድርጓቸው — ከሰው ሰው፣ ሌላ ክሊኒክ፣ የውጪ ምልክት፣ ማኅበራዊ ሚዲያ።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ታካሚዎች",
+					"href": "/dashboard/help#section-patients"
+				}
+			]
+		}
+	}
+}

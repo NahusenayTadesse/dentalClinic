@@ -1,3 +1,4 @@
+import { inRollback } from '../testing/rollback';
 import { describe, it, expect } from 'vitest';
 import { eq } from 'drizzle-orm';
 import { db } from '$lib/server/db';
@@ -82,28 +83,6 @@ describe('transition arithmetic', () => {
 });
 
 /**
- * Runs `body` against a real transaction and always rolls it back, so these cases exercise the
- * live wiring — reads, netting and the accrual calls — without leaving anything behind.
- */
-async function inRollback<T>(
-	body: (tx: Parameters<Parameters<typeof db.transaction>[0]>[0]) => Promise<T>
-) {
-	const sentinel = new Error('rollback');
-	let result: T | undefined;
-
-	try {
-		await db.transaction(async (tx) => {
-			result = await body(tx);
-			throw sentinel;
-		});
-	} catch (err) {
-		if (err !== sentinel) throw err;
-	}
-
-	return result as T;
-}
-
-/**
  * An employee with a live grant, and a leave type that draws on the balance — **created here**,
  * inside the rollback.
  *
@@ -112,10 +91,18 @@ async function inRollback<T>(
  * failed reading `staffId` of `undefined` — red on every run, for want of a fixture. Only the
  * employee is borrowed, because an employee row needs two dozen columns this file has no business
  * knowing about; with none at all there is nothing to test and the case says so.
+ *
+ * **The borrowed employee's own grants are cleared first**, inside the same rollback. They broke
+ * this once: the app's leave-accrual job runs when the dashboard is opened, granted every employee
+ * their missing service years, and the fixture's year-1 grant then collided with the real one — and
+ * had it not collided, the ledger would have spent from the real grants first, since it takes the
+ * oldest. With them gone for the length of the test, the only grant is the one made here.
  */
 async function fixture(tx: Parameters<Parameters<typeof db.transaction>[0]>[0]) {
 	const [staff] = await tx.select({ id: employee.id }).from(employee).limit(1);
 	if (!staff) return null;
+
+	await tx.delete(employeeLeaveGrant).where(eq(employeeLeaveGrant.staffId, staff.id));
 
 	await tx.insert(leaveType).values({
 		name: 'Probe Leave (rolled back)',

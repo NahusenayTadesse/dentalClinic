@@ -1,0 +1,53 @@
+{
+	"path": "/dashboard/admin-panel/contact-types",
+	"languages": {
+		"en": {
+			"title": "Contact Types",
+			"summary": "The channels a patient can be reached on besides their main phone — Telegram, WhatsApp, email.",
+			"sections": [
+				{
+					"heading": "Kind",
+					"body": "What the value looks like: a username or handle, a phone number, an email address or a full web address. It decides how the value is checked when someone types it on the chart."
+				},
+				{
+					"heading": "Link prefix",
+					"body": "The start of a web address for the channel, such as https://t.me/ for Telegram, kept with the channel so a value can be turned into a link. Leave it empty when there is none."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Patients",
+					"href": "/dashboard/help#section-patients"
+				}
+			]
+		},
+		"am": {
+			"title": "የመገናኛ ዓይነቶች",
+			"summary": "ከዋናው ስልክ በተጨማሪ ታካሚ የሚገኝባቸው መንገዶች — ቴሌግራም፣ ዋትስአፕ፣ ኢሜይል።",
+			"sections": [
+				{
+					"heading": "ዓይነት",
+					"body": "እሴቱ ምን እንደሚመስል፦ የተጠቃሚ ስም፣ ስልክ ቁጥር፣ የኢሜይል አድራሻ ወይም ሙሉ የድር አድራሻ። በቻርቱ ላይ ሲጻፍ እሴቱ እንዴት እንደሚረጋገጥ ይወስናል።"
+				},
+				{
+					"heading": "የሊንክ መነሻ",
+					"body": "የመንገዱ የድር አድራሻ መጀመሪያ፣ ለምሳሌ ለቴሌግራም https://t.me/። ከሌለ ባዶ ይተዉት።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ታካሚዎች",
+					"href": "/dashboard/help#section-patients"
+				}
+			]
+		}
+	}
+}

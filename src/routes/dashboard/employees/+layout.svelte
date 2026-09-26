@@ -1,11 +1,10 @@
 <script lang="ts">
 	import LayoutMenu, { type MenuItem } from '$lib/components/LayoutMenu.svelte';
-	import { Calendar, List, Plus, Sheet, TreePalm } from '@lucide/svelte';
+	import { Calendar, Plus, Sheet, TreePalm } from '@lucide/svelte';
 
 	let { children } = $props();
 
 	const items: MenuItem[] = [
-		{ title: 'Branch List', href: '/dashboard/employees/branches', IconComp: List },
 		{ title: 'All Active Employees', href: '/dashboard/employees', IconComp: Sheet },
 		{
 			title: 'All Inactive Employees',

@@ -1,0 +1,53 @@
+{
+	"path": "/dashboard/admin-panel/leave-accrual",
+	"languages": {
+		"en": {
+			"title": "Run Leave Accrual",
+			"summary": "The job that grants annual leave on work anniversaries and expires what has lapsed.",
+			"sections": [
+				{
+					"heading": "What it does",
+					"body": "Each run grants the leave due to anyone whose work anniversary has passed, using Annual Leave Entitlements, and expires grants older than the Leave Expiry Policy allows. It runs by itself every day."
+				},
+				{
+					"heading": "Running it now",
+					"body": "Press Run Now after changing an entitlement or hiring someone with past service, rather than waiting for tonight. A manual run is recorded like the scheduled one, and running twice grants nothing twice."
+				},
+				{
+					"heading": "The status panel",
+					"body": "It says when the job last ran and how it went. \"Overdue\" means the daily run has not happened — tell whoever looks after the server."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Employees and leave",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		},
+		"am": {
+			"title": "የፈቃድ ማጠራቀሚያ ማስኬድ",
+			"summary": "በሥራ ዓመት መታሰቢያ የዓመት ፈቃድ የሚሰጥና ጊዜው ያለፈበትን የሚያበቃ ሥራ።",
+			"sections": [
+				{
+					"heading": "የሚሠራው",
+					"body": "እያንዳንዱ ሩጫ የሥራ ዓመት መታሰቢያቸው ላለፈ ሁሉ የሚገባቸውን ፈቃድ በዓመት ፈቃድ መብቶች መሠረት ይሰጣል፤ የፈቃድ ማብቂያ ፖሊሲው ከሚፈቅደው በላይ የቆዩትንም ያበቃል። በየቀኑ በራሱ ይሠራል።"
+				},
+				{
+					"heading": "አሁን ማስኬድ",
+					"body": "መብትን ከቀየሩ ወይም ያለፈ አገልግሎት ያለውን ሰው ከቀጠሩ በኋላ እስከ ማታ ከመጠበቅ \"Run Now\"ን ይጫኑ። በእጅ የተደረገ ሩጫ እንደ ተያዘለት ሩጫ ይመዘገባል፤ ሁለት ጊዜ ማስኬድ ምንም ነገር ሁለት ጊዜ አይሰጥም።"
+				},
+				{
+					"heading": "የሁኔታ ክፍሉ",
+					"body": "ሥራው መጨረሻ መቼ እንደሠራና እንዴት እንደሄደ ይናገራል። \"Overdue\" ማለት የዕለቱ ሩጫ አልተካሄደም ማለት ነው — አገልጋዩን ለሚንከባከበው ሰው ይንገሩ።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሠራተኞችና ፈቃድ",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,69 @@
+{
+	"path": "/dashboard/admin-panel/medicines",
+	"languages": {
+		"en": {
+			"title": "Medicines",
+			"summary": "The clinic's medicine list. It serves two jobs: what the clinic prescribes, and what patients arrive already taking.",
+			"sections": [
+				{
+					"heading": "Generic name first",
+					"body": "Enter the generic (INN) name — amoxicillin, not a brand. That is what goes on a prescription and what the pharmacy dispenses on. Brand is optional and only worth filling when the clinic stocks a particular one."
+				},
+				{
+					"heading": "Prescribable",
+					"body": "Leave it ticked for medicines this clinic prescribes. Untick it for medicines you only need to record on a patient's medication list — warfarin, metformin, alendronate. They stay recordable, but they will never be offered to someone writing a prescription."
+				},
+				{
+					"heading": "The three risk flags",
+					"body": "Bleeding risk: anticoagulants and antiplatelets. Check before an extraction. Jaw osteonecrosis risk (MRONJ): bisphosphonates and denosumab. An extraction can cause it. Immunosuppressant: steroids, methotrexate, chemotherapy. Healing and infection. Set these once, here, on the medicine. Every patient taking it then carries the same warning."
+				},
+				{
+					"heading": "Antibiotic",
+					"body": "Tick it for every antibiotic. It is what lets the clinic count its own antibiotic prescribing."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Patients",
+					"href": "/dashboard/help#section-patients"
+				}
+			]
+		},
+		"am": {
+			"title": "መድኃኒቶች",
+			"summary": "የክሊኒኩ የመድኃኒት ዝርዝር። ሁለት ሥራ ይሠራል፦ ክሊኒኩ የሚያዛቸውን፣ እና ታካሚዎች ቀድመው የሚወስዷቸውን።",
+			"sections": [
+				{
+					"heading": "መጀመሪያ የወል ስም",
+					"body": "የወል (INN) ስሙን ያስገቡ — amoxicillin እንጂ የንግድ ስም አይደለም። በማዘዣው ላይ የሚጻፈውና ፋርማሲው የሚሰጠው በእሱ ነው። የንግድ ስም አማራጭ ነው።"
+				},
+				{
+					"heading": "የሚታዘዝ",
+					"body": "ክሊኒኩ ለሚያዛቸው መድኃኒቶች ምልክቱን ይተዉት። በታካሚው የመድኃኒት ዝርዝር ላይ ለመመዝገብ ብቻ ለሚያስፈልጉ — warfarin፣ metformin፣ alendronate — ምልክቱን ያንሱ። መመዝገብ ይቻላል፣ ማዘዣ ለሚጽፍ ሰው ግን ፈጽሞ አይቀርቡም።"
+				},
+				{
+					"heading": "ሦስቱ የአደጋ ምልክቶች",
+					"body": "የደም መፍሰስ አደጋ፦ ደም አቅጣኞች። ጥርስ ከመንቀል በፊት ያረጋግጡ። የመንጋጋ አጥንት ጉዳት (MRONJ)፦ bisphosphonates እና denosumab። ጥርስ መንቀል ሊያስከትለው ይችላል። በሽታ የመከላከል አቅም የሚቀንሱ፦ steroids፣ methotrexate፣ ኬሞቴራፒ። እዚህ፣ በመድኃኒቱ ላይ አንድ ጊዜ ያስቀምጧቸው፤ የሚወስደው እያንዳንዱ ታካሚ ተመሳሳይ ማስጠንቀቂያ ይይዛል።"
+				},
+				{
+					"heading": "አንቲባዮቲክ",
+					"body": "ለእያንዳንዱ አንቲባዮቲክ ምልክት ያድርጉ። ክሊኒኩ የራሱን የአንቲባዮቲክ አዘዛዝ እንዲቆጥር የሚያስችለው እሱ ነው።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ታካሚዎች",
+					"href": "/dashboard/help#section-patients"
+				}
+			]
+		}
+	}
+}

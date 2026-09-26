@@ -7,7 +7,7 @@
 			"sections": [
 				{
 					"heading": "How to work through it",
-					"body": "1. Read the rows. Columns that point at another record are links — open the site, the contract or the employee behind a row before deciding.\n2. Tick the rows you have decided on. The box in the header takes the whole page at once.\n3. Press Approve, or press Reject and give a reason.\n\nA rejection without a reason is refused. The reason becomes part of the record's permanent history and shows on the rejections desk."
+					"body": "1. Read the rows. Columns that point at another record are links — open the patient, the customer or the employee behind a row before deciding.\n2. Tick the rows you have decided on. The box in the header takes the whole page at once.\n3. Press Approve, or press Reject and give a reason.\n\nA rejection without a reason is refused. The reason becomes part of the record's permanent history and shows on the rejections desk."
 				},
 				{
 					"heading": "Bulk approval is still a decision",
@@ -31,7 +31,7 @@
 			"sections": [
 				{
 					"heading": "እንዴት እንደሚሠራ",
-					"body": "1. መስመሮቹን ያንብቡ። ወደ ሌላ መዝገብ የሚያመለክቱ ዓምዶች አገናኞች ናቸው — ከመወሰንዎ በፊት ከመስመሩ ጀርባ ያለውን ጣቢያ፣ ኮንትራት ወይም ሠራተኛ ይክፈቱ።\n2. የወሰኑባቸውን መስመሮች ምልክት ያድርጉ። በራስጌ ላይ ያለው ሳጥን ገጹን በሙሉ ይይዛል።\n3. Approve ይጫኑ፤ ወይም Reject ጫነው ምክንያት ይስጡ።\n\nምክንያት የሌለው ውድቅ ማድረግ አይፈቀድም። ምክንያቱ የመዝገቡ ቋሚ ታሪክ አካል ሆኖ በውድቅ ማድረጊያ ክፍል ውስጥ ይታያል።"
+					"body": "1. መስመሮቹን ያንብቡ። ወደ ሌላ መዝገብ የሚያመለክቱ ዓምዶች አገናኞች ናቸው — ከመወሰንዎ በፊት ከመስመሩ ጀርባ ያለውን ታካሚ፣ ደንበኛ ወይም ሠራተኛ ይክፈቱ።\n2. የወሰኑባቸውን መስመሮች ምልክት ያድርጉ። በራስጌ ላይ ያለው ሳጥን ገጹን በሙሉ ይይዛል።\n3. Approve ይጫኑ፤ ወይም Reject ጫነው ምክንያት ይስጡ።\n\nምክንያት የሌለው ውድቅ ማድረግ አይፈቀድም። ምክንያቱ የመዝገቡ ቋሚ ታሪክ አካል ሆኖ በውድቅ ማድረጊያ ክፍል ውስጥ ይታያል።"
 				},
 				{
 					"heading": "በጅምላ ማጽደቅም ውሳኔ ነው",

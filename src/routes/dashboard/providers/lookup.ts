@@ -1,6 +1,7 @@
 import type { LookupConfig } from '$lib/components/lookup/types';
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
-import LicenceCell from './licence-cell.svelte';
+import ExpiryCell from '$lib/components/Table/expiry-cell.svelte';
+import { LICENCE_WARNING_DAYS } from './licence';
 
 /**
  * The clinicians who can be booked, prescribe, and sign work.
@@ -104,7 +105,7 @@ export const config: LookupConfig = {
 				// date is narrowed here rather than asserted (CLAUDE.md §3).
 				const expires = row.original.licenceExpiresOn;
 				const on = typeof expires === 'string' || expires instanceof Date ? expires : null;
-				return renderComponent(LicenceCell, { expiresOn: on });
+				return renderComponent(ExpiryCell, { expiresOn: on, warningDays: LICENCE_WARNING_DAYS });
 			}
 		}
 	]

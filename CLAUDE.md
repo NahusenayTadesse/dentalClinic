@@ -23,32 +23,37 @@ thing, give it a new optional prop — do not fork it and leave the old one behi
 
 ### Catalog — client
 
-| Need                                | Use                                                                     | Current users |
-| ----------------------------------- | ----------------------------------------------------------------------- | ------------- |
-| A table                             | `components/Table/data-table.svelte`                                    | 85            |
-| Server-driven filter bar            | `$lib/QueryBuilder.svelte` + `$lib/queryFilters.ts`                     | 17            |
-| Client-side facets over loaded rows | `components/Table/FilterMenu.svelte`                                    | 41            |
-| Sortable header                     | `Table/data-table-sort.svelte`                                          | 89            |
-| Link cell                           | `Table/data-table-links.svelte`                                         | 71            |
-| Mention of a record (auto-linked)   | `Table/data-table-links.svelte` with `entity` + `$lib/entityLinks.ts`   |
-| Status badge                        | `Table/statuses.svelte`                                                 | 56            |
-| Long text cell                      | `Table/bigText.svelte` · address cell `Table/address.svelte`            | 8 · 4         |
-| Any form field                      | `formComponents/InputComp.svelte`                                       | 153           |
-| Modal                               | `formComponents/DialogComp.svelte`                                      | 135           |
-| Form error summary                  | `formComponents/Errors.svelte`                                          | 133           |
-| Submit spinner                      | `formComponents/LoadingBtn.svelte`                                      | 169           |
-| Form shell · flash line             | `FormCard.svelte` · `Messages.svelte`                                   | 22 · 12       |
-| Initialise a superforms form        | `createForm` — `$lib/forms/createForm.ts` (validator + toast wired)     |
-| An edit dialog on a detail page     | `formComponents/FormDialog.svelte` — fields as a snippet                | new           |
-| A date window on a server table     | `data-table.svelte`'s `dateFilter` prop → `Table/table-date-range`      | new           |
-| Ethiopian month/year picker         | `formComponents/MonthYear.svelte`                                       | 26            |
-| Delete confirmation                 | `components/DeleteEntity.svelte`                                        | 48            |
-| Detail page shell · key/value table | `SingleView.svelte` · `SingleTable.svelte`                              | 8 · 8         |
-| A whole admin-panel lookup screen   | `components/lookup/LookupPage.svelte`                                   | 14            |
-| One child table on a detail page    | `components/lookup/LookupSection.svelte` + `lookup/actions.ts`          | 5             |
-| A card on a detail page             | `components/Section.svelte`                                             | 3             |
-| Choosing a patient in a form        | `components/PatientPicker.svelte` — searches, never loads the roster    | 1             |
-| The logo                            | `components/Logo.svelte` — `static/newLogo.png`, never an `<img>` of it | 5             |
+| Need                                | Use                                                                       | Current users |
+| ----------------------------------- | ------------------------------------------------------------------------- | ------------- |
+| A table                             | `components/Table/data-table.svelte`                                      | 85            |
+| Server-driven filter bar            | `$lib/QueryBuilder.svelte` + `$lib/queryFilters.ts`                       | 17            |
+| Client-side facets over loaded rows | `components/Table/FilterMenu.svelte`                                      | 41            |
+| Sortable header                     | `Table/data-table-sort.svelte`                                            | 89            |
+| Link cell                           | `Table/data-table-links.svelte`                                           | 71            |
+| Mention of a record (auto-linked)   | `Table/data-table-links.svelte` with `entity` + `$lib/entityLinks.ts`     |
+| Status badge                        | `Table/statuses.svelte`                                                   | 56            |
+| Long text cell                      | `Table/bigText.svelte` · address cell `Table/address.svelte`              | 8 · 4         |
+| Any form field                      | `formComponents/InputComp.svelte`                                         | 153           |
+| Modal                               | `formComponents/DialogComp.svelte`                                        | 135           |
+| Form error summary                  | `formComponents/Errors.svelte`                                            | 133           |
+| Submit spinner                      | `formComponents/LoadingBtn.svelte`                                        | 169           |
+| Form shell · flash line             | `FormCard.svelte` · `Messages.svelte`                                     | 22 · 12       |
+| Initialise a superforms form        | `createForm` — `$lib/forms/createForm.ts` (validator + toast wired)       |
+| An edit dialog on a detail page     | `formComponents/FormDialog.svelte` — fields as a snippet                  | new           |
+| One dialog for many rows / a click  | `FormDialog` with `bind:open`, `seed`, `hideTrigger`                      | 2             |
+| An amount in a lookup table         | `LookupField` type `money` — number in the form, `formatETB` in the cell  | 1             |
+| A lookup of fixed rows (edit only)  | `LookupConfig.fixedRows` — no add dialog, no delete column                | 1             |
+| Teeth, surfaces, spans, the chart   | `$lib/teeth.ts` — FDI rules shared by the server check and the odontogram |
+| Service areas · procedure statuses  | `$lib/serviceAreas.ts` · `$lib/procedureStatus.ts` (client-safe enums)    |
+| A date window on a server table     | `data-table.svelte`'s `dateFilter` prop → `Table/table-date-range`        | new           |
+| Ethiopian month/year picker         | `formComponents/MonthYear.svelte`                                         | 26            |
+| Delete confirmation                 | `components/DeleteEntity.svelte`                                          | 48            |
+| Detail page shell · key/value table | `SingleView.svelte` · `SingleTable.svelte`                                | 8 · 8         |
+| A whole admin-panel lookup screen   | `components/lookup/LookupPage.svelte`                                     | 14            |
+| One child table on a detail page    | `components/lookup/LookupSection.svelte` + `lookup/actions.ts`            | 5             |
+| A card on a detail page             | `components/Section.svelte`                                               | 3             |
+| Choosing a patient in a form        | `components/PatientPicker.svelte` — searches, never loads the roster      | 1             |
+| The logo                            | `components/Logo.svelte` — `static/newLogo.png`, never an `<img>` of it   | 5             |
 
 `InputComp` dispatches on `type` to file, select, date, combo, checkbox and password variants.
 **Most fields need nothing but `InputComp`** — reach for `SelectComp`/`ComboboxComp`/
@@ -63,6 +68,12 @@ any button, dialog, popover, or menu.
 | ---------------------------------- | ------------------------------------------------------------------------------------------- |
 | Lookup-table CRUD                  | `contentCrud` — `server/crud.ts`                                                            |
 | CRUD for rows owned by a parent    | `childCrud` + `childActions` — `server/childCrud.ts` (`audit`, `permission` options)        |
+| Refusing a child write with reason | `throw new WriteRefused(field, text)` from a `childCrud` `transform` — a 400, not a 500     |
+| A chart tab's owner and view log   | `livePatientId` · `logPatientView(id, recordType, event)` — `server/patients.ts`            |
+| Charting a procedure               | `server/procedures.ts` — `procedureTransform`, `placeProcedure`, `chartProcedures`          |
+| Income tax, pension, net pay       | `server/payrollMath.ts` — `incomeTax`/`incomeTaxSql` (one rule, tested both ways), `netPay` |
+| Recording a visit's work           | `visitWork` (what to offer) · `recordVisitWork` (in the completion's transaction)           |
+| A database test's rollback         | `inRollback` · `TestTx` — `$lib/testing/rollback.ts`; routes on disk: `testing/routes.ts`   |
 | Recording a change to audited data | `recordAudit` — `server/audit.ts`, in the write's own transaction (§11)                     |
 | Getting an id back from an insert  | `insertReturningId` — `server/db/insert.ts` (§10)                                           |
 | Finding patients, and their alerts | `server/patients.ts` — search, age bands, alerts, duplicates                                |
@@ -89,11 +100,14 @@ Four registries already exist. Extending one is almost always correct, and writi
 route is almost always wrong:
 
 - **`APPROVAL_ENTITIES`** (`server/approvals.ts`) — a new maker-checker queue is one object.
-  `/dashboard/approvals/[entity]` serves all of them; there is no per-entity route.
+  `/dashboard/approvals/[entity]` serves all of them; there is no per-entity route. Its menu
+  entry is one line in `APPROVAL_QUEUES`, and a test fails until it is added.
 - **`SECTIONS`** (`reports/sections.ts`) + `columnsFor` + a `loadSection` case — a new report
   section needs no new route or component.
 - **`routeRules`** (`lib/routeAccess.ts`) — a route's permission gate.
-- **`Search.svelte`** — the command palette.
+- **`NAVIGATION`** (`lib/navigation.ts`) — the sidebar _and_ the command palette. They used to
+  be two lists and drifted into dead links in both; `navigation.test.ts` now fails on a menu link
+  with no page behind it.
 
 ### An entity page is assembled, not written
 
@@ -263,7 +277,7 @@ own table already has rows, so `npm run db:seed` tops a database up rather than 
 
 Everything else over 500 is a real target. Current offenders:
 `reports/details.server.ts` (1,518), `employees/single/[id]/+page.server.ts` (830, down from 1,296),
-`app-sidebar.svelte` (639), `salary/add-payroll/**/+page.server.ts` (588/586),
+`salary/add-payroll/**/+page.server.ts` (588/586),
 `employees/single/[id]/+page.svelte` (521), `Table/FilterMenu.svelte` (548),
 `QueryBuilder.svelte` (534).
 
@@ -528,6 +542,14 @@ across the twenty employee dialogs removed 104 type errors, and across the other
 that spelled it this way, 99 more. `Infer<typeof schema>` is the correct spelling of the same
 thing; `Login.svelte`'s `LoginSchema` is a `typeof`, which is why it keeps its `Infer`.
 
+**A client schema must parse a value to itself.** Once a form is valid, superforms writes the
+_parsed_ data back into `$form`. A `preprocess` that turns `''` into `undefined`, next to a select
+whose bound value writes `''` back, loops forever: the charting dialog did a few hundred writes a
+second, each re-running client validation and wiping the server's refusal before it could be read.
+Keep optional choices as strings (`z.coerce.string().nullable().optional()`) and let the server
+read `''` as none. Not a `z.union` of `''` and a number either: superforms cannot parse a union out
+of posted form data and fails the whole request.
+
 **A client validator is the schema the form posts to, not the schema its type names.**
 `editPersonal.svelte` was typed against the employment schema while posting to `editPersonal`;
 wiring the validator from the type would have checked personal details against the wrong shape
@@ -569,16 +591,15 @@ path depth separates the legitimate case from the admin-panel bug, because
 `/dashboard/approvals/[entity]` and `/dashboard/admin-panel/allergens` sit the same distance
 below their entry.
 
-**Drift is checked in both directions.** Sixteen help files currently describe pages that were
-deleted — contracts, payments, requests, sites, supply leases. Only that direction leaves the
-manual confidently describing a system nobody can find.
+**Drift is checked in both directions.** Sixteen help files once described pages that had been
+deleted — contracts, payments, requests, sites, supply leases — and now none do. Only that
+direction leaves the manual confidently describing a system nobody can find.
 
 `src/lib/help/coverage.test.ts` enforces all of it and names exactly what is missing. The three
-backlogs — 28 screens without their own help, 24 missing from the route map, 16 orphaned files —
-**may only shrink**, the same ratchet `check-budget.mjs` applies to type and lint counts and for
-the same reason: a number that can go up is not a budget. Each is also checked for entries that
-are no longer true, so a debt cannot be paid and left on the books as permission for the next
-person.
+backlogs started at 28 screens without their own help, 24 missing from the route map and 16
+orphaned files, and are now all **empty** — so a new screen without help, or a help file for a
+deleted screen, fails the test outright. They stay in the file, empty, and may only stay that way:
+the same ratchet `check-budget.mjs` applies to type and lint counts, and for the same reason.
 
 ---
 

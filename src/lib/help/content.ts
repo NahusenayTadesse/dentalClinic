@@ -49,12 +49,12 @@ export const HELP_SECTIONS: HelpSection[] = [
 				id: 'what-is-this',
 				title: 'What the amno system is',
 				summary:
-					'One place to run the whole business: the customers you serve, the sites you serve them at, the people who do the work, the money in and the money out, and the stock that goes with it.',
+					'One place to run a dental clinic: the patients and their charts, the diary, the work done in the chair, the staff who do it, the money in and out, and the stock the clinic uses.',
 				notes: [
-					'It replaces the separate spreadsheets that used to hold customers, contracts, attendance, payroll, collections and stock. Because everything sits in one database, a figure you see on a report is the same figure the person who entered it saw — there is no second copy to reconcile.',
+					'It replaces the paper cards, the appointment book and the spreadsheets that used to hold them. Because everything sits in one database, an allergy recorded at the desk is the allergy the dentist sees at the chair, and a figure on a report is the figure the person who entered it saw.',
 					'Every screen lives under `/dashboard`. Nothing is public: if you are not signed in you are sent to the login page, whatever address you typed.',
 					'The system is built and maintained by **amno ERP Solutions**. The footer of the menu names them, and support requests go through them.',
-					'Six things flow through the system, and almost every screen is one of them: **customers**, **sites**, **contracts**, **employees**, **money** and **supplies**. If you can place a screen into one of those six, you already know roughly what it does.'
+					'A visit runs through the system in one line: a **patient** is found or registered, **booked** into a chair, **arrives**, is **charted** on the dental chart by the dentist, and the **visit is completed** with the work done recorded. Most screens are one step of that, or the staff, money and stock behind it.'
 				],
 				keywords: ['erp', 'overview', 'purpose', 'about', 'system', 'amno']
 			},
@@ -71,7 +71,7 @@ export const HELP_SECTIONS: HelpSection[] = [
 				],
 				notes: [
 					'Sessions expire. If a page suddenly bounces you to the login screen, nothing has broken and nothing you had already saved is lost — sign back in and carry on.',
-					'Forgot your password? The **Forgot password** link on the login screen starts the reset. If it does not reach you, an administrator can set a new password for you from **Admin Panel → Users**.',
+					'Forgot your password? The **Forgot password** link on the login screen emails you a reset link. If it does not arrive, the email on your account may be wrong — an administrator can correct it in **Admin Panel → Users**, and you can then ask again.',
 					'Never share an account. Every record in the system is stamped with who entered it and who approved it, and a shared login makes both stamps meaningless.'
 				],
 				keywords: ['login', 'logout', 'password', 'session', 'expired', 'sign in', 'sign out']
@@ -98,14 +98,17 @@ export const HELP_SECTIONS: HelpSection[] = [
 				summary:
 					'The menu down the left is grouped by the kind of work you are doing. Each group opens into the screens inside it.',
 				steps: [
-					"**Dashboard** — the daily overview: expiring contracts, today's report, supplies to reorder.",
-					'**Customers, Sites, Contracts** — who you serve, where, and under what agreement.',
-					'**Requests, Approvals, Rejections, Payments** — the money owed to you, and the checks it passes through.',
+					'**Dashboard** — today at a glance: appointments booked, work done, money in and out, and supplies running low.',
+					'**Patients** — find or register a patient, and open their chart: the overview, and the dental chart.',
+					'**Appointments** — the day view of every chair, the appointment list, and the dentists.',
+					'**Approvals, Rejections** — the changes waiting for a second person, and the ones sent back.',
+					'**Customers** — employers and insurers who pay for a patient’s care.',
 					'**Employees** — people, attendance and leave.',
 					'**Finance** — salaries, overtime, deductions, transactions and expenses.',
-					'**Supplies** — stock, suppliers and site leases.',
+					'**Supplies** — stock, suppliers and supply types.',
 					'**Reports** — every ledger in the system, filtered and exportable.',
-					'**Admin Panel** — users, roles and all the reference lists the forms choose from.'
+					'**Clinic Setup** — branches, chairs, closures, services and their prices, and the clinical lists: allergens, conditions, medicines.',
+					'**Admin Panel** — users, roles, and the staff, money and location lists the forms choose from.'
 				],
 				notes: [
 					'On a phone the whole menu is behind the button in the top-left corner; it closes itself as soon as you pick something.',
@@ -146,10 +149,10 @@ export const HELP_SECTIONS: HelpSection[] = [
 				summary:
 					'Almost every screen in the system is a table, and they all behave the same way: search, sort, choose columns, filter, export.',
 				steps: [
-					'Type in the **search box** above a table to narrow it down. It looks across every visible column at once, so a site name, a phone number or an amount all work.',
+					'Type in the **search box** above a table to narrow it down. It looks across every visible column at once, so a patient’s name, a phone number or an amount all work.',
 					'Click a **column heading** to sort by it. Click again to reverse the order.',
 					'Use the **columns** dropdown to hide columns you do not need. Wide tables — payroll especially — read far better with half the columns switched off.',
-					'Use the **filter menus** above the table to pick exact values from a column: one service, two sites, three statuses.',
+					'Use the **filter menus** above the table to pick exact values from a column: one service, two departments, three statuses.',
 					'Use the **download button** for **Print** (opens the browser print dialog, where "Save as PDF" writes a file) or **Export to CSV** (opens in Excel).',
 					'Click the first cell of a row, or the action button at the end of it, to open that record in full.'
 				],
@@ -176,9 +179,9 @@ export const HELP_SECTIONS: HelpSection[] = [
 				id: 'query-builder',
 				title: 'The advanced filter (query builder)',
 				summary:
-					'When picking values from a list is not enough, the query builder asks questions about numbers and dates: "under 5 left", "due back before today", "spend over 10,000".',
+					'When picking values from a list is not enough, the advanced filter narrows by several fields at once: "consumables at or below their reorder level", "one supplier\'s items in grams".',
 				where:
-					'The **Advanced filter** button above the tables that have one — stock, leases, suppliers',
+					'The **Advanced filter** button above the tables that have one — stock levels and suppliers',
 				steps: [
 					'Press **Advanced filter** to open the condition builder.',
 					'Choose a field, then an operator — *is*, *is not*, *greater than*, *between*, *before*, *after*, *in the last N days*, *contains*, *is empty*.',
@@ -203,7 +206,7 @@ export const HELP_SECTIONS: HelpSection[] = [
 				],
 				notes: [
 					'Close a form without saving and your typing is discarded. Nothing half-finished is ever kept.',
-					'Red messages are not failures on your part — they are the system refusing something that would have caused a problem later: a duplicate invoice for a month that already has one, an end date before its start date, a lease for more items than exist.',
+					'Red messages are not failures on your part — they are the system refusing something that would have caused a problem later: a patient registered twice, an end date before its start date, a filling charted on a surface the tooth does not have.',
 					'If a save fails on the server, **nothing** from that save is written. A payroll run that fails halfway does not leave half a payroll behind; it is all or nothing.'
 				],
 				keywords: ['save', 'error', 'red', 'validation', 'required', 'discard', 'transaction']
@@ -252,9 +255,9 @@ export const HELP_SECTIONS: HelpSection[] = [
 				id: 'attachments',
 				title: 'Attachments and uploaded files',
 				summary:
-					'Receipts, contract scans, withholding certificates and photographs are stored by the system and served only to signed-in users.',
+					'Receipts, radiographs, patient photographs, withholding certificates and staff documents are stored by the system and served only to signed-in users.',
 				steps: [
-					'Use the file field on the form — payment receipt, contract file, withholding receipt — and pick the file.',
+					"Use the file field on the form — payment receipt, withholding receipt, an employee's ID — and pick the file.",
 					'Save the form. The file is stored and the record links to it.',
 					'Open the record later and click the link to view or download it.'
 				],
@@ -280,14 +283,14 @@ export const HELP_SECTIONS: HelpSection[] = [
 				summary:
 					'A record you create starts as **pending**. Somebody else has to approve it before it counts anywhere else in the system.',
 				steps: [
-					'You create a record — an employee, a salary change, an expense, a payroll run, a customer, a site, a contract.',
+					'You create a record — an employee, a salary change, an expense, a payroll run, a customer.',
 					'It is saved immediately with the status **pending**, stamped with your name as the requester.',
 					'It appears in the approval queue for that kind of record.',
 					'Somebody with the approval permission opens the queue, ticks the record and presses **Approve** or **Reject**.',
 					'Once approved, the record starts counting: it appears in listings, joins the reports, and can be paid or acted on.'
 				],
 				notes: [
-					'A pending record is **not** invisible — you can see it and correct it. It just does not count yet. A pending contract is not chased for renewal; a pending employee cannot be paid.',
+					'A pending record is **not** invisible — you can see it and correct it. It just does not count yet. A pending employee cannot be paid; a pending payroll run pays nobody.',
 					'You cannot approve your own request. Ticking your own row and pressing approve leaves it pending and tells you why.',
 					'The one exception is the `approvals.override` permission, held by very few people. When they release their own request, it is recorded as an override — the trail says the same person did both halves.',
 					'Records that pre-date the approval system read as "Approved before this system was in place" rather than as approved by nobody.'
@@ -310,13 +313,13 @@ export const HELP_SECTIONS: HelpSection[] = [
 				permission: 'approvals.view to see the counts, approvals.approve to settle anything',
 				steps: [
 					'Open **Approvals → All Queues** to see how much is waiting in each queue.',
-					'Open the queue you are responsible for — Employees, Salary Changes, Expenses, Payroll Runs, Site Contracts, and the rest.',
-					'Read the rows. Columns that point at another record are links, so you can open the site or the employee behind a row before deciding.',
+					'Open the queue you are responsible for — Employees, Salary Changes, Expenses, Payroll Runs, Discounts and Voids, and the rest.',
+					'Read the rows. Columns that point at another record are links, so you can open the patient or the employee behind a row before deciding.',
 					'Tick the rows you have decided on. Tick the header box to take the whole page at once.',
 					'Press **Approve**, or press **Reject** and give a reason — a rejection without a reason is refused.'
 				],
 				notes: [
-					'The queues cover **employees, salary changes, expenses, payroll runs, payroll adjustments, customers, customer contracts, sites** and **site contracts**.',
+					'The queues cover **employees, salary changes, expenses, payroll runs, payroll adjustments, customers, discounts and voids** on invoices, and **refunds**.',
 					'Approving in bulk is a real decision on every row you ticked. The count in the confirmation message is your check that you took what you meant to.',
 					'If some of the ticked rows were your own requests, the rest are still settled and the message tells you exactly how many were left behind and why.',
 					'Seeing the counts and settling them are two different permissions on purpose: a supervisor can watch the backlog without being able to clear it.'
@@ -410,12 +413,13 @@ export const HELP_SECTIONS: HelpSection[] = [
 				steps: [
 					'**Mark confirmed** after the reminder call.',
 					'**Mark arrived** when the patient reaches the desk. They appear under **Waiting**, with how long they have waited — red past half an hour.',
-					'**Seat in chair** when treatment starts, and **Complete visit** when they leave.',
+					'**Seat in chair** when treatment starts, and **Complete visit** when they leave. It lists the work planned for the patient and the usual services for the visit; tick what was done.',
 					'**Mark no-show** for a patient who never came; **Cancel** asks for a reason.'
 				],
 				notes: [
 					'Only an appointment that has not started can be moved. Once a patient has arrived, a new time is a new appointment.',
 					'A finished, cancelled or no-show appointment cannot be reopened, so the history stays true.',
+					'Work ticked when completing is dated to the visit, not to the day you close it, and credited to the visit’s dentist unless it was planned for another. Ticking needs **patients.clinical**; without it the visit completes on its own.',
 					'**Could come earlier** lists patients marked short-notice who are booked later that day — the first people to call when a slot frees up.',
 					'Every change is recorded in the audit trail.'
 				],
@@ -515,6 +519,39 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'Every change to a chart is written to the audit trail, and every opening of a chart is recorded in the access log. Holders of **Read the audit trail** see who opened it at the bottom of the page.'
 				],
 				keywords: ['allergy', 'condition', 'medication', 'warfarin', 'history', 'emergency contact']
+			},
+			{
+				id: 'dental-chart',
+				title: 'Charting teeth',
+				summary:
+					'The Dental chart tab: what an examination found, what is planned, what was done, and what the patient arrived with — on the teeth it concerns.',
+				where: '`/dashboard/patients/[id]/chart`',
+				permission: 'patients.view to read; patients.clinical to chart',
+				steps: [
+					'Open the patient and choose **Dental chart**. The medical alerts stay above the chart.',
+					'Click a tooth, then **Chart on tooth**. For work on the whole mouth — an examination, a scale and polish — use **Chart a whole-mouth procedure**.',
+					'Choose the service, then the status. The form asks only for what that service needs: surfaces for a filling, the tooth for an extraction, the span for a bridge.',
+					'For **Done here**, say who did it and, if it was at a booked visit, which one.'
+				],
+				notes: [
+					'A first examination is usually several **Finding** rows (the decay, the fracture), the **Planned** treatment for each on the same tooth, and **Already present** rows for old fillings and missing teeth. That is what makes the chart honest about what is untreated.',
+					'Tooth numbers are FDI: the first digit is the quadrant (1 upper right, 2 upper left, 3 lower left, 4 lower right; 5–8 for a child’s teeth), the second counts from the middle. 36 is the lower left first molar.',
+					'A fee left empty takes the service’s standard price. A finding and work done elsewhere are never charged, whatever is typed.',
+					'An extraction marked done, or recorded as already present, draws the tooth as missing.',
+					'Every procedure change is in the audit trail, and opening the dental chart is recorded in the access log separately from the overview.'
+				],
+				keywords: [
+					'odontogram',
+					'tooth',
+					'teeth',
+					'filling',
+					'extraction',
+					'caries',
+					'surface',
+					'FDI',
+					'procedure',
+					'treatment'
+				]
 			}
 		]
 	},
@@ -536,7 +573,7 @@ export const HELP_SECTIONS: HelpSection[] = [
 				steps: [
 					'**Personal** — full name, sex, date of birth, national ID, marital status, photograph.',
 					'**Contact** — phone, email, region, city, subcity and the address details.',
-					'**Employment** — the site they work at, department, position, employment status, education level, and the date they started.',
+					'**Employment** — department, position, employment status, education level, and the date they started. The employee is filed under the branch you are working at.',
 					'**Salary** — the basic salary plus the transport, housing and position allowances. This is what payroll will use.',
 					'**Emergency** — next of kin, their relationship and their phone number.',
 					'Save. The employee is **pending** until approved.'
@@ -561,19 +598,18 @@ export const HELP_SECTIONS: HelpSection[] = [
 			{
 				id: 'employee-lists',
 				title: 'Finding an employee',
-				summary: 'All active employees, employees by site, and the inactive list.',
+				summary: 'All active employees, and the inactive list.',
 				where: 'Menu → **Employees**',
 				steps: [
 					'**All Active Employees** — everyone currently employed. Search by name, phone or ID.',
-					'**Employees by Site** — the same people grouped by where they work; open a site to see its roster, and its own inactive list.',
 					'**Inactive** — people who have left, kept for history and for reports.',
 					"Click a name to open the employee's profile."
 				],
 				notes: [
-					'"Employees by site" is the roster view supervisors want; "all active" is the HR view. Same people, different question.',
-					'Filter and print the roster of a site straight from the table when a customer asks who is assigned to them.'
+					'The list shows the employees of the branch chosen in the top bar. Someone who may see every branch sees everyone.',
+					'Filter by department, position or status and print the result for a roster of one team.'
 				],
-				keywords: ['list', 'roster', 'by site', 'inactive', 'search', 'find', 'employee']
+				keywords: ['list', 'roster', 'branch', 'inactive', 'search', 'find', 'employee']
 			},
 			{
 				id: 'employee-profile',
@@ -607,12 +643,12 @@ export const HELP_SECTIONS: HelpSection[] = [
 				id: 'attendance',
 				title: 'Attendance',
 				summary:
-					'Attendance is taken per site, per period, and is what overtime and absence deductions rest on.',
+					'Attendance is taken per period, for everyone on one roster, and is what overtime and absence deductions rest on.',
 				where:
-					'Menu → **Employees → Employees by Site → Attendance**, or `/dashboard/employees/attendance`',
+					'The **Attendance** tab at the top of the Employees screens, or `/dashboard/employees/attendance`',
 				permission: 'attendance.manage',
 				steps: [
-					'Open the attendance screen and pick the site and the period.',
+					'Open the attendance screen and pick the period. Filter by department or branch to take one team at a time.',
 					'Mark the days for each person on the roster.',
 					'Save. The figures feed the compensation and time reports, and the overtime you enter for the same period.'
 				],
@@ -699,7 +735,7 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'Make sure **attendance** for the month is entered and every new hire has been **approved**.',
 					'Enter **overtime** for the month (`Finance → All OverTime`).',
 					'Enter **deductions** for the month (`Finance → All Deductions`).',
-					'Open **All UnPaid Salaries** for the month — or **UnPaid Salaries by Site** if you pay site by site.',
+					'Open **All UnPaid Salaries** for the month.',
 					'Check the totals panel: gross, tax, pension, allowances, deductions, net.',
 					'Choose the payment method, set the payment date and attach the transfer receipt.',
 					'Press **Run payroll**. The run is created, every payslip written, and the transaction recorded — all in one go.',
@@ -708,7 +744,6 @@ export const HELP_SECTIONS: HelpSection[] = [
 				notes: [
 					'The whole run is one transaction: if anything fails, nothing is written. You will never find half a month paid.',
 					'Unapproved employees are refused with a count, so if the total looks light, check the approvals queue before you check your arithmetic.',
-					"Running by site produces the same result as running the whole company; it just lets you close one site's payroll while another is still being checked.",
 					'Attach the bank transfer receipt at the moment you run it. That receipt is what reconciles the payroll to the bank statement.'
 				],
 				keywords: ['payroll', 'run', 'salary', 'month', 'pay', 'process', 'cycle', 'net', 'gross']
@@ -736,8 +771,7 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'All of it is picked up by the payroll run for that month.'
 				],
 				notes: [
-					'Enter these **before** the run. Anything added afterwards belongs to the next month, or has to go through a payroll adjustment.',
-					'Entering per site (`Finance → UnPaid Salaries by Site → the site → Overtime / Deductions`) is the same data, reached the way a site supervisor thinks about it.'
+					'Enter these **before** the run. Anything added afterwards belongs to the next month, or has to go through a payroll adjustment.'
 				],
 				keywords: ['overtime', 'deduction', 'bonus', 'advance', 'penalty', 'allowance', 'variable']
 			},
@@ -821,9 +855,9 @@ export const HELP_SECTIONS: HelpSection[] = [
 	/* ------------------------------------------------------------------ */
 	{
 		id: 'supplies',
-		title: 'Supplies, suppliers and site leases',
+		title: 'Supplies and suppliers',
 		blurb:
-			'What the company owns, who it was bought from, and what is currently out at a customer site.',
+			'What the clinic keeps in store, who it was bought from, and what needs reordering before it runs out.',
 		topics: [
 			{
 				id: 'stock-levels',
@@ -833,14 +867,15 @@ export const HELP_SECTIONS: HelpSection[] = [
 				where: 'Menu → **Supplies → Stock Levels** → `/dashboard/supplies`',
 				permission: 'supplies_suppliers.manage',
 				steps: [
-					'**Stock Levels** lists every item with what is on hand and what is spoken for.',
-					'Click an item to open it: its movement history, its damaged records and its ranges.',
-					'**Add Supply** registers a new item or a new purchase: name, type, quantity, unit cost, supplier and reorder level.',
+					'**Stock Levels** lists every item with how much is in store and whether it is returnable or consumable.',
+					'Click an item to open it: its movement history and its damaged records over a date range.',
+					'**Add Supply** registers a new item: name, type, unit, whether it is returnable, and its reorder level.',
+					"Stock comes in on the item's own page: **Change Quantity → Add**, with the quantity, the cost per unit and the account it was paid from. A purchase is recorded as money out at the same time.",
 					'Anything at or below its reorder level shows in **Supplies to reorder** on the dashboard home.'
 				],
 				notes: [
 					'Set the reorder level to cover the time it actually takes to get more, not to zero. An alert that fires the day you run out is not an alert.',
-					'Supply types are reference data and live in **Admin Panel → Supply Types**; the supplies menu links straight to it because that is where it is used.',
+					'Supply types are reference data and live in **Supplies → Supply Types**.',
 					'Damaged and lost items are recorded against the item so the shrinkage is visible in the stock report rather than hidden in a quantity that quietly changed.'
 				],
 				keywords: [
@@ -855,48 +890,24 @@ export const HELP_SECTIONS: HelpSection[] = [
 				]
 			},
 			{
-				id: 'stock-figures',
-				title: 'On hand, reserved, leased out, available',
-				summary: 'Four different numbers, and only two of them are stored.',
-				notes: [
-					'**On hand** — what is physically in the store.',
-					'**Reserved** — promised to a lease that is approved but not yet issued. Still on the shelf, but already spoken for.',
-					'**Leased out** — physically at a site right now.',
-					'**Available** — what you can actually promise to somebody new: on hand, less what is reserved.',
-					'Reserved and leased out are worked out from the leases every time they are shown, not stored on the item. That is why they can never drift out of step with the leases themselves.',
-					'The lease form offers **available**, not on hand — so you cannot promise the same box of gloves to two sites.'
-				],
-				keywords: ['on hand', 'reserved', 'available', 'leased out', 'stock', 'derived', 'promised']
-			},
-			{
-				id: 'leases',
-				title: 'Leasing supplies to a site',
+				id: 'stock-lots',
+				title: 'Where the quantity comes from',
 				summary:
-					'Equipment sent to a site is leased, not sold: the company keeps ownership and expects it back.',
-				where: 'Menu → **Supplies → Site Leases / Lease to a Site**',
-				permission: 'supplies_suppliers.manage',
-				steps: [
-					'Open **Lease to a Site**.',
-					'Pick the site, then add the items and quantities. Each item shows what is genuinely available.',
-					'Save. The lease is created as **pending**.',
-					'Once approved, the stock is **reserved** — still in the store, but no longer offerable.',
-					'When the goods physically leave, mark the lease **issued**. The stock is now leased out.',
-					'As items come back, record the return. A lease becomes **partially returned**, then **returned**, then **closed**.'
-				],
+					'Every delivery is kept as its own lot, and the quantity in store is the sum of them.',
 				notes: [
-					'The statuses are: **pending → approved → issued → partially returned → returned → closed**, with **rejected** and **cancelled** as the ways out before issue.',
-					'Every step is logged against the lease, so the question "where did those twenty radios go" always has an answer.',
-					"A lease is not a sale. The items stay the company's property on the books for the whole time they are out."
+					'The quantity is worked out from the lots each time it is shown, never kept as a running total, so it cannot drift from what was actually received and used.',
+					'Using stock takes it from the lot that expires first. The oldest composite or anaesthetic is used before it goes off, and every movement names the lot it came from.',
+					'Expiry dates are not yet entered when stock is received, so a lot is used in the order it arrived. Recording expiry on delivery is planned work.'
 				],
 				keywords: [
-					'lease',
-					'issue',
-					'return',
-					'site',
-					'equipment',
-					'loan',
-					'status',
-					'partially returned'
+					'lot',
+					'batch',
+					'expiry',
+					'expire',
+					'first expired',
+					'quantity',
+					'stock',
+					'derived'
 				]
 			},
 			{
@@ -936,23 +947,23 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'reports.finance, reports.hr, reports.customer_site or audit_logs.view, by page',
 				steps: [
 					'Choose the **start** and **end** dates. Both ends are included.',
-					'Press **Filters** and narrow the scope: department, position, site, customer, employment status, education, gender, employee, payment method, expense type — plus a search over the open ledger and a page size. The badge on the button counts how many narrowings are active.',
+					'Press **Filters** and narrow the scope: department, position, branch, customer, employment status, education, gender, employee, payment method, expense type — plus a search over the open ledger and a page size. The badge on the button counts how many narrowings are active.',
 					'Read the tiles and the charts: they are the totals for exactly that slice.',
-					'Choose a **section** below them to load the detail rows: payslips, attendance, expenses, contracts, and so on.',
+					'Choose a **section** below them to load the detail rows: payslips, attendance, expenses, stock movements, and so on.',
 					'Filter the detail table further if you need to, then print or export it.'
 				],
 				notes: [
 					'Only the ledger you ask for is fetched. The tiles and charts stay fast however much history the range covers, because the expensive part is the one table you chose.',
 					'Every detail table exports and prints like any other table in the system, so a board pack is a matter of choosing the range and pressing the button.',
-					'A total that looks wrong is nearly always a scope question — check the date range and the site filter before anything else.',
-					'**Your query follows you.** Move to another report with the buttons under the heading and the range and the filters come with it, so a slice set once can be read across People, Payroll, Money and Commercial without setting it again.'
+					'A total that looks wrong is nearly always a scope question — check the date range and the branch filter before anything else.',
+					'**Your query follows you.** Move to another report with the buttons under the heading and the range and the filters come with it, so a slice set once can be read across People, Payroll, Compensation, Time & Leave, Stock and Money without setting it again.'
 				],
 				keywords: ['report', 'range', 'filter', 'export', 'chart', 'total', 'section', 'ledger']
 			},
 			{
 				id: 'reports-pages',
 				title: 'What each report covers',
-				summary: 'Nine pages, grouped by the question you are asking.',
+				summary: 'Eight pages, grouped by the question you are asking.',
 				steps: [
 					'**Overview** (`/dashboard/reports`) — the company at a glance: payroll and revenue together.',
 					'**People** — headcount, hires, terminations, the workforce as it stands.',
@@ -961,11 +972,10 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'**Time & Leave** — attendance, leaves taken and leave granted.',
 					'**Stock** — stock levels, supply adjustments and damaged items.',
 					'**Money** — transactions, expenses and services rendered.',
-					'**Commercial** — site payments, payment requests, contracts, renewals, penalties, customers and sites.',
 					'**System** — the audit log: who did what, and when.'
 				],
 				notes: [
-					'The permissions split the same way the questions do: `reports.hr` for people and leave, `reports.customer_site` for commercial, `reports.finance` for the money pages, `audit_logs.view` for the system report.',
+					'The permissions split the same way the questions do: `reports.hr` for people and leave, `reports.finance` for the money and stock pages, `audit_logs.view` for the system report.',
 					'The stock report is also linked from the supplies menu, because that is where you are standing when you want it.'
 				],
 				keywords: [
@@ -975,7 +985,6 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'leave',
 					'stock',
 					'money',
-					'commercial',
 					'audit',
 					'system'
 				]
@@ -1034,7 +1043,7 @@ export const HELP_SECTIONS: HelpSection[] = [
 				steps: [
 					'**Add user** creates an account: name, username, password and the role it carries.',
 					'Use the password generator rather than inventing one, and hand it over in person.',
-					'Open a user to change their role, add a special permission, or set a new password.',
+					'Open a user to change their name, email or role, or add a special permission. A forgotten password is reset by the user, from the login screen.',
 					'When somebody leaves, remove their access here the same day.'
 				],
 				notes: [
@@ -1086,7 +1095,7 @@ export const HELP_SECTIONS: HelpSection[] = [
 				],
 				notes: [
 					'The places cascade, so add the region before the city and the city before the subcity, or the new value will have nothing to hang from.',
-					'**Services** are what you sell — cleaning, security, and so on. They are what a contract points at, so the name shows on the invoice and in the commercial report.'
+					'**Services** are the treatments the clinic offers — a consultation, a filling, an extraction — with a standard price and what the dental chart asks for when one is recorded. They live in **Clinic Setup → Services**.'
 				],
 				keywords: [
 					'region',
@@ -1176,17 +1185,6 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'A rejection without a reason is refused. Type the reason and it goes through.'
 				],
 				keywords: ['approve', 'cannot', 'own request', 'override', 'blocked', 'reason', 'refused']
-			},
-			{
-				id: 'q-duplicate-request',
-				title: 'It says a request already exists for this month',
-				summary: 'One payment request per site per month, and the check counts deleted ones.',
-				steps: [
-					'Look for the existing request for that site and month — including in the cancelled list.',
-					'Correct that request rather than raising a second one.',
-					'If it was deleted, it still holds the month; ask an administrator to sort it out.'
-				],
-				keywords: ['duplicate', 'already exists', 'month', 'request', 'unique', 'error']
 			},
 			{
 				id: 'q-payroll-short',
@@ -1293,7 +1291,7 @@ export const ROUTE_MAP: RouteEntry[] = [
 		path: '/dashboard',
 		title: 'Dashboard home',
 		purpose:
-			"Expiring contracts, today's report and the supplies that need reordering. Open to every signed-in user.",
+			'Today at a glance: appointments booked, work done, money in and out, and supplies running low. Open to every signed-in user.',
 		group: 'Dashboard'
 	},
 	{
@@ -1311,7 +1309,7 @@ export const ROUTE_MAP: RouteEntry[] = [
 	{
 		path: '/dashboard/files/[name]',
 		title: 'Uploaded file',
-		purpose: 'Serves an attached receipt, contract or photograph. Requires a session.',
+		purpose: 'Serves an attached receipt, radiograph or photograph. Requires a session.',
 		group: 'Dashboard'
 	},
 	{
@@ -1347,12 +1345,6 @@ export const ROUTE_MAP: RouteEntry[] = [
 		group: 'Customers'
 	},
 
-	// Contracts
-
-	// Requests
-
-	// Payments
-
 	// Approvals & rejections
 	{
 		path: '/dashboard/approvals',
@@ -1365,7 +1357,7 @@ export const ROUTE_MAP: RouteEntry[] = [
 		path: '/dashboard/approvals/[entity]',
 		title: 'One approval queue',
 		purpose:
-			'Settle pending records: employees, salaries, expenses, payroll runs, payroll adjustments, customers, customer contracts, sites, site contracts.',
+			'Settle pending records: employees, salary changes, expenses, payroll runs, payroll adjustments, customers, invoice discounts and voids, refunds.',
 		permission: 'approvals.approve',
 		group: 'Approvals'
 	},
@@ -1413,7 +1405,185 @@ export const ROUTE_MAP: RouteEntry[] = [
 		title: 'Chairs',
 		purpose: 'The dental chairs at each branch — the columns of the appointment day view.',
 		permission: 'settings.manage',
+		group: 'Clinic setup'
+	},
+
+	{
+		path: '/dashboard/admin-panel/closures',
+		title: 'Closures',
+		purpose: 'Days the clinic is shut, everywhere or at one branch. Nothing can be booked on them.',
+		permission: 'settings.manage',
+		group: 'Clinic setup'
+	},
+	{
+		path: '/dashboard/admin-panel/appointment-types',
+		title: 'Appointment types',
+		purpose: 'What a visit can be for, with its usual length and its colour on the day view.',
+		permission: 'settings.manage',
+		group: 'Clinic setup'
+	},
+	{
+		path: '/dashboard/admin-panel/services/categories',
+		title: 'Service categories',
+		purpose: 'The groups services are filed under.',
+		permission: 'settings.manage',
+		group: 'Clinic setup'
+	},
+	{
+		path: '/dashboard/admin-panel/specialties',
+		title: 'Specialties',
+		purpose: "What a clinician is licensed as, chosen on each dentist's record.",
+		permission: 'settings.manage',
+		group: 'Clinic setup'
+	},
+	{
+		path: '/dashboard/admin-panel/dental-labs',
+		title: 'Dental labs',
+		purpose: 'The laboratories the clinic sends work to, and the turnaround each promises.',
+		permission: 'settings.manage',
+		group: 'Clinic setup'
+	},
+	{
+		path: '/dashboard/admin-panel/allergens',
+		title: 'Allergens',
+		purpose: 'The substances a patient can be recorded as reacting to.',
+		permission: 'settings.manage',
+		group: 'Clinic setup'
+	},
+	{
+		path: '/dashboard/admin-panel/conditions',
+		title: 'Conditions',
+		purpose: "The medical and dental conditions a patient's history can record.",
+		permission: 'settings.manage',
+		group: 'Clinic setup'
+	},
+	{
+		path: '/dashboard/admin-panel/medicines',
+		title: 'Medicines',
+		purpose:
+			'What the clinic prescribes and what patients arrive taking, with the risk flags a dentist acts on.',
+		permission: 'settings.manage',
+		group: 'Clinic setup'
+	},
+	{
+		path: '/dashboard/admin-panel/referral-sources',
+		title: 'Referral sources',
+		purpose: 'How patients find the clinic, chosen at registration.',
+		permission: 'settings.manage',
+		group: 'Clinic setup'
+	},
+	{
+		path: '/dashboard/admin-panel/contact-types',
+		title: 'Contact types',
+		purpose: 'The channels a patient can be reached on besides their phone.',
+		permission: 'settings.manage',
+		group: 'Clinic setup'
+	},
+
+	{
+		path: '/dashboard/admin-panel/users/add-users',
+		title: 'Add a user',
+		purpose: 'Give an office employee an account and a role.',
+		permission: 'users.manage',
 		group: 'Admin panel'
+	},
+	{
+		path: '/dashboard/admin-panel/users/[id]',
+		title: 'One user',
+		purpose: 'A user account: its details and role, and any special permissions it holds.',
+		permission: 'users.manage',
+		group: 'Admin panel'
+	},
+	{
+		path: '/dashboard/admin-panel/roles/add-roles',
+		title: 'Add a role',
+		purpose: 'A new named bundle of permissions.',
+		permission: 'roles.manage',
+		group: 'Admin panel'
+	},
+	{
+		path: '/dashboard/admin-panel/roles/[id]',
+		title: 'One role',
+		purpose: 'A role and the permissions it grants.',
+		permission: 'roles.manage',
+		group: 'Admin panel'
+	},
+	{
+		path: '/dashboard/employees/leaves/pending',
+		title: 'Pending leave',
+		purpose: 'Leave requests waiting for a decision.',
+		permission: 'leaves.view_approved',
+		group: 'Employees'
+	},
+	{
+		path: '/dashboard/employees/leaves/approved',
+		title: 'Approved leave',
+		purpose: 'Leave that has been granted.',
+		permission: 'leaves.view_approved',
+		group: 'Employees'
+	},
+	{
+		path: '/dashboard/employees/leaves/cancelled',
+		title: 'Rejected leave',
+		purpose: 'Leave requests that were turned down.',
+		permission: 'leaves.view_approved',
+		group: 'Employees'
+	},
+	{
+		path: '/dashboard/employees/single/[id]/salary/add-bonus',
+		title: 'Add a bonus',
+		purpose: 'A bonus for one employee, picked up by that month’s payroll.',
+		permission: 'employees.create_followup',
+		group: 'Employees'
+	},
+	{
+		path: '/dashboard/employees/single/[id]/salary/add-deduction',
+		title: 'Add a deduction',
+		purpose: 'A deduction for one employee, taken by that month’s payroll.',
+		permission: 'employees.create_followup',
+		group: 'Employees'
+	},
+	{
+		path: '/dashboard/employees/single/[id]/salary/add-overtime',
+		title: 'Add overtime',
+		purpose: 'Overtime for one employee, paid by that month’s payroll.',
+		permission: 'employees.create_followup',
+		group: 'Employees'
+	},
+	{
+		path: '/dashboard/salary',
+		title: 'Paid salary history',
+		purpose: 'Every payroll run paid so far, month by month.',
+		permission: 'salary.manage',
+		group: 'Finance'
+	},
+	{
+		path: '/dashboard/salary/transactions/ranges/[range]',
+		title: 'Transactions for a period',
+		purpose: 'Money in and out between two dates.',
+		permission: 'transactions.manage',
+		group: 'Finance'
+	},
+	{
+		path: '/dashboard/salary/transactions/expenses/ranges/[range]',
+		title: 'Expenses for a period',
+		purpose: 'Expenses between two dates.',
+		permission: 'transactions.manage',
+		group: 'Finance'
+	},
+	{
+		path: '/dashboard/supplies/[id]/ranges/[range]',
+		title: 'A supply’s movements for a period',
+		purpose: 'One item’s stock movements between two dates.',
+		permission: 'supplies_suppliers.manage',
+		group: 'Supplies'
+	},
+	{
+		path: '/dashboard/supplies/suppliers/[id]',
+		title: 'One supplier',
+		purpose: 'A supplier: their details, address and contacts.',
+		permission: 'supplies_suppliers.manage',
+		group: 'Supplies'
 	},
 
 	// Patients
@@ -1435,6 +1605,14 @@ export const ROUTE_MAP: RouteEntry[] = [
 		path: '/dashboard/patients/[id]',
 		title: 'Patient chart',
 		purpose: 'One patient: alerts, details, medical history, allergies, conditions and medicines.',
+		permission: 'patients.view',
+		group: 'Patients'
+	},
+	{
+		path: '/dashboard/patients/[id]/chart',
+		title: 'Dental chart',
+		purpose:
+			'The odontogram and every procedure on record: findings, planned work, work done and work the patient arrived with.',
 		permission: 'patients.view',
 		group: 'Patients'
 	},
@@ -1601,7 +1779,7 @@ export const ROUTE_MAP: RouteEntry[] = [
 	{
 		path: '/dashboard/supplies',
 		title: 'Stock levels',
-		purpose: 'Every supply with on hand, reserved, leased out and available.',
+		purpose: 'Every supply with how much is in store, its kind and its type.',
 		permission: 'supplies_suppliers.manage',
 		group: 'Supplies'
 	},
@@ -1726,7 +1904,7 @@ export const ROUTE_MAP: RouteEntry[] = [
 		title: 'Branches',
 		purpose: 'Clinic locations. Most clinics have one and never open this.',
 		permission: 'settings.manage',
-		group: 'Admin Panel'
+		group: 'Clinic setup'
 	},
 	{
 		path: '/dashboard/admin-panel/regions',
@@ -1752,7 +1930,7 @@ export const ROUTE_MAP: RouteEntry[] = [
 	{
 		path: '/dashboard/admin-panel/department',
 		title: 'Departments',
-		purpose: 'The departments employees belong to.',
+		purpose: 'The departments employees belong to, and which count as office staff.',
 		permission: 'settings.manage',
 		group: 'Admin panel'
 	},
@@ -1766,9 +1944,9 @@ export const ROUTE_MAP: RouteEntry[] = [
 	{
 		path: '/dashboard/admin-panel/services',
 		title: 'Services',
-		purpose: 'What you sell — what a contract points at.',
+		purpose: 'The treatments the clinic offers, with their price and what the chart asks for.',
 		permission: 'settings.manage',
-		group: 'Admin panel'
+		group: 'Clinic setup'
 	},
 	{
 		path: '/dashboard/admin-panel/educational-level',
@@ -1822,14 +2000,14 @@ export const ROUTE_MAP: RouteEntry[] = [
 	{
 		path: '/dashboard/admin-panel/payment-methods',
 		title: 'Payment methods',
-		purpose: 'Cash, transfer, cheque — and the account each maps to.',
+		purpose: 'The accounts money moves through — each bank account, Telebirr and cash.',
 		permission: 'settings.manage',
 		group: 'Admin panel'
 	},
 	{
 		path: '/dashboard/admin-panel/tax-types',
-		title: 'Tax types',
-		purpose: 'The income tax bands payroll applies.',
+		title: 'Tax bands',
+		purpose: 'The monthly income-tax bands payroll taxes salaries by; rates are percentages.',
 		permission: 'settings.manage',
 		group: 'Admin panel'
 	},
@@ -1842,15 +2020,15 @@ export const ROUTE_MAP: RouteEntry[] = [
 	},
 	{
 		path: '/dashboard/admin-panel/pensions',
-		title: 'Pension',
-		purpose: 'Employee and employer contribution rates.',
+		title: 'Pension rates',
+		purpose: 'The employee and employer contribution rates, as percentages of basic salary.',
 		permission: 'settings.manage',
 		group: 'Admin panel'
 	},
 	{
 		path: '/dashboard/admin-panel/vat-withhold',
 		title: 'VAT and withholding',
-		purpose: 'The rates used on collections.',
+		purpose: 'The clinic’s VAT and withholding percentages, for invoices once billing is built.',
 		permission: 'settings.manage',
 		group: 'Admin panel'
 	},

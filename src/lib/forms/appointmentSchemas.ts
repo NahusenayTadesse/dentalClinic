@@ -61,6 +61,18 @@ export const changeStatus = z.object({
 });
 export type ChangeStatus = z.infer<typeof changeStatus>;
 
+/**
+ * Completing a visit, with the work it records: planned procedures now done, and whole-mouth
+ * services from the visit's type. Both lists may be empty — a visit can end with nothing charted,
+ * and a receptionist without clinical rights closes it that way.
+ */
+export const completeVisit = z.object({
+	id: z.coerce.number().int().positive(),
+	procedureIds: z.array(z.coerce.number().int().positive()).default([]),
+	serviceIds: z.array(z.coerce.number().int().positive()).default([])
+});
+export type CompleteVisit = z.infer<typeof completeVisit>;
+
 export const cancelAppointment = z.object({
 	id: z.coerce.number().int().positive(),
 	/** Required: "why did this not happen" is the one question a cancellation must answer. */

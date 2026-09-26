@@ -93,7 +93,7 @@ compile error rather than a silent omission.
 **Not audited** — high churn, no evidentiary value, and each row would cost the buffer pool the
 same as a patient record:
 
-- `job_run`, `backup`, `sent_reports`, `patient_access_log`, `audit_log` itself
+- `job_run`, `backup`, `patient_access_log`, `audit_log` itself
 - every lookup table (`allergen`, `condition`, `contact_types`, `appointment_type`, …). These are
   configuration, they change rarely, and they already carry `secureFields` — `updatedBy` and
   `updatedAt` on the row answer the same question without a second table.

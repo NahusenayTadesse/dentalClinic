@@ -7,11 +7,11 @@
 			"sections": [
 				{
 					"heading": "The monthly cycle, in order",
-					"body": "1. Make sure the month's attendance is entered and every new hire has been approved.\n2. Enter overtime for the month (All OverTime).\n3. Enter deductions for the month (All Deductions).\n4. Open All UnPaid Salaries for the month, or UnPaid Salaries by Site if you pay site by site.\n5. Check the totals panel: gross, tax, pension, allowances, deductions, net.\n6. Choose the bank account, set the payment date, attach the transfer receipt.\n7. Run payroll. The run, every payslip and the bank transaction are written together.\n8. The run then waits in the Payroll Runs approval queue.\n\nThe whole run is one transaction: if anything fails, nothing is written. You will never find half a month paid."
+					"body": "1. Make sure the month's attendance is entered and every new hire has been approved.\n2. Enter overtime for the month (All OverTime).\n3. Enter deductions for the month (All Deductions).\n4. Open All UnPaid Salaries for the month.\n5. Check the totals panel: gross, tax, pension, allowances, deductions, net.\n6. Choose the bank account, set the payment date, attach the transfer receipt.\n7. Run payroll. The run, every payslip and the bank transaction are written together.\n8. The run then waits in the Payroll Runs approval queue.\n\nThe whole run is one transaction: if anything fails, nothing is written. You will never find half a month paid."
 				},
 				{
 					"heading": "The screens",
-					"body": "• Paid Salaries — payslips already paid, month by month\n• All UnPaid Salaries / by Site — the payroll sheet for a month\n• All OverTime, All Deductions — the variable parts, entered before the run\n• Transactions — money in and money out, by date range\n• Bank History — every movement against every account\n\nPayroll screens are addressed by month in the Ethiopian calendar, and open on the current month by default. Change months from the selector at the top."
+					"body": "• Paid Salaries — payslips already paid, month by month\n• All UnPaid Salaries — the payroll sheet for a month\n• All OverTime, All Deductions — the variable parts, entered before the run\n• Transactions — money in and money out, by date range\n• Expenses — what the clinic spends, by category, each waiting for approval\n\nPayroll screens are addressed by month in the Ethiopian calendar, and open on the current month by default. Change months from the selector at the top."
 				},
 				{
 					"heading": "If payroll looks short",
@@ -35,11 +35,11 @@
 			"sections": [
 				{
 					"heading": "ወርሃዊ ዑደቱ በቅደም ተከተል",
-					"body": "1. የወሩ የመገኘት መዝገብ መግባቱንና አዲስ ተቀጣሪዎች ሁሉ መጽደቃቸውን ያረጋግጡ።\n2. የወሩን ትርፍ ሰዓት ያስገቡ።\n3. የወሩን ተቀናሾች ያስገቡ።\n4. የወሩን ያልተከፈሉ ደመወዞች ይክፈቱ፤ በጣቢያ የሚከፍሉ ከሆነም በጣቢያ ያለውን።\n5. የድምር ክፍሉን ይመልከቱ፦ ጠቅላላ፣ ግብር፣ ጡረታ፣ አበሎች፣ ተቀናሾች፣ የተጣራ።\n6. የባንክ ሒሳቡን ይምረጡ፣ የክፍያ ቀን ያስቀምጡ፣ የዝውውር ደረሰኝ ያያይዙ።\n7. ደመወዝ ያስኪዱ። ክፍያው፣ እያንዳንዱ የደመወዝ ወረቀትና የባንክ ግብይቱ በአንድ ላይ ይመዘገባሉ።\n8. ከዚያ በደመወዝ ማጽደቅ ወረፋ ውስጥ ይጠብቃል።\n\nሙሉው ሂደት አንድ ግብይት ነው፦ አንድ ነገር ቢሳሳት ምንም አይመዘገብም። ግማሽ የተከፈለ ወር አያገኙም።"
+					"body": "1. የወሩ የመገኘት መዝገብ መግባቱንና አዲስ ተቀጣሪዎች ሁሉ መጽደቃቸውን ያረጋግጡ።\n2. የወሩን ትርፍ ሰዓት ያስገቡ።\n3. የወሩን ተቀናሾች ያስገቡ።\n4. የወሩን ያልተከፈሉ ደመወዞች ይክፈቱ።\n5. የድምር ክፍሉን ይመልከቱ፦ ጠቅላላ፣ ግብር፣ ጡረታ፣ አበሎች፣ ተቀናሾች፣ የተጣራ።\n6. የባንክ ሒሳቡን ይምረጡ፣ የክፍያ ቀን ያስቀምጡ፣ የዝውውር ደረሰኝ ያያይዙ።\n7. ደመወዝ ያስኪዱ። ክፍያው፣ እያንዳንዱ የደመወዝ ወረቀትና የባንክ ግብይቱ በአንድ ላይ ይመዘገባሉ።\n8. ከዚያ በደመወዝ ማጽደቅ ወረፋ ውስጥ ይጠብቃል።\n\nሙሉው ሂደት አንድ ግብይት ነው፦ አንድ ነገር ቢሳሳት ምንም አይመዘገብም። ግማሽ የተከፈለ ወር አያገኙም።"
 				},
 				{
 					"heading": "ገጾቹ",
-					"body": "• የተከፈሉ ደመወዞች — አስቀድመው የተከፈሉ የደመወዝ ወረቀቶች በወር በወር\n• ያልተከፈሉ ደመወዞች / በጣቢያ — የወሩ የደመወዝ ሉህ\n• ትርፍ ሰዓት፣ ተቀናሾች — ከክፍያው በፊት የሚገቡ ተለዋዋጭ ክፍያዎች\n• ግብይቶች — ገቢና ወጪ በቀን ክልል\n• የባንክ ታሪክ — በሁሉም ሒሳቦች ላይ ያሉ እንቅስቃሴዎች\n\nየደመወዝ ገጾች በኢትዮጵያ ዘመን አቆጣጠር በወር ይለያሉ፤ በነባሪነትም የአሁኑን ወር ይከፍታሉ። ወር ለመቀየር ከላይ ያለውን መምረጫ ይጠቀሙ።"
+					"body": "• የተከፈሉ ደመወዞች — አስቀድመው የተከፈሉ የደመወዝ ወረቀቶች በወር በወር\n• ያልተከፈሉ ደመወዞች — የወሩ የደመወዝ ሉህ\n• ትርፍ ሰዓት፣ ተቀናሾች — ከክፍያው በፊት የሚገቡ ተለዋዋጭ ክፍያዎች\n• ግብይቶች — ገቢና ወጪ በቀን ክልል\n• ወጪዎች — ክሊኒኩ የሚያወጣው፣ በምድብ፣ እያንዳንዱ ማጽደቅ እየጠበቀ\n\nየደመወዝ ገጾች በኢትዮጵያ ዘመን አቆጣጠር በወር ይለያሉ፤ በነባሪነትም የአሁኑን ወር ይከፍታሉ። ወር ለመቀየር ከላይ ያለውን መምረጫ ይጠቀሙ።"
 				},
 				{
 					"heading": "ደመወዝ ያነሰ ከመሰለ",

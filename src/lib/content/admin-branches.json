@@ -1,0 +1,53 @@
+{
+	"path": "/dashboard/admin-panel/branches",
+	"languages": {
+		"en": {
+			"title": "Branches",
+			"summary": "The clinic's locations. With more than one active branch, a selector appears in the top bar and every list shows the branch you are working at.",
+			"sections": [
+				{
+					"heading": "Adding a branch",
+					"body": "Give it the name staff use and the number patients call. Opened On is optional."
+				},
+				{
+					"heading": "What a branch changes",
+					"body": "Records created while you work at a branch are filed under it. Patient search still finds patients from every branch, so someone registered at one location is treated at another without being registered twice. Seeing across all branches needs its own permission."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Admin panel",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		},
+		"am": {
+			"title": "ቅርንጫፎች",
+			"summary": "የክሊኒኩ ቦታዎች። ከአንድ በላይ ንቁ ቅርንጫፍ ሲኖር በላይኛው አሞሌ ላይ መምረጫ ይታያል፤ እያንዳንዱ ዝርዝርም እየሠሩበት ያለውን ቅርንጫፍ ያሳያል።",
+			"sections": [
+				{
+					"heading": "ቅርንጫፍ መጨመር",
+					"body": "ሠራተኞች የሚጠሩበትን ስምና ታካሚዎች የሚደውሉበትን ቁጥር ይስጡ። የተከፈተበት ቀን አማራጭ ነው።"
+				},
+				{
+					"heading": "ቅርንጫፍ የሚለውጠው",
+					"body": "በአንድ ቅርንጫፍ ሲሠሩ የሚፈጠሩ መዝገቦች በዚያ ቅርንጫፍ ስር ይመዘገባሉ። የታካሚ ፍለጋ ግን ከሁሉም ቅርንጫፎች ያገኛል፤ በአንዱ የተመዘገበ ሰው በሌላው ሁለት ጊዜ ሳይመዘገብ ይታከማል። ሁሉንም ቅርንጫፎች ማየት የራሱ ፈቃድ ያስፈልገዋል።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — የአስተዳደር ፓነል",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		}
+	}
+}

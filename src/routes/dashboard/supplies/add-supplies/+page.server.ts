@@ -36,7 +36,8 @@ export const actions: Actions = {
 			unitOfMeasurement,
 			otherUnitOfMeasurement,
 			reorderLevel,
-			returnable
+			returnable,
+			tracksExpiry
 		} = form.data;
 
 		try {
@@ -47,13 +48,15 @@ export const actions: Actions = {
 				unitOfMeasure: unitOfMeasurement === 'other' ? otherUnitOfMeasurement : unitOfMeasurement,
 				reorderLevel,
 				returnable,
+				tracksExpiry,
 				createdBy: locals?.user?.id
 			});
 
 			// Stay on the same page and set a flash message
 			return message(form, { type: 'success', text: 'New Supply Successfully Added' });
-		} catch (err) {
-			return message(form, { type: 'error', text: 'New Supply Failed to Add ' + err?.message });
+		} catch (err: unknown) {
+			console.error('add supply failed', err);
+			return message(form, { type: 'error', text: 'The item could not be added.' });
 		}
 	}
 };

@@ -1,0 +1,45 @@
+{
+	"path": "/dashboard/admin-panel/services/categories",
+	"languages": {
+		"en": {
+			"title": "Service Categories",
+			"summary": "The groups services are filed under — preventive, restorative, surgical, orthodontic.",
+			"sections": [
+				{
+					"heading": "Keep them few",
+					"body": "A category is for finding and reporting. A handful of broad ones is easier to report on than many narrow ones."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Admin panel",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		},
+		"am": {
+			"title": "የአገልግሎት ምድቦች",
+			"summary": "አገልግሎቶች የሚመደቡባቸው ቡድኖች — መከላከያ፣ መልሶ ማቋቋሚያ፣ ቀዶ ሕክምና፣ ኦርቶዶንቲክ።",
+			"sections": [
+				{
+					"heading": "ጥቂት ያድርጓቸው",
+					"body": "ምድብ ለመፈለግና ለሪፖርት ነው። ብዙ ጠባብ ምድቦች ከመኖር ጥቂት ሰፋ ያሉ ለሪፖርት ይቀላሉ።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — የአስተዳደር ፓነል",
+					"href": "/dashboard/help#section-admin"
+				}
+			]
+		}
+	}
+}

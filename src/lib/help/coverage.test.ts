@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
-import { join, sep } from 'node:path';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { dashboardRoutes } from '../testing/routes';
 
 /**
  * Guards the rule that a new screen ships with its help (CLAUDE.md §14).
@@ -24,7 +25,6 @@ import { describe, expect, it } from 'vitest';
  * for entries that are no longer true, so a debt cannot be paid and left on the books.
  */
 
-const ROUTES_ROOT = join(process.cwd(), 'src', 'routes');
 const CONTENT_DIR = join(process.cwd(), 'src', 'lib', 'content');
 
 /**
@@ -52,6 +52,10 @@ const HELP_FAMILY = new Set([
 	// Served by `patient-chart.json`, a `match` on the prefix — the chart's URL carries an id, and a
 	// help entry cannot name one. The same shape as the employee profile above.
 	'/dashboard/patients/[id]',
+	// A tab of the same chart, and covered by the same file: `patient-chart.json` has a "Dental
+	// chart" section. Its own entry could not be reached — a key cannot name the id, and a shorter
+	// `/chart` match loses to the chart's longer prefix.
+	'/dashboard/patients/[id]/chart',
 	'/dashboard/employees/single/[id]/add-leave',
 	'/dashboard/employees/single/[id]/id-maker',
 	'/dashboard/employees/single/[id]/leave-history',
@@ -85,112 +89,22 @@ const HELP_FAMILY = new Set([
  * generic "Admin Panel" entry. Thirteen are already migrated onto `LookupPage`, so this list and
  * the lookup migration burn down together.
  */
-const HELP_BACKLOG = new Set([
-	'/dashboard/admin-panel/allergens',
-	'/dashboard/admin-panel/annual-leave-entitlements',
-	'/dashboard/admin-panel/appointment-types',
-	'/dashboard/admin-panel/branches',
-	'/dashboard/admin-panel/cities',
-	'/dashboard/admin-panel/closures',
-	'/dashboard/admin-panel/conditions',
-	'/dashboard/admin-panel/contact-types',
-	'/dashboard/admin-panel/dental-labs',
-	'/dashboard/admin-panel/department',
-	'/dashboard/admin-panel/educational-level',
-	'/dashboard/admin-panel/employment-status',
-	'/dashboard/admin-panel/leave-accrual',
-	'/dashboard/admin-panel/leave-expiry-policy',
-	'/dashboard/admin-panel/leave-types',
-	'/dashboard/admin-panel/overtime-types',
-	'/dashboard/admin-panel/payment-methods',
-	'/dashboard/admin-panel/pensions',
-	'/dashboard/admin-panel/positions',
-	'/dashboard/admin-panel/referral-sources',
-	'/dashboard/admin-panel/regions',
-	'/dashboard/admin-panel/services',
-	'/dashboard/admin-panel/services/categories',
-	'/dashboard/admin-panel/specialties',
-	'/dashboard/admin-panel/subcities',
-	'/dashboard/admin-panel/supply-types',
-	'/dashboard/admin-panel/tax-types',
-	'/dashboard/admin-panel/vat-withhold'
-]);
+const HELP_BACKLOG = new Set<string>([]);
 
 /**
- * Help files describing pages that no longer exist — mostly the client-billing features that were
- * pruned (contracts, payments, requests, sites) and the supply leases removed this cycle.
+ * Help files describing pages that no longer exist.
  *
- * Drift runs both ways, and only this direction leaves the manual confidently describing a system
- * nobody can find. Deleting these is content work, not test work, so they are recorded rather
- * than silently tolerated.
+ * Empty, and meant to stay so. It held sixteen — the contracts, payments, requests and sites pruned
+ * with the facilities features, and the supply leases — until they were deleted. Drift runs both
+ * ways, and only this direction leaves the manual confidently describing a system nobody can find,
+ * so a page removed from here should take its help file with it rather than add a line.
  */
-const ORPHAN_BACKLOG = new Set([
-	'add-contract.json',
-	'add-payment.json',
-	'add-request.json',
-	'add-site.json',
-	'bank-history.json',
-	'contract-details.json',
-	'contracts-inactive.json',
-	'contracts-list.json',
-	'contracts-terminated.json',
-	'employees-by-site.json',
-	'payments-list.json',
-	'report-commercial.json',
-	'requests-section.json',
-	'site-detail.json',
-	'sites-list.json',
-	'supply-leases.json'
-]);
+const ORPHAN_BACKLOG = new Set<string>([]);
 
 /** Pages absent from `ROUTE_MAP`, so the route map and printed manual do not list them. */
-const ROUTE_MAP_BACKLOG = new Set([
-	'/dashboard/admin-panel/allergens',
-	'/dashboard/admin-panel/appointment-types',
-	'/dashboard/admin-panel/closures',
-	'/dashboard/admin-panel/conditions',
-	'/dashboard/admin-panel/contact-types',
-	'/dashboard/admin-panel/dental-labs',
-	'/dashboard/admin-panel/referral-sources',
-	'/dashboard/admin-panel/roles/[id]',
-	'/dashboard/admin-panel/roles/add-roles',
-	'/dashboard/admin-panel/services/categories',
-	'/dashboard/admin-panel/specialties',
-	'/dashboard/admin-panel/users/[id]',
-	'/dashboard/admin-panel/users/add-users',
-	'/dashboard/employees/leaves/approved',
-	'/dashboard/employees/leaves/cancelled',
-	'/dashboard/employees/leaves/pending',
-	'/dashboard/employees/single/[id]/salary/add-bonus',
-	'/dashboard/employees/single/[id]/salary/add-deduction',
-	'/dashboard/employees/single/[id]/salary/add-overtime',
-	'/dashboard/salary',
-	'/dashboard/salary/transactions/expenses/ranges/[range]',
-	'/dashboard/salary/transactions/ranges/[range]',
-	'/dashboard/supplies/[id]/ranges/[range]',
-	'/dashboard/supplies/suppliers/[id]'
-]);
+const ROUTE_MAP_BACKLOG = new Set<string>([]);
 
 type Entry = { key: string; file: string; exact: boolean };
-
-function dashboardPages(): string[] {
-	function walk(dir: string): string[] {
-		const found: string[] = [];
-
-		for (const entry of readdirSync(dir, { withFileTypes: true })) {
-			const full = join(dir, entry.name);
-
-			if (entry.isDirectory()) found.push(...walk(full));
-			else if (entry.name === '+page.svelte') {
-				found.push(dir.slice(ROUTES_ROOT.length).split(sep).join('/') || '/');
-			}
-		}
-
-		return found;
-	}
-
-	return [...new Set(walk(join(ROUTES_ROOT, 'dashboard')))].sort();
-}
 
 /** Every `?`-panel entry, keyed the way `Registry.ts` keys it. */
 function helpEntries(): Entry[] {
@@ -210,7 +124,7 @@ function routeMapPaths(): Set<string> {
 	return new Set([...source.matchAll(/^\t\tpath: '([^']+)'/gm)].map((m) => m[1]));
 }
 
-const pages = dashboardPages();
+const pages = dashboardRoutes();
 const entries = helpEntries();
 const ownEntry = new Set(entries.map((e) => e.key));
 

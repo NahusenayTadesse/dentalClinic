@@ -1,5 +1,5 @@
 <script lang="ts" generics="T extends Record<string, unknown>">
-	import type { Snippet } from 'svelte';
+	import { untrack, type Snippet } from 'svelte';
 	import type { SuperForm, SuperValidated } from 'sveltekit-superforms';
 	import SquarePen from '@lucide/svelte/icons/square-pen';
 	import Save from '@lucide/svelte/icons/save';
@@ -27,6 +27,11 @@
 	 *       {/snippet}
 	 *     </FormDialog>
 	 *
+	 * **Opened from elsewhere.** By default the dialog brings its own "Edit" button. A page that
+	 * opens it from something else — a tooth on the dental chart, a row in a table — binds `open`,
+	 * hides the trigger, and passes `seed`: the values to start from, applied each time it opens.
+	 * One dialog then serves every row, rather than a form per row.
+	 *
 	 * Non-goals: add dialogs over a table (that is `LookupSection`), and multi-step forms.
 	 */
 	let {
@@ -38,7 +43,11 @@
 		description,
 		submitLabel = 'Save changes',
 		triggerLabel = 'Edit',
-		disabled = false
+		disabled = false,
+		open = $bindable(false),
+		seed,
+		hideTrigger = false,
+		resetOnSuccess = false
 	}: {
 		title: string;
 		/** The named action the form posts to, e.g. `?/editIdentity`. */
@@ -56,18 +65,40 @@
 		triggerLabel?: string;
 		/** Hide the dialog entirely — for a viewer who may read the section but not change it. */
 		disabled?: boolean;
+		/** Bind to open the dialog from outside it. */
+		open?: boolean;
+		/**
+		 * Values written into the form each time the dialog opens — which tooth was clicked, which
+		 * row is being edited. Read at the moment of opening, so changing it while the dialog is
+		 * open does not overwrite what is being typed.
+		 */
+		seed?: Partial<T>;
+		/** No trigger button: the page opens the dialog itself through `open`. */
+		hideTrigger?: boolean;
+		/**
+		 * Clear the form after a successful save. For an add dialog used again and again; an edit
+		 * dialog keeps what was saved, which is what the default does.
+		 */
+		resetOnSuccess?: boolean;
 	} = $props();
-
-	let open = $state(false);
 
 	// Seeded once from the load; after a save superforms replaces it with what the server returned.
 	// svelte-ignore state_referenced_locally
 	const { form, errors, enhance, delayed, allErrors } = createForm(data, schema, {
-		resetForm: false,
+		resetForm: resetOnSuccess,
 		// Closed only on success, so a refused save keeps the dialog and its errors on screen.
 		onUpdated({ form }) {
 			if (form.message?.type === 'success') open = false;
 		}
+	});
+
+	// Seeded on opening only: `seed` is read untracked, so a new seed while the dialog is open is
+	// ignored until the next time it opens.
+	$effect(() => {
+		if (!open) return;
+		untrack(() => {
+			if (seed) form.update((current) => ({ ...current, ...seed }), { taint: false });
+		});
 	});
 
 	/* One id per action: several of these share a page, and the submit button finds its form by id. */
@@ -77,10 +108,12 @@
 {#if !disabled}
 	<DialogComp bind:open {title} {description} variant="ghost" triggerClass="ml-auto">
 		{#snippet trigger(props)}
-			<Button size="sm" variant="ghost" class="ml-auto gap-1" {...props}>
-				<SquarePen class="size-4" />
-				{triggerLabel}
-			</Button>
+			{#if !hideTrigger}
+				<Button size="sm" variant="ghost" class="ml-auto gap-1" {...props}>
+					<SquarePen class="size-4" />
+					{triggerLabel}
+				</Button>
+			{/if}
 		{/snippet}
 
 		<form {action} method="post" use:enhance id={formId} class="flex w-full flex-col gap-4 p-4">

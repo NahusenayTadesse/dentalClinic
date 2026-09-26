@@ -19,7 +19,6 @@
  * Non-goals: reads (that is `patient_access_log`), and bulk operations row by row — a payroll run
  * over 400 employees is one call describing the run, not 400.
  */
-import type { RequestEvent } from '@sveltejs/kit';
 import type { db } from '$lib/server/db';
 import { auditLog } from '$lib/server/db/schema';
 
@@ -186,9 +185,20 @@ export type AuditEntry = {
  * An update whose values match the row writes nothing — a save with no edits is not an event.
  * Returns whether a row was written.
  */
+/**
+ * The parts of a request an audit row is stamped from: who, where, and from which address.
+ *
+ * Named, rather than a whole `RequestEvent`, so a write can be audited — and tested — with exactly
+ * what it records. A `RequestEvent` is one of these.
+ */
+export type AuditRequest = {
+	locals: { user?: { id: string } | null; branch?: { active: number | null } };
+	getClientAddress: () => string;
+};
+
 export async function recordAudit(
 	writer: Writer,
-	event: Pick<RequestEvent, 'locals' | 'getClientAddress'>,
+	event: AuditRequest,
 	entry: AuditEntry
 ): Promise<boolean> {
 	let changes: Record<string, unknown> | null = null;
@@ -219,7 +229,7 @@ export async function recordAudit(
  * audit row without an address is still evidence; refusing the write over it would lose the
  * change's record entirely.
  */
-function clientAddress(event: Pick<RequestEvent, 'getClientAddress'>): string | null {
+function clientAddress(event: Pick<AuditRequest, 'getClientAddress'>): string | null {
 	try {
 		return event.getClientAddress().slice(0, 45);
 	} catch {

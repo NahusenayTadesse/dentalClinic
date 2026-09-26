@@ -3,15 +3,15 @@
 	"languages": {
 		"en": {
 			"title": "Supply Details",
-			"summary": "One item: where its quantity came from, what is out on lease, and what has been lost.",
+			"summary": "One item: how much is in store, where that quantity came from, and what has been lost.",
 			"sections": [
 				{
 					"heading": "What is here",
-					"body": "• The item's name, type, description and reorder level\n• Its four figures: on hand, reserved, leased out and available\n• Its movement history over a date range\n• Damaged and lost records over a date range"
+					"body": "• The item's name, type, description and reorder level\n• How much is in store\n• Its movement history over a date range\n• Damaged and lost records over a date range"
 				},
 				{
-					"heading": "The four figures again",
-					"body": "• On hand — physically in the store\n• Reserved — promised to an approved lease that has not been issued yet\n• Leased out — physically at a site\n• Available — on hand less reserved: what you can still promise somebody\n\nReserved and leased out are worked out from the leases each time, never stored here, so they cannot drift out of step with the leases themselves."
+					"heading": "Where the quantity comes from",
+					"body": "The quantity in store is the sum of the item's lots — one per delivery — worked out each time it is shown rather than kept as a running total that could drift. Using stock takes it from the lot that expires first."
 				},
 				{
 					"heading": "Recording damage and loss",
@@ -20,22 +20,22 @@
 			],
 			"links": [
 				{
-					"label": "Full guide — Supplies and leases",
+					"label": "Full guide — Supplies",
 					"href": "/dashboard/help#section-supplies"
 				}
 			]
 		},
 		"am": {
 			"title": "የግብዓት ዝርዝር",
-			"summary": "አንድ ዕቃ፦ መጠኑ ከየት እንደመጣ፣ በኪራይ ውጪ ያለውና የጠፋው።",
+			"summary": "አንድ ዕቃ፦ በመጋዘን ያለው መጠን፣ መጠኑ ከየት እንደመጣ እና የጠፋው።",
 			"sections": [
 				{
 					"heading": "እዚህ ያለው",
-					"body": "• የዕቃው ስም፣ ዓይነት፣ መግለጫና የዳግም ትዕዛዝ ደረጃ\n• አራቱ አኃዞቹ፦ በእጅ ያለ፣ የተያዘ፣ የተከራየና ነፃ\n• በቀን ክልል ውስጥ ያለው የእንቅስቃሴ ታሪክ\n• በቀን ክልል ውስጥ የተበላሹና የጠፉ መዝገቦች"
+					"body": "• የዕቃው ስም፣ ዓይነት፣ መግለጫና የዳግም ትዕዛዝ ደረጃ\n• በመጋዘን ያለው መጠን\n• በቀን ክልል ውስጥ ያለው የእንቅስቃሴ ታሪክ\n• በቀን ክልል ውስጥ የተበላሹና የጠፉ መዝገቦች"
 				},
 				{
-					"heading": "አራቱ አኃዞች እንደገና",
-					"body": "• በእጅ ያለ — በመጋዘን በአካል ያለው\n• የተያዘ — ጸድቆ ገና ላልወጣ ኪራይ የተመደበ\n• የተከራየ — በጣቢያ ላይ በአካል ያለ\n• ነፃ — በእጅ ካለው የተያዘው ሲቀነስ፦ አሁንም ለሌላ ሰው ሊሰጡት የሚችሉት\n\nየተያዘውና የተከራየው በየጊዜው ከኪራዮች ይሰላሉ እንጂ እዚህ አይቀመጡም፤ ስለዚህ ከኪራዮቹ ጋር ሊለያዩ አይችሉም።"
+					"heading": "መጠኑ ከየት ይመጣል",
+					"body": "በመጋዘን ያለው መጠን የዕቃው ሎቶች ድምር ነው — በእያንዳንዱ ርክክብ አንድ ሎት። ሊዛባ የሚችል ተከታታይ ድምር ሆኖ አይቀመጥም፤ በታየ ቁጥር ይሰላል። ክምችት ሲወሰድ ቀድሞ ከሚያልቀው ሎት ይወሰዳል።"
 				},
 				{
 					"heading": "ጉዳትና ብክነት መመዝገብ",
@@ -44,7 +44,7 @@
 			],
 			"links": [
 				{
-					"label": "ሙሉ መመሪያ — ግብዓቶችና ኪራዮች",
+					"label": "ሙሉ መመሪያ — ግብዓቶች",
 					"href": "/dashboard/help#section-supplies"
 				}
 			]

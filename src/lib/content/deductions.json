@@ -15,7 +15,7 @@
 				},
 				{
 					"heading": "Where to see them",
-					"body": "The Compensation report carries the deductions ledger for any range, filtered by site, department or person. That is the copy to take when somebody queries what came off their pay."
+					"body": "The Compensation report carries the deductions ledger for any range, filtered by branch, department or person. That is the copy to take when somebody queries what came off their pay."
 				}
 			],
 			"links": [
@@ -39,7 +39,7 @@
 				},
 				{
 					"heading": "የት እንደሚታዩ",
-					"body": "የካሳ ሪፖርት የተቀናሾችን መዝገብ ለማንኛውም ክልል በጣቢያ፣ በክፍል ወይም በሰው ተጣርቶ ይይዛል። አንድ ሰው ከደመወዙ ስለተቀነሰው ሲጠይቅ የሚወሰደው ያ ነው።"
+					"body": "የካሳ ሪፖርት የተቀናሾችን መዝገብ ለማንኛውም ክልል በቅርንጫፍ፣ በክፍል ወይም በሰው ተጣርቶ ይይዛል። አንድ ሰው ከደመወዙ ስለተቀነሰው ሲጠይቅ የሚወሰደው ያ ነው።"
 				}
 			],
 			"links": [

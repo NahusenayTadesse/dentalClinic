@@ -1,0 +1,45 @@
+{
+	"path": "/dashboard/admin-panel/positions",
+	"languages": {
+		"en": {
+			"title": "Positions",
+			"summary": "The positions staff hold, each in a department.",
+			"sections": [
+				{
+					"heading": "Adding a position",
+					"body": "Give it its name and choose its department. The same title in two departments is two positions."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Employees and leave",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		},
+		"am": {
+			"title": "የሥራ መደቦች",
+			"summary": "ሠራተኞች የሚይዟቸው የሥራ መደቦች፤ እያንዳንዱ በአንድ የሥራ ክፍል ውስጥ።",
+			"sections": [
+				{
+					"heading": "የሥራ መደብ መጨመር",
+					"body": "ስሙን ይስጡና የሥራ ክፍሉን ይምረጡ። በሁለት የሥራ ክፍሎች ውስጥ ያለ ተመሳሳይ ስም ሁለት የሥራ መደቦች ነው።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሠራተኞችና ፈቃድ",
+					"href": "/dashboard/help#section-people"
+				}
+			]
+		}
+	}
+}

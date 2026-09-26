@@ -10,6 +10,7 @@
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
+	import CompleteVisit from './complete-visit.svelte';
 	import { createForm } from '$lib/forms/createForm';
 	import {
 		cancelAppointment,
@@ -17,6 +18,7 @@
 		moveAppointment,
 		type CancelAppointment,
 		type ChangeStatus,
+		type CompleteVisit as CompleteVisitForm,
 		type MoveAppointment
 	} from '$lib/forms/appointmentSchemas';
 	import {
@@ -34,8 +36,8 @@
 	 * One appointment: what it is, and everything that can happen to it next.
 	 *
 	 * The status buttons are drawn from `NEXT_STATUS` — the same table the server checks — so a button
-	 * here is a move the action will accept. Cancelling asks for a reason; moving is offered only
-	 * until the visit starts.
+	 * here is a move the action will accept. Cancelling asks for a reason; completing asks what was
+	 * done (`complete-visit.svelte`); moving is offered only until the visit starts.
 	 *
 	 * Rendered keyed by the appointment, so each opened appointment seeds its own forms.
 	 */
@@ -45,7 +47,8 @@
 		forms,
 		providers,
 		chairs,
-		canBook
+		canBook,
+		canChart = false
 	}: {
 		open?: boolean;
 		appointment: DayAppointment;
@@ -53,10 +56,13 @@
 			status: SuperValidated<ChangeStatus>;
 			cancel: SuperValidated<CancelAppointment>;
 			move: SuperValidated<MoveAppointment>;
+			complete: SuperValidated<CompleteVisitForm>;
 		};
 		providers: { value: number; name: string }[];
 		chairs: { id: number; name: string }[];
 		canBook: boolean;
+		/** Whether the viewer may record clinical work, which completing a visit offers. */
+		canChart?: boolean;
 	} = $props();
 
 	const close = {
@@ -97,11 +103,14 @@
 	const status = $derived<AppointmentStatus>(
 		isAppointmentStatus(appointment.status) ? appointment.status : 'scheduled'
 	);
-	const moves = $derived(NEXT_STATUS[status].filter((s) => s !== 'cancelled'));
+	// Cancelling and completing each open a panel of their own; the rest are one-click moves.
+	const moves = $derived(NEXT_STATUS[status].filter((s) => s !== 'cancelled' && s !== 'completed'));
+	const canComplete = $derived(NEXT_STATUS[status].includes('completed'));
 	const canCancel = $derived(NEXT_STATUS[status].includes('cancelled'));
 
 	let showCancel = $state(false);
 	let showMove = $state(false);
+	let showComplete = $state(false);
 
 	const chairOptions = $derived(chairs.map((c) => ({ value: c.id, name: c.name })));
 
@@ -214,6 +223,11 @@
 			{/if}
 
 			<div class="flex flex-wrap gap-2">
+				{#if canComplete}
+					<Button size="sm" onclick={() => (showComplete = !showComplete)}>
+						{STATUS_LABEL.completed.action}
+					</Button>
+				{/if}
 				{#if isMovable(status)}
 					<Button variant="outline" size="sm" onclick={() => (showMove = !showMove)}>Move</Button>
 				{/if}
@@ -223,6 +237,15 @@
 					</Button>
 				{/if}
 			</div>
+
+			{#if showComplete}
+				<CompleteVisit
+					{appointment}
+					data={forms.complete}
+					{canChart}
+					ondone={() => (open = false)}
+				/>
+			{/if}
 
 			{#if showMove}
 				<form

@@ -1,0 +1,53 @@
+{
+	"path": "/dashboard/admin-panel/allergens",
+	"languages": {
+		"en": {
+			"title": "Allergens",
+			"summary": "The substances a patient can be recorded as reacting to. Each one is an option on the patient chart's allergy section.",
+			"sections": [
+				{
+					"heading": "Adding an allergen",
+					"body": "Give it the name clinicians use and a category: medication, anaesthetic, dental material, food, environmental or other. Before adding, check the list for a near-duplicate — \"Penicillin V\" next to \"Penicillin\" splits the patients who react to it across two entries, and the allergy alerts on the patient list can only count what is spelled the same way."
+				},
+				{
+					"heading": "Order",
+					"body": "Lower numbers come first in the picker. Put the substances your clinic meets most often at the top."
+				},
+				{
+					"heading": "Retiring an entry",
+					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Patients",
+					"href": "/dashboard/help#section-patients"
+				}
+			]
+		},
+		"am": {
+			"title": "አለርጂ አምጪዎች",
+			"summary": "ታካሚ አለርጂ እንዳለበት ሊመዘገብባቸው የሚችሉ ነገሮች። እያንዳንዱ በታካሚው ቻርት የአለርጂ ክፍል ውስጥ እንደ ምርጫ ይታያል።",
+			"sections": [
+				{
+					"heading": "አለርጂ አምጪ መጨመር",
+					"body": "ሐኪሞች የሚጠሩበትን ስምና ምድብ ይስጡ፦ መድኃኒት፣ ማደንዘዣ፣ የጥርስ ሕክምና ቁሳቁስ፣ ምግብ፣ አካባቢያዊ ወይም ሌላ። ከመጨመርዎ በፊት ተመሳሳይ ስም ያለው መኖሩን ያረጋግጡ — \"Penicillin V\" ከ\"Penicillin\" አጠገብ ቢኖር ለአንዱ ነገር አለርጂ ያለባቸውን ታካሚዎች በሁለት ይከፍላል።"
+				},
+				{
+					"heading": "ቅደም ተከተል",
+					"body": "ትንሽ ቁጥር ያላቸው በምርጫ ዝርዝሩ መጀመሪያ ይመጣሉ። ክሊኒኩ በብዛት የሚያጋጥሙትን ከላይ ያድርጉ።"
+				},
+				{
+					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
+					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ታካሚዎች",
+					"href": "/dashboard/help#section-patients"
+				}
+			]
+		}
+	}
+}
