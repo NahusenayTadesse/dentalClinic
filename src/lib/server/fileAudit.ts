@@ -24,8 +24,9 @@ import { FILES_DIR } from '$lib/server/files';
  * Deliberately reads *every* row, including soft-deleted ones: a deleted record's file is still
  * referenced, and a reconciliation that ignored that would report live documents as orphans.
  *
- * The real fix is a `files` table that records what each upload is attached to. Until that
- * exists, this is the only way to see the drift.
+ * `patient_file` is the first table built the right way — a row per upload, naming its owner —
+ * and is listed below like any other. The columns before it are one filename each on the record
+ * that owns them; until they move to rows of their own, this is the only way to see the drift.
  */
 
 /** Every column that stores a filename, as `table.column` pairs of raw SQL identifiers. */
@@ -43,7 +44,8 @@ const FILENAME_COLUMNS: ReadonlyArray<readonly [table: string, column: string]> 
 	['work_experience', 'certificate'],
 	['transactions', 'reciept_link'],
 	['payroll_receipts', 'reciept_link'],
-	['payroll_entries', 'reciept_link']
+	['payroll_entries', 'reciept_link'],
+	['patient_file', 'stored_name']
 ];
 
 export type FileAudit = {

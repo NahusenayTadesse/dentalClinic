@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/billing/cash",
+	"languages": {
+		"en": {
+			"title": "Cash drawer",
+			"summary": "Open the drawer with a float, see what it should hold, and count and close it at night.",
+			"sections": [
+				{
+					"heading": "In the morning",
+					"body": "Open the drawer with the float — what is in it before the first patient pays. Cash cannot be taken at this branch while the drawer is closed."
+				},
+				{
+					"heading": "During the day",
+					"body": "The page shows the cash taken and what the drawer should hold: the float plus cash in, less cash out."
+				},
+				{
+					"heading": "At night",
+					"body": "Count the cash and press Count and close. Type what you counted and what is being taken out to bank; the rest stays as tomorrow's float. If the count is over or short, say why — it will not close without a note. What the drawer should hold is written down at the count, so a payment entered later cannot change a day already counted."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Billing",
+					"href": "/dashboard/help#section-billing"
+				}
+			]
+		},
+		"am": {
+			"title": "የገንዘብ መሳቢያ",
+			"summary": "መሳቢያውን በመነሻ ገንዘብ ይክፈቱ፣ መያዝ ያለበትን ይመልከቱ፣ ማታም ቆጥረው ይዝጉ።",
+			"sections": [
+				{
+					"heading": "ጠዋት",
+					"body": "መሳቢያውን በመነሻ ገንዘቡ ይክፈቱ — የመጀመሪያው ታካሚ ከመክፈሉ በፊት በውስጡ ያለው። መሳቢያው ዝግ እያለ በዚህ ቅርንጫፍ ጥሬ ገንዘብ አይቀበልም።"
+				},
+				{
+					"heading": "በቀኑ ውስጥ",
+					"body": "ገጹ የተቀበለውን ጥሬ ገንዘብ እና መሳቢያው መያዝ ያለበትን ያሳያል፦ መነሻ ገንዘብ እና የገባው ጥሬ ገንዘብ፣ የወጣው ተቀንሶ።"
+				},
+				{
+					"heading": "ማታ",
+					"body": "ጥሬ ገንዘቡን ቆጥረው Count and close ይጫኑ። የቆጠሩትን እና ወደ ባንክ የሚወሰደውን ይጻፉ፤ ቀሪው የነገ መነሻ ገንዘብ ሆኖ ይቀራል። ቆጠራው ከበለጠ ወይም ካነሰ ምክንያቱን ይጻፉ — ያለ ማስታወሻ አይዘጋም። መሳቢያው መያዝ የነበረበት በቆጠራው ጊዜ ይመዘገባል፤ ስለዚህ በኋላ የገባ ክፍያ አስቀድሞ የተቆጠረን ቀን አይቀይርም።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ክፍያ",
+					"href": "/dashboard/help#section-billing"
+				}
+			]
+		}
+	}
+}

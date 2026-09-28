@@ -23,37 +23,43 @@ thing, give it a new optional prop — do not fork it and leave the old one behi
 
 ### Catalog — client
 
-| Need                                | Use                                                                       | Current users |
-| ----------------------------------- | ------------------------------------------------------------------------- | ------------- |
-| A table                             | `components/Table/data-table.svelte`                                      | 85            |
-| Server-driven filter bar            | `$lib/QueryBuilder.svelte` + `$lib/queryFilters.ts`                       | 17            |
-| Client-side facets over loaded rows | `components/Table/FilterMenu.svelte`                                      | 41            |
-| Sortable header                     | `Table/data-table-sort.svelte`                                            | 89            |
-| Link cell                           | `Table/data-table-links.svelte`                                           | 71            |
-| Mention of a record (auto-linked)   | `Table/data-table-links.svelte` with `entity` + `$lib/entityLinks.ts`     |
-| Status badge                        | `Table/statuses.svelte`                                                   | 56            |
-| Long text cell                      | `Table/bigText.svelte` · address cell `Table/address.svelte`              | 8 · 4         |
-| Any form field                      | `formComponents/InputComp.svelte`                                         | 153           |
-| Modal                               | `formComponents/DialogComp.svelte`                                        | 135           |
-| Form error summary                  | `formComponents/Errors.svelte`                                            | 133           |
-| Submit spinner                      | `formComponents/LoadingBtn.svelte`                                        | 169           |
-| Form shell · flash line             | `FormCard.svelte` · `Messages.svelte`                                     | 22 · 12       |
-| Initialise a superforms form        | `createForm` — `$lib/forms/createForm.ts` (validator + toast wired)       |
-| An edit dialog on a detail page     | `formComponents/FormDialog.svelte` — fields as a snippet                  | new           |
-| One dialog for many rows / a click  | `FormDialog` with `bind:open`, `seed`, `hideTrigger`                      | 2             |
-| An amount in a lookup table         | `LookupField` type `money` — number in the form, `formatETB` in the cell  | 1             |
-| A lookup of fixed rows (edit only)  | `LookupConfig.fixedRows` — no add dialog, no delete column                | 1             |
-| Teeth, surfaces, spans, the chart   | `$lib/teeth.ts` — FDI rules shared by the server check and the odontogram |
-| Service areas · procedure statuses  | `$lib/serviceAreas.ts` · `$lib/procedureStatus.ts` (client-safe enums)    |
-| A date window on a server table     | `data-table.svelte`'s `dateFilter` prop → `Table/table-date-range`        | new           |
-| Ethiopian month/year picker         | `formComponents/MonthYear.svelte`                                         | 26            |
-| Delete confirmation                 | `components/DeleteEntity.svelte`                                          | 48            |
-| Detail page shell · key/value table | `SingleView.svelte` · `SingleTable.svelte`                                | 8 · 8         |
-| A whole admin-panel lookup screen   | `components/lookup/LookupPage.svelte`                                     | 14            |
-| One child table on a detail page    | `components/lookup/LookupSection.svelte` + `lookup/actions.ts`            | 5             |
-| A card on a detail page             | `components/Section.svelte`                                               | 3             |
-| Choosing a patient in a form        | `components/PatientPicker.svelte` — searches, never loads the roster      | 1             |
-| The logo                            | `components/Logo.svelte` — `static/newLogo.png`, never an `<img>` of it   | 5             |
+| Need                                | Use                                                                               | Current users |
+| ----------------------------------- | --------------------------------------------------------------------------------- | ------------- |
+| A table                             | `components/Table/data-table.svelte`                                              | 85            |
+| Server-driven filter bar            | `$lib/QueryBuilder.svelte` + `$lib/queryFilters.ts`                               | 17            |
+| Client-side facets over loaded rows | `components/Table/FilterMenu.svelte`                                              | 41            |
+| Sortable header                     | `Table/data-table-sort.svelte`                                                    | 89            |
+| Link cell                           | `Table/data-table-links.svelte`                                                   | 71            |
+| Mention of a record (auto-linked)   | `Table/data-table-links.svelte` with `entity` + `$lib/entityLinks.ts`             |
+| Status badge                        | `Table/statuses.svelte`                                                           | 56            |
+| Long text cell                      | `Table/bigText.svelte` · address cell `Table/address.svelte`                      | 8 · 4         |
+| Any form field                      | `formComponents/InputComp.svelte`                                                 | 153           |
+| Modal                               | `formComponents/DialogComp.svelte`                                                | 135           |
+| Form error summary                  | `formComponents/Errors.svelte`                                                    | 133           |
+| Submit spinner                      | `formComponents/LoadingBtn.svelte`                                                | 169           |
+| Form shell · flash line             | `FormCard.svelte` · `Messages.svelte`                                             | 22 · 12       |
+| Initialise a superforms form        | `createForm` — `$lib/forms/createForm.ts` (validator + toast wired)               |
+| An edit dialog on a detail page     | `formComponents/FormDialog.svelte` — fields as a snippet                          | new           |
+| One dialog for many rows / a click  | `FormDialog` with `bind:open`, `seed`, `hideTrigger`                              | 2             |
+| An amount in a lookup table         | `LookupField` type `money` — number in the form, `formatETB` in the cell          | 1             |
+| A lookup of fixed rows (edit only)  | `LookupConfig.fixedRows` — no add dialog, no delete column                        | 1             |
+| Teeth, surfaces, spans, the chart   | `$lib/teeth.ts` — FDI rules shared by the server check and the odontogram         |
+| Service areas · procedure statuses  | `$lib/serviceAreas.ts` · `$lib/procedureStatus.ts` (client-safe enums)            |
+| A date window on a server table     | `data-table.svelte`'s `dateFilter` prop → `Table/table-date-range`                | new           |
+| Ethiopian month/year picker         | `formComponents/MonthYear.svelte`                                                 | 26            |
+| Delete confirmation                 | `components/DeleteEntity.svelte`                                                  | 48            |
+| Detail page shell · key/value table | `SingleView.svelte` · `SingleTable.svelte`                                        | 8 · 8         |
+| A whole admin-panel lookup screen   | `components/lookup/LookupPage.svelte`                                             | 14            |
+| One child table on a detail page    | `components/lookup/LookupSection.svelte` + `lookup/actions.ts`                    | 5             |
+| A card on a detail page             | `components/Section.svelte`                                                       | 4             |
+| An expiry date: expired / due soon  | `Table/expiry-cell.svelte` · `$lib/expiry.ts` (the window is the caller's)        | 2             |
+| A treatment plan's status           | `PlanStatusBadge.svelte` · `$lib/treatmentPlanStatus.ts` (steps, expiry, outcome) | 4             |
+| A bill's status                     | `InvoiceStatusBadge.svelte` · `$lib/invoiceStatus.ts` (steps, approval, payment)  | 3             |
+| A document on paper                 | `components/PrintSheet.svelte` — letterhead, print button, page margin            | 2             |
+| Choosing charted work in a form     | `components/ProcedurePicker.svelte` — checklist bound to `procedureIds`           | 3             |
+| Choosing a patient in a form        | `components/PatientPicker.svelte` — searches, never loads the roster              | 1             |
+| Taking a payment against bills      | `components/PaymentForm.svelte` + `$lib/forms/payment.ts` (patient or payer)      | 3             |
+| The logo                            | `components/Logo.svelte` — `static/newLogo.png`, never an `<img>` of it           | 5             |
 
 `InputComp` dispatches on `type` to file, select, date, combo, checkbox and password variants.
 **Most fields need nothing but `InputComp`** — reach for `SelectComp`/`ComboboxComp`/
@@ -64,35 +70,51 @@ any button, dialog, popover, or menu.
 
 ### Catalog — server
 
-| Need                               | Use                                                                                         |
-| ---------------------------------- | ------------------------------------------------------------------------------------------- |
-| Lookup-table CRUD                  | `contentCrud` — `server/crud.ts`                                                            |
-| CRUD for rows owned by a parent    | `childCrud` + `childActions` — `server/childCrud.ts` (`audit`, `permission` options)        |
-| Refusing a child write with reason | `throw new WriteRefused(field, text)` from a `childCrud` `transform` — a 400, not a 500     |
-| A chart tab's owner and view log   | `livePatientId` · `logPatientView(id, recordType, event)` — `server/patients.ts`            |
-| Charting a procedure               | `server/procedures.ts` — `procedureTransform`, `placeProcedure`, `chartProcedures`          |
-| Income tax, pension, net pay       | `server/payrollMath.ts` — `incomeTax`/`incomeTaxSql` (one rule, tested both ways), `netPay` |
-| Recording a visit's work           | `visitWork` (what to offer) · `recordVisitWork` (in the completion's transaction)           |
-| A database test's rollback         | `inRollback` · `TestTx` — `$lib/testing/rollback.ts`; routes on disk: `testing/routes.ts`   |
-| Recording a change to audited data | `recordAudit` — `server/audit.ts`, in the write's own transaction (§11)                     |
-| Getting an id back from an insert  | `insertReturningId` — `server/db/insert.ts` (§10)                                           |
-| Finding patients, and their alerts | `server/patients.ts` — search, age bands, alerts, duplicates                                |
-| Booking rules and the day's diary  | `server/appointments.ts` (`bookingProblems`) · `server/appointmentActions.ts` (the writes)  |
-| Clock time at the clinic           | `$lib/clinicTime.ts` — never `getHours()` or `new Date(y, m, d, h)` on a `datetime` (§9)    |
-| An appointment's next status       | `$lib/appointmentStatus.ts` — the server checks and the buttons are drawn from one table    |
-| List filtering + pagination        | `parseTableQuery` / `buildWhere` / `pagination` / `currentQuery` — `server/queryFilters.ts` |
-| Exclude deleted rows               | `notDeleted()` — `server/softDelete.ts` (118 files)                                         |
-| Cascading delete                   | the `softDelete*` family — `server/softDelete.ts`                                           |
-| Delete action on a lookup page     | `lookupDeleteAction` — `server/lookupDelete.ts`                                             |
-| Authorization                      | `requireSuperAdmin` · `syncAdminRole` — `server/permissions.ts`                             |
-| The working branch, and its scope  | `locals.branch` · `branchFilter` · `patientScope` — `server/branchScope.ts`                 |
-| Permission check in an action      | `requirePermission` · `hasPermission` — `server/permissions.ts`                             |
-| Reading a MySQL error code         | `isDuplicateKey` · `mysqlErrorCode` — `server/dbErrors.ts`                                  |
-| The permission list and admin role | `seedPermissions` — `server/seedPermissions.ts`, run by `/setup`                            |
-| Dropdown option lists              | `server/fastData.ts` (50 files)                                                             |
-| Anything about stored files        | `server/files.ts` — `saveUploadedFile`, `resolveStoredFile`, `mimeFor`, `MAX_UPLOAD_BYTES`  |
-| Formatting money / Ethiopian dates | `formatETB`, `formatEthiopianDate` — `lib/global.svelte.ts`                                 |
-| The URL of a stored file           | `fileUrl` — `lib/global.svelte.ts` (client-safe; `server/files.ts` owns the bytes)          |
+| Need                                     | Use                                                                                                                                                    |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Lookup-table CRUD                        | `contentCrud` — `server/crud.ts`                                                                                                                       |
+| CRUD for rows owned by a parent          | `childCrud` + `childActions` — `server/childCrud.ts` (`audit`, `permission` options)                                                                   |
+| Refusing a child write with reason       | `throw new WriteRefused(field, text)` from a `childCrud` `transform` — a 400, not a 500. `superAdminDelete` for a row that is withdrawn, never deleted |
+| A chart tab's owner and view log         | `livePatientId` · `logPatientView(id, recordType, event)` — `server/patients.ts`                                                                       |
+| Clinical notes: sign, amend, drafts      | `server/clinicalNotes.ts` — a signed note is never changed; corrections are new notes                                                                  |
+| Prescriptions, and the allergy check     | `server/prescriptions.ts` · `$lib/allergyClash.ts` (one rule for the form and the server)                                                              |
+| A patient's files                        | `server/patientFiles.ts` — `attachFile`, `fileOwner` (what the file route checks)                                                                      |
+| Merging duplicate patients               | `mergePatients` — `server/patientMerge.ts` (`OWNED` is tested against the foreign keys)                                                                |
+| A clinician or visit id from a form      | `checkedProvider` (`prescriber`) · `checkedVisit` · `recentVisits` — `server/appointments.ts`                                                          |
+| Refusing a write with a reason           | `refuseUnless(ok, text, field)` — `server/childCrud.ts`, beside `WriteRefused`                                                                         |
+| Charting a procedure                     | `server/procedures.ts` — `procedureTransform`, `placeProcedure`, `chartProcedures`                                                                     |
+| Income tax, pension, net pay             | `server/payrollMath.ts` — `incomeTax`/`incomeTaxSql` (one rule, tested both ways), `netPay`                                                            |
+| A clinician's commission                 | `commissionByStaff` — `server/commission.ts`, on completed work at the rate of that day                                                                |
+| Treatment plans: reads and writes        | `server/treatmentPlans.ts` — incl. adjustments to a presented quote (`planAdjustments`)                                                                |
+| Bills: what is owed, and changing them   | `server/billing.ts` (reads, `patientBalance`) · `invoiceWrites.ts` · `payments.ts`                                                                     |
+| Payments, payer payments, refunds        | `server/payments.ts` — `takePayment`, `takePayerPayment`, `requestRefund`, `settleRefunds`                                                             |
+| A write owned by a record, not a patient | `ownedAction` — `server/patientAction.ts` (`patientAction` is it, for a patient)                                                                       |
+| The cash drawer                          | `server/cashDrawer.ts` — `openSessionFor`, `drawerState`, `openDrawer`, `closeDrawer`                                                                  |
+| A numbered document                      | `nextNumber` — `server/documentNumbers.ts` (locked counter, per Ethiopian year)                                                                        |
+| A write on a patient's chart tab         | `patientAction(event, permission, schema, write)` — `server/patientAction.ts`                                                                          |
+| The clinic's settings                    | `readSettings` — `server/settings.ts`                                                                                                                  |
+| Stock in and out of lots                 | `moveStock` — `server/stock.ts` (never issues an expired lot unless `includeExpired`)                                                                  |
+| Recording a visit's work                 | `visitWork` (what to offer) · `recordVisitWork` (in the completion's transaction)                                                                      |
+| A database test's rollback               | `inRollback` · `TestTx` — `$lib/testing/rollback.ts`; routes on disk: `testing/routes.ts`                                                              |
+| Recording a change to audited data       | `recordAudit` — `server/audit.ts`, in the write's own transaction (§11)                                                                                |
+| Getting an id back from an insert        | `insertReturningId` — `server/db/insert.ts` (§10)                                                                                                      |
+| Finding patients, and their alerts       | `server/patients.ts` — search, age bands, alerts, duplicates                                                                                           |
+| Booking rules and the day's diary        | `server/appointments.ts` (`bookingProblems`) · `server/appointmentActions.ts` (the writes)                                                             |
+| Clock time at the clinic                 | `$lib/clinicTime.ts` — never `getHours()` or `new Date(y, m, d, h)` on a `datetime` (§9)                                                               |
+| An appointment's next status             | `$lib/appointmentStatus.ts` — the server checks and the buttons are drawn from one table                                                               |
+| List filtering + pagination              | `parseTableQuery` / `buildWhere` / `pagination` / `currentQuery` — `server/queryFilters.ts`                                                            |
+| Exclude deleted rows                     | `notDeleted()` — `server/softDelete.ts` (118 files)                                                                                                    |
+| Cascading delete                         | the `softDelete*` family — `server/softDelete.ts`                                                                                                      |
+| Delete action on a lookup page           | `lookupDeleteAction` — `server/lookupDelete.ts`                                                                                                        |
+| Authorization                            | `requireSuperAdmin` · `syncAdminRole` — `server/permissions.ts`                                                                                        |
+| The working branch, and its scope        | `locals.branch` · `branchFilter` · `patientScope` — `server/branchScope.ts`                                                                            |
+| Permission check in an action            | `requirePermission` · `hasPermission` — `server/permissions.ts`                                                                                        |
+| Reading a MySQL error code               | `isDuplicateKey` · `mysqlErrorCode` — `server/dbErrors.ts`                                                                                             |
+| The permission list and admin role       | `seedPermissions` — `server/seedPermissions.ts`, run by `/setup`                                                                                       |
+| Dropdown option lists                    | `server/fastData.ts` (50 files)                                                                                                                        |
+| Anything about stored files              | `server/files.ts` — `saveUploadedFile`, `resolveStoredFile`, `mimeFor`, `MAX_UPLOAD_BYTES`                                                             |
+| Formatting money / Ethiopian dates       | `formatETB`, `formatEthiopianDate` — `lib/global.svelte.ts`                                                                                            |
+| The URL of a stored file                 | `fileUrl` — `lib/global.svelte.ts` (client-safe; `server/files.ts` owns the bytes)                                                                     |
 
 ### Add a row, not a route
 
@@ -277,7 +299,6 @@ own table already has rows, so `npm run db:seed` tops a database up rather than 
 
 Everything else over 500 is a real target. Current offenders:
 `reports/details.server.ts` (1,518), `employees/single/[id]/+page.server.ts` (830, down from 1,296),
-`salary/add-payroll/**/+page.server.ts` (588/586),
 `employees/single/[id]/+page.svelte` (521), `Table/FilterMenu.svelte` (548),
 `QueryBuilder.svelte` (534).
 
@@ -364,6 +385,12 @@ Not style. These carry patient data.
   a `datetime` against an _expression_ rather than a column needs `storedInstant(date)`: without a
   column Drizzle does not convert, the driver uses local time, and the appointment overlap check
   let a dentist be double-booked three hours off.
+- **Database sessions run in UTC** (`server/db/connection.ts`), so the database's own clock — a
+  `DEFAULT now()`, `ON UPDATE CURRENT_TIMESTAMP`, a `NOW()` stamp — speaks Drizzle's UTC
+  convention. They ran in the server's zone until a quote's history showed every `created_at`
+  three hours late. Open a connection only through `createClinicPool`. And **never `CURDATE()`**:
+  in a UTC session it is yesterday until three in the morning here — "today" is `today()` in
+  `db/dialect.ts` or `clinicToday()`.
 - **Permission strings live only in `lib/routeAccess.ts`.** They are also rows in the
   `permissions` table — renaming one is a data migration, so get it right the first time.
 - **Errors: loud in the server log, quiet to the client.** Sign-in and password reset must give
@@ -375,11 +402,13 @@ Not style. These carry patient data.
   size limit and the safe path resolution. Never join a user-supplied name onto `FILES_DIR`
   yourself — `path.normalize` resolves `..` rather than rejecting it, so `resolveStoredFile` does
   the containment check that stops a name climbing out of the store.
-- **A file URL is not a permission.** `/dashboard/files/[name]` can only check that the caller is
-  signed in; the store is flat and a filename records nothing about what it is attached to. The
-  122-bit random name is what stands in for a check. That is adequate against guessing and
-  inadequate against a leaked URL, so do not treat these URLs as shareable secrets — and see
-  `fileAudit.ts` for why a `files` table is the next piece of work here.
+- **A file URL is not a permission — unless a row says whose file it is.** A patient's file has a
+  `patient_file` row naming its owner, so `/dashboard/files/[name]` asks for `patients.view` and
+  logs the opening (`fileOwner` in `server/patientFiles.ts`). Every other stored file — an
+  employee's documents, a receipt — is still guarded only by its 122-bit random name: adequate
+  against guessing, inadequate against a leaked URL, so do not treat those URLs as shareable
+  secrets. **A new kind of attachment gets a row of its own naming its owner**, never a bare
+  filename column; `fileAudit.ts` lists the columns still waiting to move.
 
 > Soft delete is the proof the approach works: `notDeleted()` in 118 files, `lookupDeleteAction`
 > in 19, and zero inline `deletedAt` writes anywhere in `src/routes`. When the helper exists and

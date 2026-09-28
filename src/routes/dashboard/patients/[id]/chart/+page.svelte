@@ -6,11 +6,11 @@
 	import Section from '$lib/components/Section.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import FormDialog from '$lib/formComponents/FormDialog.svelte';
-	import { dentitionForAge, toothName, toothStates, type Dentition } from '$lib/teeth';
+	import { dentitionForAge, toothName, toothStates, whereLabel, type Dentition } from '$lib/teeth';
 	import Odontogram from './Odontogram.svelte';
 	import ProcedureFields from './ProcedureFields.svelte';
 	import StatusCell from './StatusCell.svelte';
-	import { procedureColumns, whereLabel, type ProcedureRow } from './columns';
+	import { procedureColumns, type ProcedureRow } from './columns';
 	import { addProcedure, editProcedure, type AddProcedure, type EditProcedure } from './schema';
 
 	/**

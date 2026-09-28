@@ -29,7 +29,7 @@
 		{ name: 'Kind', value: data.supply?.returnable ? 'Returnable' : 'Consumable' },
 		{
 			name: 'Expires',
-			value: data.supply?.tracksExpiry ? 'Yes — lots carry an expiry date' : 'No'
+			value: data.supply?.tracksExpiry ? 'Yes' : 'No'
 		},
 		{ name: 'Unit of Measurement', value: data.supply?.unitOfMeasure },
 		{ name: 'Product Description', value: data.supply?.description },
@@ -112,22 +112,6 @@
 	</div>
 	{#if edit === false}
 		<div class="w-full p-4"><SingleTable {singleTable} /></div>
-		<div class="w-full p-4">
-			<Section title="Stock by lot" IconComp={Boxes} style="identityIcon">
-				{#if data.lots.length}
-					<DataTable
-						data={data.lots}
-						columns={lotColumns}
-						search={false}
-						fileName="{data.supply?.name} lots"
-					/>
-				{:else}
-					<p class="text-sm text-muted-foreground">
-						Nothing in store. Receive a delivery to add a lot.
-					</p>
-				{/if}
-			</Section>
-		</div>
 	{/if}
 	{#if edit}
 		<div class="w-full p-4">
@@ -146,5 +130,23 @@
 		</div>
 	{/if}
 </SingleView>
+
+<div class="w-full py-4">
+	<Section title="Stock by lot" IconComp={Boxes} style="identityIcon">
+		{#if data.lots.length}
+			<DataTable
+				data={data.lots}
+				columns={lotColumns}
+				search={false}
+				fileName="{data.supply?.name} lots"
+				height="auto"
+			/>
+		{:else}
+			<p class="text-sm text-muted-foreground">
+				Nothing in store. Receive a delivery to add a lot.
+			</p>
+		{/if}
+	</Section>
+</div>
 
 <DataTable data={data?.suppliers} {columns} fileName="{data?.supply?.name} Suppliers List" />

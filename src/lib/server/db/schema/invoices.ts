@@ -81,9 +81,13 @@ export const invoice = mysqlTable(
 		/** The clinic's own sequence. Unique: two invoices may not share a number. */
 		invoiceNumber: varchar('invoice_number', { length: 50 }).unique(),
 
-		issuedOn: date('issued_on').notNull(),
+		/*
+		 * Calendar days, `mode: 'string'` — as a JavaScript `Date` the driver hands a day back as a
+		 * midnight that converts to the day before in the clinic's time zone.
+		 */
+		issuedOn: date('issued_on', { mode: 'string' }).notNull(),
 		/** When payment is expected. Null for pay-now, which is most of them. */
-		dueOn: date('due_on'),
+		dueOn: date('due_on', { mode: 'string' }),
 
 		/**
 		 * `draft`   — being assembled, nothing handed over, still freely editable
@@ -156,10 +160,9 @@ export const invoice = mysqlTable(
  * `procedureId` stays for traceability — which treatment this billed — but nothing is read
  * through it at render time, and `set null` means re-charting cannot orphan a document.
  *
- * Supersedes `transaction_services`, which is the same idea attached directly to a payment: it
- * came from the facilities business, where you paid at the desk and listed what for. That table
- * still has four report consumers and should go when the transaction flows are reworked; until
- * then, do not write to both.
+ * Superseded `transaction_services`, which was the same idea attached directly to a payment: it
+ * came from the facilities business, where you paid at the desk and listed what for. The reports
+ * read bills now, and migration 0038 dropped it.
  */
 export const invoiceLine = mysqlTable(
 	'invoice_line',

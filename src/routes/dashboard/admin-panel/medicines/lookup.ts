@@ -35,6 +35,17 @@ export const config: LookupConfig = {
 			]
 		},
 		{
+			name: 'allergenId',
+			label: 'Allergy family',
+			type: 'reference',
+			options: 'allergenList',
+			display: 'allergen',
+			picker: 'select',
+			// The allergy a patient would have to this because of what it is — amoxicillin is a
+			// penicillin. Prescriptions are checked against it (`$lib/allergyClash.ts`).
+			required: false
+		},
+		{
 			name: 'isPrescribable',
 			label: 'Prescribable',
 			type: 'checkbox',

@@ -8,7 +8,11 @@ import {
 	decimal,
 	date,
 	text,
-	index
+	index,
+	json,
+	boolean,
+	datetime,
+	foreignKey
 } from 'drizzle-orm/mysql-core';
 import { relations } from 'drizzle-orm';
 import { secureFields } from './secureFields';
@@ -17,6 +21,7 @@ import { patient } from './patients';
 import { provider } from './providers';
 import { procedures } from './procedures';
 import { tooth } from './teeth';
+import { user } from './user';
 
 /**
  * A course of treatment presented to a patient as one decision.
@@ -86,8 +91,12 @@ export const treatmentPlan = mysqlTable(
 			.notNull()
 			.default('draft'),
 
-		presentedOn: date('presented_on'),
-		decidedOn: date('decided_on'),
+		/*
+		 * Calendar days, `mode: 'string'` — as a JavaScript `Date` the driver hands a day back as
+		 * the server's midnight, which is the day before once converted to the clinic's time.
+		 */
+		presentedOn: date('presented_on', { mode: 'string' }),
+		decidedOn: date('decided_on', { mode: 'string' }),
 
 		/**
 		 * Why not, when the answer was no or only partly yes.
@@ -99,7 +108,7 @@ export const treatmentPlan = mysqlTable(
 		declineReason: varchar('decline_reason', { length: 255 }),
 
 		/** How long the quote stands. Past it, `expired` is honest rather than a stale promise. */
-		validUntil: date('valid_until'),
+		validUntil: date('valid_until', { mode: 'string' }),
 
 		note: text('note'),
 
@@ -169,6 +178,99 @@ export const treatmentPlanItem = mysqlTable(
 	(table) => [
 		index('treatment_plan_item_plan_idx').on(table.treatmentPlanId, table.decision),
 		index('treatment_plan_item_procedure_idx').on(table.procedureId)
+	]
+);
+
+/**
+ * Every change made to a quote after the patient has seen it — the record that lets a presented
+ * quote be corrected without the original being lost.
+ *
+ * **Why a ledger and not an edit.** A presented quote is what a patient was told. It used to be
+ * frozen outright, which was honest and unworkable: a price agreed down in the chair, a crown
+ * that turned into a root canal on the X-ray, a line quoted twice by mistake all had to become a
+ * whole new plan. Now the lines may change, and each change writes a row here saying what it
+ * was, what it became, why, who, and when. The lines hold the quote as it stands; this table
+ * holds how it got there, and the original is those rows read backwards.
+ *
+ * **Kept forever.** No `deletedAt`, no `updatedAt`, and no code path that updates or deletes a
+ * row. A removed line is soft-deleted and its removal is a row here, so the line and the reason
+ * it went both survive. This is the business record of a price changing; `audit_log` carries the
+ * same event as the security record, and neither stands in for the other.
+ *
+ * `lineTotalBefore`/`lineTotalAfter` are the line's total either side of the change — 0 before
+ * an added line, 0 after a removed one — so the quote's original total is today's total less the
+ * sum of the differences, with no replay of the changes needed.
+ *
+ * Changes to a **draft** are not recorded here: nobody has seen a draft, so there is nothing to
+ * have changed from.
+ */
+export const treatmentPlanAdjustment = mysqlTable(
+	'treatment_plan_adjustment',
+	{
+		id: int('id').primaryKey().autoincrement(),
+
+		treatmentPlanId: int('treatment_plan_id').notNull(),
+
+		/** The line changed. Lines are only ever soft-deleted, so this always leads somewhere. */
+		treatmentPlanItemId: int('treatment_plan_item_id').notNull(),
+
+		/**
+		 * `changed` — wording, quantity or price of an existing line
+		 * `added`   — a line put on the quote after it was presented
+		 * `removed` — a line taken off it
+		 */
+		kind: mysqlEnum('kind', ['changed', 'added', 'removed']).notNull(),
+
+		/** `{ field: [before, after] }` for the fields that moved, as `audit_log.changes`. */
+		changes: json('changes'),
+
+		lineTotalBefore: decimal('line_total_before', { precision: 10, scale: 2, mode: 'number' })
+			.notNull()
+			.default(0),
+		lineTotalAfter: decimal('line_total_after', { precision: 10, scale: 2, mode: 'number' })
+			.notNull()
+			.default(0),
+
+		/**
+		 * Why. Required: "discount agreed", "X-ray showed it needs a root canal", "quoted twice"
+		 * are the difference between a correction and a price quietly moving.
+		 */
+		reason: varchar('reason', { length: 255 }).notNull(),
+
+		/**
+		 * Made after the patient had answered. A price that moves on work they already agreed to is
+		 * the change a clinic most needs to see — and to have discussed with them again.
+		 */
+		afterAnswer: boolean('after_answer').notNull().default(false),
+
+		createdBy: varchar('created_by', { length: 255 }).references(() => user.id, {
+			onDelete: 'set null'
+		}),
+		/**
+		 * When, written by the app as an instant — a `datetime`, never a `timestamp` with the
+		 * database's `now()` as default. That default writes the server's local clock, which Drizzle
+		 * reads back as UTC, so every change made after nine at night was dated the next day
+		 * (CLAUDE.md §9). No default here, so no write can take the wrong clock by leaving it out.
+		 */
+		createdAt: datetime('created_at').notNull()
+	},
+	(table) => [
+		index('treatment_plan_adjustment_plan_idx').on(table.treatmentPlanId, table.id),
+		/*
+		 * Named by hand: the generated name for the line's key is 72 characters, over MySQL's limit
+		 * of 64, and the migration failed halfway with the table already made. NO ACTION on both, so a
+		 * hard delete of a plan or a line with history is refused rather than taking the history.
+		 */
+		foreignKey({
+			name: 'tp_adjustment_plan_fk',
+			columns: [table.treatmentPlanId],
+			foreignColumns: [treatmentPlan.id]
+		}),
+		foreignKey({
+			name: 'tp_adjustment_item_fk',
+			columns: [table.treatmentPlanItemId],
+			foreignColumns: [treatmentPlanItem.id]
+		})
 	]
 );
 

@@ -10,6 +10,10 @@
 					"body": "Every payment in and out names one: salaries, expenses and stock purchases. Name each account the way the accountant reconciles it, so a transaction list can be checked against the statement."
 				},
 				{
+					"heading": "Kind",
+					"body": "Say what kind of money each method is. Cash is the one that matters: a payment by a cash method goes into the cash drawer, so it needs the drawer open at the branch and counts toward what the drawer should hold at night."
+				},
+				{
 					"heading": "Retiring an entry",
 					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
 				}
@@ -28,6 +32,10 @@
 				{
 					"heading": "ጥቅሙ",
 					"body": "እያንዳንዱ ገቢና ወጪ አንዱን ይጠቅሳል፦ ደመወዝ፣ ወጪዎችና የክምችት ግዢዎች። የግብይቶች ዝርዝር ከመግለጫው ጋር እንዲመሳከር እያንዳንዱን ሂሳብ የሂሳብ ባለሙያው በሚያስታርቅበት ስም ይሰይሙት።"
+				},
+				{
+					"heading": "ዓይነት",
+					"body": "እያንዳንዱ ዘዴ ምን ዓይነት ገንዘብ እንደሆነ ይግለጹ። ወሳኙ ጥሬ ገንዘብ ነው፦ በጥሬ ገንዘብ ዘዴ የተከፈለ ክፍያ ወደ የገንዘብ መሳቢያው ይገባል፤ ስለዚህ በቅርንጫፉ መሳቢያው ክፍት እንዲሆን ይፈልጋል፣ ማታም መሳቢያው መያዝ ካለበት ጋር ይቆጠራል።"
 				},
 				{
 					"heading": "መዝገብን ከአገልግሎት ማስወጣት",

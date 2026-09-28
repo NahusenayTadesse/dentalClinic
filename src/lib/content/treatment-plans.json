@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/treatment-plans",
+	"languages": {
+		"en": {
+			"title": "Plan follow-up",
+			"summary": "Quotes shown to patients and not yet answered, the longest-waiting first — and how the last quarter's quotes were answered.",
+			"sections": [
+				{
+					"heading": "Who to ring",
+					"body": "Every treatment plan presented at this branch that is still awaiting an answer and has not expired, oldest first. The patient's name opens their chart; Open plan goes to the quote, where you record the answer when they give it."
+				},
+				{
+					"heading": "Case acceptance",
+					"body": "• Case acceptance — the share of quoted value patients agreed to, over plans presented in the last 90 days and already answered\n• Agreed — the value of that agreed work, out of what was quoted\n• Awaiting an answer — quotes still standing\n• Expired unanswered — quotes that ran out before anyone got an answer\n\nA quote still waiting is not counted as a no. If acceptance is low, read the reasons on the declined plans: price and hesitation need different answers."
+				},
+				{
+					"heading": "When a quote expires",
+					"body": "It leaves this list and reads as Expired on the patient's Treatment plans tab. Its work is free to go on a new plan, at today's prices — the old plan stays as the record of what was offered."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Patients",
+					"href": "/dashboard/help#section-patients"
+				}
+			]
+		},
+		"am": {
+			"title": "የዕቅድ ክትትል",
+			"summary": "ለታካሚዎች የቀረቡና ገና መልስ ያልተሰጠባቸው ዋጋዎች፣ ረጅም ጊዜ የጠበቁት መጀመሪያ — እና ያለፈው ሩብ ዓመት ዋጋዎች እንዴት እንደተመለሱ።",
+			"sections": [
+				{
+					"heading": "ማንን መደወል",
+					"body": "በዚህ ቅርንጫፍ የቀረበ፣ ገና መልስ የሚጠብቅና ጊዜው ያላለፈ እያንዳንዱ የሕክምና ዕቅድ፣ የቆየው መጀመሪያ። የታካሚው ስም ቻርታቸውን ይከፍታል፤ Open plan ወደ ዋጋው ይወስዳል፣ ታካሚው ሲመልስ መልሱን እዚያ ይመዘግባሉ።"
+				},
+				{
+					"heading": "የሕክምና ተቀባይነት",
+					"body": "• የሕክምና ተቀባይነት — ባለፉት 90 ቀናት ከቀረቡና መልስ ከተሰጠባቸው ዕቅዶች ታካሚዎች የተስማሙበት የዋጋ ድርሻ\n• የተስማሙበት — ከቀረበው ዋጋ ውስጥ የተስማሙበት ሥራ ዋጋ\n• መልስ የሚጠብቁ — አሁንም የጸኑ ዋጋዎች\n• ሳይመለሱ ጊዜው ያለፈባቸው — መልስ ሳይገኝ ያለቁ ዋጋዎች\n\nገና የሚጠብቅ ዋጋ እንደ \"አይ\" አይቆጠርም። ተቀባይነቱ ዝቅተኛ ከሆነ ውድቅ በተደረጉት ዕቅዶች ላይ ያሉትን ምክንያቶች ያንብቡ፤ ዋጋና ማመንታት የተለያየ መልስ ይፈልጋሉ።"
+				},
+				{
+					"heading": "ዋጋ ጊዜው ሲያልፍ",
+					"body": "ከዚህ ዝርዝር ይወጣል፤ በታካሚው የሕክምና ዕቅዶች ትር ላይ \"ጊዜው ያለፈበት\" ተብሎ ይታያል። ሥራው በዛሬው ዋጋ በአዲስ ዕቅድ ላይ ሊገባ ይችላል — አሮጌው ዕቅድ የቀረበው ነገር መዝገብ ሆኖ ይቀራል።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ታካሚዎች",
+					"href": "/dashboard/help#section-patients"
+				}
+			]
+		}
+	}
+}

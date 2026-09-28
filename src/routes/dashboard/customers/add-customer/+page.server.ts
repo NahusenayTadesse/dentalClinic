@@ -1,35 +1,31 @@
 import { superValidate, setError, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { eq, and } from 'drizzle-orm';
+import { redirect } from 'sveltekit-flash-message/server';
+
 import { notDeleted } from '$lib/server/softDelete';
-import { customerSchema as schema } from './schema';
 import { db } from '$lib/server/db';
 import { customers, address } from '$lib/server/db/schema/';
+import { insertReturningId } from '$lib/server/db/insert';
 import { asRequested } from '$lib/server/approvals';
+import { isDuplicateKey } from '$lib/server/dbErrors';
 import { subcities } from '$lib/server/fastData';
-import type { Actions } from './$types';
-import type { PageServerLoad } from './$types.js';
-import { setFlash, redirect } from 'sveltekit-flash-message/server';
+import { customerSchema as schema } from './schema';
+import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async () => {
-	const form = await superValidate(zod4(schema));
-
-	const subcityList = await subcities();
-
-	return {
-		form,
-		subcityList
-	};
-};
+/**
+ * Registering a payer — an employer or insurer. It starts pending (`asRequested`) and waits in
+ * Approvals → Payers, like the rest of the maker-checker records.
+ */
+export const load: PageServerLoad = async () => ({
+	form: await superValidate(zod4(schema)),
+	subcityList: await subcities()
+});
 
 export const actions: Actions = {
 	addCustomer: async ({ request, locals, cookies }) => {
 		const form = await superValidate(request, zod4(schema));
-
-		if (!form.valid) {
-			// Stay on the same page and set a flash message
-			return message(form, { type: 'error', text: 'Please check your form.' });
-		}
+		if (!form.valid) return message(form, { type: 'error', text: 'Please check the form.' });
 		const {
 			name,
 			phone,
@@ -43,71 +39,50 @@ export const actions: Actions = {
 			houseNumber
 		} = form.data;
 
-		// try {
-
-		const existingCustomer = await db
+		// Checked first for a message under the field; the unique TIN is caught below, since two
+		// organisations can share a switchboard but never a tax number.
+		const [samePhone] = await db
 			.select({ id: customers.id })
 			.from(customers)
-			.where(and(eq(customers.phone, phone), notDeleted(customers)));
-
-		if (existingCustomer.length) {
-			setError(form, 'phone', 'Customer with same phone number exists');
-			return message(form, { type: 'error', text: 'Error: customer with the same number exists' });
+			.where(and(eq(customers.phone, phone), notDeleted(customers)))
+			.limit(1);
+		if (samePhone) {
+			return setError(form, 'phone', 'A payer with this phone number already exists.');
 		}
 
-		const newCustomerResult = await db.transaction(async (tx) => {
-			// 1. Insert Address
-			const [addressRes] = await tx
-				.insert(address)
-				.values({
-					subcityId: Number(subcity), // Handle potential NaN
+		let id: number;
+		try {
+			id = await db.transaction(async (tx) => {
+				const addressId = await insertReturningId(tx, address, {
+					subcityId: subcity,
 					street,
 					kebele,
 					buildingNumber,
 					floor,
 					houseNumber
-				})
-				.$returningId();
-
-			if (!addressRes) return message(form, { type: 'error', text: 'Failed to insert address' });
-
-			// 2. Insert Customer using the new address ID
-			const [customerRes] = await tx
-				.insert(customers)
-				.values({
-					...asRequested(locals?.user?.id),
+				});
+				return insertReturningId(tx, customers, {
+					...asRequested(locals.user?.id),
 					name,
 					phone,
-					email,
+					email: email?.trim() || null,
 					tinNo,
-					address: addressRes.id,
-					createdBy: locals?.user?.id
-				})
-				.$returningId();
+					address: addressId,
+					createdBy: locals.user?.id
+				});
+			});
+		} catch (err: unknown) {
+			if (isDuplicateKey(err)) {
+				return setError(form, 'tinNo', 'A payer with this TIN is already registered.');
+			}
+			console.error('Adding a payer failed:', err);
+			return message(
+				form,
+				{ type: 'error', text: 'The payer could not be saved.' },
+				{ status: 500 }
+			);
+		}
 
-			return customerRes;
-		});
-
-		if (!newCustomerResult)
-			return message(form, { type: 'error', text: 'Unexpected Error,  please try again' });
-		// Stay on the same page and set a flash message
-		// setFlash({ type: 'success', message: 'Customer Successfully Added' }, cookies);
-		redirect(
-			`/dashboard/customers/${newCustomerResult.id}`,
-			{ type: 'success', message: 'Customer Successfully Added!' },
-			cookies
-		);
-		// } catch (err) {
-		// 	console.error('Error' + err?.message);
-		// 	if (err?.code === 'ER_DUP_ENTRY')
-		// 		return setError(form, 'phone', 'Phone Number already exists.');
-		// 	return message(form, {
-		// 		type: 'error',
-		// 		text:
-		// 			err.code === 'ER_DUP_ENTRY'
-		// 				? 'Phone number is already taken. Please choose another one.'
-		// 				: err?.message
-		// 	});
-		// }
+		redirect(`/dashboard/customers/${id}`, { type: 'success', message: 'Payer added.' }, cookies);
 	}
 };

@@ -98,6 +98,34 @@ export const routeRules: RouteRule[] = [
 		permission: 'appointments.view'
 	},
 
+	/*
+	 * Treatment plans: the follow-up list of quotes awaiting an answer, and — checked in each action
+	 * on the patient's plans tab, which sits under `/dashboard/patients` — drawing up a plan,
+	 * presenting it and recording the answer. Reading a patient's plans is the chart's own
+	 * `patients.view`; this is who runs case acceptance, often a treatment coordinator rather
+	 * than the dentist.
+	 */
+	{
+		prefix: '/dashboard/treatment-plans',
+		permission: 'treatment_plans.manage'
+	},
+
+	/*
+	 * Billing. The drawer is its own permission, and its prefix comes first: counting the cash is
+	 * a different trust from raising a bill — often a manager's, at the end of the day. Raising a
+	 * bill and taking payment on a patient's chart is checked in each action there, under the same
+	 * `billing.invoice`, since the chart's own rule is only `patients.view`. Discounts and voids
+	 * are settled through `approvals.approve`, not here.
+	 */
+	{
+		prefix: '/dashboard/billing/cash',
+		permission: 'billing.cash_session'
+	},
+	{
+		prefix: '/dashboard/billing',
+		permission: 'billing.invoice'
+	},
+
 	{
 		prefix: '/dashboard/patients/add',
 		permission: 'patients.register'

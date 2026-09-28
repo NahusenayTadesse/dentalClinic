@@ -9,12 +9,13 @@ import { edit as schema } from './schema';
 
 import { db } from '$lib/server/db';
 import { moveStock } from '$lib/server/stock';
+import { WriteRefused } from '$lib/server/childCrud';
+import { insertReturningId } from '$lib/server/db/insert';
 import { clinicToday } from '$lib/clinicTime';
 import {
 	supplies,
 	deductions,
 	damagedSupplies,
-	transactionSupplies,
 	transactions,
 	suppliesAdjustments
 } from '$lib/server/db/schema';
@@ -46,8 +47,6 @@ import { saveUploadedFile } from '$lib/server/upload';
 // 			paidAmount: sql<number>`COALESCE(SUM(${transactions.amount}), 0)`
 // 		})
 // 		.from(supplies)
-// 		.leftJoin(transactionSupplies, eq(supplies.id, transactionSupplies.supplyId))
-// 		.leftJoin(transactions, eq(transactionSupplies.transactionId, transactions.id))
 // 		.leftJoin(user, eq(supplies.createdBy, user.id))
 // 		.where(and(eq(supplies.branchId, locals?.user?.branch), eq(supplies.id, id)))
 // 		.groupBy(
@@ -163,7 +162,7 @@ export const actions: Actions = {
 				return setError(
 					form,
 					'expiryDate',
-					'That date has passed — expired stock is not received.'
+					'That is today or already past — expired stock is not received.'
 				);
 			}
 		}
@@ -197,12 +196,8 @@ export const actions: Actions = {
 
 					transactionId = created.id;
 
-					await tx.insert(transactionSupplies).values({
-						transactionId: created.id,
-						supplyId: id,
-						quantity: String(adjustment),
-						unitPrice: String(costPerItem ?? 0)
-					});
+					// What was bought is on the ledger row below (`suppliesAdjustments.transactionId`),
+					// which is why no separate purchase-line table is written.
 				}
 
 				/*
@@ -245,7 +240,7 @@ export const actions: Actions = {
 				 */
 				if (moved !== adjustment) {
 					throw new Error(
-						`Only ${Math.abs(moved)} of ${Math.abs(adjustment)} units were available in stock`
+						`Only ${Math.abs(moved)} of ${Math.abs(adjustment)} units are in stock and in date — expired lots are written off as damaged, not issued`
 					);
 				}
 			});
@@ -259,78 +254,114 @@ export const actions: Actions = {
 			});
 		}
 	},
+	/**
+	 * A damage report: the report row, the units out of their lots, and — when the damage is the
+	 * employee's to pay for — a payroll deduction, all in one transaction.
+	 *
+	 * Rewritten after four faults, each silent: the report was a `db.update` with no `where`, so every
+	 * new report overwrote every earlier one; the ledger rows never named the report, so undoing it
+	 * put nothing back on the shelf; the deduction left out its date, a required column, so a
+	 * deductible report always failed after the stock had already moved; and an item with no known
+	 * cost priced the deduction at NaN.
+	 */
 	damaged: async ({ params, locals, request }) => {
-		const { id } = params;
 		const form = await superValidate(request, zod4(damagedSchema));
+		if (!form.valid) return fail(400, { form });
 
-		const { quantity, damagedBy, deductable, reason } = form.data;
+		const supplyId = Number(params.id);
+		const quantity = Number(form.data.quantity);
+		const damagedBy = Number(form.data.damagedBy) || null;
+		const { deductable } = form.data;
+		const reason = form.data.reason?.trim() || 'Damaged';
+
+		if (!(quantity > 0)) return setError(form, 'quantity', 'Enter how many were damaged.');
+		if (deductable && !damagedBy) {
+			return setError(form, 'damagedBy', 'Choose who pays for it, or untick deductible.');
+		}
 
 		try {
-			if (!id) {
-				return message(form, { type: 'error', text: 'Unexpected Error: Supply ID not provided' });
-			}
-
-			await db.update(damagedSupplies).set({
-				supplyId: Number(id),
-				quantity: Number(quantity),
-				createdBy: locals.user?.id,
-				damagedBy: Number(damagedBy),
-				deductable,
-				reason
-			});
-
-			/*
-			 * Damage takes units out of a lot, not off a total — stock on hand is the sum of open
-			 * lots. The ledger row records which lot, which is also what lets the damage report be
-			 * undone later: `softDeleteDamagedSupply` reads the lot back off this row.
-			 */
 			await db.transaction(async (tx) => {
-				const touched = await moveStock(tx, {
-					supplyId: Number(id),
-					delta: -Math.abs(Number(quantity)),
-					userId: locals.user?.id
+				const damagedId = await insertReturningId(tx, damagedSupplies, {
+					supplyId,
+					quantity,
+					damagedBy,
+					deductable,
+					reason,
+					createdBy: locals.user?.id
 				});
 
+				// Damage takes units out of lots, expired ones included: writing off an expired box is
+				// the commonest damage report there is.
+				const touched = await moveStock(tx, {
+					supplyId,
+					delta: -quantity,
+					userId: locals.user?.id,
+					includeExpired: true
+				});
+				const moved = touched.reduce((sum, lot) => sum - lot.quantity, 0);
+				if (moved !== quantity) {
+					throw new WriteRefused('quantity', `Only ${moved} are in stock.`);
+				}
+
+				// One ledger row per lot, each naming the report — which is what lets
+				// `softDeleteDamagedSupply` put the units back into the lots they came from.
 				for (const lot of touched) {
 					await tx.insert(suppliesAdjustments).values({
-						suppliesId: Number(id),
+						suppliesId: supplyId,
 						adjustment: lot.quantity,
 						batchId: lot.batchId,
+						damagedSuppliesId: damagedId,
 						movementType: 'damaged',
 						reason,
 						createdBy: locals.user?.id
 					});
 				}
-			});
-			if (deductable) {
-				const cost = await db
-					.select({
-						costPerItem: suppliesAdjustments.costPerItem
-					})
-					.from(suppliesAdjustments)
-					.where(
-						and(
-							eq(suppliesAdjustments.suppliesId, Number(id)),
-							isNotNull(suppliesAdjustments.costPerItem), // Ensures we get a record with a price
-							notDeleted(suppliesAdjustments)
+
+				if (deductable && damagedBy) {
+					const [cost] = await tx
+						.select({ costPerItem: suppliesAdjustments.costPerItem })
+						.from(suppliesAdjustments)
+						.where(
+							and(
+								eq(suppliesAdjustments.suppliesId, supplyId),
+								isNotNull(suppliesAdjustments.costPerItem),
+								notDeleted(suppliesAdjustments)
+							)
 						)
-					)
-					.orderBy(desc(suppliesAdjustments.createdAt))
-					.then((rows) => rows[0]);
+						.orderBy(desc(suppliesAdjustments.createdAt))
+						.limit(1);
+					const unitCost = Number(cost?.costPerItem);
+					if (!(unitCost > 0)) {
+						throw new WriteRefused(
+							'deductable',
+							'No delivery of this item has a cost recorded, so there is nothing to deduct.'
+						);
+					}
 
-				await db.insert(deductions).values({
-					staffId: Number(damagedBy),
-					type: 'Damaged Supply Item',
-					createdBy: locals.user?.id,
-					amount: Number(quantity) * Number(cost?.costPerItem),
-					reason
-				});
+					await tx.insert(deductions).values({
+						staffId: damagedBy,
+						type: 'Damaged Supply Item',
+						reason,
+						amount: (quantity * unitCost).toFixed(2),
+						// A `date` column in Date mode; midnight UTC of the clinic's day is that day.
+						deductionDate: new Date(clinicToday()),
+						createdBy: locals.user?.id
+					});
+				}
+			});
+
+			return message(form, { type: 'success', text: 'Damage recorded.' });
+		} catch (err: unknown) {
+			// Thrown rather than returned, so the transaction rolls back: a refused report leaves no
+			// report row and no units moved.
+			if (err instanceof WriteRefused) {
+				if (err.field === 'quantity' || err.field === 'deductable') {
+					return setError(form, err.field, err.message);
+				}
+				return message(form, { type: 'error', text: err.message }, { status: 400 });
 			}
-
-			return message(form, { type: 'success', text: 'Damaged supply added Successfully!' });
-		} catch (err) {
-			console.error('Error marking adding damaged supply:', err);
-			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+			console.error('Error adding damaged supply:', err);
+			return message(form, { type: 'error', text: 'The damage report could not be saved.' });
 		}
 	},
 	/**

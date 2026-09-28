@@ -1,5 +1,6 @@
 import { contentCrud } from '$lib/server/crud';
-import { medicine } from '$lib/server/db/schema/';
+import { allergen, medicine } from '$lib/server/db/schema/';
+import { allergens } from '$lib/server/fastData';
 import { lookupDeleteAction } from '$lib/server/lookupDelete';
 import { add, edit } from './schema';
 
@@ -18,7 +19,18 @@ const crud = contentCrud({
 	label: 'Medicine',
 	addSchema: add,
 	editSchema: edit,
-	uniqueField: 'genericName'
+	uniqueField: 'genericName',
+	references: [
+		{
+			field: 'allergenId',
+			table: allergen,
+			as: 'allergen',
+			options: allergens,
+			optionsKey: 'allergenList'
+		}
+	],
+	// "No family" arrives as `''`, which is not an id.
+	transform: (values) => ({ ...values, allergenId: Number(values.allergenId) || null })
 });
 
 /*

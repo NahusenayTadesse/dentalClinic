@@ -20,7 +20,22 @@
  * both are sparsely filled today and a hard refusal built on missing data blocks real bookings. They
  * become warnings when those screens exist.
  */
-import { and, eq, gt, isNull, lt, lte, gte, ne, notInArray, or, sql, type SQL } from 'drizzle-orm';
+import {
+	and,
+	desc,
+	eq,
+	gt,
+	inArray,
+	isNull,
+	lt,
+	lte,
+	gte,
+	ne,
+	notInArray,
+	or,
+	sql,
+	type SQL
+} from 'drizzle-orm';
 import { alias } from 'drizzle-orm/mysql-core';
 
 import { db } from '$lib/server/db';
@@ -34,6 +49,7 @@ import {
 	provider
 } from '$lib/server/db/schema';
 import { notDeleted } from '$lib/server/softDelete';
+import { WriteRefused } from '$lib/server/childCrud';
 import { addMinutes, concatWith, storedInstant } from '$lib/server/db/dialect';
 import { patientFullName } from '$lib/server/patients';
 import { clinicClock, clinicDate } from '$lib/clinicTime';
@@ -179,7 +195,10 @@ export async function bookableProviders() {
  * Active providers for a picker. `bookableOnly` narrows it to those the diary may book; charting
  * work done wants everyone licensed to have done it, including a radiographer nobody books.
  */
-export async function providerOptions({ bookableOnly = false }: { bookableOnly?: boolean } = {}) {
+export async function providerOptions({
+	bookableOnly = false,
+	prescribersOnly = false
+}: { bookableOnly?: boolean; prescribersOnly?: boolean } = {}) {
 	return db
 		.select({
 			value: provider.id,
@@ -195,11 +214,83 @@ export async function providerOptions({ bookableOnly = false }: { bookableOnly?:
 		.where(
 			and(
 				bookableOnly ? eq(provider.isBookable, true) : undefined,
+				prescribersOnly ? eq(provider.canPrescribe, true) : undefined,
 				eq(provider.isActive, true),
 				notDeleted(provider)
 			)
 		)
 		.orderBy(providerEmployee.name);
+}
+
+/**
+ * A provider id from a form, checked to be a live clinician, or null for none. With `prescriber`,
+ * also one who holds `canPrescribe` — the rule the prescription table leaves to the write path,
+ * since no constraint can reach across to `provider`.
+ */
+export async function checkedProvider(
+	reader: Reader,
+	providerId: number | null,
+	{ prescriber = false }: { prescriber?: boolean } = {}
+): Promise<number | null> {
+	if (providerId === null) return null;
+	const [row] = await reader
+		.select({ id: provider.id, canPrescribe: provider.canPrescribe })
+		.from(provider)
+		.where(and(eq(provider.id, providerId), eq(provider.isActive, true), notDeleted(provider)))
+		.limit(1);
+	if (!row) throw new WriteRefused('providerId', 'Choose a clinician from the list.');
+	if (prescriber && !row.canPrescribe) {
+		throw new WriteRefused('providerId', 'This clinician is not recorded as able to prescribe.');
+	}
+	return row.id;
+}
+
+/**
+ * A visit id from a form, checked to be this patient's, or null for none. A note or prescription
+ * tied to someone else's appointment would read as that visit's record on the wrong chart.
+ */
+export async function checkedVisit(
+	reader: Reader,
+	patientId: number,
+	appointmentId: number | null
+): Promise<number | null> {
+	if (appointmentId === null) return null;
+	const [row] = await reader
+		.select({ id: appointment.id })
+		.from(appointment)
+		.where(
+			and(
+				eq(appointment.id, appointmentId),
+				eq(appointment.patientId, patientId),
+				notDeleted(appointment)
+			)
+		)
+		.limit(1);
+	if (!row) throw new WriteRefused('appointmentId', 'That visit is not on this patient’s record.');
+	return row.id;
+}
+
+/**
+ * The patient's visits a note or a prescription can be tied to: the last sixty days and today's, newest first. What is
+ * written about a visit is written soon after it; offering every visit ever would bury the right one.
+ */
+export async function recentVisits(patientId: number) {
+	const since = new Date(Date.now() - 60 * 86_400_000);
+	const rows = await db
+		.select({ id: appointment.id, startsAt: appointment.startsAt, provider: providerName })
+		.from(appointment)
+		.leftJoin(provider, eq(provider.id, appointment.providerId))
+		.leftJoin(providerEmployee, eq(providerEmployee.id, provider.employeeId))
+		.where(
+			and(
+				eq(appointment.patientId, patientId),
+				notDeleted(appointment),
+				inArray(appointment.status, ['arrived', 'inChair', 'completed'])
+			)
+		)
+		.orderBy(desc(appointment.startsAt))
+		.limit(20);
+	return rows.filter((r) => r.startsAt >= since);
 }
 
 /** Appointment types for the picker, with the slot length and colour each implies. */

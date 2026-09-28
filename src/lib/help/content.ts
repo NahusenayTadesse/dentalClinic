@@ -319,7 +319,7 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'Press **Approve**, or press **Reject** and give a reason — a rejection without a reason is refused.'
 				],
 				notes: [
-					'The queues cover **employees, salary changes, expenses, payroll runs, payroll adjustments, customers, discounts and voids** on invoices, and **refunds**.',
+					'The queues cover **employees, salary changes, expenses, payroll runs, payroll adjustments, payers, discounts and voids** on invoices, and **refunds**.',
 					'Approving in bulk is a real decision on every row you ticked. The count in the confirmation message is your check that you took what you meant to.',
 					'If some of the ticked rows were your own requests, the rest are still settled and the message tells you exactly how many were left behind and why.',
 					'Seeing the counts and settling them are two different permissions on purpose: a supervisor can watch the backlog without being able to clear it.'
@@ -552,6 +552,176 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'procedure',
 					'treatment'
 				]
+			},
+			{
+				id: 'treatment-plans',
+				title: 'Treatment plans and case acceptance',
+				summary:
+					'A plan quotes the work planned on the chart, records what the patient said to each line, and keeps the quote as it was given.',
+				where: 'A patient’s **Treatment plans** tab, and **Patients → Plan Follow-up**',
+				permission: 'patients.view to read; treatment_plans.manage to draw up, present and answer',
+				steps: [
+					'Chart the treatment as **Planned** on the dental chart first — a plan is made from planned work.',
+					'On the **Treatment plans** tab press **New plan**, tick the work to quote, and say who is proposing it. It starts as a **draft**.',
+					'On the draft, change a line’s wording or price if you need to — a discount agreed in the chair — or add and remove work. **Print draft** gives the patient something to take away before you commit to it.',
+					'Press **Present to patient** and say how long the prices stand (90 days unless you change it).',
+					'To correct a presented quote — a discount, a line re-priced after the X-ray, a line quoted twice — change or remove the line as before. You will be asked **why**, and the change is kept in the quote’s history for good.',
+					'When the patient answers, mark **Yes** or **No** on every line — or **Yes to all** / **No to all** — and say why for anything they said no to. **Record the answer**.',
+					'Book the agreed work as usual. When every agreed line is done on the chart, **Mark plan completed**.'
+				],
+				notes: [
+					'Every change to a presented quote is kept under **Changes since it was presented**: what it was, what it became, why, who and when. Nothing there can be edited or deleted, and **First quoted** always shows what the patient was originally told. A reprinted quote says it was revised and what it first came to.',
+					'Work can be added to a quote until the patient answers; after that, new work goes on a new plan. A change to a line the patient already agreed to is marked **Changed after it was agreed** — talk to them again. Removing a line from an answered plan updates its status (taking off the only “no” makes it accepted), and the last line cannot be removed.',
+					'An expired, declined or completed quote cannot be changed. If the patient comes back, make a new plan: the old one stays as the record of what they were told.',
+					'A quote past its **stands until** date reads as **Expired** everywhere and cannot be answered. Its work is free to go on a new plan at today’s prices.',
+					'A piece of planned work can be on only one open plan at a time. Work on a declined or expired plan is free to be quoted again.',
+					'Saying no to a line does not change the chart: the work stays planned, because the patient may come back to it.',
+					'**Plan Follow-up** lists every quote still awaiting an answer at this branch, the longest-waiting first — the patients to ring. **Case acceptance** there is the share of quoted value patients agreed to over the last 90 days, counting only plans that have been answered.',
+					'The reason for a no matters more than the no. “After the harvest”, “wants a second opinion” and “cannot afford it” each call for a different follow-up.',
+					'Every step is in the audit trail, and opening or printing a plan is recorded in the access log.'
+				],
+				keywords: [
+					'treatment plan',
+					'quote',
+					'estimate',
+					'case acceptance',
+					'follow-up',
+					'declined',
+					'accepted',
+					'expired',
+					'present',
+					'adjustment',
+					'revised',
+					'discount'
+				]
+			},
+			{
+				id: 'clinical-notes',
+				title: 'Clinical notes',
+				summary:
+					'What was found, what was done, and what was said on the phone — signed, and corrected by adding rather than changing.',
+				where: 'A patient’s **Notes** tab',
+				permission: 'patients.view to read; patients.clinical to write',
+				steps: [
+					'Press **Write a note**. Choose the kind — examination, treatment, telephone or other — and give it a one-line summary so the history can be read at a glance.',
+					'Choose the visit it describes, if there was one, and the clinician.',
+					'Tick **Sign it now** to commit to it. Leave it unticked to save a draft: only you can change, sign or throw away your draft.',
+					'To correct a signed note, press **Amend** and write the correction. It is added beneath the original, signed by you.'
+				],
+				notes: [
+					'A signed note is never changed or deleted. A note may be read years later by someone deciding whether care was reasonable, and both what was first written and the correction have to be there.',
+					'A draft is marked as a draft for everyone; the tab counts your own unsigned drafts so they are not forgotten.',
+					'Write telephone calls down. A call is a record too, and the one most often lost.'
+				],
+				keywords: [
+					'note',
+					'clinical note',
+					'examination',
+					'sign',
+					'amend',
+					'correction',
+					'telephone'
+				]
+			},
+			{
+				id: 'prescriptions',
+				title: 'Writing a prescription',
+				summary:
+					'A prescription is checked against the allergies on the chart as each medicine is chosen, and printed for the patient.',
+				where: 'A patient’s **Prescriptions** tab',
+				permission: 'patients.view to read; patients.clinical to write; a super admin to cancel',
+				steps: [
+					'Press **Write a prescription**. Read the allergies and what the patient already takes, shown first.',
+					'Choose the prescriber — only clinicians marked **Can prescribe** under **Appointments → Dentists** are offered — and say what it is for.',
+					'Weigh a child and enter the weight: it is what a child’s dose is worked from.',
+					'Add each medicine with its dose, how often, for how many days, how much to hand over, and what the patient is told.',
+					'Press **Write the prescription**, then **Print it for the patient**.'
+				],
+				notes: [
+					'A medicine that clashes with an allergy on the chart — amoxicillin for a penicillin allergy — is marked the moment it is chosen. It can be written anyway only by ticking that you have checked, and that tick is recorded.',
+					'The check needs each medicine’s **Allergy family**, set under **Admin Panel → Medicines**. A medicine without one is still matched by name.',
+					'What it is for is required. It is what lets a clinic look back at how often it prescribes antibiotics, and why.',
+					'A prescription is not changed once written — the patient holds the paper. One written in error is cancelled by a super admin and written again; both stay on the audit trail.',
+					'Printing is recorded in the access log.'
+				],
+				keywords: [
+					'prescription',
+					'prescribe',
+					'medicine',
+					'antibiotic',
+					'allergy',
+					'dose',
+					'print',
+					'rx'
+				]
+			},
+			{
+				id: 'patient-files',
+				title: 'Files, radiographs and old paper charts',
+				summary:
+					'Radiographs, photographs, letters and photographed paper charts, attached to the patient they belong to.',
+				where: 'A patient’s **Files** tab',
+				permission: 'patients.view to open; patients.clinical to attach; a super admin to remove',
+				steps: [
+					'Press **Attach a file** and say what it is.',
+					'Choose the file. A radiograph is uploaded full size; a photograph is made smaller first, to save bandwidth.',
+					'For a photographed paper chart, give **the date on the paper**, not today — that date is what makes the old record worth keeping.',
+					'For a film of one tooth, give the tooth’s FDI number, like 36.'
+				],
+				notes: [
+					'Click a file to open it full size in a new tab.',
+					'Opening a patient’s file needs permission to view patients, and is recorded in who opened the chart — a file link sent to someone without that permission does not open.',
+					'Removing a file takes it off the chart; the file itself is kept and the removal is on the audit trail.'
+				],
+				keywords: [
+					'file',
+					'radiograph',
+					'x-ray',
+					'photo',
+					'scan',
+					'upload',
+					'paper chart',
+					'attachment'
+				]
+			},
+			{
+				id: 'consents',
+				title: 'Recording consent',
+				summary:
+					'What the patient agreed to, how, and before whom — and when they changed their mind.',
+				where: 'A patient’s **Consents** tab',
+				permission: 'patients.view to read; patients.clinical to record',
+				steps: [
+					'For a signed form, attach it on the **Files** tab first (as a consent form).',
+					'On **Consents**, press **Add**. Choose what it is consent to, how it was given, and the date.',
+					'For a child, say who gave it and their relationship — a seven-year-old does not consent to an extraction; a parent does.',
+					'A verbal consent must name the clinician who witnessed it. Choose the treatment it is for, if it is for one, and the signed form if there is one.'
+				],
+				notes: [
+					'Verbal consent before a witness is a proper record — it is how a patient who does not read consents. The witness is what stands behind it.',
+					'Consent is withdrawn, never deleted: edit it and give the reason. It is dated the day it is withdrawn, and the history reads honestly.'
+				],
+				keywords: ['consent', 'agreement', 'witness', 'verbal', 'guardian', 'withdraw']
+			},
+			{
+				id: 'merging-duplicates',
+				title: 'Merging a duplicate record',
+				summary:
+					'When one patient was registered twice, everything is moved onto one record and the other leads to it.',
+				where: 'The overview of the record to keep, under **Duplicate records**',
+				permission: 'A super admin',
+				steps: [
+					'Open the chart of the record to keep — usually the older, fuller one.',
+					'Under **Duplicate records**, the records with the same name or phone are listed with why. Press **Merge into this chart** on the other one, or **Find another record** to search by name.',
+					'Confirm. Everything on the other record — visits, treatment, plans, bills and payments, notes, prescriptions, files, consents, allergies — moves here.'
+				],
+				notes: [
+					'The other record becomes a pointer: its file number, on paper charts and old receipts, still leads to this chart.',
+					'An allergy, condition or medicine both records have is kept once. A detail this record was missing, like a phone number, is filled from the other.',
+					'Who opened the other record stays recorded against it, and is shown with this chart’s views.',
+					'A merge is one entry in the audit trail, listing what moved. It is not undone from the screen.'
+				],
+				keywords: ['merge', 'duplicate', 'registered twice', 'same patient', 'combine']
 			}
 		]
 	},
@@ -719,6 +889,156 @@ export const HELP_SECTIONS: HelpSection[] = [
 
 	/* ------------------------------------------------------------------ */
 	{
+		id: 'billing',
+		title: 'Billing, payments and the cash drawer',
+		blurb:
+			'Billing a patient for work done, taking their money, and counting the drawer at the end of the day.',
+		topics: [
+			{
+				id: 'raising-a-bill',
+				title: 'Raising a bill',
+				summary:
+					'A bill is made from the completed work on the chart, as a draft, and issued once it is right.',
+				where: 'A patient’s **Billing** tab',
+				permission: 'billing.invoice',
+				steps: [
+					'Treatment has to be marked **done** first — on the dental chart, or by completing the visit in the diary. Only completed work with a fee can be billed.',
+					'On the patient’s **Billing** tab press **Raise a bill** and tick the work. It starts as a **draft**.',
+					'On the draft, add anything that is not charted treatment with **Add a charge** (a missed-appointment fee, something sold), change a line, or add a **discount**.',
+					'Press **Issue the bill**. It gets its number (INV-year-number) and is fixed from then on. Set a due date only if the patient is not paying on the day.',
+					'**Print** gives the patient the bill, with every payment and its receipt number on it.'
+				],
+				notes: [
+					'An issued bill is never edited. What the patient holds and what the system shows stay the same.',
+					'A piece of work goes on one bill. Once it is on a bill — even a draft — it is not offered again, unless that bill is thrown away or voided.',
+					'A draft can be thrown away. An issued bill is **voided**, and only through a manager (below).',
+					'Medical services are exempt from VAT, so no bill carries VAT.'
+				],
+				keywords: ['bill', 'invoice', 'charge', 'draft', 'issue', 'print', 'receipt']
+			},
+			{
+				id: 'taking-payment',
+				title: 'Taking a payment',
+				summary:
+					'One payment can settle several bills, and one bill can be paid off in several payments.',
+				where: 'A patient’s **Billing** tab, or a bill’s own page → **Take a payment**',
+				permission: 'billing.invoice',
+				steps: [
+					'Press **Take a payment**. Every bill that can be paid is listed with what it still owes.',
+					'Type the amount against each bill being paid — or **Pay everything owed** — and choose how it was paid.',
+					'Add the bank or mobile-money reference if there is one, and **Record payment**. Each payment gets a receipt number.'
+				],
+				notes: [
+					'A payment can never be more than a bill still owes.',
+					'**Cash** needs the cash drawer open at the branch you are working at. If it is shut, the form says so and the payment is refused.',
+					'A bill waiting for a manager — for its discount, or to be voided — cannot take a payment until the manager decides.',
+					'What a patient owes shows in red at the top of their chart, on the Billing tab, and in the patient list, for staff who can see billing.'
+				],
+				keywords: ['payment', 'pay', 'cash', 'bank', 'telebirr', 'installment', 'balance', 'owes']
+			},
+			{
+				id: 'discounts-and-voids',
+				title: 'Discounts and voids',
+				summary:
+					'A big discount, and any void, need a manager before they take effect — the two ways money leaves a cash practice unnoticed.',
+				where: '**Approvals → Discounts and Voids**',
+				permission: 'approvals.approve to decide; billing.invoice to ask',
+				steps: [
+					'A bill issued with a discount over the clinic’s limit (**Admin Panel → Billing Settings**, 10% unless changed) waits for a manager.',
+					'To void an issued bill, open it and press **Void**, and say why. Only a bill with nothing paid against it can be voided — refund the money first.',
+					'The manager approves or refuses it in **Approvals → Discounts and Voids**.'
+				],
+				notes: [
+					'An approved discount stands; a refused one comes off, and the bill stands at its full price.',
+					'An approved void makes the bill **Void**: it keeps its number, and its work can be billed again. A refused void leaves the bill as it was.',
+					'Nobody approves their own request unless they hold the override permission, and that is recorded.'
+				],
+				keywords: ['discount', 'void', 'cancel', 'approve', 'manager', 'threshold']
+			},
+			{
+				id: 'refunds',
+				title: 'Giving money back',
+				summary:
+					'A refund is asked for at the desk and approved by a manager; only then does the bill owe it again, and only then does cash leave the drawer.',
+				where: 'The bill’s own page → **Payments → Refund**',
+				permission: 'billing.invoice to ask; approvals.approve to decide',
+				steps: [
+					'Open the bill, find the payment the money came from, and press **Refund** beside it.',
+					'Enter how much, how it is being given back, and why. You cannot give back more than that payment put on the bill, less refunds of it already asked for.',
+					'A manager approves it in **Approvals → Refunds**. A cash refund needs the drawer open at the branch when it is approved.'
+				],
+				notes: [
+					'While it waits, the refund shows on the bill as *waiting for approval* and changes nothing. A refused one stays listed, struck through.',
+					'Once approved it gets its own number (**RFD-…**), the bill owes the amount again, and a cash refund comes out of what the drawer should hold.',
+					'To cancel a bill that has been paid, refund the payments first, then void it.'
+				],
+				keywords: ['refund', 'money back', 'return', 'reverse', 'overpaid', 'rfd']
+			},
+			{
+				id: 'payers',
+				title: 'Employers and insurers',
+				summary:
+					'A payer is an organisation that pays for some patients. Their bills go to them, and they pay many at once.',
+				where: 'Menu → **Payers**; **Bill to** on a draft bill',
+				permission: 'customers.record for the payer; billing.invoice for their bills',
+				steps: [
+					'Add the payer under **Payers → Add a payer**. It waits for approval like any new payer.',
+					'Link a patient to their payer on registration. Every bill raised for that patient starts with **Bill to** set to the payer.',
+					'On a draft bill, **Bill to** can be changed — to the patient, or to another payer. It is fixed once the bill is issued, and printed on it.',
+					'When the payer pays, open them under **Payers** and press **Take a payment**. Put an amount against each bill the transfer covers.'
+				],
+				notes: [
+					'A bill sent to a payer is in the payer’s row on **Who Owes**, not the patient’s — the desk chases whoever is paying.',
+					'The patient still sees the bill on their own Billing tab, and can pay it themselves if the payer will not.'
+				],
+				keywords: [
+					'insurer',
+					'insurance',
+					'employer',
+					'company',
+					'payer',
+					'customer',
+					'bill to',
+					'credit'
+				]
+			},
+			{
+				id: 'cash-drawer',
+				title: 'The cash drawer',
+				summary:
+					'Open it with a float in the morning; count it at night. The system says what it should hold.',
+				where: '**Billing → Cash Drawer**',
+				permission: 'billing.cash_session',
+				steps: [
+					'In the morning, **Open the drawer** with the float — what is in it before the first patient pays.',
+					'Through the day the page shows the cash taken and what the drawer **should hold**.',
+					'At night, count the cash and press **Count and close**. Type the total counted and how much is being taken out to bank; the rest is tomorrow’s float.',
+					'If the count is over or short, say what you know about why. It will not close without a note.'
+				],
+				notes: [
+					'One drawer per branch at a time. Cash cannot be taken while it is closed.',
+					'What the drawer should hold is written down at the moment of the count, so nothing entered later can change a day already counted.',
+					'**Recent counts** lists the last month with each day’s over or short — a drawer that keeps coming up short shows as a pattern.'
+				],
+				keywords: ['cash', 'drawer', 'till', 'float', 'count', 'variance', 'short', 'over', 'bank']
+			},
+			{
+				id: 'who-owes',
+				title: 'Who owes',
+				summary: 'Everyone at this branch with unpaid bills, the most owed first.',
+				where: 'Menu → **Billing → Who Owes**',
+				permission: 'billing.invoice',
+				notes: [
+					'**Open bills** goes to the patient’s Billing tab, where the payment is taken.',
+					'Bills sent to an employer or insurer are listed under **Payers who owe**, and not again under the patient.',
+					'The count of bills waiting for a manager is shown beside it, with a link to the queue for those who decide.'
+				],
+				keywords: ['receivables', 'debt', 'outstanding', 'owes', 'unpaid']
+			}
+		]
+	},
+
+	{
 		id: 'finance',
 		title: 'Payroll and finance',
 		blurb:
@@ -744,9 +1064,21 @@ export const HELP_SECTIONS: HelpSection[] = [
 				notes: [
 					'The whole run is one transaction: if anything fails, nothing is written. You will never find half a month paid.',
 					'Unapproved employees are refused with a count, so if the total looks light, check the approvals queue before you check your arithmetic.',
-					'Attach the bank transfer receipt at the moment you run it. That receipt is what reconciles the payroll to the bank statement.'
+					'Attach the bank transfer receipt at the moment you run it. That receipt is what reconciles the payroll to the bank statement.',
+					'**Commission** is worked out, not entered. A salary with Commission set to Yes earns its percentage of the fees of every procedure the employee completed in the month, at the rate in force on the day of the work, and it is added to gross pay and taxed with it. Procedures not yet marked completed on the chart are not paid on.'
 				],
-				keywords: ['payroll', 'run', 'salary', 'month', 'pay', 'process', 'cycle', 'net', 'gross']
+				keywords: [
+					'payroll',
+					'run',
+					'salary',
+					'month',
+					'pay',
+					'process',
+					'cycle',
+					'net',
+					'gross',
+					'commission'
+				]
 			},
 			{
 				id: 'payroll-months',
@@ -868,15 +1200,16 @@ export const HELP_SECTIONS: HelpSection[] = [
 				permission: 'supplies_suppliers.manage',
 				steps: [
 					'**Stock Levels** lists every item with how much is in store and whether it is returnable or consumable.',
-					'Click an item to open it: its movement history and its damaged records over a date range.',
-					'**Add Supply** registers a new item: name, type, unit, whether it is returnable, and its reorder level.',
-					"Stock comes in on the item's own page: **Change Quantity → Add**, with the quantity, the cost per unit and the account it was paid from. A purchase is recorded as money out at the same time.",
+					'Click an item to open it: its lots with their expiry dates, its movement history and its damaged records over a date range.',
+					'**Add Supply** registers a new item: name, type, unit, whether it is returnable, whether it **expires**, and its reorder level.',
+					"Stock comes in on the item's own page: **Change Quantity → Add**, with the quantity, the expiry date on the box, the lot number, the supplier, the cost per unit and the account it was paid from. A purchase is recorded as money out at the same time.",
 					'Anything at or below its reorder level shows in **Supplies to reorder** on the dashboard home.'
 				],
 				notes: [
 					'Set the reorder level to cover the time it actually takes to get more, not to zero. An alert that fires the day you run out is not an alert.',
 					'Supply types are reference data and live in **Supplies → Supply Types**.',
-					'Damaged and lost items are recorded against the item so the shrinkage is visible in the stock report rather than hidden in a quantity that quietly changed.'
+					'Damaged and lost items are recorded against the item so the shrinkage is visible in the stock report rather than hidden in a quantity that quietly changed.',
+					"Tick **Deductible** on a damage report only when the cost is to come out of someone's pay. Choose the employee; the deduction is priced at the item's last recorded delivery cost and appears on their next payslip. Deleting the report puts the units back into the lots they came from; the deduction is payroll and stays — delete it under **Salary → Deductions** if it should not stand."
 				],
 				keywords: [
 					'stock',
@@ -897,7 +1230,8 @@ export const HELP_SECTIONS: HelpSection[] = [
 				notes: [
 					'The quantity is worked out from the lots each time it is shown, never kept as a running total, so it cannot drift from what was actually received and used.',
 					'Using stock takes it from the lot that expires first. The oldest composite or anaesthetic is used before it goes off, and every movement names the lot it came from.',
-					'Expiry dates are not yet entered when stock is received, so a lot is used in the order it arrived. Recording expiry on delivery is planned work.'
+					'An item marked **Expires** — anaesthetic, composite, bonding agent — cannot be received without the expiry date on the box, and a date that has already passed is refused. Other items may carry a date or not; an undated lot is used after every dated one.',
+					'An expired lot is never issued. It stays in the quantity, because it is still on the shelf, until it is written off as damaged. The item’s page lists each lot, the next to be used at the top, red once it has expired and amber within three months of it.'
 				],
 				keywords: [
 					'lot',
@@ -1322,27 +1656,28 @@ export const ROUTE_MAP: RouteEntry[] = [
 		nonNavigable: true
 	},
 
-	// Customers
+	// Payers (the `customers` table: employers and insurers)
 	{
 		path: '/dashboard/customers',
-		title: 'All customers',
-		purpose: 'Every approved customer, searchable and exportable.',
+		title: 'All payers',
+		purpose: 'Every employer and insurer that pays for some patients, searchable and exportable.',
 		permission: 'customers.record',
-		group: 'Customers'
+		group: 'Payers'
 	},
 	{
 		path: '/dashboard/customers/add-customer',
-		title: 'Add customer',
-		purpose: 'Register a new customer; starts pending.',
+		title: 'Add a payer',
+		purpose: 'Register an employer or insurer; starts pending.',
 		permission: 'customers.record',
-		group: 'Customers'
+		group: 'Payers'
 	},
 	{
 		path: '/dashboard/customers/[id]',
-		title: 'Customer detail',
-		purpose: 'One customer: their contacts, address and history.',
+		title: 'Payer',
+		purpose:
+			'One payer: contacts and address, the bills sent to them across patients, what they owe, and taking their payment.',
 		permission: 'customers.record',
-		group: 'Customers'
+		group: 'Payers'
 	},
 
 	// Approvals & rejections
@@ -1357,7 +1692,7 @@ export const ROUTE_MAP: RouteEntry[] = [
 		path: '/dashboard/approvals/[entity]',
 		title: 'One approval queue',
 		purpose:
-			'Settle pending records: employees, salary changes, expenses, payroll runs, payroll adjustments, customers, invoice discounts and voids, refunds.',
+			'Settle pending records: employees, salary changes, expenses, payroll runs, payroll adjustments, payers, invoice discounts and voids, refunds.',
 		permission: 'approvals.approve',
 		group: 'Approvals'
 	},
@@ -1614,6 +1949,95 @@ export const ROUTE_MAP: RouteEntry[] = [
 		purpose:
 			'The odontogram and every procedure on record: findings, planned work, work done and work the patient arrived with.',
 		permission: 'patients.view',
+		group: 'Patients'
+	},
+	{
+		path: '/dashboard/patients/[id]/plans',
+		title: 'Treatment plans',
+		purpose:
+			'Every plan this patient has been offered, and a new one from the work planned on the chart.',
+		permission: 'patients.view',
+		group: 'Patients'
+	},
+	{
+		path: '/dashboard/patients/[id]/plans/[planId]',
+		title: 'Treatment plan',
+		purpose:
+			'One plan: its lines, what the patient said to each, and the next step — present, answer, complete.',
+		permission: 'patients.view',
+		group: 'Patients'
+	},
+	{
+		path: '/dashboard/patients/[id]/notes',
+		title: 'Clinical notes',
+		purpose:
+			'What clinicians wrote about the patient: write, sign, and correct a signed note by amendment.',
+		permission: 'patients.view (patients.clinical to write)',
+		group: 'Patients'
+	},
+	{
+		path: '/dashboard/patients/[id]/prescriptions',
+		title: 'Prescriptions',
+		purpose:
+			'What the patient was prescribed; write one against their allergies and current medicines, and print it.',
+		permission: 'patients.view (patients.clinical to write)',
+		group: 'Patients'
+	},
+	{
+		path: '/dashboard/patients/[id]/files',
+		title: 'Patient files',
+		purpose: 'Radiographs, photographs, referral letters and photographed paper charts.',
+		permission: 'patients.view (patients.clinical to attach)',
+		group: 'Patients'
+	},
+	{
+		path: '/dashboard/patients/[id]/consents',
+		title: 'Consents',
+		purpose: 'What the patient agreed to, how and before whom, and whether it still stands.',
+		permission: 'patients.view (patients.clinical to record)',
+		group: 'Patients'
+	},
+	{
+		path: '/dashboard/patients/[id]/billing',
+		title: 'Patient billing',
+		purpose: 'What the patient owes, their work not yet billed, their bills, and taking a payment.',
+		permission: 'billing.invoice',
+		group: 'Billing'
+	},
+	{
+		path: '/dashboard/patients/[id]/billing/[invoiceId]',
+		title: 'Bill',
+		purpose: 'One bill: build a draft, issue it, take payments, print it, or ask to void it.',
+		permission: 'billing.invoice',
+		group: 'Billing'
+	},
+	{
+		path: '/dashboard/billing',
+		title: 'Who owes',
+		purpose: 'Everyone at this branch with unpaid bills, the most owed first.',
+		permission: 'billing.invoice',
+		group: 'Billing'
+	},
+	{
+		path: '/dashboard/billing/cash',
+		title: 'Cash drawer',
+		purpose: 'Open the drawer with a float, see what it should hold, and count and close it.',
+		permission: 'billing.cash_session',
+		group: 'Billing'
+	},
+	{
+		path: '/dashboard/admin-panel/billing-settings',
+		title: 'Billing settings',
+		purpose: 'How big a discount the front desk may give before a manager has to approve it.',
+		permission: 'settings.manage',
+		group: 'Admin panel'
+	},
+	{
+		path: '/dashboard/treatment-plans',
+		title: 'Plan follow-up',
+		purpose:
+			'Quotes awaiting an answer, the longest-waiting first, and case acceptance over the last 90 days.',
+		permission: 'treatment_plans.manage',
 		group: 'Patients'
 	},
 

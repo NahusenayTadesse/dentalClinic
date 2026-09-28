@@ -32,14 +32,15 @@ import {
 	suppliesAdjustments,
 	supplySuppliers,
 	supplyTypes,
-	transactionServices,
 	transactions,
+	invoiceLine,
 	user
 } from '$lib/server/db/schema';
 import { notDeleted } from '$lib/server/softDelete';
 import type { ReportFilters } from './filters';
 import { all, amountScope, inRange, n, searchScope, staffName, staffScope } from './scope.server';
 import { onHand } from '$lib/server/stock';
+import { billedLines } from './billedLines.server';
 
 export type DetailResult = { rows: Record<string, unknown>[]; total: number };
 
@@ -889,50 +890,31 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 		}
 
 		case 'services-rendered': {
-			const where = all([
-				notDeleted(transactionServices),
-				notDeleted(employee),
-				inRange(transactionServices.createdAt, filters),
-				filters.serviceId ? eq(transactionServices.serviceId, filters.serviceId) : undefined,
-				...amountScope(transactionServices.price, filters),
-				...scope,
-				searchScope(search, [services.name, staffName])
-			]);
+			// Billed work, read from bills (`billedLines.server.ts`) — no longer `transaction_services`.
+			const lines = billedLines(
+				filters,
+				searchScope(search, [services.name, invoiceLine.description, staffName])
+			);
 
 			return run(
 				() =>
 					page(
 						db
 							.select({
-								id: transactionServices.id,
-								date: day(transactionServices.createdAt),
-								service: services.name,
-								employee: staffName,
-								price: transactionServices.price,
-								tip: transactionServices.tip,
-								tax: transactionServices.tax,
-								total: transactionServices.total,
-								paymentStatus: transactions.paymentStatus
+								id: lines.id,
+								date: day(lines.issuedOn),
+								bill: lines.bill,
+								service: lines.service,
+								employee: lines.clinician,
+								quantity: lines.quantity,
+								price: lines.unitPrice,
+								total: lines.lineTotal,
+								paymentStatus: lines.status
 							})
-							.from(transactionServices)
-							.innerJoin(employee, eq(transactionServices.staffId, employee.id))
-							.leftJoin(services, eq(transactionServices.serviceId, services.id))
-							.leftJoin(
-								transactions,
-								and(
-									eq(transactionServices.transactionId, transactions.id),
-									notDeleted(transactions)
-								)
-							)
-							.where(where)
-							.orderBy(desc(transactionServices.createdAt))
+							.from(lines)
+							.orderBy(desc(lines.issuedOn), desc(lines.id))
 					),
-				() =>
-					db
-						.select({ total: count() })
-						.from(transactionServices)
-						.innerJoin(employee, eq(transactionServices.staffId, employee.id))
-						.where(where)
+				() => db.select({ total: count() }).from(lines)
 			);
 		}
 

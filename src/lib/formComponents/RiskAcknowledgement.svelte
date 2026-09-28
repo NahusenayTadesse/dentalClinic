@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { Checkbox } from '$lib/components/ui/checkbox/index.js';
-	import { TriangleAlert } from '@lucide/svelte';
+	import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
 
 	/**
-	 * A warning the user has to accept before a risky money entry goes through.
+	 * A warning the user has to accept before a risky entry goes through.
 	 *
-	 * Used where the app cannot actually verify the money — these balances are a
-	 * bookkeeping aid, not a link to a real bank — so it warns and asks for an
-	 * explicit acknowledgement rather than refusing.
+	 * Used where the app warns rather than refuses: a money entry it cannot verify (these
+	 * balances are a bookkeeping aid, not a link to a real bank), and a prescription that clashes
+	 * with an allergy on the chart, which a clinician may knowingly write.
 	 *
 	 * `checked` is bound to the form's boolean field; the same field is re-checked
 	 * on the server, because a hidden checkbox is UX, not a control.
@@ -17,6 +17,7 @@
 		title = 'Check this before you continue',
 		message = '',
 		name = 'acknowledgeRisk',
+		confirmLabel = 'I understand the risks',
 		checked = $bindable(false)
 	}: {
 		/** Only render when the entry is actually risky. */
@@ -25,6 +26,8 @@
 		message?: string;
 		/** Form field name posted alongside the rest of the form. */
 		name?: string;
+		/** What ticking the box says — a prescriber confirming an allergy is not taking a money risk. */
+		confirmLabel?: string;
 		checked?: boolean;
 	} = $props();
 </script>
@@ -43,7 +46,7 @@
 		{/if}
 		<label class="mt-1 flex items-center gap-2 text-sm font-medium">
 			<Checkbox bind:checked aria-label={title} />
-			I understand the risks
+			{confirmLabel}
 		</label>
 		<!--
 			Rendered only when ticked, never as value="false". A string "false" is

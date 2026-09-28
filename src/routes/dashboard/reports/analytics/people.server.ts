@@ -23,6 +23,7 @@ import {
 	staffScope,
 	topN
 } from '../scope.server';
+import { daysBetween, today } from '$lib/server/db/dialect';
 
 /**
  * Who the company employs, who joined, and who left.
@@ -35,7 +36,6 @@ export async function peopleStats(
 	filters: ReportFilters
 ): Promise<{ stats: Stat[]; charts: ReportChartData[] }> {
 	const scope = staffScope(filters);
-	const live = all([notDeleted(employee), ...scope]);
 	const current = all([notDeleted(employee), isNull(employee.terminationDate), ...scope]);
 	const keys = monthKeys(filters);
 
@@ -62,8 +62,8 @@ export async function peopleStats(
 				female: countWhen(sql`${employee.gender} = 'female'`),
 				// DATEDIFF/365.25 is close enough for an average that is only ever
 				// read to one decimal place, and it costs no date arithmetic in JS.
-				avgTenure: sql<string>`COALESCE(AVG(DATEDIFF(CURDATE(), ${employee.hireDate}) / 365.25), 0)`,
-				avgAge: sql<string>`COALESCE(AVG(DATEDIFF(CURDATE(), ${employee.birthDate}) / 365.25), 0)`,
+				avgTenure: sql<string>`COALESCE(AVG(${daysBetween(today(), employee.hireDate)} / 365.25), 0)`,
+				avgAge: sql<string>`COALESCE(AVG(${daysBetween(today(), employee.birthDate)} / 365.25), 0)`,
 				leaveBalance: sql<string>`COALESCE(SUM(${employee.leavesLeft}), 0)`
 			})
 			.from(employee)
@@ -137,10 +137,10 @@ export async function peopleStats(
 		db
 			.select({
 				label: sql<string>`CASE
-					WHEN DATEDIFF(CURDATE(), ${employee.birthDate}) / 365.25 < 25 THEN 'Under 25'
-					WHEN DATEDIFF(CURDATE(), ${employee.birthDate}) / 365.25 < 35 THEN '25 - 34'
-					WHEN DATEDIFF(CURDATE(), ${employee.birthDate}) / 365.25 < 45 THEN '35 - 44'
-					WHEN DATEDIFF(CURDATE(), ${employee.birthDate}) / 365.25 < 55 THEN '45 - 54'
+					WHEN ${daysBetween(today(), employee.birthDate)} / 365.25 < 25 THEN 'Under 25'
+					WHEN ${daysBetween(today(), employee.birthDate)} / 365.25 < 35 THEN '25 - 34'
+					WHEN ${daysBetween(today(), employee.birthDate)} / 365.25 < 45 THEN '35 - 44'
+					WHEN ${daysBetween(today(), employee.birthDate)} / 365.25 < 55 THEN '45 - 54'
 					ELSE '55 and over'
 				END`,
 				value: count()
@@ -152,10 +152,10 @@ export async function peopleStats(
 		db
 			.select({
 				label: sql<string>`CASE
-					WHEN DATEDIFF(CURDATE(), ${employee.hireDate}) / 365.25 < 1 THEN 'Under 1 year'
-					WHEN DATEDIFF(CURDATE(), ${employee.hireDate}) / 365.25 < 3 THEN '1 - 2 years'
-					WHEN DATEDIFF(CURDATE(), ${employee.hireDate}) / 365.25 < 5 THEN '3 - 4 years'
-					WHEN DATEDIFF(CURDATE(), ${employee.hireDate}) / 365.25 < 10 THEN '5 - 9 years'
+					WHEN ${daysBetween(today(), employee.hireDate)} / 365.25 < 1 THEN 'Under 1 year'
+					WHEN ${daysBetween(today(), employee.hireDate)} / 365.25 < 3 THEN '1 - 2 years'
+					WHEN ${daysBetween(today(), employee.hireDate)} / 365.25 < 5 THEN '3 - 4 years'
+					WHEN ${daysBetween(today(), employee.hireDate)} / 365.25 < 10 THEN '5 - 9 years'
 					ELSE '10 years and over'
 				END`,
 				value: count()

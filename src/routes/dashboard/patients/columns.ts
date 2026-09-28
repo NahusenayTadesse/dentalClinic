@@ -3,7 +3,7 @@ import type { PageData } from './$types';
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import Copy from '$lib/Copy.svelte';
-import { formatEthiopianDate } from '$lib/global.svelte';
+import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 import NameCell from './name-cell.svelte';
 import AlertsCell from './alerts-cell.svelte';
 import HistoryCell from './history-cell.svelte';
@@ -119,3 +119,16 @@ export const columns: ColumnDef<Row>[] = [
 			row.original.registered ? formatEthiopianDate(new Date(row.original.registered)) : '—'
 	}
 ];
+
+/**
+ * What each patient owes, added by the page only for someone who may see billing — the load
+ * leaves `owes` null for everyone else. Not sortable: the list is sorted by the server, and a
+ * balance is not a column it can sort on.
+ */
+export const owesColumn: ColumnDef<Row> = {
+	id: 'owes',
+	header: 'Owes',
+	enableSorting: false,
+	accessorFn: (row) => row.owes ?? 0,
+	cell: ({ row }) => (row.original.owes ? formatETB(row.original.owes) : '—')
+};

@@ -1,126 +1,77 @@
-<script>
-	import { renderComponent } from '$lib/components/ui/data-table/index.js';
+<script lang="ts">
+	import Plus from '@lucide/svelte/icons/plus';
+	import { Button } from '$lib/components/ui/button/index.js';
 	import DataTable from '$lib/components/Table/data-table.svelte';
-	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
-	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
-	import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
-	import Empty from '$lib/components/Empty.svelte';
-	import { Button } from '$lib/components/ui/button/index';
-	import Edit from './edit.svelte';
-	export const columns = [
-		{
-			id: 'index',
-			header: '#',
-			cell: (info) => {
-				const rowIndex = info.table.getRowModel().rows.findIndex((row) => row.id === info.row.id);
-				return rowIndex + 1;
-			},
-			enableSorting: false
-		},
-		{
-			accessorKey: 'name',
-			header: ({ column }) =>
-				renderComponent(DataTableSort, {
-					name: 'Name',
-					onclick: column.getToggleSortingHandler()
-				}),
-			cell: ({ row }) => {
-				// You can pass whatever you need from `row.original` to the component
-				return renderComponent(Edit, {
-					id: row.original.id,
-					name: row.original.name,
-					action: '?/edit',
-					data: data.editForm,
-					icon: false
-				});
-			}
-		},
-
-		{
-			accessorKey: 'createdBy',
-			header: ({ column }) =>
-				renderComponent(DataTableSort, {
-					name: 'Created By',
-					onclick: column.getToggleSortingHandler()
-				}),
-			cell: ({ row }) => {
-				// You can pass whatever you need from `row.original` to the component
-				return renderComponent(DataTableLinks, {
-					id: row.original.createdById,
-					name: row.original.createdBy,
-					entity: 'user'
-				});
-			}
-		},
-
-		{
-			accessorKey: '',
-			header: 'Edit',
-			cell: ({ row }) => {
-				// You can pass whatever you need from `row.original` to the component
-				return renderComponent(Edit, {
-					id: row.original.id,
-					name: row.original.name,
-					action: '?/edit',
-					data: data.editForm,
-					icon: true
-				});
-			}
-		},
-
-		{
-			id: 'delete',
-			header: '',
-			enableSorting: false,
-			// Renders nothing unless the viewer is a super admin; the action re-checks.
-			cell: ({ row }) =>
-				renderComponent(DeleteEntity, {
-					entity: 'Payment Method',
-					name: row.original?.name,
-					id: row.original?.id,
-					icon: true,
-					canDelete: data?.isSuperAdmin
-				})
-		}
-	];
-	let { data } = $props();
-	import { superForm } from 'sveltekit-superforms/client';
+	import FormDialog from '$lib/formComponents/FormDialog.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import { Plus } from '@lucide/svelte';
+	import { paymentMethodColumns } from './columns';
+	import {
+		PAYMENT_KINDS,
+		editPaymentMethod,
+		paymentMethod,
+		type EditPaymentMethod
+	} from './schema';
 
-	const { form, errors, enhance, delayed, message } = superForm(data.form, {});
+	/**
+	 * The ways a patient can pay. One add dialog, and one edit dialog for every row, opened from the
+	 * name. "Kind" is what billing reads: cash needs the drawer open.
+	 */
+	let { data } = $props();
 
-	import { toast } from 'svelte-sonner';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
+	let addOpen = $state(false);
+	let editOpen = $state(false);
+	let editSeed = $state<Partial<EditPaymentMethod>>({});
+
+	const columns = $derived(
+		paymentMethodColumns({
+			onedit: (row) => {
+				editSeed = { id: row.id, name: row.name, kind: row.kind };
+				editOpen = true;
+			},
+			canDelete: Boolean(data.isSuperAdmin)
+		})
+	);
+	const kinds = PAYMENT_KINDS.map((k) => ({ value: k.value, name: k.name }));
 </script>
 
 <svelte:head>
 	<title>Payment Methods</title>
 </svelte:head>
 
-<DialogComp title="+ Add New Payment Method" variant="default">
-	<form action="?/add" use:enhance id="main" class="flex flex-col gap-4" method="post">
-		<InputComp {form} {errors} label="name" type="text" name="name" required={true} />
+<div class="flex justify-end p-4">
+	<Button onclick={() => (addOpen = true)}><Plus class="size-4" /> Add a payment method</Button>
+</div>
 
-		<Button type="submit" form="main">
-			{#if $delayed}
-				<LoadingBtn name="Adding Payment Method" />
-			{:else}
-				<Plus /> Add Payment Method
-			{/if}
-		</Button>
-	</form>
-</DialogComp>
-{#key data?.allPaymentMethods}
-	<DataTable {columns} data={data?.allPaymentMethods} search={true} fileName="Payment Methods" />
-{/key}
+<DataTable {columns} data={data.allPaymentMethods} search fileName="Payment Methods" />
+
+<FormDialog
+	title="Add a payment method"
+	action="?/add"
+	data={data.form}
+	schema={paymentMethod}
+	bind:open={addOpen}
+	hideTrigger
+	resetOnSuccess
+	submitLabel="Add"
+>
+	{#snippet fields({ form, errors })}
+		<InputComp label="Name" name="name" {form} {errors} placeholder="Cash, Telebirr, CBE…" />
+		<InputComp label="Kind" name="kind" type="select" {form} {errors} items={kinds} />
+	{/snippet}
+</FormDialog>
+
+<FormDialog
+	title="Edit payment method"
+	action="?/edit"
+	data={data.editForm}
+	schema={editPaymentMethod}
+	bind:open={editOpen}
+	seed={editSeed}
+	hideTrigger
+>
+	{#snippet fields({ form, errors, values })}
+		<input type="hidden" name="id" value={values.id} />
+		<InputComp label="Name" name="name" {form} {errors} />
+		<InputComp label="Kind" name="kind" type="select" {form} {errors} items={kinds} />
+	{/snippet}
+</FormDialog>

@@ -1,0 +1,45 @@
+{
+	"match": "/dashboard/billing",
+	"languages": {
+		"en": {
+			"title": "Who owes",
+			"summary": "Everyone at this branch with unpaid bills, the most owed first.",
+			"sections": [
+				{
+					"heading": "The list",
+					"body": "Each patient with a bill still owing: how many unpaid bills, the date of the oldest, and the total. The name opens their chart; Open bills goes to their Billing tab, where the payment is taken."
+				},
+				{
+					"heading": "Waiting for a manager",
+					"body": "Bills whose discount is over the clinic's limit, and bills someone has asked to void, wait in Approvals → Discounts and Voids. They take no payment until a manager decides."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Billing",
+					"href": "/dashboard/help#section-billing"
+				}
+			]
+		},
+		"am": {
+			"title": "ዕዳ ያለባቸው",
+			"summary": "በዚህ ቅርንጫፍ ያልተከፈለ ሂሳብ ያለበት ሁሉ፣ ብዙ ያለበት መጀመሪያ።",
+			"sections": [
+				{
+					"heading": "ዝርዝሩ",
+					"body": "አሁንም የሚከፈል ሂሳብ ያለበት እያንዳንዱ ታካሚ፦ ስንት ያልተከፈሉ ሂሳቦች፣ የቆየው ቀን እና ድምሩ። ስሙ ቻርታቸውን ይከፍታል፤ Open bills ክፍያው ወደሚወሰድበት የክፍያ ትራቸው ይወስዳል።"
+				},
+				{
+					"heading": "ሥራ አስኪያጅ የሚጠብቁ",
+					"body": "ቅናሻቸው ከክሊኒኩ ገደብ በላይ የሆኑ ሂሳቦች እና እንዲሰረዙ የተጠየቁ ሂሳቦች በApprovals → Discounts and Voids ይጠብቃሉ። ሥራ አስኪያጅ እስኪወስን ክፍያ አይቀበሉም።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ክፍያ",
+					"href": "/dashboard/help#section-billing"
+				}
+			]
+		}
+	}
+}

@@ -82,6 +82,10 @@ const DESCRIPTIONS: Record<string, string> = {
 	'patients.register': 'Register new patients',
 	'providers.manage': 'Maintain dentists and their licences',
 	'patients.view': 'Find patients and open their charts',
+	'billing.invoice': 'Raise and issue bills, take payments, and see what patients owe',
+	'billing.cash_session': 'Open the cash drawer, and count and close it at the end of the day',
+	'treatment_plans.manage':
+		'Draw up treatment plans, present them, record the patient’s answer, and see the follow-up list',
 	'rejections.reopen': 'Put a rejected record back into its queue',
 	'rejections.view': 'See rejected records',
 	'reports.finance': 'Read the money and payroll reports',
@@ -439,6 +443,21 @@ export async function seedAppointmentTypes() {
  * never prescribes but must record, because patients arrive on them — and three of those carry
  * flags that change what a dentist may safely do. See `isPrescribable` on `medicine`.
  */
+/** The allergen a seeded medicine belongs to, by name — the same rule as migration 0041. */
+function medicineFamily(genericName: string): string | null {
+	const name = genericName.toLowerCase();
+	if (name.startsWith('amoxicillin') || name.includes('penicillin')) return 'Penicillin';
+	if (['erythromycin', 'clindamycin', 'doxycycline', 'metronidazole'].includes(name)) {
+		return 'Other antibiotics';
+	}
+	if (['ibuprofen', 'diclofenac', 'naproxen'].includes(name) || name.startsWith('aspirin')) {
+		return 'Aspirin / NSAIDs';
+	}
+	if (name.startsWith('paracetamol')) return 'Paracetamol';
+	if (name.startsWith('lidocaine')) return 'Lidocaine';
+	return null;
+}
+
 export async function seedMedicines() {
 	const [existing] = await db.select({ id: medicine.id }).from(medicine).limit(1);
 
@@ -689,6 +708,18 @@ export async function seedMedicines() {
 			sortOrder: 136
 		}
 	]);
+
+	// Each medicine's allergy family, where the family is on the allergen list (seeded first), so
+	// a new clinic's prescriptions are checked against allergies from the first day. Migration 0041
+	// did the same for clinics installed before the column existed.
+	const families = await db.select({ id: allergen.id, name: allergen.name }).from(allergen);
+	const familyId = (name: string) => families.find((f) => f.name === name)?.id ?? null;
+	const rows = await db.select({ id: medicine.id, name: medicine.genericName }).from(medicine);
+	for (const row of rows) {
+		const family = medicineFamily(row.name);
+		const id = family ? familyId(family) : null;
+		if (id) await db.update(medicine).set({ allergenId: id }).where(eq(medicine.id, row.id));
+	}
 }
 
 /**
@@ -764,8 +795,10 @@ export async function seedClinicClosures() {
 	await db.insert(clinicClosure).values(
 		fixed.map(([name, ethiopianMonth, ethiopianDay]) => {
 			const g = toGregorian(ethYear, ethiopianMonth, ethiopianDay);
-			// `toGregorian` returns a 1-based month; `Date` wants it 0-based.
-			const on = new Date(g.year, g.month - 1, g.day);
+			// `toGregorian` returns a 1-based month; `Date` wants it 0-based. UTC midnight, not local:
+			// the driver writes a `Date` as UTC (`db/connection.ts`), and local midnight in Addis
+			// Ababa is the previous day there — every holiday would have moved a day early.
+			const on = new Date(Date.UTC(g.year, g.month - 1, g.day));
 
 			return {
 				name,

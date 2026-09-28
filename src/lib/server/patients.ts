@@ -17,7 +17,21 @@
  * decision (CLAUDE.md §15); and anything clinical beyond the alert summary, which is the chart's.
  */
 import { error } from '@sveltejs/kit';
-import { and, eq, exists, gt, inArray, isNull, like, lte, or, sql, type SQL } from 'drizzle-orm';
+import {
+	and,
+	asc,
+	desc,
+	eq,
+	exists,
+	gt,
+	inArray,
+	isNull,
+	like,
+	lte,
+	or,
+	sql,
+	type SQL
+} from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import {
 	allergen,
@@ -470,18 +484,28 @@ export async function possibleDuplicates(input: {
 		})
 		.from(patient)
 		.where(and(livePatient(), or(byName, byPhone)))
+		// The strongest matches first, then the capped rest. Unordered, the ten could be ten
+		// namesakes and leave out the one record with the same name *and* the same phone —
+		// the likeliest duplicate of all, found cut off the list while testing the merge screen.
+		.orderBy(...(byPhone ? [desc(sql`(${byPhone})`)] : []), desc(sql`(${byName})`), asc(patient.id))
 		.limit(10);
 
 	return rows.map((row) => {
 		const sameName =
 			row.firstName.toLowerCase() === input.name.trim().toLowerCase() &&
 			row.fatherName.toLowerCase() === input.fatherName.trim().toLowerCase();
+		const samePhone = digits.length >= 6 && phoneDigits(row.phone ?? '').includes(digits);
 		return {
 			id: row.id,
 			fileNo: row.fileNo,
 			name: row.name,
 			phone: row.phone,
-			reason: sameName ? 'Same name and father’s name' : 'Same phone number'
+			reason:
+				sameName && samePhone
+					? 'Same name and phone number'
+					: sameName
+						? 'Same name and father’s name'
+						: 'Same phone number'
 		};
 	});
 }
@@ -560,8 +584,15 @@ type ViewedRecord = (typeof patientAccessLog.recordType.enumValues)[number];
 export async function logPatientView(
 	patientId: number,
 	recordType: ViewedRecord,
-	event: { locals: App.Locals; getClientAddress: () => string }
+	event: { locals: App.Locals; getClientAddress: () => string },
+	/**
+	 * Which row, and what was done with it. A print is its own act — paper leaves the building —
+	 * so it is windowed separately from a view of the same record rather than hidden by one.
+	 */
+	options: { recordId?: number; action?: 'view' | 'print' } = {}
 ) {
+	const action = options.action ?? 'view';
+	const recordId = options.recordId ?? null;
 	const userId = event.locals.user?.id;
 	if (!userId) return;
 
@@ -574,6 +605,10 @@ export async function logPatientView(
 				eq(patientAccessLog.patientId, patientId),
 				eq(patientAccessLog.userId, userId),
 				eq(patientAccessLog.recordType, recordType),
+				eq(patientAccessLog.action, action),
+				recordId === null
+					? isNull(patientAccessLog.recordId)
+					: eq(patientAccessLog.recordId, recordId),
 				gt(patientAccessLog.viewedAt, since)
 			)
 		)
@@ -591,7 +626,8 @@ export async function logPatientView(
 		patientId,
 		userId,
 		recordType,
-		action: 'view',
+		recordId,
+		action,
 		ipAddress,
 		branchId: event.locals.branch.active
 	});

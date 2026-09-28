@@ -6,12 +6,13 @@ import {
 	educationalLevel,
 	employeeTermination
 } from '$lib/server/db/schema';
-import { eq, and, sql, isNull } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
-import type { PageServerLoad } from '../$types';
+import type { PageServerLoad } from './$types';
 import { employeeFullName } from '$lib/server/employeeName';
+import { isoDate, yearsSince } from '$lib/server/db/dialect';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async () => {
 	let staffList = await db
 		.select({
 			id: employee.id,
@@ -21,8 +22,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 			education: educationalLevel.name,
 			status: employmentStatuses.name,
 			terminationDate: employee.terminationDate,
-			years: sql<number>`TIMESTAMPDIFF(YEAR, ${employee.hireDate}, CURDATE())`,
-			joined: sql<string>`DATE_FORMAT(${employee.hireDate}, '%Y-%m-%d')`
+			years: yearsSince(employee.hireDate),
+			joined: isoDate(employee.hireDate)
 		})
 		.from(employee)
 		.leftJoin(department, and(eq(department.id, employee.departmentId), notDeleted(department)))

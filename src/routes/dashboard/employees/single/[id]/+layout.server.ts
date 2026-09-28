@@ -23,11 +23,12 @@ import {
 	paymentMethods,
 	position
 } from '$lib/server/db/schema';
-import { eq, and, desc, sql } from 'drizzle-orm';
+import { eq, and, desc } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
 import { alias } from 'drizzle-orm/mysql-core';
 import type { LayoutServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
+import { isoDate, yearsSince } from '$lib/server/db/dialect';
 
 export const load: LayoutServerLoad = async ({ params }) => {
 	const { id } = params;
@@ -61,11 +62,11 @@ export const load: LayoutServerLoad = async ({ params }) => {
 			statusId: employmentStatuses.id,
 			address: employee.address,
 			birthDate: employee.birthDate,
-			age: sql<number>`TIMESTAMPDIFF(YEAR, ${employee.birthDate}, CURDATE())`,
+			age: yearsSince(employee.birthDate),
 			educationalLevel: educationalLevel.name,
 			educationalLevelId: educationalLevel.id,
 			maritalStatus: employee.martialStatus,
-			hireDate: sql<string>`DATE_FORMAT(${employee.hireDate}, '%Y-%m-%d')`,
+			hireDate: isoDate(employee.hireDate),
 			photo: employee.photo,
 			govId: employee.govtId,
 			isActive: employee.isActive,
@@ -83,7 +84,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 			rejectedBy: rejecter.name,
 			rejectedAt: employee.rejectedAt,
 			rejectionReason: employee.rejectionReason,
-			years: sql<number>`TIMESTAMPDIFF(YEAR, ${employee.hireDate}, CURDATE())`
+			years: yearsSince(employee.hireDate)
 		})
 		.from(employee)
 		.leftJoin(department, and(eq(employee.departmentId, department.id), notDeleted(department)))

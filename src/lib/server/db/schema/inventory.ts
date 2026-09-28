@@ -136,7 +136,7 @@ export const suppliesAdjustments = mysqlTable('supplies_adjustments', {
 	 * The payment this movement was part of, for a purchase.
 	 *
 	 * Points at `transactions`, which is what the write path has always stored here. It used to
-	 * reference `transaction_supplies` — the line item rather than the payment — while the adjust
+	 * reference `transaction_supplies` (since dropped) — the line item rather than the payment — while the adjust
 	 * action wrote a `transactions.id` into it. Two auto-increment sequences starting at 1 overlap
 	 * for a long time, so the foreign key accepted the wrong id silently and the change-history
 	 * page joined through to whichever receipt happened to share the number. It would have

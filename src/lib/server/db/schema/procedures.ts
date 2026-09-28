@@ -46,9 +46,9 @@ import { PROCEDURE_STATUSES } from '../../../procedureStatus';
  * tables. `existing` covers work the patient arrived with, which has to be chartable without
  * ever having been planned or billed here.
  *
- * Non-goal: this is not the bill. `transactions` and `transaction_services` own money changing
- * hands; `fee` here is what this procedure is priced at, which is what makes an unaccepted plan
- * quotable before any transaction exists.
+ * Non-goal: this is not the bill. `invoice` and `invoice_line` own what is charged, and
+ * `transactions` the money changing hands; `fee` here is what this procedure is priced at, which
+ * is what makes an unaccepted plan quotable before any bill exists.
  */
 export const procedures = mysqlTable(
 	'procedures',
@@ -72,9 +72,8 @@ export const procedures = mysqlTable(
 		 * service has been hard-deleted cannot say what it was, which is worse than not existing.
 		 *
 		 * `services` is reused rather than a dental-specific `procedure_code` table being added.
-		 * It already carries name, category, price and soft delete, it is already what
-		 * `transaction_services` points at, and a second catalogue would mean pricing lived in two
-		 * places. `services.area` says whether the work is charted on a tooth, its surfaces, a
+		 * It already carries name, category, price and soft delete, and a second catalogue would
+		 * mean pricing lived in two places. `services.area` says whether the work is charted on a tooth, its surfaces, a
 		 * span of teeth or the whole mouth. American systems key this to ADA CDT codes; those exist for insurance claims
 		 * that nobody files here.
 		 */

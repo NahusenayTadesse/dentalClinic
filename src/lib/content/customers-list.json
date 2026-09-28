@@ -2,42 +2,42 @@
 	"path": "/dashboard/customers",
 	"languages": {
 		"en": {
-			"title": "Customers",
-			"summary": "Organisations that pay for patients' care — an employer, an insurer, an NGO. A patient can be linked to one on their chart.",
+			"title": "Payers",
+			"summary": "Employers and insurers that pay for some patients' care. A patient is linked to their payer on registration, and that patient's bills go to the payer unless the desk chooses otherwise.",
 			"sections": [
 				{
 					"heading": "The columns",
-					"body": "Name, phone, email and TIN, who added the customer, and when. Click a name to open the customer."
+					"body": "Name, phone, email and TIN, who added the payer, and when. Click a name to open the payer: their bills, what they owe, and taking their payment."
 				},
 				{
-					"heading": "Adding a customer",
-					"body": "Press Add Customer. A new customer waits for someone else to approve it before it can be used."
+					"heading": "Adding a payer",
+					"body": "Press Add a payer. A new payer waits for someone else to approve it in Approvals → Payers before it can be chosen."
 				}
 			],
 			"links": [
 				{
-					"label": "Full guide — Finance",
-					"href": "/dashboard/help#section-finance"
+					"label": "Full guide — Billing",
+					"href": "/dashboard/help#section-billing"
 				}
 			]
 		},
 		"am": {
-			"title": "ደንበኞች",
-			"summary": "ለታካሚዎች ሕክምና የሚከፍሉ ድርጅቶች — አሠሪ፣ መድን ሰጪ፣ መንግሥታዊ ያልሆነ ድርጅት። ታካሚ በቻርቱ ላይ ከአንዱ ጋር ሊገናኝ ይችላል።",
+			"title": "ከፋዮች",
+			"summary": "ለአንዳንድ ታካሚዎች ሕክምና የሚከፍሉ አሠሪዎችና መድን ሰጪዎች። ታካሚ ሲመዘገብ ከከፋዩ ጋር ይገናኛል፤ የዚያ ታካሚ ደረሰኞች ባለሙያው ሌላ ካልመረጠ ወደ ከፋዩ ይሄዳሉ።",
 			"sections": [
 				{
 					"heading": "ዓምዶቹ",
-					"body": "ስም፣ ስልክ፣ ኢሜይልና የግብር ከፋይ መለያ ቁጥር (TIN)፣ ማን እንደጨመረውና መቼ። ደንበኛውን ለመክፈት ስሙን ይጫኑ።"
+					"body": "ስም፣ ስልክ፣ ኢሜይልና TIN፣ ከፋዩን ማን እንደጨመረውና መቼ። ከፋዩን ለመክፈት ስሙን ይጫኑ፦ ደረሰኞቹ፣ ያለበት ዕዳና ክፍያውን መቀበል።"
 				},
 				{
-					"heading": "ደንበኛ መጨመር",
-					"body": "\"Add Customer\"ን ይጫኑ። አዲስ ደንበኛ ጥቅም ላይ ከመዋሉ በፊት ሌላ ሰው እስኪያጸድቀው ይጠብቃል።"
+					"heading": "ከፋይ መጨመር",
+					"body": "\"Add a payer\"ን ይጫኑ። አዲስ ከፋይ ከመመረጡ በፊት ሌላ ሰው በApprovals → Payers እስኪያጸድቀው ይጠብቃል።"
 				}
 			],
 			"links": [
 				{
-					"label": "ሙሉ መመሪያ — ፋይናንስ",
-					"href": "/dashboard/help#section-finance"
+					"label": "ሙሉ መመሪያ — ክፍያ",
+					"href": "/dashboard/help#section-billing"
 				}
 			]
 		}

@@ -1,4 +1,4 @@
-import { and, count, eq, inArray, isNull, or, sql, type SQL } from 'drizzle-orm';
+import { and, count, eq, inArray, isNull, sql, type SQL } from 'drizzle-orm';
 import type { AnyMySqlColumn, MySqlTable } from 'drizzle-orm/mysql-core';
 import { db } from '$lib/server/db';
 import { returnToBatch } from './stock';
@@ -23,6 +23,10 @@ import {
 	suppliesAdjustments,
 	supplySuppliers,
 	transactions,
+	treatmentPlan,
+	treatmentPlanItem,
+	invoice,
+	invoiceLine,
 	user,
 	workExperience
 } from '$lib/server/db/schema';
@@ -330,7 +334,11 @@ export async function softDeleteDamagedSupply(
 	// The ledger row generated from this report goes with it — and is what says which lot the
 	// units came out of, so it is read before it is stamped.
 	const generated = await tx
-		.select({ id: suppliesAdjustments.id, batchId: suppliesAdjustments.batchId })
+		.select({
+			id: suppliesAdjustments.id,
+			batchId: suppliesAdjustments.batchId,
+			adjustment: suppliesAdjustments.adjustment
+		})
 		.from(suppliesAdjustments)
 		.where(
 			and(eq(suppliesAdjustments.damagedSuppliesId, damagedId), notDeleted(suppliesAdjustments))
@@ -343,8 +351,10 @@ export async function softDeleteDamagedSupply(
 			and(eq(suppliesAdjustments.damagedSuppliesId, damagedId), notDeleted(suppliesAdjustments))
 		);
 
+	// Each lot gets back what came out of it. This returned the report's whole quantity to every
+	// lot, so damage that spanned two lots came back doubled when undone.
 	for (const led of generated) {
-		if (led.batchId) await returnToBatch(tx, led.batchId, row.quantity, userId);
+		if (led.batchId) await returnToBatch(tx, led.batchId, Math.abs(led.adjustment), userId);
 	}
 
 	return true;
@@ -533,4 +543,61 @@ export async function softDeleteSupplier(
 
 	await softDeleteAddresses(tx, [row.address], userId);
 	return true;
+}
+
+/**
+ * Deletes a draft treatment plan and its lines.
+ *
+ * Drafts only, which the caller checks: a plan that was presented is the record of what a patient
+ * was told, and is kept whatever became of it. The lines go with the plan because they exist only
+ * as its lines — nothing lists them on their own.
+ */
+export async function softDeleteTreatmentPlan(tx: Tx, planId: number, userId?: string) {
+	const stamp = deletionStamp(userId);
+	await tx
+		.update(treatmentPlanItem)
+		.set(stamp)
+		.where(and(eq(treatmentPlanItem.treatmentPlanId, planId), notDeleted(treatmentPlanItem)));
+	await tx
+		.update(treatmentPlan)
+		.set(stamp)
+		.where(and(eq(treatmentPlan.id, planId), notDeleted(treatmentPlan)));
+}
+
+/**
+ * Takes one line off a draft treatment plan. Drafts are workspace — a line removed before the
+ * plan was presented was never shown to anybody — so the caller checks the plan is a draft.
+ */
+export async function softDeleteTreatmentPlanItem(tx: Tx, itemId: number, userId?: string) {
+	await tx
+		.update(treatmentPlanItem)
+		.set(deletionStamp(userId))
+		.where(and(eq(treatmentPlanItem.id, itemId), notDeleted(treatmentPlanItem)));
+}
+
+/**
+ * Takes one line off a draft bill. The caller checks the bill is a draft: an issued bill is a
+ * document the patient holds, and is voided through a manager rather than edited.
+ */
+export async function softDeleteInvoiceLine(tx: Tx, lineId: number, userId?: string) {
+	await tx
+		.update(invoiceLine)
+		.set(deletionStamp(userId))
+		.where(and(eq(invoiceLine.id, lineId), notDeleted(invoiceLine)));
+}
+
+/**
+ * Throws away a draft bill and its lines, which puts its work back among what is unbilled. Drafts
+ * only, which the caller checks — an issued bill is never deleted.
+ */
+export async function softDeleteDraftInvoice(tx: Tx, invoiceId: number, userId?: string) {
+	const stamp = deletionStamp(userId);
+	await tx
+		.update(invoiceLine)
+		.set(stamp)
+		.where(and(eq(invoiceLine.invoiceId, invoiceId), notDeleted(invoiceLine)));
+	await tx
+		.update(invoice)
+		.set(stamp)
+		.where(and(eq(invoice.id, invoiceId), eq(invoice.status, 'draft'), notDeleted(invoice)));
 }

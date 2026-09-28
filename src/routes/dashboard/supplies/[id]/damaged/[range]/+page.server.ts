@@ -1,7 +1,6 @@
 import { db } from '$lib/server/db';
 import {
 	transactions,
-	transactionSupplies,
 	user,
 	suppliesAdjustments,
 	damagedSupplies,

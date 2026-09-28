@@ -7,11 +7,15 @@
 			"sections": [
 				{
 					"heading": "Before you press run",
-					"body": "1. The month's attendance is entered.\n2. Every new hire has been approved — a pending employee cannot be paid.\n3. Overtime for the month is entered.\n4. Deductions for the month are entered.\n\nAnything added after the run is not in it. The order is what makes the month reconcile."
+					"body": "1. The month's attendance is entered.\n2. Every new hire has been approved — a pending employee cannot be paid.\n3. Overtime for the month is entered.\n4. Deductions for the month are entered.\n5. The month's procedures are marked completed on the patients' charts — a clinician's commission is worked out from them.\n\nAnything added after the run is not in it. The order is what makes the month reconcile."
 				},
 				{
 					"heading": "Running it",
 					"body": "1. Check the totals panel: gross, tax, pension (employee and employer), transport, housing and position allowances, deductions, net.\n2. Choose the bank account the money leaves from.\n3. Set the payment date.\n4. Attach the transfer receipt — this is what reconciles the payroll to the bank statement later.\n5. Press Run payroll.\n\nThe run, every payslip and the bank transaction are written together as one transaction. If anything fails, nothing is written: you will never find half a month paid."
+				},
+				{
+					"heading": "Commission",
+					"body": "An employee whose salary has Commission set to Yes earns its percentage of the fees of every procedure they completed in the month, at the rate on their salary on the day of the work. It is added to gross pay and taxed like the rest of it. Work still planned, or completed in another month, does not count."
 				},
 				{
 					"heading": "If it refuses or looks short",
@@ -31,11 +35,15 @@
 			"sections": [
 				{
 					"heading": "ከማስኬድዎ በፊት",
-					"body": "1. የወሩ የመገኘት መዝገብ ገብቷል።\n2. አዲስ ተቀጣሪዎች ሁሉ ጸድቀዋል — ያልጸደቀ ሠራተኛ ክፍያ አይፈጸምለትም።\n3. የወሩ ትርፍ ሰዓት ገብቷል።\n4. የወሩ ተቀናሾች ገብተዋል።\n\nከክፍያው በኋላ የተጨመረ ማንኛውም ነገር አልተካተተም። ወሩ እንዲመሳከር የሚያደርገው ይህ ቅደም ተከተል ነው።"
+					"body": "1. የወሩ የመገኘት መዝገብ ገብቷል።\n2. አዲስ ተቀጣሪዎች ሁሉ ጸድቀዋል — ያልጸደቀ ሠራተኛ ክፍያ አይፈጸምለትም።\n3. የወሩ ትርፍ ሰዓት ገብቷል።\n4. የወሩ ተቀናሾች ገብተዋል።\n5. የወሩ ሕክምናዎች በታካሚዎቹ ቻርት ላይ እንደተጠናቀቁ ተመዝግበዋል — የባለሙያው ኮሚሽን የሚሰላው ከእነሱ ነው።\n\nከክፍያው በኋላ የተጨመረ ማንኛውም ነገር አልተካተተም። ወሩ እንዲመሳከር የሚያደርገው ይህ ቅደም ተከተል ነው።"
 				},
 				{
 					"heading": "ማስኬድ",
 					"body": "1. የድምር ክፍሉን ይመልከቱ፦ ጠቅላላ፣ ግብር፣ ጡረታ (የሠራተኛና የድርጅት)፣ የትራንስፖርት፣ የቤትና የሥራ መደብ አበሎች፣ ተቀናሾች፣ የተጣራ።\n2. ገንዘቡ የሚወጣበትን የባንክ ሒሳብ ይምረጡ።\n3. የክፍያ ቀን ያስቀምጡ።\n4. የዝውውር ደረሰኝ ያያይዙ — በኋላ ደመወዙን ከባንክ መግለጫ ጋር የሚያመሳክረው ይኸው ነው።\n5. Run payroll ይጫኑ።\n\nክፍያው፣ እያንዳንዱ የደመወዝ ወረቀትና የባንክ ግብይቱ በአንድ ግብይት አብረው ይመዘገባሉ። አንድ ነገር ቢሳሳት ምንም አይመዘገብም፦ ግማሽ የተከፈለ ወር አያገኙም።"
+				},
+				{
+					"heading": "ኮሚሽን",
+					"body": "ደመወዙ ላይ ኮሚሽን \"Yes\" የተደረገለት ሠራተኛ በወሩ ውስጥ ካጠናቀቃቸው ሕክምናዎች ክፍያ ላይ የተቀመጠውን መቶኛ ያገኛል፤ መጠኑ ሥራው በተሠራበት ቀን በደመወዙ ላይ የነበረው ነው። ከጠቅላላ ክፍያ ጋር ተደምሮ እንደ ቀሪው ይታክሳል። ገና የታቀደ ወይም በሌላ ወር የተጠናቀቀ ሥራ አይቆጠርም።"
 				},
 				{
 					"heading": "ካልተቀበለ ወይም ያነሰ ከመሰለ",

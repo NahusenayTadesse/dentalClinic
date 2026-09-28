@@ -11,7 +11,7 @@ import { saveUploadedFile } from '$lib/server/upload';
 import { notDeleted, softDeleteOwnedRecord } from '$lib/server/softDelete';
 import { recordAudit, type AuditedTable } from '$lib/server/audit';
 import { insertReturningId } from '$lib/server/db/insert';
-import { requirePermission } from '$lib/server/permissions';
+import { requirePermission, requireSuperAdmin } from '$lib/server/permissions';
 
 /**
  * CRUD for a table of rows owned by one parent record — the tabs on a detail page.
@@ -98,6 +98,12 @@ export interface ChildCrudOptions {
 	 * it — and the action is reachable by anyone who can POST to the page, so it is checked here.
 	 */
 	permission?: string;
+	/**
+	 * Deleting a row needs a super admin, whatever `permission` says. For a child row whose history
+	 * is the point — a consent is withdrawn, not deleted, and a deleted one reads as though it was
+	 * never given — so the delete exists only for a row entered on the wrong patient.
+	 */
+	superAdminDelete?: boolean;
 }
 
 /**
@@ -120,6 +126,14 @@ export class WriteRefused extends Error {
 	}
 }
 
+/**
+ * Refuses a write unless `ok`, with a reason for the person — the one-line guard every write module
+ * starts with. It was written out in three of them before it lived here.
+ */
+export function refuseUnless(ok: boolean, text: string, field: string | null = null): asserts ok {
+	if (!ok) throw new WriteRefused(field, text);
+}
+
 /** The form's response to a `WriteRefused`: the reason under its field, and a 400. */
 function refused(form: Parameters<typeof message>[0], err: WriteRefused) {
 	if (err.field) setError(form, err.field as never, err.message);
@@ -138,7 +152,8 @@ export function childCrud({
 	fileFields = [],
 	transform,
 	audit,
-	permission
+	permission,
+	superAdminDelete = false
 }: ChildCrudOptions) {
 	const owner = table[ownerColumn];
 	if (!owner) throw new Error(`childCrud: ${ownerColumn} is not a column on this table`);
@@ -327,6 +342,7 @@ export function childCrud({
 			 */
 			delete: async (event: RequestEvent, ownerId: number) => {
 				if (permission) requirePermission(event.locals, permission);
+				if (superAdminDelete) requireSuperAdmin(event.locals);
 				const form = await superValidate(event.request, zod4(idSchema));
 
 				if (!form.valid) {

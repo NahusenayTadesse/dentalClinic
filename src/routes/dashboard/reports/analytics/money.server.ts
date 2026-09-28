@@ -1,17 +1,15 @@
 import { count, countDistinct, desc, eq, sql } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import {
-	employee,
 	expenses,
 	expensesType,
 	paymentMethods,
-	services,
-	transactionServices,
-	transactionSupplies,
+	invoice,
 	transactions
 } from '$lib/server/db/schema';
 import { notDeleted } from '$lib/server/softDelete';
 import type { ReportFilters } from '../filters';
+import { billedLines } from '../billedLines.server';
 import type { ReportChartData, Stat } from '../types';
 import {
 	alignMonths,
@@ -21,8 +19,6 @@ import {
 	monthKeys,
 	monthOf,
 	n,
-	staffName,
-	staffScope,
 	topN,
 	total
 } from '../scope.server';
@@ -37,7 +33,6 @@ export async function moneyStats(
 	filters: ReportFilters
 ): Promise<{ stats: Stat[]; charts: ReportChartData[] }> {
 	const keys = monthKeys(filters);
-	const scope = staffScope(filters);
 
 	const transactionWhere = all([
 		notDeleted(transactions),
@@ -56,19 +51,14 @@ export async function moneyStats(
 		...amountScope(expenses.total, filters)
 	]);
 
-	const serviceWhere = all([
-		notDeleted(transactionServices),
-		notDeleted(employee),
-		inRange(transactionServices.createdAt, filters),
-		filters.serviceId ? eq(transactionServices.serviceId, filters.serviceId) : undefined,
-		...scope
-	]);
+	// Billed work, read from bills (`billedLines.server.ts`).
+	const lines = billedLines(filters);
 
 	const [
 		[transactionTotals],
 		[expenseTotals],
 		[serviceTotals],
-		[supplySales],
+		[discounts],
 		transactionsByMonth,
 		transactionsByStatus,
 		transactionsByMethod,
@@ -101,26 +91,23 @@ export async function moneyStats(
 		db
 			.select({
 				total: count(),
-				revenue: total(transactionServices.price),
-				tips: total(transactionServices.tip),
-				tax: total(transactionServices.tax),
-				billed: total(transactionServices.total),
-				staff: countDistinct(transactionServices.staffId),
-				kinds: countDistinct(transactionServices.serviceId)
+				revenue: total(lines.lineTotal),
+				staff: countDistinct(lines.staffId),
+				kinds: countDistinct(lines.service)
 			})
-			.from(transactionServices)
-			.innerJoin(employee, eq(transactionServices.staffId, employee.id))
-			.where(serviceWhere),
+			.from(lines),
 
+		// Discounts given on bills issued inside the range.
 		db
-			.select({
-				lines: count(),
-				value: sql<string>`COALESCE(SUM(${transactionSupplies.quantity} * ${transactionSupplies.unitPrice}), 0)`,
-				units: total(transactionSupplies.quantity)
-			})
-			.from(transactionSupplies)
+			.select({ amount: total(invoice.discount), bills: count() })
+			.from(invoice)
 			.where(
-				all([notDeleted(transactionSupplies), inRange(transactionSupplies.createdAt, filters)])
+				all([
+					sql`${invoice.status} IN ('issued', 'partly', 'paid')`,
+					sql`${invoice.discount} > 0`,
+					notDeleted(invoice),
+					inRange(invoice.issuedOn, filters)
+				])
 			),
 
 		db
@@ -169,31 +156,23 @@ export async function moneyStats(
 
 		db
 			.select({
-				bucket: monthOf(transactionServices.createdAt),
-				value: total(transactionServices.price),
-				tips: total(transactionServices.tip),
+				bucket: monthOf(lines.issuedOn),
+				value: total(lines.lineTotal),
 				entries: count()
 			})
-			.from(transactionServices)
-			.innerJoin(employee, eq(transactionServices.staffId, employee.id))
-			.where(serviceWhere)
+			.from(lines)
 			.groupBy(sql`1`),
 
 		db
-			.select({ label: services.name, value: total(transactionServices.price) })
-			.from(transactionServices)
-			.innerJoin(employee, eq(transactionServices.staffId, employee.id))
-			.leftJoin(services, eq(transactionServices.serviceId, services.id))
-			.where(serviceWhere)
-			.groupBy(services.name),
+			.select({ label: lines.service, value: total(lines.lineTotal) })
+			.from(lines)
+			.groupBy(sql`1`),
 
 		db
-			.select({ label: staffName, value: total(transactionServices.price) })
-			.from(transactionServices)
-			.innerJoin(employee, eq(transactionServices.staffId, employee.id))
-			.where(serviceWhere)
-			.groupBy(employee.id)
-			.orderBy(desc(total(transactionServices.price)))
+			.select({ label: lines.clinician, value: total(lines.lineTotal) })
+			.from(lines)
+			.groupBy(lines.staffId, lines.clinician)
+			.orderBy(desc(total(lines.lineTotal)))
 			.limit(12)
 	]);
 
@@ -240,32 +219,22 @@ export async function moneyStats(
 		},
 		{
 			key: 'service-revenue',
-			label: 'Service Revenue',
+			label: 'Billed for Work',
 			value: n(serviceTotals?.revenue),
 			format: 'money',
 			group: 'Money',
-			hint: `${n(serviceTotals?.total)} services by ${n(serviceTotals?.staff)} staff`,
+			hint: `${n(serviceTotals?.total)} lines on issued bills, by ${n(serviceTotals?.staff)} clinicians`,
 			section: 'services-rendered',
 			tone: 'positive'
 		},
 		{
-			key: 'service-tips',
-			label: 'Tips',
-			value: n(serviceTotals?.tips),
+			key: 'discounts',
+			label: 'Discounts Given',
+			value: n(discounts?.amount),
 			format: 'money',
 			group: 'Money',
-			hint: 'Collected on rendered services',
-			section: 'services-rendered',
-			tone: 'positive'
-		},
-		{
-			key: 'supply-sales',
-			label: 'Supplies Sold',
-			value: n(supplySales?.value),
-			format: 'money',
-			group: 'Money',
-			hint: `${n(supplySales?.units)} units over ${n(supplySales?.lines)} lines`,
-			tone: 'positive'
+			hint: `On ${n(discounts?.bills)} bills issued in the range`,
+			tone: 'neutral'
 		}
 	];
 
@@ -346,15 +315,12 @@ export async function moneyStats(
 		},
 		{
 			key: 'service-revenue-month',
-			title: 'Service Revenue per Month',
+			title: 'Billed for Work per Month',
 			group: 'Money',
 			kind: 'line',
 			labels: keys,
 			money: true,
-			series: [
-				{ label: 'Revenue', data: alignMonths(keys, servicesByMonth, (row) => n(row.value)) },
-				{ label: 'Tips', data: alignMonths(keys, servicesByMonth, (row) => n(row.tips)) }
-			]
+			series: [{ label: 'Billed', data: alignMonths(keys, servicesByMonth, (row) => n(row.value)) }]
 		},
 		{
 			key: 'revenue-by-service',
@@ -369,7 +335,7 @@ export async function moneyStats(
 		},
 		{
 			key: 'revenue-by-staff',
-			title: 'Revenue by Employee',
+			title: 'Billed by Clinician',
 			group: 'Money',
 			kind: 'bar',
 			money: true,

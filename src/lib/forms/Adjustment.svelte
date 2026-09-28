@@ -12,7 +12,7 @@
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import type { Item } from '$lib/global.svelte';
 
-	type PaymentMethodOption = { value: number; name: string | null; balance: string | null };
+	type PaymentMethodOption = { value: number; name: string | null };
 
 	let isOpen = $state(false);
 
@@ -27,7 +27,7 @@
 		data: SuperValidated<Infer<typeof inventoryAdjustmentFormSchema>>;
 		name: string;
 		employees?: Item[];
-		/** Accounts a purchase can be paid from, with their recorded balances. */
+		/** Accounts a purchase can be paid from. */
 		paymentMethods?: PaymentMethodOption[];
 		/** Who a delivery can have come from. */
 		suppliers?: Item[];
@@ -126,6 +126,7 @@
 					{errors}
 					required={tracksExpiry}
 					oldDays={false}
+					allowEmpty
 				/>
 				<InputComp
 					label="Lot or batch number"

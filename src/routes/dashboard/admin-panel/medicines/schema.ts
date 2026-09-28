@@ -9,6 +9,8 @@ const fields = {
 		['tablet', 'capsule', 'syrup', 'suspension', 'injection', 'mouthwash', 'gel', 'cream', 'other'],
 		'Form is required'
 	),
+	/** The allergy family, or `''` for none — see `medicine.allergenId`. */
+	allergenId: z.coerce.string().optional(),
 	isPrescribable: z.boolean().default(true),
 	isAntibiotic: z.boolean().default(false),
 	bleedingRisk: z.boolean().default(false),

@@ -21,16 +21,23 @@
  */
 import { sql, type SQL } from 'drizzle-orm';
 import type { MySqlColumn } from 'drizzle-orm/mysql-core';
+import { clinicToday } from '../../clinicTime';
 
 /** A column or an already-built expression — most of these accept either. */
 type Expr = MySqlColumn | SQL;
 
-/** Today, as a date. `CURRENT_DATE` on Postgres, `date('now')` on SQLite. */
+/**
+ * Today at the clinic, as a date parameter — **not** `CURDATE()`.
+ *
+ * Sessions run in UTC (`connection.ts`), where `CURDATE()` is yesterday in Addis Ababa until three
+ * in the morning. The clinic's date is worked out in the app and passed in, which is also the one
+ * spelling all three engines share.
+ */
 export function today(): SQL<string> {
-	return sql<string>`CURDATE()`;
+	return sql<string>`${clinicToday()}`;
 }
 
-/** Now, as a datetime. */
+/** Now, as a datetime — the session's UTC clock, which is how `datetime` columns are stored. */
 export function nowExpr(): SQL<string> {
 	return sql<string>`NOW()`;
 }
@@ -42,7 +49,7 @@ export function nowExpr(): SQL<string> {
  * fraction would put someone at 8 years two months early.
  */
 export function yearsSince(column: Expr): SQL<number> {
-	return sql<number>`TIMESTAMPDIFF(YEAR, ${column}, CURDATE())`;
+	return sql<number>`TIMESTAMPDIFF(YEAR, ${column}, ${today()})`;
 }
 
 /** Whole days from `from` to `to`. Negative when `to` is earlier. */
@@ -107,4 +114,23 @@ export function addMinutes(column: Expr, minutes: Expr | number): SQL<string> {
  */
 export function storedInstant(instant: Date): SQL<string> {
 	return sql<string>`${instant.toISOString().slice(0, 19).replace('T', ' ')}`;
+}
+
+/**
+ * A `json` column's value, as the object it holds.
+ *
+ * The engines disagree about what comes back: MySQL hands the driver a parsed value, MariaDB stores
+ * JSON as text and hands back the string, SQLite has no JSON type at all. Read every `json` column
+ * through this, so a caller checks one shape. Unparseable text is `null` rather than a throw — a
+ * history row with a damaged note should still list.
+ *
+ * Found through `treatment_plan_adjustment.changes`, which read as empty on MariaDB.
+ */
+export function jsonValue(value: unknown): unknown {
+	if (typeof value !== 'string') return value;
+	try {
+		return JSON.parse(value);
+	} catch {
+		return null;
+	}
 }

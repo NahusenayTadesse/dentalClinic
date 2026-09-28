@@ -53,6 +53,7 @@ export function minutesToHoursString(minutes: number) {
 import { sql } from 'drizzle-orm';
 import type { MySqlColumn } from 'drizzle-orm/mysql-core';
 import { SvelteDate } from 'svelte/reactivity';
+import { clinicDayRange, clinicToday } from './clinicTime';
 
 /**
  * A random, unguessable name for an uploaded file.
@@ -135,23 +136,35 @@ export function getCurrentMonthRange(): string {
 	return `${firstOfMonth}-${todayStr}`;
 }
 
-export const currentMonthFilter = (dateField: MySqlColumn, start?: string, end?: string) => {
-	// If start/end are passed, return BETWEEN condition
-	if (start && end) {
-		const endOfDay = new SvelteDate(end);
-		endOfDay.setHours(23, 59, 59, 999);
+/** `YYYY-M-D` or `YYYY-MM-DD` as `YYYY-MM-DD` — some callers build the unpadded form. */
+function paddedDay(day: string): string {
+	const [y, m, d] = day.split('-');
+	return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+}
 
-		return sql`${dateField} BETWEEN ${start} AND ${endOfDay}`;
+/**
+ * A column within a period of whole clinic days, `start` to `end` inclusive — or, with neither, the
+ * clinic's current month.
+ *
+ * Compared as instants: from the clinic's midnight that opens `start` to the one that closes
+ * `end`. That is right for all three kinds of column this is used on — a `date`, a `timestamp`
+ * and a `datetime` — now that sessions run in UTC (`server/db/connection.ts`). It was a `BETWEEN`
+ * a bare date and a local end-of-day `Date`, which in a UTC session would have dropped the first
+ * three hours of the period's first day from every `created_at` filter.
+ */
+export const currentMonthFilter = (dateField: MySqlColumn, start?: string, end?: string) => {
+	if (start && end) {
+		const from = clinicDayRange(paddedDay(start)).start;
+		const until = clinicDayRange(paddedDay(end)).end;
+		return sql`${dateField} >= ${from} AND ${dateField} < ${until}`;
 	}
 
-	// Otherwise fallback to current-month logic
-	const currentYear = new SvelteDate().getFullYear();
-	const currentMonth = new SvelteDate().getMonth() + 1;
-
-	return sql`
-    EXTRACT(YEAR FROM ${dateField}) = ${currentYear}
-    AND EXTRACT(MONTH FROM ${dateField}) = ${currentMonth}
-  `;
+	const today = clinicToday();
+	const [year, month] = today.split('-').map(Number);
+	const first = `${year}-${String(month).padStart(2, '0')}-01`;
+	const next =
+		month === 12 ? `${year + 1}-01-01` : `${year}-${String(month + 1).padStart(2, '0')}-01`;
+	return sql`${dateField} >= ${clinicDayRange(first).start} AND ${dateField} < ${clinicDayRange(next).start}`;
 };
 
 export function isMobile() {
@@ -212,7 +225,7 @@ export const formatEthiopianDate = (date: Date | null | undefined): string => {
 		});
 
 		return formatter.format(date);
-	} catch (error) {
+	} catch {
 		// 3. Catch-all for browser compatibility issues or unexpected inputs
 		return 'Error Formatting Date';
 	}
@@ -242,7 +255,7 @@ export const formatEthiopianYearMonth = (
 
 		// Encodes it safely for HTTP Redirect Headers (e.g., %E1%8A%A2...)
 		return encodeURIComponent(formattedString);
-	} catch (e) {
+	} catch {
 		return 'Formatting Error';
 	}
 };
@@ -284,7 +297,7 @@ export const getEthiopianYearMonth = (
 		if (!Number.isFinite(year) || !Number.isFinite(month) || month < 1) return null;
 
 		return { year, month: Math.min(month, 12) };
-	} catch (e) {
+	} catch {
 		return null;
 	}
 };
@@ -297,7 +310,7 @@ export const getEthiopianYearMonth = (
  * Returns '' if the date cannot be converted, which callers should treat as "do
  * not redirect" rather than pasting an empty segment into a URL.
  */
-export const currentEthiopianMonthParam = (date: Date = new Date()): string => {
+export const currentEthiopianMonthParam = (date: Date = new SvelteDate()): string => {
 	const ethiopian = getEthiopianYearMonth(date);
 	if (!ethiopian) return '';
 	return formatEthiopianYearMonth(ethiopian.year, ethiopian.month);
@@ -313,7 +326,7 @@ export const formatEthiopianYear = (date: Date | null | undefined): string => {
 		});
 
 		return formatter.format(date);
-	} catch (e) {
+	} catch {
 		return '';
 	}
 };
@@ -332,7 +345,7 @@ export const getEthiopianYearInt = (date: Date | null | undefined): number | nul
 		// Extract only the digits
 		const yearMatch = formatted.match(/\d+/);
 		return yearMatch ? parseInt(yearMatch[0], 10) : null;
-	} catch (e) {
+	} catch {
 		return null;
 	}
 };
@@ -351,66 +364,13 @@ export function formatETB(amount: number | null | undefined, useAmharic: boolean
 			currencyDisplay: 'symbol',
 			minimumFractionDigits: 2
 		}).format(amount);
-	} catch (e) {
+	} catch {
 		// Fallback if Intl fails
 		return `${amount.toFixed(2)} ETB`;
 	}
 }
 
-export const getGregorianRangeFromEthiopian = (ethMonth: number, ethYear: number) => {
-	// 1. Ethiopian months 1-12 have 30 days. Month 13 has 5 or 6.
-	const startDay = 1;
-	const endDay = ethMonth === 13 ? (isEthiopianLeapYear(ethYear) ? 6 : 5) : 30;
-
-	// 2. Approximate the Gregorian year (Ethiopian year + ~7/8 years)
-	const approxGregYear = ethYear + 8;
-
-	const findGregorian = (eYear: number, eMonth: number, eDay: number) => {
-		// Start searching around the approximate Gregorian date
-		const date = new Date(approxGregYear, 0, 1);
-
-		// Use a brute-force search within a small window or a known offset
-		// For simplicity and accuracy across environments:
-		const jdn = ethiopianToJDN(eYear, eMonth, eDay);
-		return jdnToGregorian(jdn);
-	};
-
-	return {
-		start: findGregorian(ethYear, ethMonth, startDay),
-		end: findGregorian(ethYear, ethMonth, endDay)
-	};
-};
-
-// Helper: Check for Ethiopian Leap Year
-const isEthiopianLeapYear = (year: number) => (year + 1) % 4 === 0;
-
-// Helper: Convert Ethiopian to Julian Day Number (JDN)
-function ethiopianToJDN(year: number, month: number, day: number): number {
-	const ERA = 1723856;
-	return ERA + (year - 1) * 365 + Math.floor(year / 4) + (month - 1) * 30 + day - 1;
-}
-
-// Helper: Convert JDN back to Gregorian Date object
-function jdnToGregorian(jdn: number): Date {
-	const z = jdn + 0.5;
-	const f = Math.floor(z);
-	let a = f;
-	if (f >= 2299161) {
-		const alpha = Math.floor((f - 1867216.25) / 36524.25);
-		a = f + 1 + alpha - Math.floor(alpha / 4);
-	}
-	const b = a + 1524;
-	const c = Math.floor((b - 122.1) / 365.25);
-	const d = Math.floor(365.25 * c);
-	const e = Math.floor((b - d) / 30.6001);
-	const day = b - d - Math.floor(30.6001 * e);
-	const month = e < 14 ? e - 1 : e - 13;
-	const year = month > 2 ? c - 4716 : c - 4715;
-
-	return new Date(year, month - 1, day);
-}
-
-import { toGregorian, toEthiopian } from 'ethiopian-calendar-new';
+import { toGregorian } from 'ethiopian-calendar-new';
 
 export function ethiopianRange(month: number, year: number) {
 	if (month === 13) {

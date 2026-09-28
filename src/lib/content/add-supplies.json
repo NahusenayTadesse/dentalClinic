@@ -7,7 +7,7 @@
 			"sections": [
 				{
 					"heading": "What to fill in",
-					"body": "• Name and description\n• Type — from Supplies → Supply Types. If the type you need is missing, add it there first.\n• Unit — piece, gram, millilitre and so on; every quantity of this item is in it\n• Returnable — tick it for instruments that come back to the store after use\n• Reorder level — the point at which the item starts appearing on the dashboard\n\nThen open the item, press Change Quantity and choose Add to record the delivery: the quantity, the cost per unit, and the account it was paid from."
+					"body": "• Name and description\n• Type — from Supplies → Supply Types. If the type you need is missing, add it there first.\n• Unit — piece, gram, millilitre and so on; every quantity of this item is in it\n• Returnable — tick it for instruments that come back to the store after use\n• Expires — tick it for anything with an expiry date: anaesthetic, composite, bonding agent. Every delivery of it must then carry the date on the box.\n• Reorder level — the point at which the item starts appearing on the dashboard\n\nThen open the item, press Change Quantity and choose Add to record the delivery: the quantity, the expiry date, the lot number, the supplier, the cost per unit, and the account it was paid from."
 				},
 				{
 					"heading": "Setting the reorder level",
@@ -15,7 +15,7 @@
 				},
 				{
 					"heading": "After saving",
-					"body": "The item appears in Stock Levels with the quantity in store. Every delivery is kept as its own lot, and stock is taken from the lot that expires first, so the oldest composite or anaesthetic is used before it goes off."
+					"body": "The item appears in Stock Levels with the quantity in store. Every delivery is kept as its own lot, and stock is taken from the in-date lot that expires first, so the oldest composite or anaesthetic is used before it goes off. An expired lot is never issued; it is written off as damaged."
 				}
 			],
 			"links": [
@@ -31,7 +31,7 @@
 			"sections": [
 				{
 					"heading": "የሚሞላው",
-					"body": "• ስምና መግለጫ\n• ምድብ — ከSupplies → Supply Types። የሚፈልጉት ምድብ ከሌለ መጀመሪያ እዚያ ይጨምሩት።\n• መለኪያ — ቁራጭ፣ ግራም፣ ሚሊ ሊትር ወዘተ፤ የዚህ ዕቃ ማንኛውም መጠን በዚህ ይለካል\n• ተመላሽ — ከጥቅም በኋላ ወደ መጋዘን ለሚመለሱ መሣሪያዎች ምልክት ያድርጉ\n• የዳግም ትዕዛዝ ደረጃ — ዕቃው በዳሽቦርድ ላይ መታየት የሚጀምርበት ነጥብ\n\nከዚያ ዕቃውን ከፍተው \"Change Quantity\"ን ይጫኑ፤ ርክክቡን ለመመዝገብ \"Add\"ን ይምረጡ፦ መጠኑ፣ የአንዱ ዋጋና የተከፈለበት ሂሳብ።"
+					"body": "• ስምና መግለጫ\n• ምድብ — ከSupplies → Supply Types። የሚፈልጉት ምድብ ከሌለ መጀመሪያ እዚያ ይጨምሩት።\n• መለኪያ — ቁራጭ፣ ግራም፣ ሚሊ ሊትር ወዘተ፤ የዚህ ዕቃ ማንኛውም መጠን በዚህ ይለካል\n• ተመላሽ — ከጥቅም በኋላ ወደ መጋዘን ለሚመለሱ መሣሪያዎች ምልክት ያድርጉ\n• የማለቂያ ቀን ያለው (Expires) — የማለቂያ ቀን ላለው ማንኛውም ነገር ምልክት ያድርጉ፦ ማደንዘዣ፣ ኮምፖዚት፣ ቦንዲንግ። ከዚያ በኋላ እያንዳንዱ ርክክብ በሳጥኑ ላይ ያለውን ቀን መያዝ አለበት።\n• የዳግም ትዕዛዝ ደረጃ — ዕቃው በዳሽቦርድ ላይ መታየት የሚጀምርበት ነጥብ\n\nከዚያ ዕቃውን ከፍተው \"Change Quantity\"ን ይጫኑ፤ ርክክቡን ለመመዝገብ \"Add\"ን ይምረጡ፦ መጠኑ፣ የማለቂያ ቀኑ፣ የሎት ቁጥሩ፣ አቅራቢው፣ የአንዱ ዋጋና የተከፈለበት ሂሳብ።"
 				},
 				{
 					"heading": "የዳግም ትዕዛዝ ደረጃ ማስቀመጥ",
@@ -39,7 +39,7 @@
 				},
 				{
 					"heading": "ካስቀመጡ በኋላ",
-					"body": "ዕቃው በክምችት ደረጃ ውስጥ በመጋዘን ካለው መጠን ጋር ይታያል። እያንዳንዱ ርክክብ እንደ ራሱ ሎት ይቀመጣል፤ ክምችትም ቀድሞ ከሚያልቀው ሎት ይወሰዳል፤ ስለዚህ የቆየው ኮምፖዚት ወይም ማደንዘዣ ጊዜው ከማለፉ በፊት ጥቅም ላይ ይውላል።"
+					"body": "ዕቃው በክምችት ደረጃ ውስጥ በመጋዘን ካለው መጠን ጋር ይታያል። እያንዳንዱ ርክክብ እንደ ራሱ ሎት ይቀመጣል፤ ክምችትም ጊዜው ካላለፈባቸው ሎቶች ቀድሞ ከሚያልቀው ይወሰዳል፤ ስለዚህ የቆየው ኮምፖዚት ወይም ማደንዘዣ ጊዜው ከማለፉ በፊት ጥቅም ላይ ይውላል። ጊዜው ያለፈበት ሎት አይወጣም፤ እንደተበላሸ ተመዝግቦ ይሰረዛል።"
 				}
 			],
 			"links": [

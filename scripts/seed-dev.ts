@@ -18,9 +18,9 @@
  * real patient or employee if it ever escapes into a screenshot.
  */
 import 'dotenv/config';
-import mysql from 'mysql2/promise';
 import { count } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/mysql2';
+import { createClinicPool } from '../src/lib/server/db/connection';
 import { seed } from 'drizzle-seed';
 
 import {
@@ -41,6 +41,7 @@ import {
 import { seedLeave, seedSalaries, seedStaffDetails } from './seed/staff';
 import { seedSupplies } from './seed/supplies';
 import { seedClinicalRecord } from './seed/clinical';
+import { seedTreatmentPlans } from './seed/plans';
 import {
 	seedDamagedStock,
 	seedExpenses,
@@ -48,10 +49,9 @@ import {
 	seedPatientFiles,
 	seedPayrollInputs,
 	seedRelationships,
-	seedSalesLines,
 	seedTerminations
 } from './seed/operations';
-import { placeholderFile } from './seed/files';
+import { placeholderFiles } from './seed/files';
 
 const url = process.env.DATABASE_URL;
 
@@ -80,7 +80,8 @@ if (!process.argv.includes('--yes')) {
 	process.exit(1);
 }
 
-const connection = await mysql.createPool(url);
+// The app's own factory: UTC sessions, or every seeded `created_at` is three hours late.
+const connection = createClinicPool(url);
 const db = drizzle(connection);
 
 /*
@@ -236,6 +237,7 @@ async function rest() {
 
 	await seedSupplies(db);
 	await seedClinicalRecord(db);
+	await seedTreatmentPlans(db);
 
 	await seedPayrollInputs(db);
 	await seedExpenses(db);
@@ -243,8 +245,7 @@ async function rest() {
 	await seedDamagedStock(db);
 	await seedTerminations(db);
 	await seedRelationships(db);
-	await seedSalesLines(db);
-	await seedPatientFiles(db, placeholderFile());
+	await seedPatientFiles(db, placeholderFiles);
 }
 
 await main();

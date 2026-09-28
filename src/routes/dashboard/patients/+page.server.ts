@@ -14,6 +14,7 @@ import {
 import { notDeleted } from '$lib/server/softDelete';
 import { patientScope } from '$lib/server/branchScope';
 import { hasPermission } from '$lib/server/permissions';
+import { balancesFor } from '$lib/server/billing';
 import { isoDate, yearsSince } from '$lib/server/db/dialect';
 import {
 	buildWhere,
@@ -154,12 +155,18 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		.limit(query.limit)
 		.offset(query.offset);
 
-	const flags = await flagsFor(rows.map((r) => r.id));
+	// What each owes, only for someone who may see money — `null` hides the column for everyone else.
+	const canBill = hasPermission(locals, 'billing.invoice');
+	const [flags, balances] = await Promise.all([
+		flagsFor(rows.map((r) => r.id)),
+		canBill ? balancesFor(rows.map((r) => r.id)) : Promise.resolve(null)
+	]);
 
 	const patients = rows.map((row) => ({
 		...row,
 		age: row.age === null ? null : Number(row.age),
 		...(flags.get(row.id) ?? { allergies: [], conditions: [], medicineAlerts: [] }),
+		owes: balances ? (balances.get(row.id) ?? 0) : null,
 		/*
 		 * Only meaningful while working at one branch. Seeing across all of them, nobody is "from
 		 * another branch" — and a patient with no branch recorded predates branches, not elsewhere.
@@ -291,6 +298,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			: 0;
 
 	return {
+		showBalance: canBill,
 		patients,
 		facets,
 		elsewhere,

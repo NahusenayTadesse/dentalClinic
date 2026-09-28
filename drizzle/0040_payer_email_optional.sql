@@ -1,0 +1,1 @@
+ALTER TABLE `customers` MODIFY COLUMN `email` varchar(100);

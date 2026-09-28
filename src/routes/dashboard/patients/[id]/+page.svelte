@@ -23,6 +23,7 @@
 	import FormDialog from '$lib/formComponents/FormDialog.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
+	import MergeSection from './MergeSection.svelte';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 
 	import {
@@ -355,16 +356,21 @@
 		style="systemIcon"
 		class="lg:col-span-2"
 	>
-		<!--
-			Counts only. Appointments, treatment, billing, files and notes each get their own screen;
-			until then the chart says what exists rather than pretending nothing does.
-		-->
+		<!-- Counts only: each of these has its own tab, where it is read and changed. -->
 		<SingleTable singleTable={summaryRows} />
 	</Section>
 
 	<Section title="System information" IconComp={Settings} style="systemIcon">
 		<SingleTable singleTable={systemRows} />
 	</Section>
+
+	{#if data.merge}
+		<MergeSection
+			duplicates={data.merge.duplicates}
+			form={data.merge.form}
+			pick={data.merge.pick}
+		/>
+	{/if}
 
 	{#if data.can.seeViews && data.recentViews}
 		<Section title="Who opened this chart" IconComp={Eye} style="systemIcon" class="lg:col-span-3">

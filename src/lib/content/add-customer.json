@@ -2,42 +2,42 @@
 	"match": "/dashboard/customers/add-customer",
 	"languages": {
 		"en": {
-			"title": "Add Customer",
-			"summary": "Register an organisation that pays for patients' care. It starts pending.",
+			"title": "Add a Payer",
+			"summary": "Register an employer or insurer that pays for some patients' care. It starts pending.",
 			"sections": [
 				{
 					"heading": "What to fill in",
-					"body": "Name as it should appear on paperwork, TIN, phone, email and address. Region, city and subcity come from the lists in the Admin Panel; if the one you need is missing, add it there first."
+					"body": "Name as it should appear on bills, TIN, phone, email and address. Subcity comes from the list in the Admin Panel; if the one you need is missing, add it there first."
 				},
 				{
 					"heading": "After saving",
-					"body": "The customer waits in the Customers approval queue until it is approved — normally by somebody other than the person who added it."
+					"body": "The payer waits in Approvals → Payers until it is approved — normally by somebody other than the person who added it. Then it can be chosen on a patient's registration and under Bill to on a draft bill."
 				}
 			],
 			"links": [
 				{
-					"label": "Full guide — Finance",
-					"href": "/dashboard/help#section-finance"
+					"label": "Full guide — Billing",
+					"href": "/dashboard/help#section-billing"
 				}
 			]
 		},
 		"am": {
-			"title": "ደንበኛ መጨመር",
-			"summary": "ለታካሚዎች ሕክምና የሚከፍል ድርጅት ይመዝግቡ። በመጠባበቅ ላይ ሆኖ ይጀምራል።",
+			"title": "ከፋይ መጨመር",
+			"summary": "ለአንዳንድ ታካሚዎች ሕክምና የሚከፍል አሠሪ ወይም መድን ሰጪ ይመዝግቡ። በመጠባበቅ ላይ ሆኖ ይጀምራል።",
 			"sections": [
 				{
 					"heading": "የሚሞላው",
-					"body": "በሰነዶች ላይ መታየት ያለበት ስም፣ TIN፣ ስልክ፣ ኢሜይልና አድራሻ። ክልል፣ ከተማና ክፍለ ከተማ ከአስተዳደር ፓነል ዝርዝሮች ይመጣሉ፤ የሚፈልጉት ከሌለ መጀመሪያ እዚያ ይጨምሩት።"
+					"body": "በደረሰኞች ላይ መታየት ያለበት ስም፣ TIN፣ ስልክ፣ ኢሜይልና አድራሻ። ክፍለ ከተማ ከአስተዳደር ፓነል ዝርዝር ይመጣል፤ የሚፈልጉት ከሌለ መጀመሪያ እዚያ ይጨምሩት።"
 				},
 				{
 					"heading": "ካስቀመጡ በኋላ",
-					"body": "ደንበኛው እስኪጸድቅ ድረስ በደንበኞች የማጽደቂያ ወረፋ ውስጥ ይጠብቃል — ብዙውን ጊዜ የሚያጸድቀው የጨመረው ሰው ሳይሆን ሌላ ሰው ነው።"
+					"body": "ከፋዩ በApprovals → Payers እስኪጸድቅ ድረስ ይጠብቃል — ብዙውን ጊዜ የሚያጸድቀው የጨመረው ሰው ሳይሆን ሌላ ሰው ነው። ከዚያ በታካሚ ምዝገባና በረቂቅ ደረሰኝ \"Bill to\" ላይ መመረጥ ይችላል።"
 				}
 			],
 			"links": [
 				{
-					"label": "ሙሉ መመሪያ — ፋይናንስ",
-					"href": "/dashboard/help#section-finance"
+					"label": "ሙሉ መመሪያ — ክፍያ",
+					"href": "/dashboard/help#section-billing"
 				}
 			]
 		}

@@ -22,6 +22,10 @@
 					"body": "Tick it for every antibiotic. It is what lets the clinic count its own antibiotic prescribing."
 				},
 				{
+					"heading": "Allergy family",
+					"body": "The allergy a patient would have to this medicine because of what it is: amoxicillin belongs to Penicillin, ibuprofen to Aspirin / NSAIDs. A prescription for it is stopped when the patient has that allergy on their chart, until the prescriber confirms they have checked. Leave it empty for a medicine that belongs to no family on the allergen list; it is still matched when the allergy's name is in the medicine's name."
+				},
+				{
 					"heading": "Retiring an entry",
 					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
 				}
@@ -52,6 +56,10 @@
 				{
 					"heading": "አንቲባዮቲክ",
 					"body": "ለእያንዳንዱ አንቲባዮቲክ ምልክት ያድርጉ። ክሊኒኩ የራሱን የአንቲባዮቲክ አዘዛዝ እንዲቆጥር የሚያስችለው እሱ ነው።"
+				},
+				{
+					"heading": "የአለርጂ ቤተሰብ",
+					"body": "ታካሚ በመድኃኒቱ ዓይነት ምክንያት ሊኖርበት የሚችለው አለርጂ፦ አሞክሲሲሊን የፔኒሲሊን ቤተሰብ ነው፣ አይቡፕሮፌን የአስፕሪን / NSAIDs። ታካሚው ያ አለርጂ በቻርቱ ላይ ካለበት፣ የሚያዝዘው ማረጋገጡን እስኪያረጋግጥ ድረስ የዚህ መድኃኒት ማዘዣ ይቆማል። በአለርጂ ዝርዝሩ ውስጥ ቤተሰብ ለሌለው መድኃኒት ባዶ ይተዉት፤ የአለርጂው ስም በመድኃኒቱ ስም ውስጥ ካለ አሁንም ይገናኛል።"
 				},
 				{
 					"heading": "መዝገብን ከአገልግሎት ማስወጣት",

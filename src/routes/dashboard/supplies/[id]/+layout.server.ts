@@ -16,7 +16,7 @@ import {
 	supplyBatch,
 	user
 } from '$lib/server/db/schema';
-import { and, asc, desc, eq, gt, sql } from 'drizzle-orm';
+import { and, asc, eq, gt, sql } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
 import type { LayoutServerLoad } from './$types';
 import {
@@ -99,7 +99,9 @@ export const load: LayoutServerLoad = async ({ params }) => {
 			name: supplySuppliers.name,
 			phone: supplySuppliers.phone,
 			email: supplySuppliers.email,
-			description: supplySuppliers.description
+			description: supplySuppliers.description,
+			// Not selected before, so the table's status column read every supplier as inactive.
+			status: supplySuppliers.status
 		})
 		.from(supplySuppliers)
 		.innerJoin(

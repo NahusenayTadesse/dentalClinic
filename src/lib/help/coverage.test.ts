@@ -56,6 +56,19 @@ const HELP_FAMILY = new Set([
 	// chart" section. Its own entry could not be reached — a key cannot name the id, and a shorter
 	// `/chart` match loses to the chart's longer prefix.
 	'/dashboard/patients/[id]/chart',
+	// The treatment plans tab and a plan's own page: tabs of the same chart, covered by its
+	// "Treatment plans" section, for the same reason as the dental chart above.
+	'/dashboard/patients/[id]/plans',
+	'/dashboard/patients/[id]/plans/[planId]',
+	// The billing tab and a bill's page: tabs of the same chart, covered by its "Billing" section.
+	'/dashboard/patients/[id]/billing',
+	'/dashboard/patients/[id]/billing/[invoiceId]',
+	// The notes, prescriptions, files and consents tabs: the same chart, each covered by its own
+	// section of `patient-chart.json`.
+	'/dashboard/patients/[id]/notes',
+	'/dashboard/patients/[id]/prescriptions',
+	'/dashboard/patients/[id]/files',
+	'/dashboard/patients/[id]/consents',
 	'/dashboard/employees/single/[id]/add-leave',
 	'/dashboard/employees/single/[id]/id-maker',
 	'/dashboard/employees/single/[id]/leave-history',

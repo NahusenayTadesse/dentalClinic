@@ -47,8 +47,8 @@ half-wired, with a named gap. **⬜ not started** means only the schema and the 
 | --------------------- | ------ | ------------------------------------------------------------------------------------------------------------------- |
 | `tooth`               | ✅     | the odontogram and the procedure form; names shared with `$lib/teeth.ts`                                            |
 | `procedures`          | ✅     | the Dental chart tab: odontogram, procedure list, add/edit/delete, audited                                          |
-| `treatment_plan`      | 🟡     | counted on the chart; no screen                                                                                     |
-| `treatment_plan_item` | ⬜     | seed only                                                                                                           |
+| `treatment_plan`      | ✅     | the patient's Treatment plans tab, a plan page, a printable quote, and Plan Follow-up                               |
+| `treatment_plan_item` | ✅     | snapshotted lines, answered one by one                                                                              |
 | `clinical_note`       | 🟡     | counted on the chart; no screen                                                                                     |
 | `prescription`        | 🟡     | counted on the chart; no screen                                                                                     |
 | `prescription_item`   | ⬜     | seed only                                                                                                           |
@@ -61,10 +61,10 @@ half-wired, with a named gap. **⬜ not started** means only the schema and the 
 
 | Table                                          | Status | Where / gap                                                                                                                                         |
 | ---------------------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `invoice`                                      | 🟡     | the chart totals it and `APPROVAL_ENTITIES` has an entry for it. **Nothing can raise one**, so the approval queue can never fill                    |
-| `invoice_line`                                 | ⬜     | seed only                                                                                                                                           |
-| `invoice_payment`                              | 🟡     | the chart sums it; no screen                                                                                                                        |
-| `cash_session`                                 | ⬜     | no screen. `transactions.cashSessionId` is never set                                                                                                |
+| `invoice`                                      | ✅     | raised from completed work on a patient's Billing tab, issued with a number, printed; discounts and voids through the approvals queue               |
+| `invoice_line`                                 | ✅     | snapshotted from procedures, or typed as a charge on a draft                                                                                        |
+| `invoice_payment`                              | ✅     | one payment across several bills, several payments on one bill                                                                                      |
+| `cash_session`                                 | ✅     | Billing → Cash Drawer: open with a float, count and close; cash payments are recorded against it                                                    |
 | `transactions`                                 | 🟡     | `/salary/transactions` lists them. There is no patient payment path; the only writers are expenses and payroll                                      |
 | `payment_methods`, `vat_and_withhold`          | ✅     | admin panel                                                                                                                                         |
 | `expenses`, `expenses_type`                    | ✅     | `/salary/transactions/expenses/**`, approvals                                                                                                       |
@@ -74,11 +74,11 @@ half-wired, with a named gap. **⬜ not started** means only the schema and the 
 
 ### Stock
 
-| Table                                          | Status | Gap                                                                                                                                                  |
-| ---------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `supplies`, `supply_types`, `supply_suppliers` | ✅     |                                                                                                                                                      |
-| `supplies_adjustments`, `damaged_supplies`     | ✅     | through `moveStock`                                                                                                                                  |
-| `supply_batch`                                 | 🟡     | stock is derived from lots and consumed expiring-soonest-first, but **no screen lists lots or expiry dates**, and nothing warns before a lot expires |
+| Table                                          | Status | Gap                                                                                                                                                                                  |
+| ---------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `supplies`, `supply_types`, `supply_suppliers` | ✅     |                                                                                                                                                                                      |
+| `supplies_adjustments`, `damaged_supplies`     | ✅     | through `moveStock`                                                                                                                                                                  |
+| `supply_batch`                                 | 🟡     | expiry, lot number and supplier are recorded on delivery and listed on the item's page; expired lots are never issued. No dashboard warning yet, and no trace from a lot to patients |
 
 ### Staff, access and the system
 
@@ -113,6 +113,26 @@ half-wired, with a named gap. **⬜ not started** means only the schema and the 
   table holding two fines; a run's employer-pension total was built from its tax total; and a
   payslip adjustment took the employer's pension out of the employee's net. Tax is now one rule,
   tested in JavaScript and against the database in SQL, and pension rates are keyed by who pays.
+  The seeded bands are those of Proclamation 1395/2025, and `/setup` seeds them on a new install.
+- ~~**Commission was never calculated.**~~ Done (`server/commission.ts`). A clinician whose salary
+  has commission switched on earns its percentage of the fees of the procedures they completed in
+  the month, each at the rate in force on the day of the work; it is part of gross and taxable pay.
+  It pays on production, not collections — there are no invoices to pay on until Stage 3.
+- ~~**Stock expiry was never entered.**~~ Done. A delivery records its expiry date, lot number and
+  supplier; an item marked Expires cannot be received without a date, or with one that has
+  passed. The item's page lists its lots, next to be used first, with expired and expiring-soon
+  dates marked. Issuing skips expired lots; they leave as damage write-offs.
+- ~~**Damage reports corrupted each other.**~~ Fixed. Recording damage ran an `UPDATE` with no
+  `WHERE`, overwriting every earlier report; undoing one returned nothing to the shelf, or the full
+  quantity to every lot it spanned; and a deductible report always failed after the stock had
+  moved. It is now one transaction, and tested.
+- ~~**A payroll run never confirmed.**~~ Fixed. The success message was returned from inside the
+  transaction, so the action returned nothing. Its dates are now zero-padded ISO days.
+- **The payroll run trusts the figures the browser posts back.** The page computes every payslip,
+  sends it to the browser, and the action writes what comes back — gross, tax and net included.
+  CLAUDE.md §9 says the server decides those; the action should recompute from the same query. The
+  file also carries type errors from its `date` columns being in `Date` mode while it passes
+  strings, which is a mode change across the payroll tables rather than a local fix.
 - ~~**Services have no price.**~~ Done (migration 0028). `services` has `price`, `area` (what the
   chart asks for) and `removesTooth`, and the seed catalogue is priced in birr.
 - ~~**The chart is near its size limit.**~~ Done. The chart is a layout with tabs; the overview's
@@ -120,7 +140,21 @@ half-wired, with a named gap. **⬜ not started** means only the schema and the 
 - **Reports have no clinical sections.** `reports/sections.ts` has 23 sections, all HR, payroll,
   stock or money. None covers production per dentist, case acceptance, recalls due, receivables or
   cash variance.
-- **Type health.** `npm run check` reports 781 errors repo-wide. Per CLAUDE.md §3 this is a
+- ~~**Every `defaultNow()` timestamp read three hours late.**~~ Fixed. Database sessions run in
+  UTC (`db/connection.ts`, tested). "Today" comes from the clinic's clock, and migration 0035
+  moved the `deleted_at` stamps already written in local time.
+  Along the way it fixed "upcoming appointments", which compared against a local `NOW()` and were
+  three hours off. The period filter (`currentMonthFilter`) now compares clinic-day instants, since
+  a UTC session would otherwise have dropped the first three hours of a period's first day; a
+  boundary test pins both edges. better-auth's own timestamps from before the fix still read three
+  hours early. They are sign-in bookkeeping, and nothing can tell them apart from rows the database
+  stamped correctly.
+
+- ~~**A customer page could edit any address.**~~ Fixed. The address form posted an address id and
+  the action updated whatever row it named, so a crafted POST from a customer page could rewrite a
+  patient's or an employee's address. It now edits the customer's own address, found on the
+  server. The page also crashed for a customer with no address; it no longer offers the dialog.
+- **Type health.** `npm run check` reports 772 errors repo-wide. Per CLAUDE.md §3 this is a
   direction rather than a stage: files you touch must be clean.
 
 ---
@@ -217,6 +251,27 @@ and the dashboard's "completed today" number means something.
 **Done when:** the chart can answer "what did we propose, and what did they say", and nobody has
 to remember it.
 
+**Done.** A plan is drawn up from planned work on the patient's **Treatment plans** tab, as a draft
+whose lines snapshot each procedure's description and price. It is edited only as a draft, then
+presented with a validity date (90 days by default). The answer is recorded line by line; the
+plan's status follows from the lines, and any no needs a reason. A quote past its date reads as
+expired everywhere without a job to mark it, and its work is free to go on a new plan. A plan is
+completed once all its agreed work is done on the chart. The quote prints on the branch's
+letterhead and is logged as a print. **Patients → Plan Follow-up** lists quotes awaiting an answer,
+longest-waiting first, with case acceptance over the last 90 days. Rules in
+`$lib/treatmentPlanStatus.ts`; queries and writes in `server/treatmentPlans.ts`, audited and tested;
+permission `treatment_plans.manage` (migration 0032 adds the plan to the access log's record
+types).
+
+A presented quote can still be corrected while it is live — re-priced, reworded, a line added
+before the answer or removed — with a reason each time. Every change is a row in
+`treatment_plan_adjustment` (migrations 0033–0034), which nothing updates or deletes; the plan page
+lists them with the quote's first total, lines changed after the patient agreed are flagged, and a
+reprinted quote says it was revised and what it first came to.
+
+Not done: booking the agreed work straight from the plan, and a case-acceptance section in
+Reports.
+
 ### Stage 3: Billing, payments and the cash drawer
 
 **Tables:** `invoice`, `invoice_line`, `invoice_payment`, `cash_session`, `transactions`
@@ -245,6 +300,39 @@ existing `approvals.approve`.
 **Done when:** a visit ends with a bill, the bill with a payment, and the day with a counted
 drawer.
 
+**Done (items 1–5).** A bill is raised on the patient's **Billing** tab from completed work, as a
+draft that snapshots each line. It can take extra charges and a discount, and is issued with a
+number from a counter that cannot collide (`INV-2019-00001`). A discount over the clinic's limit
+(Admin Panel → Billing Settings, 10% by default) and any void wait in Approvals → Discounts and
+Voids, and the bill takes no payment until a manager decides. A refused request leaves the bill
+payable at full price (the new `onReject` hook). A payment is one transaction and one allocation
+per bill, with a receipt number; cash needs the branch's drawer open. The drawer opens with a
+float and closes with a count; the expected figure is frozen at the count, and a variance needs a
+note. What a patient owes has one definition (`patientBalance`), shown in the chart header, the
+overview, the Billing tab, the patient list and the **Who Owes** list. Payment methods now say
+what kind of money they are (migration 0036). Opening and printing a bill is in the access log
+(0037). Modules: `server/billing.ts` (reads), `invoiceWrites.ts`, `payments.ts`, `cashDrawer.ts`,
+`documentNumbers.ts`; rules in `$lib/invoiceStatus.ts`; all tested.
+
+**Done (items 6–7, refunds, old receipts).**
+
+- **Item 6.** The services-rendered report and the money analytics read billed lines
+  (`reports/billedLines.server.ts`): a bill's line counts once the bill is issued, dated by its
+  issue, with the procedure's clinician. `transaction_services` and `transaction_supplies` are
+  dropped (migration 0038).
+- **Item 7.** Customers are **payers** on every screen (the table and the route keep their names;
+  the permission `customers.record` is data). A bill starts billed to the patient's payer, and
+  **Bill to** on a draft changes it; the payer is printed on the bill. A payer's page lists their
+  bills across patients, what they owe, and takes one payment across many of them
+  (`takePayerPayment`). **Who Owes** lists payers separately, and a payer's bill is not counted
+  again under the patient.
+- **Refunds.** Asked from a payment on the bill's page, approved in Approvals → Refunds. The
+  refund is a negative allocation on a money-out transaction that counts only once approved; it
+  cannot exceed what that payment put on the bill less refunds already asked. Approval numbers it
+  (`RFD-`), puts the bill back to owing, and needs the drawer open for cash (`settleRefunds`).
+- **Old payments** have receipt numbers (migration 0039), numbered per Ethiopian year in the order
+  the money came in, and the counters moved past them.
+
 ### Stage 4: The rest of the chart
 
 **Tables:** `clinical_note`, `patient_file`, `patient_consent`, `prescription`,
@@ -262,6 +350,37 @@ Mostly `childCrud` sections on the new tabs, each using the audit and permission
 5. **Merge duplicates:** a super-admin action that re-parents every child row, sets `mergedInto`,
    and writes one `merge` audit row. The read side already handles the result.
 
+**Done.** The chart has four new tabs, each written under `patients.clinical` and audited, each
+opening logged in the access log.
+
+- **Notes** (`server/clinicalNotes.ts`): a timeline, newest first. A note is signed at once or kept
+  as a draft only its author may change, sign or discard. A signed note is never changed; **Amend**
+  adds a signed correction beneath it, and a chain of corrections reads under the first note.
+- **Prescriptions** (`server/prescriptions.ts`): written against the patient's allergies and
+  current medicines, shown on the form. The prescriber must be able to prescribe, the medicines
+  must be on the prescribing list, and the indication is required. A medicine that clashes with an
+  allergy is flagged as it is chosen and refused on the server unless acknowledged; the
+  acknowledgement is in the audit row. The clash rule is `$lib/allergyClash.ts`, shared by the form
+  and the server, and reads a new `medicine.allergen_id` (migration 0041, set for the seeded
+  medicines and editable on the medicines screen). Printed as the Ethiopian form lays it out. Not
+  edited once written; a super admin cancels one written in error.
+- **Files** (`server/patientFiles.ts`): radiographs, photographs, letters and photographed paper
+  charts, with the date the paper was written. Radiographs upload uncompressed. **The file route now
+  checks `patients.view` for a patient's file and logs the opening** — a patient file is no longer
+  protected only by its random name. `fileAudit.ts` reconciles `patient_file` too.
+- **Consents** (`childCrud` + `LookupSection`): type, method, date, who gave it and their
+  relationship, the witness, the treatment and the signed form, each checked to be this patient's.
+  A verbal consent needs its witness. Withdrawn by giving a reason, which dates itself; deleted only
+  by a super admin (`superAdminDelete`, new on `childCrud`).
+- **Merge** (`server/patientMerge.ts`): a super admin merges a duplicate from the overview, where the
+  registration check's suggestions are listed. Every owned row moves in one transaction — a test
+  compares the list with the database's foreign keys — a shared allergy, condition or medicine is
+  kept once, blank fields are filled, and one `merge` audit row says what moved. The access log is
+  not rewritten; the chart reads views across merged records instead.
+
+Shared along the way: `refuseUnless` (was in three modules), `checkedProvider`, `checkedVisit` and
+`recentVisits` (`server/appointments.ts`), `clinicalAction` for the clinical tabs.
+
 ### Stage 5: Bringing patients back, and work sent out
 
 **Tables:** `recall`, `lab_case`, `appointment_type_services` (if not finished in Stage 1)
@@ -278,10 +397,9 @@ Mostly `childCrud` sections on the new tabs, each using the audit and permission
 **Tables:** `patient_access_log`, `supply_batch`, plus report sections over Stages 1–5
 
 1. **Access log viewer:** per patient on the chart, and per user in `reports/system`.
-2. **Stock lots:** record the expiry date when stock is received (the Change Quantity form has no
-   field for it yet, so `tracksExpiry` is never enforced and lots are used oldest first), list lots
-   with lot number and expiry on the supply page, add a near-expiry
-   warning on the dashboard, and add a trace from a lot to the patients who received it.
+2. **Stock lots:** expiry is now recorded on delivery and lots are listed on the supply page.
+   Left: a near-expiry warning on the dashboard, and a trace from a lot to the patients who
+   received it.
 3. **Clinical report sections**, as rows in `SECTIONS` rather than new routes: production per
    dentist, procedures by service, case acceptance, recalls due or missed, receivables aging, cash
    variance, lab turnaround.
@@ -292,10 +410,7 @@ Mostly `childCrud` sections on the new tabs, each using the audit and permission
 - Migrate the remaining 59 forms onto `createForm` as each page is touched.
 - Shrink the help and route-map backlogs as screens get their help.
 - Drop the tables that Stage 0 and Stage 3 decided to retire.
-- **Commission is never calculated.** An employee carries an office commission and a percentage,
-  and the payslip has a commission column, but the run writes 0. The department flag that was
-  labelled "Calculate Commission" only ever decided who counts as office staff, and is now labelled
-  that way. Either calculate it or drop the fields.
+- Make the payroll run recompute what it writes instead of trusting the posted figures (§2 above).
 
 ---
 

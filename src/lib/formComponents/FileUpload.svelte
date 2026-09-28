@@ -2,18 +2,22 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input/index';
 	import { Label } from '$lib/components/ui/label/index.js';
-	import {
-		X,
-		CloudUpload as UploadCloud,
-		FileText,
-		Image as ImageIcon,
-		Loader
-	} from '@lucide/svelte';
+	import X from '@lucide/svelte/icons/x';
+	import UploadCloud from '@lucide/svelte/icons/cloud-upload';
+	import FileText from '@lucide/svelte/icons/file-text';
+	import ImageIcon from '@lucide/svelte/icons/image';
+	import Loader from '@lucide/svelte/icons/loader';
 	import { fileProxy } from 'sveltekit-superforms';
 	import imageCompression from 'browser-image-compression';
 	import { fileUrl } from '$lib/global.svelte';
 
-	let { form, name, placeholder = 'PDF or Images (Max 10MB)', image = '' } = $props();
+	let {
+		form,
+		name,
+		placeholder = 'PDF or Images (Max 10MB)',
+		image = '',
+		compress = true
+	} = $props();
 
 	let file = $state(fileProxy(form, name));
 	let isDragging = $state(false);
@@ -34,7 +38,9 @@
 		try {
 			const processedFiles = await Promise.all(
 				Array.from(files).map(async (f) => {
-					if (f.type === 'application/pdf') return f;
+					// Off for a radiograph: shrinking one to fit a phone screen throws away the detail
+					// it was taken to show. On for everything else, where upload size is the cost.
+					if (f.type === 'application/pdf' || !compress) return f;
 					try {
 						const compressed = await imageCompression(f, options);
 						// ✅ Convert Blob → File, preserving the original filename
@@ -48,7 +54,7 @@
 			// ✅ Use DataTransfer to build a real FileList
 			const dt = new DataTransfer();
 			processedFiles.forEach((f) => dt.items.add(f));
-			file.set(dt.files as any);
+			file.set(dt.files);
 		} catch (err) {
 			console.error('FULL ERROR:', err);
 		} finally {

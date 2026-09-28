@@ -3,7 +3,7 @@
 	"languages": {
 		"en": {
 			"title": "Patient chart",
-			"summary": "Everything held about one patient, with the medical alerts first. Two tabs: the overview, and the dental chart.",
+			"summary": "Everything held about one patient, with the medical alerts first. Tabs for the overview, the dental chart, treatment plans and, for billing staff, billing.",
 			"sections": [
 				{
 					"heading": "Medical alerts",
@@ -18,8 +18,36 @@
 					"body": "The Dental chart tab draws the mouth: upper teeth above, lower below, the patient's right on your left. Each tooth shows its surfaces. Red is a finding not yet treated, a light tint is planned work, solid is work done, and a crossed-out tooth is missing.\n\nClick a tooth to see what is charted on it, then Chart on tooth to add a finding or a treatment there. What the form asks for follows the service: a filling asks for surfaces, an extraction for the tooth, a bridge for the teeth it spans, an examination for none of them. Only the surfaces the tooth has are offered.\n\nChoose the status carefully. Finding is decay or damage seen but not treated. Planned is proposed work. Done here is treated at this clinic and needs the dentist who did it. Already present is work or a gap the patient arrived with. Findings and work done elsewhere are never charged. Leave the fee empty to use the service's standard price.\n\nThe chart starts on the adult, mixed or child teeth by age; switch with the buttons above it."
 				},
 				{
+					"heading": "Treatment plans",
+					"body": "The Treatment plans tab quotes the work charted as planned. New plan starts a draft from the work you tick; change wording or prices while it is a draft, then Present to patient. A presented quote can still be corrected — a discount, a re-priced or removed line — but each change asks why and is kept for good under Changes since it was presented, beside what the quote first came to.\n\nWhen the patient answers, mark Yes or No on every line and say why for any No — the plan becomes Accepted, Partly accepted or Declined from the lines. Past its stands-until date an unanswered quote is Expired and its work can go on a new plan. Print quote gives the patient a copy; printing is recorded in the access log.\n\nDrawing up, presenting and answering plans needs treatment_plans.manage."
+				},
+				{
+					"heading": "Billing",
+					"body": "The Billing tab (for staff with billing.invoice) shows what the patient owes, the completed work not yet billed, and their bills. Raise a bill ticks the completed work into a draft; add charges or a discount, then Issue it — it gets its number and is fixed from then on. Take a payment spreads one payment over any of their unpaid bills; cash needs the cash drawer open. A discount over the clinic's limit, and any void, wait for a manager in Approvals → Discounts and Voids, and the bill takes no payment until then. What the patient owes also shows in red at the top of the chart. On a draft, Bill to sends the bill to the patient's employer or insurer instead — it starts that way for a patient linked to one. To give money back, press Refund beside the payment on the bill's page; a manager approves it in Approvals → Refunds, and only then does the bill owe it again."
+				},
+				{
+					"heading": "Notes",
+					"body": "The Notes tab is what clinicians wrote, newest first: examinations, treatment, telephone calls. Write a note and tick Sign to commit to it, or leave it unticked to save a draft only you can change, sign or discard. A signed note is never changed — press Amend to add a correction beneath it, and both are kept. Link a note to the visit it describes when there was one."
+				},
+				{
+					"heading": "Prescriptions",
+					"body": "The Prescriptions tab lists what the patient was prescribed. Write a prescription with the patient's allergies and current medicines shown at the top. Choose who is prescribing (only clinicians marked Can prescribe), say what it is for, and add each medicine with dose, how often, days and quantity. A medicine that clashes with an allergy on the chart is marked at once; writing it anyway needs a tick, which is recorded. Print the sheet for the patient. A prescription is not edited once written; a super admin can cancel one written in error."
+				},
+				{
+					"heading": "Files",
+					"body": "The Files tab holds radiographs, photographs, referral letters, lab results and photographed paper charts. Attach a file, say what it is, and for an old paper chart give the date on the paper, not today. Radiographs are uploaded at full size; photographs are made smaller to save bandwidth. Opening a file needs permission to view patients, and is recorded in who opened this chart."
+				},
+				{
+					"heading": "Consents",
+					"body": "The Consents tab records what the patient agreed to — treatment, surgery, anaesthetic, radiographs, photographs, sharing records — how, and when. For a child, say who gave it and their relationship. A verbal consent must name the clinician who witnessed it. Attach a signed form on the Files tab first, then choose it here. A consent is never deleted: to withdraw it, give the reason, and it is dated."
+				},
+				{
+					"heading": "Duplicate records",
+					"body": "A super admin sees Duplicate records at the bottom of the overview: other records with the same name or phone. Merge into this chart moves everything from that record here — visits, treatment, bills, notes, allergies — and turns it into a pointer to this chart, so its old file number still leads here. An allergy both records have is kept once. It is recorded, and not undone from the screen."
+				},
+				{
 					"heading": "Who can change what",
-					"body": "Anyone who can open the chart can read it. Changing personal details, phones, billing and contacts needs \"Change a patient's details\". Changing the medical history, allergies, conditions and medications needs \"Change a patient's allergies, conditions, medicines and medical history\". Buttons you may not use are hidden. Every change is recorded in the audit trail, and every time the chart is opened is recorded too."
+					"body": "Anyone who can open the chart can read it. Changing personal details, phones, billing and contacts needs \"Change a patient's details\". Changing the medical history, allergies, conditions and medications — and writing notes, prescriptions, files and consents — needs \"Change a patient's allergies, conditions, medicines and medical history\". Buttons you may not use are hidden. Every change is recorded in the audit trail, and every time the chart is opened is recorded too."
 				},
 				{
 					"heading": "Other branches and merged records",
@@ -35,7 +63,7 @@
 		},
 		"am": {
 			"title": "የታካሚ መዝገብ",
-			"summary": "ስለ አንድ ታካሚ የተያዘው መረጃ በሙሉ፤ የሕክምና ማስጠንቀቂያዎች ቀድመው። ሁለት ትሮች አሉት፦ አጠቃላይ እይታ እና የጥርስ ቻርት።",
+			"summary": "ስለ አንድ ታካሚ የተያዘው መረጃ በሙሉ፤ የሕክምና ማስጠንቀቂያዎች ቀድመው። ትሮቹ፦ አጠቃላይ እይታ፣ የጥርስ ቻርት፣ የሕክምና ዕቅዶች እና ለክፍያ ሠራተኞች ክፍያ።",
 			"sections": [
 				{
 					"heading": "የሕክምና ማስጠንቀቂያዎች",
@@ -48,6 +76,34 @@
 				{
 					"heading": "የጥርስ ቻርት",
 					"body": "\"Dental chart\" ትሩ አፉን ይስላል፦ የላይኛው ጥርሶች ከላይ፣ የታችኛው ከታች፣ የታካሚው ቀኝ በእርስዎ ግራ። እያንዳንዱ ጥርስ ገጾቹን ያሳያል። ቀይ ያልታከመ ግኝት ነው፣ ፈዘዝ ያለ ቀለም የታቀደ ሥራ ነው፣ ሙሉ ቀለም የተሠራ ሥራ ነው፤ የተሰረዘ ጥርስ የሌለ ጥርስ ነው።\n\nበጥርሱ ላይ የተመዘገበውን ለማየት ጥርሱን ይጫኑ፤ ከዚያ ግኝት ወይም ሕክምና ለመመዝገብ \"Chart on tooth\"ን ይጫኑ። ቅጹ የሚጠይቀው እንደ አገልግሎቱ ነው፦ ሙሌት ገጾችን፣ ጥርስ መንቀል ጥርሱን፣ ድልድይ የሚሸፍናቸውን ጥርሶች፣ ምርመራ ምንም አይጠይቅም። የሚቀርቡት ጥርሱ ያሉት ገጾች ብቻ ናቸው።\n\nሁኔታውን በጥንቃቄ ይምረጡ። ግኝት የታየ ግን ያልታከመ ጉዳት ነው። የታቀደ የቀረበ ሥራ ነው። እዚህ የተሠራ በዚህ ክሊኒክ የታከመ ሲሆን የሠራውን ሐኪም ይጠይቃል። ቀድሞ የነበረ ታካሚው ይዞት የመጣው ሥራ ወይም ክፍተት ነው። ግኝቶችና በሌላ ቦታ የተሠራ ሥራ ፈጽሞ አይከፈልባቸውም። የአገልግሎቱን መደበኛ ዋጋ ለመጠቀም ክፍያውን ባዶ ይተዉት።\n\nቻርቱ በዕድሜ መሠረት በአዋቂ፣ በድብልቅ ወይም በልጅ ጥርሶች ይጀምራል፤ ከላይ ባሉት ቁልፎች ይቀይሩ።"
+				},
+				{
+					"heading": "የሕክምና ዕቅዶች",
+					"body": "የሕክምና ዕቅዶች ትሩ በቻርቱ ላይ \"የታቀደ\" ተብሎ የተመዘገበውን ሥራ ዋጋ ያወጣል። New plan ምልክት ካደረጉበት ሥራ ረቂቅ ይጀምራል፤ ረቂቅ እያለ አገላለጹንና ዋጋውን ይቀይሩ፣ ከዚያ Present to patient ይጫኑ። የቀረበ ዋጋ አሁንም ሊስተካከል ይችላል — ቅናሽ፣ ዋጋው የተቀየረ ወይም የተወገደ መስመር — ነገር ግን እያንዳንዱ ለውጥ ምክንያት ይጠይቃል፤ ዋጋው መጀመሪያ ከነበረው ጋር \"Changes since it was presented\" ስር ለዘለቄታው ይቀመጣል።\n\nታካሚው ሲመልስ በእያንዳንዱ መስመር Yes ወይም No ያድርጉ፤ ለማንኛውም No ምክንያቱን ይጻፉ — ዕቅዱ ከመስመሮቹ ተነስቶ ተቀባይነት ያገኘ፣ በከፊል የተቀበለ ወይም ውድቅ የተደረገ ይሆናል። የጸናበት ቀን ካለፈ ያልተመለሰ ዋጋ ጊዜው ያለፈበት ይሆናል፤ ሥራውም በአዲስ ዕቅድ ላይ ሊገባ ይችላል። Print quote ለታካሚው ቅጂ ይሰጣል፤ ማተሙ በመዳረሻ መዝገብ ውስጥ ይመዘገባል።\n\nዕቅድ ለማዘጋጀት፣ ለማቅረብና መልሱን ለመመዝገብ treatment_plans.manage ያስፈልጋል።"
+				},
+				{
+					"heading": "ክፍያ",
+					"body": "የክፍያ ትሩ (billing.invoice ላላቸው ሠራተኞች) ታካሚው ያለበትን ዕዳ፣ ገና ያልተከፈለበትን የተጠናቀቀ ሥራ እና ሂሳቦቻቸውን ያሳያል። Raise a bill የተጠናቀቀውን ሥራ ምልክት አድርጎ ረቂቅ ሂሳብ ያዘጋጃል፤ ሌሎች ክፍያዎችን ወይም ቅናሽ ይጨምሩ፣ ከዚያ Issue ይጫኑ — ቁጥር ያገኛል፣ ከዚያ በኋላም አይቀየርም። Take a payment አንድን ክፍያ ባልተከፈሉ ሂሳቦቻቸው ላይ ያከፋፍላል፤ ጥሬ ገንዘብ የገንዘብ መሳቢያው ክፍት እንዲሆን ይፈልጋል። ከክሊኒኩ ገደብ በላይ የሆነ ቅናሽ እና ማንኛውም መሰረዝ በApprovals → Discounts and Voids ሥራ አስኪያጅ እስኪወስን ይጠብቃሉ፤ እስከዚያም ሂሳቡ ክፍያ አይቀበልም። ታካሚው ያለበት ዕዳ በቻርቱ አናት ላይም በቀይ ይታያል። በረቂቅ ደረሰኝ ላይ \"Bill to\" ደረሰኙን ወደ ታካሚው አሠሪ ወይም መድን ሰጪ ይልካል — ከአንዱ ጋር ለተገናኘ ታካሚ በዚያው ይጀምራል። ገንዘብ ለመመለስ በደረሰኙ ገጽ ከክፍያው አጠገብ \"Refund\"ን ይጫኑ፤ ሥራ አስኪያጅ በApprovals → Refunds ያጸድቀዋል፤ ከዚያ በኋላ ብቻ ደረሰኙ መጠኑን እንደገና ይጠይቃል።"
+				},
+				{
+					"heading": "ማስታወሻዎች",
+					"body": "የማስታወሻዎች ክፍል ክሊኒሻኖች የጻፉት ነው፤ አዲሱ በመጀመሪያ፦ ምርመራ፣ ሕክምና፣ የስልክ ጥሪዎች። ማስታወሻ ይጻፉና ለመፈረም \"Sign\"ን ይምረጡ፤ ካልመረጡ እርስዎ ብቻ የሚለውጡት፣ የሚፈርሙት ወይም የሚጥሉት ረቂቅ ይቀመጣል። የተፈረመ ማስታወሻ አይለወጥም — ከሥሩ እርማት ለመጨመር \"Amend\"ን ይጫኑ፤ ሁለቱም ይቀመጣሉ።"
+				},
+				{
+					"heading": "የመድኃኒት ማዘዣዎች",
+					"body": "የማዘዣዎች ክፍል ለታካሚው የታዘዘውን ያሳያል። ማዘዣ ሲጽፉ የታካሚው አለርጂዎችና አሁን የሚወስዳቸው መድኃኒቶች ከላይ ይታያሉ። የሚያዝዘውን ክሊኒሻን (\"Can prescribe\" የተሰጠው ብቻ)፣ ለምን እንደሆነ፣ እና እያንዳንዱን መድኃኒት ከመጠኑ፣ ከድግግሞሹ፣ ከቀናቱና ከብዛቱ ጋር ይጨምሩ። በቻርቱ ላይ ካለ አለርጂ ጋር የሚጋጭ መድኃኒት ወዲያው ይጠቆማል፤ ቢሆንም ለማዘዝ ምልክት ማድረግ ያስፈልጋል፣ ይህም ይመዘገባል። ወረቀቱን ለታካሚው ያትሙ። ከተጻፈ በኋላ ማዘዣ አይስተካከልም፤ በስሕተት የተጻፈውን ሱፐር አድሚን መሰረዝ ይችላል።"
+				},
+				{
+					"heading": "ፋይሎች",
+					"body": "የፋይሎች ክፍል ራጅ፣ ፎቶዎች፣ የሪፈራል ደብዳቤዎች፣ የላብ ውጤቶችና ፎቶ የተነሱ የወረቀት መዝገቦችን ይይዛል። ፋይል ያያይዙ፣ ምን እንደሆነ ይናገሩ፤ ለአሮጌ የወረቀት መዝገብ በወረቀቱ ላይ ያለውን ቀን ይስጡ እንጂ የዛሬውን አይደለም። ራጅ በሙሉ መጠኑ ይጫናል፤ ፎቶዎች ኢንተርኔት ለመቆጠብ ይቀነሳሉ። ፋይል መክፈት ታካሚዎችን የማየት ፈቃድ ይፈልጋል፤ መከፈቱም ይመዘገባል።"
+				},
+				{
+					"heading": "ስምምነቶች",
+					"body": "የስምምነቶች ክፍል ታካሚው የተስማማበትን ይመዘግባል — ሕክምና፣ ቀዶ ሕክምና፣ ማደንዘዣ፣ ራጅ፣ ፎቶ፣ መረጃ ማጋራት — እንዴትና መቼ። ለሕፃን ማን እንደሰጠውና ዝምድናውን ይናገሩ። በቃል የተሰጠ ስምምነት የመሰከረውን ክሊኒሻን መጥቀስ አለበት። የተፈረመ ቅጽ መጀመሪያ በፋይሎች ክፍል ያያይዙ፣ ከዚያ እዚህ ይምረጡት። ስምምነት አይሰረዝም፦ ለማንሳት ምክንያቱን ይስጡ፣ ቀኑም ይመዘገባል።"
+				},
+				{
+					"heading": "የተደጋገሙ መዝገቦች",
+					"body": "ሱፐር አድሚን በአጠቃላይ እይታው ግርጌ \"Duplicate records\"ን ያያል፦ ተመሳሳይ ስም ወይም ስልክ ያላቸው ሌሎች መዝገቦች። \"Merge into this chart\" ከዚያ መዝገብ ሁሉንም — ጉብኝቶችን፣ ሕክምናን፣ ክፍያዎችን፣ ማስታወሻዎችን፣ አለርጂዎችን — ወደዚህ ያመጣል፤ አሮጌው መዝገብ ወደዚህ የሚያመለክት ይሆናል፣ የድሮ የፋይል ቁጥሩም ወደዚህ ያመራል። ይመዘገባል፤ ከስክሪኑ አይመለስም።"
 				},
 				{
 					"heading": "ማን ምን መለወጥ ይችላል",

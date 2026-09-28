@@ -49,6 +49,7 @@ import Loader from '@lucide/svelte/icons/loader';
 import MapPin from '@lucide/svelte/icons/map-pin';
 import Megaphone from '@lucide/svelte/icons/megaphone';
 import OctagonMinus from '@lucide/svelte/icons/octagon-minus';
+import PhoneCall from '@lucide/svelte/icons/phone-call';
 import Pill from '@lucide/svelte/icons/pill';
 import Plus from '@lucide/svelte/icons/plus';
 import ScanLine from '@lucide/svelte/icons/scan-line';
@@ -62,6 +63,8 @@ import TreePalm from '@lucide/svelte/icons/tree-palm';
 import UserPlus from '@lucide/svelte/icons/user-plus';
 import UserRoundCog from '@lucide/svelte/icons/user-round-cog';
 import Users from '@lucide/svelte/icons/users';
+import HandCoins from '@lucide/svelte/icons/hand-coins';
+import Vault from '@lucide/svelte/icons/vault';
 
 /** One menu entry. A group is an entry with `items`; its own `url` is where the group lives. */
 export type NavItem = {
@@ -89,7 +92,7 @@ export const APPROVAL_QUEUES: { key: string; title: string }[] = [
 	{ key: 'expenses', title: 'Expenses' },
 	{ key: 'payroll-runs', title: 'Payroll Runs' },
 	{ key: 'payroll-adjustments', title: 'Payroll Adjustments' },
-	{ key: 'customers', title: 'Customers' },
+	{ key: 'customers', title: 'Payers' },
 	{ key: 'invoices', title: 'Discounts and Voids' },
 	{ key: 'refunds', title: 'Refunds' }
 ];
@@ -112,7 +115,8 @@ export const NAVIGATION: NavItem[] = [
 		icon: HeartPulse,
 		items: [
 			{ title: 'All Patients', url: '/dashboard/patients', icon: List },
-			{ title: 'Register a Patient', url: '/dashboard/patients/add', icon: UserPlus }
+			{ title: 'Register a Patient', url: '/dashboard/patients/add', icon: UserPlus },
+			{ title: 'Plan Follow-up', url: '/dashboard/treatment-plans', icon: PhoneCall }
 		]
 	},
 
@@ -124,6 +128,16 @@ export const NAVIGATION: NavItem[] = [
 			{ title: 'Day View', url: '/dashboard/appointments', icon: CalendarDays },
 			{ title: 'Appointment List', url: '/dashboard/appointments/list', icon: List },
 			{ title: 'Dentists', url: '/dashboard/providers', icon: Stethoscope }
+		]
+	},
+
+	{
+		title: 'Billing',
+		url: '/dashboard/billing',
+		icon: HandCoins,
+		items: [
+			{ title: 'Who Owes', url: '/dashboard/billing', icon: HandCoins },
+			{ title: 'Cash Drawer', url: '/dashboard/billing/cash', icon: Vault }
 		]
 	},
 
@@ -148,12 +162,12 @@ export const NAVIGATION: NavItem[] = [
 	},
 
 	{
-		title: 'Customers',
+		title: 'Payers',
 		url: '/dashboard/customers',
 		icon: Users,
 		items: [
-			{ title: 'All Customers', url: '/dashboard/customers', icon: List },
-			{ title: 'Add Customer', url: '/dashboard/customers/add-customer', icon: Plus }
+			{ title: 'All Payers', url: '/dashboard/customers', icon: List },
+			{ title: 'Add a Payer', url: '/dashboard/customers/add-customer', icon: Plus }
 		]
 	},
 
@@ -336,6 +350,12 @@ export const NAVIGATION: NavItem[] = [
 			{
 				title: 'Payment Methods',
 				url: '/dashboard/admin-panel/payment-methods',
+				section: 'money',
+				icon: Banknote
+			},
+			{
+				title: 'Billing Settings',
+				url: '/dashboard/admin-panel/billing-settings',
 				section: 'money',
 				icon: Banknote
 			},

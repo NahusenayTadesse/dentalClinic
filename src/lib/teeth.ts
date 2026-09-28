@@ -308,3 +308,18 @@ export function toothStates(procedures: ChartedProcedure[]): Map<number, ToothSt
 
 	return states;
 }
+
+/**
+ * Where a procedure is, as the chart and a quote both write it: its span, its tooth and surfaces,
+ * or the whole mouth. Moved here from the chart's columns when treatment plans became its second
+ * user.
+ */
+export function whereLabel(row: {
+	toothId: number | null;
+	surfaces: string | null;
+	toothRange: string | null;
+}): string {
+	if (row.toothRange) return row.toothRange.replaceAll(',', ', ');
+	if (row.toothId === null) return 'Whole mouth';
+	return row.surfaces ? `${row.toothId} ${row.surfaces}` : String(row.toothId);
+}

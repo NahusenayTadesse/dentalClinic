@@ -5,7 +5,7 @@ export const editDetail = z.object({
 		.string('Name is Required')
 		.min(2, 'Name must be at least 2 characters')
 		.max(100, 'Name must be at most 100 characters'),
-	email: z.email('Email is Required').optional(),
+	email: z.union([z.email('Enter a valid email.'), z.literal('')]).optional(),
 	phone: z
 		.string('Phone Number is Required')
 		.min(2, 'Phone must be at least 2 characters')

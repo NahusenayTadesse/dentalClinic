@@ -1,0 +1,37 @@
+{
+	"path": "/dashboard/admin-panel/billing-settings",
+	"languages": {
+		"en": {
+			"title": "Billing settings",
+			"summary": "How big a discount the front desk may give before a manager has to approve it.",
+			"sections": [
+				{
+					"heading": "The discount limit",
+					"body": "A bill issued with a discount over this share of it waits in Approvals → Discounts and Voids, and takes no payment until a manager approves it. 10% unless changed. 0 sends every discount to a manager; 100 sends none."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Billing",
+					"href": "/dashboard/help#section-billing"
+				}
+			]
+		},
+		"am": {
+			"title": "የክፍያ ቅንብሮች",
+			"summary": "የፊት ዴስኩ ሥራ አስኪያጅ ሳያጸድቅ ምን ያህል ቅናሽ መስጠት እንደሚችል።",
+			"sections": [
+				{
+					"heading": "የቅናሽ ገደቡ",
+					"body": "ከዚህ ድርሻ በላይ ቅናሽ ተደርጎበት የወጣ ሂሳብ በApprovals → Discounts and Voids ይጠብቃል፤ ሥራ አስኪያጅ እስኪያጸድቅም ክፍያ አይቀበልም። ካልተቀየረ 10%። 0 ሁሉንም ቅናሽ ወደ ሥራ አስኪያጅ ይልካል፤ 100 ምንም አይልክም።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ክፍያ",
+					"href": "/dashboard/help#section-billing"
+				}
+			]
+		}
+	}
+}

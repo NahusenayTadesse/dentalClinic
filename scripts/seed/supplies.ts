@@ -25,17 +25,18 @@ const SUPPLIERS = [
 	{ name: 'Sample Pharmaceuticals', phone: '0114001004' }
 ];
 
+/** `expires`: the item goes off, so every lot of it is dated — see `supplies.tracksExpiry`. */
 const CATALOGUE = [
-	{ name: 'Composite resin A2', unit: 'syringe', reorder: 10 },
-	{ name: 'Dental amalgam capsules', unit: 'box', reorder: 5 },
-	{ name: 'Lidocaine 2% cartridges', unit: 'box', reorder: 8 },
-	{ name: 'Examination gloves (M)', unit: 'box', reorder: 20 },
-	{ name: 'Face masks', unit: 'box', reorder: 20 },
-	{ name: 'Suture 3-0', unit: 'pack', reorder: 6 },
-	{ name: 'Impression material', unit: 'kit', reorder: 4 },
-	{ name: 'Fluoride varnish', unit: 'tube', reorder: 6 },
-	{ name: 'Radiograph film', unit: 'pack', reorder: 5 },
-	{ name: 'Disposable bibs', unit: 'pack', reorder: 15 }
+	{ name: 'Composite resin A2', unit: 'syringe', reorder: 10, expires: true },
+	{ name: 'Dental amalgam capsules', unit: 'box', reorder: 5, expires: true },
+	{ name: 'Lidocaine 2% cartridges', unit: 'box', reorder: 8, expires: true },
+	{ name: 'Examination gloves (M)', unit: 'box', reorder: 20, expires: false },
+	{ name: 'Face masks', unit: 'box', reorder: 20, expires: false },
+	{ name: 'Suture 3-0', unit: 'pack', reorder: 6, expires: true },
+	{ name: 'Impression material', unit: 'kit', reorder: 4, expires: true },
+	{ name: 'Fluoride varnish', unit: 'tube', reorder: 6, expires: true },
+	{ name: 'Radiograph film', unit: 'pack', reorder: 5, expires: true },
+	{ name: 'Disposable bibs', unit: 'pack', reorder: 15, expires: false }
 ];
 
 export async function seedSupplies(db: SeedDb) {
@@ -89,6 +90,7 @@ export async function seedSupplies(db: SeedDb) {
 				name: item.name,
 				unitOfMeasure: item.unit,
 				reorderLevel: item.reorder,
+				tracksExpiry: item.expires,
 				description: 'Seed stock item'
 			})
 			.$returningId();
@@ -98,10 +100,24 @@ export async function seedSupplies(db: SeedDb) {
 		await db.insert(supplyBatch).values({
 			supplyId: row.id,
 			batchNumber: `B-${between(1000, 9999)}`,
-			expiryDate: localDate(between(90, 900)) as never,
+			expiryDate: item.expires ? localDate(between(90, 900)) : null,
 			quantity: received,
-			receivedQuantity: received
+			receivedQuantity: received,
+			receivedOn: localDate(-between(10, 60))
 		});
+
+		// A short-dated box beside the main lot, so the expiring-soon state is on screen from the
+		// first run rather than only after someone receives stock.
+		if (item.name.startsWith('Lidocaine')) {
+			await db.insert(supplyBatch).values({
+				supplyId: row.id,
+				batchNumber: `B-${between(1000, 9999)}`,
+				expiryDate: localDate(between(20, 45)),
+				quantity: 6,
+				receivedQuantity: 6,
+				receivedOn: localDate(-between(120, 200))
+			});
+		}
 
 		await db.insert(suppliesAdjustments).values({
 			movementType: 'received',

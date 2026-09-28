@@ -368,11 +368,11 @@ const DEFINITIONS: Record<SectionKey, Column[]> = {
 
 	'services-rendered': [
 		['date', 'Date', 'date'],
+		['bill', 'Bill'],
 		['service', 'Service'],
-		['employee', 'Employee'],
+		['employee', 'Clinician'],
+		['quantity', 'Qty'],
 		['price', 'Price', 'money'],
-		['tip', 'Tip', 'money'],
-		['tax', 'Tax', 'money'],
 		['total', 'Total', 'money'],
 		['paymentStatus', 'Status', 'status']
 	],

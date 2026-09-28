@@ -1,6 +1,6 @@
 import { superValidate, message, setError } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { and, count, desc, eq, gt, inArray, max, min, ne, sql, sum } from 'drizzle-orm';
+import { and, count, desc, eq, gt, inArray, max, min, sql, sum } from 'drizzle-orm';
 
 import { db } from '$lib/server/db';
 import {
@@ -35,6 +35,11 @@ import { birthDateFrom, livePatientId, logPatientView } from '$lib/server/patien
 import { editHistory, editIdentity, editReach } from '../schema';
 import { SECTIONS } from './sections';
 import { appointmentQuery } from '$lib/server/appointments';
+import { openPlan } from '$lib/server/treatmentPlans';
+import { patientBalance } from '$lib/server/billing';
+import { clinicToday } from '$lib/clinicTime';
+import { loadMerge, mergeAction } from './merge';
+import { mergedInto } from '$lib/server/patientMerge';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
 
 /**
@@ -59,7 +64,8 @@ export const load: PageServerLoad = async (event) => {
 		identityForm,
 		reachForm,
 		historyForm,
-		appointments
+		appointments,
+		merge
 	] = await Promise.all([
 		loadSections(id),
 		loadOptions(),
@@ -97,7 +103,8 @@ export const load: PageServerLoad = async (event) => {
 			{ errors: false }
 		),
 		// Every branch's: the chart is the patient's, not this branch's (§15). Latest first.
-		appointmentQuery(eq(appointment.patientId, id)).orderBy(desc(appointment.startsAt)).limit(15)
+		appointmentQuery(eq(appointment.patientId, id)).orderBy(desc(appointment.startsAt)).limit(15),
+		loadMerge(record, event.locals)
 	]);
 
 	return {
@@ -106,6 +113,7 @@ export const load: PageServerLoad = async (event) => {
 		summary,
 		appointments,
 		recentViews,
+		merge,
 		forms: { identity: identityForm, reach: reachForm, history: historyForm }
 	};
 };
@@ -150,7 +158,8 @@ async function loadOptions() {
  * like one with none because the lab screen is not built.
  */
 async function loadSummary(patientId: number) {
-	const open = ['draft', 'presented', 'accepted', 'partial'] as const;
+	// Issued bills only: a draft is owed by nobody, a void by nobody.
+	const OWED = ['issued', 'partly', 'paid'] as const;
 
 	const [visits, next, plans, prescriptions, billed, paid, files, notes, consents] =
 		await Promise.all([
@@ -183,7 +192,9 @@ async function loadSummary(patientId: number) {
 					and(
 						eq(treatmentPlan.patientId, patientId),
 						notDeleted(treatmentPlan),
-						inArray(treatmentPlan.status, [...open])
+						// The plans module's own rule, so an expired quote is not counted as open here
+						// while the plans tab calls it expired.
+						openPlan(clinicToday())
 					)
 				),
 			db
@@ -194,7 +205,7 @@ async function loadSummary(patientId: number) {
 				.select({ total: sum(invoice.total) })
 				.from(invoice)
 				.where(
-					and(eq(invoice.patientId, patientId), notDeleted(invoice), ne(invoice.status, 'void'))
+					and(eq(invoice.patientId, patientId), notDeleted(invoice), inArray(invoice.status, OWED))
 				),
 			db
 				.select({ total: sum(invoicePayment.amount) })
@@ -204,7 +215,7 @@ async function loadSummary(patientId: number) {
 					and(
 						eq(invoice.id, invoicePayment.invoiceId),
 						notDeleted(invoice),
-						ne(invoice.status, 'void')
+						inArray(invoice.status, OWED)
 					)
 				)
 				.where(and(eq(invoice.patientId, patientId), notDeleted(invoicePayment))),
@@ -237,7 +248,8 @@ async function loadSummary(patientId: number) {
 		prescriptions: Number(prescriptions[0]?.total ?? 0),
 		billed: billedTotal,
 		paid: paidTotal,
-		balance: billedTotal - paidTotal,
+		// The billing module's own figure, so the overview, the header and the billing tab agree.
+		balance: await patientBalance(patientId),
 		files: Number(files[0]?.total ?? 0),
 		notes: Number(notes[0]?.total ?? 0),
 		consents: Number(consents[0]?.total ?? 0)
@@ -246,6 +258,9 @@ async function loadSummary(patientId: number) {
 
 /** The last people to open this chart — shown only to those who may read the audit trail. */
 async function loadRecentViews(patientId: number) {
+	// Views of records merged into this one are views of this patient: the log is not rewritten on a
+	// merge (it is evidence), so it is read across them instead.
+	const ids = [patientId, ...(await mergedInto(patientId))];
 	return db
 		.select({
 			id: patientAccessLog.id,
@@ -258,7 +273,7 @@ async function loadRecentViews(patientId: number) {
 		.from(patientAccessLog)
 		.leftJoin(user, eq(user.id, patientAccessLog.userId))
 		.leftJoin(branch, eq(branch.id, patientAccessLog.branchId))
-		.where(eq(patientAccessLog.patientId, patientId))
+		.where(inArray(patientAccessLog.patientId, ids))
 		.orderBy(desc(patientAccessLog.viewedAt))
 		.limit(15);
 }
@@ -294,6 +309,7 @@ async function updatePatient(
 
 export const actions: Actions = {
 	...childActions(SECTIONS, livePatientId),
+	merge: mergeAction,
 
 	editIdentity: async (event) => {
 		requirePermission(event.locals, 'patients.edit');

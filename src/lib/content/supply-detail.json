@@ -7,15 +7,19 @@
 			"sections": [
 				{
 					"heading": "What is here",
-					"body": "• The item's name, type, description and reorder level\n• How much is in store\n• Its movement history over a date range\n• Damaged and lost records over a date range"
+					"body": "• The item's name, type, description and reorder level\n• How much is in store, and whether it expires\n• Stock by lot — each delivery still on the shelf, the next to be used at the top, with its expiry date: red once it has passed, amber within three months\n• Its movement history over a date range\n• Damaged and lost records over a date range"
 				},
 				{
 					"heading": "Where the quantity comes from",
-					"body": "The quantity in store is the sum of the item's lots — one per delivery — worked out each time it is shown rather than kept as a running total that could drift. Using stock takes it from the lot that expires first."
+					"body": "The quantity in store is the sum of the item's lots — one per delivery — worked out each time it is shown rather than kept as a running total that could drift. Using stock takes it from the in-date lot that expires first. An expired lot is never issued: it stays in the quantity, because it is still on the shelf, until you record it as damaged."
+				},
+				{
+					"heading": "Receiving a delivery",
+					"body": "Change Quantity → Add. For an item marked Expires, the expiry date on the box is required, and a date that has already passed is refused — expired stock is not received. The lot number and the supplier are optional, but they are what a recall is traced by."
 				},
 				{
 					"heading": "Recording damage and loss",
-					"body": "Record it against the item when it happens, not at the next count. That is what makes the shrinkage visible in the stock report instead of hiding it inside a quantity that quietly changed — and a quantity that changes with no record behind it is the thing nobody can explain later."
+					"body": "Record it against the item when it happens, not at the next count. That is what makes the shrinkage visible in the stock report instead of hiding it inside a quantity that quietly changed — and a quantity that changes with no record behind it is the thing nobody can explain later.\n\nTick Deductible only when the cost is to come out of the employee's pay, and choose who. The deduction is priced at the item's last recorded delivery cost; an item with no cost on record cannot be deducted. Deleting a damage report puts the units back into the lots they came from."
 				}
 			],
 			"links": [
@@ -31,15 +35,19 @@
 			"sections": [
 				{
 					"heading": "እዚህ ያለው",
-					"body": "• የዕቃው ስም፣ ዓይነት፣ መግለጫና የዳግም ትዕዛዝ ደረጃ\n• በመጋዘን ያለው መጠን\n• በቀን ክልል ውስጥ ያለው የእንቅስቃሴ ታሪክ\n• በቀን ክልል ውስጥ የተበላሹና የጠፉ መዝገቦች"
+					"body": "• የዕቃው ስም፣ ዓይነት፣ መግለጫና የዳግም ትዕዛዝ ደረጃ\n• በመጋዘን ያለው መጠን፣ እና የማለቂያ ቀን ያለው መሆኑ\n• ክምችት በሎት — በመደርደሪያው ላይ ያለ እያንዳንዱ ርክክብ፣ ቀጥሎ የሚወሰደው ከላይ፣ ከማለቂያ ቀኑ ጋር፦ ቀኑ ካለፈ ቀይ፣ በሦስት ወር ውስጥ የሚያልቅ ከሆነ ብርቱካናማ\n• በቀን ክልል ውስጥ ያለው የእንቅስቃሴ ታሪክ\n• በቀን ክልል ውስጥ የተበላሹና የጠፉ መዝገቦች"
 				},
 				{
 					"heading": "መጠኑ ከየት ይመጣል",
-					"body": "በመጋዘን ያለው መጠን የዕቃው ሎቶች ድምር ነው — በእያንዳንዱ ርክክብ አንድ ሎት። ሊዛባ የሚችል ተከታታይ ድምር ሆኖ አይቀመጥም፤ በታየ ቁጥር ይሰላል። ክምችት ሲወሰድ ቀድሞ ከሚያልቀው ሎት ይወሰዳል።"
+					"body": "በመጋዘን ያለው መጠን የዕቃው ሎቶች ድምር ነው — በእያንዳንዱ ርክክብ አንድ ሎት። ሊዛባ የሚችል ተከታታይ ድምር ሆኖ አይቀመጥም፤ በታየ ቁጥር ይሰላል። ክምችት ሲወሰድ ጊዜው ካላለፈባቸው ሎቶች ቀድሞ ከሚያልቀው ይወሰዳል። ጊዜው ያለፈበት ሎት በፍጹም አይወጣም፤ በመደርደሪያው ላይ እስካለ ድረስ በመጠኑ ውስጥ ይቆጠራል፣ እንደተበላሸ እስኪመዘገብ ድረስ።"
+				},
+				{
+					"heading": "ርክክብ መቀበል",
+					"body": "Change Quantity → Add። \"Expires\" ምልክት ለተደረገበት ዕቃ በሳጥኑ ላይ ያለው የማለቂያ ቀን ግዴታ ነው፤ ያለፈ ቀን አይቀበልም — ጊዜው ያለፈበት ክምችት አይገባም። የሎት ቁጥሩና አቅራቢው አማራጭ ናቸው፤ ነገር ግን አንድ ምርት ሲመለስ (recall) የሚፈለገው በእነሱ ነው።"
 				},
 				{
 					"heading": "ጉዳትና ብክነት መመዝገብ",
-					"body": "በተከሰተበት ጊዜ በዕቃው ላይ ይመዝግቡት እንጂ በሚቀጥለው ቆጠራ አይሁን። ብክነቱ በክምችት ሪፖርት ውስጥ እንዲታይ የሚያደርገው ይህ ነው እንጂ በዝም ብሎ በተቀየረ መጠን ውስጥ አይሸሸግም — ከበስተጀርባው መዝገብ የሌለው መጠን ደግሞ በኋላ ማንም ሊያብራራው የማይችለው ነገር ነው።"
+					"body": "በተከሰተበት ጊዜ በዕቃው ላይ ይመዝግቡት እንጂ በሚቀጥለው ቆጠራ አይሁን። ብክነቱ በክምችት ሪፖርት ውስጥ እንዲታይ የሚያደርገው ይህ ነው እንጂ በዝም ብሎ በተቀየረ መጠን ውስጥ አይሸሸግም — ከበስተጀርባው መዝገብ የሌለው መጠን ደግሞ በኋላ ማንም ሊያብራራው የማይችለው ነገር ነው።\n\n\"Deductable\"ን ምልክት የሚያደርጉት ወጪው ከሠራተኛው ደመወዝ የሚቀነስ ሲሆን ብቻ ነው፤ ሠራተኛውንም ይምረጡ። ተቀናሹ የሚሰላው በዕቃው የመጨረሻ የተመዘገበ የርክክብ ዋጋ ነው፤ ዋጋ ያልተመዘገበለት ዕቃ ሊቀነስ አይችልም። የጉዳት መዝገብ ሲሰረዝ ዕቃዎቹ ወደ ወጡባቸው ሎቶች ይመለሳሉ።"
 				}
 			],
 			"links": [

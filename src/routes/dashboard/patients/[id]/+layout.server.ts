@@ -14,6 +14,7 @@ import {
 	patientIdParam
 } from '$lib/server/patients';
 import { BOOK_PERMISSION } from '$lib/server/appointmentActions';
+import { patientBalance } from '$lib/server/billing';
 import type { LayoutServerLoad } from './$types';
 
 /**
@@ -39,8 +40,7 @@ import type { LayoutServerLoad } from './$types';
  * Views are logged by each tab, not here, so the access log can say which part was opened
  * (`logPatientView`).
  *
- * Non-goals, each waiting on its own tab: merging duplicates, treatment plans, billing, files and
- * notes. The overview shows their counts so it is honest about what exists.
+ * Each part of the record has its own tab and logs its own view; the overview counts them all.
  */
 
 const createdBy = alias(user, 'created_by_user');
@@ -110,7 +110,12 @@ export const load: LayoutServerLoad = async ({ params, locals, url }) => {
 		redirect(303, `/dashboard/patients/${record.mergedIntoId}${tab}?mergedFrom=${record.id}`);
 	}
 
-	const flags = await flagsFor([id]);
+	const canBill = hasPermission(locals, 'billing.invoice');
+	// What they owe, in the header on every tab — only for someone who may see money at all.
+	const [flags, balance] = await Promise.all([
+		flagsFor([id]),
+		canBill ? patientBalance(id) : Promise.resolve(null)
+	]);
 
 	return {
 		patient: {
@@ -119,6 +124,7 @@ export const load: LayoutServerLoad = async ({ params, locals, url }) => {
 			historyState: historyState(record.historyTakenAt)
 		},
 		flags: flags.get(id) ?? { allergies: [], conditions: [], medicineAlerts: [] },
+		balance,
 		mergedFrom: Number(url.searchParams.get('mergedFrom')) || null,
 		fromOtherBranch:
 			locals.branch.active !== null &&
@@ -128,7 +134,8 @@ export const load: LayoutServerLoad = async ({ params, locals, url }) => {
 			edit: hasPermission(locals, 'patients.edit'),
 			clinical: hasPermission(locals, 'patients.clinical'),
 			seeViews: hasPermission(locals, 'audit_logs.view'),
-			book: hasPermission(locals, BOOK_PERMISSION)
+			book: hasPermission(locals, BOOK_PERMISSION),
+			bill: canBill
 		}
 	};
 };

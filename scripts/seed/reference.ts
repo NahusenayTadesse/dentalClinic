@@ -163,18 +163,19 @@ export async function seedFinanceReference(db: SeedDb) {
 	}
 
 	if (await isEmpty(db, paymentMethods, 'payment_methods')) {
-		await db
-			.insert(paymentMethods)
-			.values(
+		await db.insert(paymentMethods).values(
+			// The kind is what billing reads: a cash payment needs the drawer open.
+			(
 				[
-					'Commercial Bank of Ethiopia',
-					'Awash Bank',
-					'Dashen Bank',
-					'Abyssinia Bank',
-					'Telebirr',
-					'Cash'
-				].map((name) => ({ name }))
-			);
+					['Commercial Bank of Ethiopia', 'bank'],
+					['Awash Bank', 'bank'],
+					['Dashen Bank', 'bank'],
+					['Abyssinia Bank', 'bank'],
+					['Telebirr', 'mobile'],
+					['Cash', 'cash']
+				] as const
+			).map(([name, kind]) => ({ name, kind }))
+		);
 	}
 
 	if (await isEmpty(db, expensesType, 'expenses_type')) {

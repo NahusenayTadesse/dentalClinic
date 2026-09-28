@@ -225,6 +225,83 @@
       "when": 1790454905469,
       "tag": "0031_pension_rate",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "5",
+      "when": 1790535697358,
+      "tag": "0032_access_log_treatment_plan",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "5",
+      "when": 1790537334210,
+      "tag": "0033_treatment_plan_adjustment",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "5",
+      "when": 1790537791182,
+      "tag": "0034_adjustment_created_at_datetime",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "5",
+      "when": 1790539186697,
+      "tag": "0035_deleted_at_to_utc",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "5",
+      "when": 1790582470496,
+      "tag": "0036_billing_settings_sequences",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "5",
+      "when": 1790583254274,
+      "tag": "0037_access_log_invoice",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "5",
+      "when": 1790619687529,
+      "tag": "0038_drop_erp_sales_lines",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "5",
+      "when": 1790620550762,
+      "tag": "0039_backfill_receipt_numbers",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "5",
+      "when": 1790620746376,
+      "tag": "0040_payer_email_optional",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "5",
+      "when": 1790622439597,
+      "tag": "0041_medicine_allergy_class",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "5",
+      "when": 1790623684920,
+      "tag": "0042_access_log_consent",
+      "breakpoints": true
     }
   ]
 }

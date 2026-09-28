@@ -1,4 +1,5 @@
 <script lang="ts">
+	import CommissionFields from '$lib/forms/CommissionFields.svelte';
 	import type { Snapshot } from '@sveltejs/kit';
 	import { ExternalLink, Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
@@ -308,33 +309,7 @@
 					required
 				/>
 
-				{#if data?.departmentList.find((d) => d.value === $form.department)?.commission}
-					<Input
-						label="Office Commission"
-						name="officeCommission"
-						{form}
-						{errors}
-						type="select"
-						items={[
-							{ value: false, name: 'No' },
-							{ value: true, name: 'Yes' }
-						]}
-						required
-						placeholder="This Employee Recieves Office Commission"
-					/>
-
-					{#if $form.officeCommission}
-						<Input
-							label="Commission Percentage"
-							name="percentage"
-							{form}
-							{errors}
-							type="number"
-							max="50"
-							required
-						/>
-					{/if}
-				{/if}
+				<CommissionFields {form} {errors} />
 				<Input
 					label="Employment Status"
 					name="employmentStatus"

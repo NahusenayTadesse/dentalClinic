@@ -1,11 +1,11 @@
 <script lang="ts">
+	import CommissionFields from '$lib/forms/CommissionFields.svelte';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import type { Snapshot } from '@sveltejs/kit';
 
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 
-	import * as Card from '$lib/components/ui/card/index.js';
 	import { Pen, Percent, Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
@@ -46,7 +46,7 @@
 	//   let newPercetage =
 	function onclick() {
 		byPercent = !byPercent;
-		$form.amount = String(current);
+		$form.amount = Number(current);
 	}
 
 	function oninput() {
@@ -142,33 +142,7 @@
 				required
 			/>
 
-			{#if data?.departments.find((d) => d.value === $form.department)?.commission}
-				<InputComp
-					label="Office Commission"
-					name="officeCommission"
-					{form}
-					{errors}
-					type="select"
-					items={[
-						{ value: false, name: 'No' },
-						{ value: true, name: 'Yes' }
-					]}
-					required
-					placeholder="This Employee Recieves Office Commission"
-				/>
-
-				{#if $form.officeCommission}
-					<InputComp
-						label="Commission Percentage"
-						name="percentage"
-						{form}
-						{errors}
-						max="50"
-						type="number"
-						required
-					/>
-				{/if}
-			{/if}
+			<CommissionFields {form} {errors} />
 
 			<InputComp
 				{form}

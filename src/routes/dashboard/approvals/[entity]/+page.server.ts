@@ -2,6 +2,7 @@ import { fail, message, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { db } from '$lib/server/db';
 import { approvalLinks, findEntity, pendingRows, settleApprovals } from '$lib/server/approvals';
+import { WriteRefused } from '$lib/server/childCrud';
 import { hasPermission } from '$lib/server/permissions';
 import { settleSchema } from '../schema';
 import type { Actions, PageServerLoad } from './$types';
@@ -83,11 +84,16 @@ export const actions: Actions = {
 				type: result.blocked > 0 ? 'error' : 'success',
 				text: `${verb} ${result.settled} ${noun}.` + notes.join('')
 			});
-		} catch (err) {
+		} catch (err: unknown) {
+			// A refusal from a queue's own rules (a cash refund with the drawer shut) says why; anything
+			// else is logged and kept off the screen (CLAUDE.md §9 — loud in the log, quiet to the client).
+			if (err instanceof WriteRefused) {
+				return message(form, { type: 'error', text: err.message }, { status: 400 });
+			}
 			console.error('Approval failed:', err);
 			return message(form, {
 				type: 'error',
-				text: `Could not complete that: ${err instanceof Error ? err.message : 'Unknown error'}`
+				text: 'That could not be completed. Nothing was changed.'
 			});
 		}
 	}

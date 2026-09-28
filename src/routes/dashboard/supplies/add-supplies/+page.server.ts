@@ -1,13 +1,11 @@
 import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { fail } from '@sveltejs/kit';
 
 import { supplyItemSchema as schema } from './schema';
 import { db } from '$lib/server/db';
 import { supplies } from '$lib/server/db/schema/';
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types.js';
-import { setFlash, redirect } from 'sveltekit-flash-message/server';
 import { supplyCategories } from '$lib/server/fastData';
 
 export const load: PageServerLoad = async () => {
@@ -21,7 +19,7 @@ export const load: PageServerLoad = async () => {
 };
 
 export const actions: Actions = {
-	add: async ({ request, cookies, locals }) => {
+	add: async ({ request, locals }) => {
 		const form = await superValidate(request, zod4(schema));
 
 		if (!form.valid) {

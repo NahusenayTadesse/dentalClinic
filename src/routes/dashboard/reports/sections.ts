@@ -209,7 +209,7 @@ export const SECTIONS: SectionMeta[] = [
 		key: 'services-rendered',
 		label: 'Services Rendered',
 		group: 'Money',
-		description: 'Services billed on a transaction inside the range.',
+		description: 'Work billed on bills issued inside the range, line by line.',
 		filterKeys: ['service', 'employee']
 	},
 

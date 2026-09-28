@@ -17,8 +17,7 @@ import {
 } from 'drizzle-orm/mysql-core';
 import { employee } from './staff';
 import { secureFields, approvalFields } from './secureFields';
-import { services } from './services';
-import { supplies, supplySuppliers } from '../schema';
+import { supplySuppliers } from '../schema';
 import { user } from './user';
 import { branchRef } from './branches';
 import { patient } from './patients';
@@ -29,6 +28,13 @@ export const paymentMethods = mysqlTable('payment_methods', {
 	id: int('id').primaryKey().autoincrement(),
 	name: varchar('name', { length: 100 }).notNull().unique(),
 	description: varchar('description', { length: 255 }),
+	/**
+	 * What kind of money this is. **`cash` is the one that matters**: a cash payment goes into the
+	 * drawer, so it needs an open `cash_session` at the branch and counts toward what the drawer
+	 * should hold at the end of the day. The name cannot say so — "Cash", "Birr cash", "Front desk"
+	 * — and inferring it from one would be a string match standing in for a control.
+	 */
+	kind: mysqlEnum('kind', ['cash', 'bank', 'mobile', 'card', 'other']).notNull().default('bank'),
 	...secureFields
 });
 
@@ -246,34 +252,11 @@ export const transactionsRelations = relations(transactions, ({ one }) => ({
 	})
 }));
 
-export const transactionServices = mysqlTable('transaction_services', {
-	id: int('id').primaryKey().autoincrement(),
-	staffId: int('staff_id')
-		.references(() => employee.id)
-		.notNull(),
-	transactionId: int('transaction_id')
-		.notNull()
-		.references(() => transactions.id, { onDelete: 'cascade' }),
-	serviceId: int('service_id')
-		.notNull()
-		.references(() => services.id),
-	price: decimal('price', { precision: 10, scale: 2 }).notNull(),
-	tip: decimal('tip', { precision: 10, scale: 2 }).notNull().default('0'),
-	tax: decimal('tax', { precision: 10, scale: 2 }),
-	total: decimal('total', { precision: 10, scale: 2 }),
-	...secureFields
-});
-
-export const transactionSupplies = mysqlTable('transaction_supplies', {
-	id: int('id').primaryKey().autoincrement(),
-	transactionId: int('transaction_id')
-		.notNull()
-		.references(() => transactions.id, { onDelete: 'cascade' }),
-	supplyId: int('supply_id').references(() => supplies.id, { onDelete: 'set null' }),
-	quantity: decimal('quantity', { precision: 10, scale: 2 }).notNull().default('1'),
-	unitPrice: decimal('unit_price', { precision: 10, scale: 2 }).notNull(),
-	...secureFields
-});
+/*
+ * `transaction_services` and `transaction_supplies` were here: the facilities ERP's way of listing
+ * what a payment was for. A bill's lines replaced them (`invoice_line`) — work is billed, then paid
+ * separately — and migration 0038 dropped both once the reports read bills instead.
+ */
 
 export const expenses = mysqlTable('expenses', {
 	id: int('id').autoincrement().primaryKey(),
@@ -441,19 +424,3 @@ export const payrollAdjustments = mysqlTable('payroll_adjustments', {
 	...secureFields,
 	...approvalFields
 });
-
-export const transactionRelations = relations(transactions, ({ many }) => ({
-	transactionServices: many(transactionServices), // this will be connected via saleId
-	transactionSupplies: many(transactionSupplies) // this will be connected via saleId
-}));
-
-export const transactionServicessRelations = relations(transactionServices, ({ one }) => ({
-	sale: one(transactions, {
-		fields: [transactionServices.transactionId],
-		references: [transactions.id]
-	}),
-	service: one(services, {
-		fields: [transactionServices.serviceId],
-		references: [services.id]
-	})
-}));

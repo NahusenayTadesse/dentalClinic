@@ -3,10 +3,13 @@
 	import { PackageX as Minus } from '@lucide/svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import type { SuperValidated } from 'sveltekit-superforms';
-	import { superForm } from 'sveltekit-superforms';
-	import type { DamagedForm } from '$lib/ZodSchema';
+	import type { Infer, SuperValidated } from 'sveltekit-superforms';
+	import { damagedFormSchema } from '$lib/ZodSchema';
+	import { createForm } from '$lib/forms/createForm';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import Errors from '$lib/formComponents/Errors.svelte';
+	import type { Item } from '$lib/global.svelte';
+
 	let isOpen = $state(false);
 
 	let {
@@ -14,20 +17,16 @@
 		name = 'item',
 		employees
 	}: {
-		data: SuperValidated<DamagedForm>;
+		data: SuperValidated<Infer<typeof damagedFormSchema>>;
 		name: string;
 		employees?: Item[];
 	} = $props();
-	const { form, errors, enhance, delayed, message } = superForm(data, {});
-	import { toast } from 'svelte-sonner';
-	import type { Item } from '$lib/global.svelte';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
+
+	// Seeded once from the load; the toast comes from `createForm` (CLAUDE.md §13).
+	// svelte-ignore state_referenced_locally
+	const { form, errors, enhance, delayed, allErrors } = createForm(data, damagedFormSchema, {
+		onUpdated({ form }) {
+			if (form.message?.type === 'success') isOpen = false;
 		}
 	});
 </script>
@@ -54,13 +53,13 @@
 				required={true}
 			/>
 			<InputComp
-				label="Employee Responsible for the damage"
+				label="Employee responsible, if it is to be deducted"
 				name="damagedBy"
 				type="combo"
 				{form}
 				{errors}
-				placeholder="Enter Quantity"
-				required={true}
+				placeholder="Choose an employee"
+				required={false}
 				items={employees}
 			/>
 
@@ -73,6 +72,7 @@
 				{errors}
 				required={false}
 			/>
+			<Errors allErrors={$allErrors} />
 			<Button type="submit" variant="destructive" size="lg">
 				{#if $delayed}
 					<LoadingBtn name="Entering Damaged Item" />

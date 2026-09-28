@@ -23,7 +23,7 @@
  * otherwise its quantity would derive to zero. `supplies.tracksExpiry` says whether an expiry
  * date is expected on each, not whether lots exist.
  */
-import { and, asc, eq, isNull, sql } from 'drizzle-orm';
+import { and, asc, eq, gte, isNull, or, sql } from 'drizzle-orm';
 import { supplies } from './db/schema/inventory';
 import { supplyBatch } from './db/schema/batches';
 import { clinicToday } from '../clinicTime';
@@ -68,6 +68,11 @@ export function onHand() {
  * tracking is meant to prevent. A lot that reaches zero is marked `depleted` rather than deleted,
  * so the movements that emptied it still lead somewhere.
  *
+ * An issue never takes from a lot past its expiry date: before deliveries carried dates this could
+ * not arise, and after, soonest-first would have handed out the expired box before any good one.
+ * Expired stock leaves as a write-off, which passes `includeExpired`. A lot expiring today is
+ * still in date, the same boundary `$lib/expiry.ts` draws on screen.
+ *
  * Returns the lots it touched, so the caller can record which lot a dispense came from — the link
  * a recall is traced through.
  *
@@ -88,6 +93,8 @@ export async function moveStock(
 		expiryDate?: string | null;
 		unitCost?: number | null;
 		supplierId?: number | null;
+		/** Only for issues: take from expired lots too. For writing stock off, never for using it. */
+		includeExpired?: boolean;
 	}
 ): Promise<{ batchId: number; quantity: number }[]> {
 	const { supplyId, delta, userId } = options;
@@ -123,7 +130,10 @@ export async function moveStock(
 			and(
 				eq(supplyBatch.supplyId, supplyId),
 				eq(supplyBatch.status, 'active'),
-				isNull(supplyBatch.deletedAt)
+				isNull(supplyBatch.deletedAt),
+				options.includeExpired
+					? undefined
+					: or(isNull(supplyBatch.expiryDate), gte(supplyBatch.expiryDate, clinicToday()))
 			)
 		)
 		.orderBy(

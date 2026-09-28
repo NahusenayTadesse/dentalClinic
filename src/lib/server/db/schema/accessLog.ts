@@ -66,7 +66,10 @@ export const patientAccessLog = mysqlTable(
 			'note',
 			'prescription',
 			'file',
-			'procedure'
+			'procedure',
+			'treatmentPlan',
+			'invoice',
+			'consent'
 		]).notNull(),
 
 		/** Which row, where one was opened. Null for the patient summary, which is the patient. */

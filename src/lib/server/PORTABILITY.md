@@ -47,14 +47,14 @@ starts from a list instead of a grep.
 
 ### Database
 
-| Seam                                 | Owns                                                                                                                                                                                                     | Status                                                                                    |
-| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `db/dialect.ts`                      | every SQL expression the three engines spell differently — `today`, `nowExpr`, `yearsSince`, `daysBetween`, `isoDate`, `monthKey`, `addDays`, `addMinutes`, `concatWith`, `groupConcat`, `storedInstant` | **built**; first consumer is the employees list                                           |
-| `db/insert.ts`                       | getting an id back from an insert — MySQL has `$returningId()`, the others use `RETURNING`                                                                                                               | **built** — `insertReturningId`; first consumers are `childCrud` and patient registration |
-| `db/index.ts`                        | the driver and the connection                                                                                                                                                                            | exists                                                                                    |
-| `dbErrors.ts`                        | driver error codes. A duplicate key is `ER_DUP_ENTRY` on MySQL, `23505` on Postgres, `SQLITE_CONSTRAINT_UNIQUE` on SQLite. Never compare an errno inline                                                 | exists, 2 callers                                                                         |
-| `stock.ts`                           | the on-hand subquery. Portable as written; it stays the one place that knows how stock is derived                                                                                                        | exists                                                                                    |
-| `lib/global.svelte.ts` → `fileUrl()` | the URL that serves a stored file                                                                                                                                                                        | **built**, 28 call sites migrated                                                         |
+| Seam                                 | Owns                                                                                                                                                                                                                                                  | Status                                                                                    |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `db/dialect.ts`                      | every SQL expression the three engines spell differently — `today`, `nowExpr`, `yearsSince`, `daysBetween`, `isoDate`, `monthKey`, `addDays`, `addMinutes`, `concatWith`, `groupConcat`, `storedInstant`, and `jsonValue` for reading a `json` column | **built**; first consumer is the employees list                                           |
+| `db/insert.ts`                       | getting an id back from an insert — MySQL has `$returningId()`, the others use `RETURNING`                                                                                                                                                            | **built** — `insertReturningId`; first consumers are `childCrud` and patient registration |
+| `db/index.ts`                        | the driver and the connection                                                                                                                                                                                                                         | exists                                                                                    |
+| `dbErrors.ts`                        | driver error codes. A duplicate key is `ER_DUP_ENTRY` on MySQL, `23505` on Postgres, `SQLITE_CONSTRAINT_UNIQUE` on SQLite. Never compare an errno inline                                                                                              | exists, 2 callers                                                                         |
+| `stock.ts`                           | the on-hand subquery. Portable as written; it stays the one place that knows how stock is derived                                                                                                                                                     | exists                                                                                    |
+| `lib/global.svelte.ts` → `fileUrl()` | the URL that serves a stored file                                                                                                                                                                                                                     | **built**, 28 call sites migrated                                                         |
 
 `db/dialect.ts` exists now. Every body in it is still MariaDB — that is the point: the port is a
 file rather than a search. Adding to it is how a new dialect-specific expression enters the app.
@@ -113,6 +113,14 @@ These are not leaks to be fixed; they are behaviour differences to know about be
    beside it are what makes an empty database usable, so they are part of every new deployment
    by definition. A seed that reaches for `$returningId()` directly is as much a blocker as a
    route that does.
+7. **JSON is not one type.** MySQL returns a `json` column parsed; MariaDB stores it as text and
+   returns the string; SQLite has no JSON type. Read one through `jsonValue` (`db/dialect.ts`).
+   This already differs between the two engines the app runs on today: the treatment plan history
+   read as empty on MariaDB until it went through the helper.
+8. **Identifiers stop at 64 characters on MySQL/MariaDB.** Drizzle names a foreign key after both
+   tables and both columns, which can pass that. The migration then fails partway, with the table
+   already created, and `drizzle-kit migrate` said nothing. Name long keys by hand with
+   `foreignKey({ name })`, as `treatment_plan_adjustment` does.
 
 ## Known dialect-specific schema
 
@@ -143,26 +151,25 @@ the entry says why, because "I was in a hurry" is how a ledger becomes fiction.
 > **These files are not to be changed as part of adopting this rule.** They predate it, they
 > work, and they will be cleaned up when their feature is next touched. The rule binds new code.
 
-### `src/routes` — 16 files
+### `src/routes` — 10 files
 
-| File                                                            | Uses                                      |
-| --------------------------------------------------------------- | ----------------------------------------- |
-| `dashboard/+page.server.ts`                                     | `CURDATE`                                 |
-| `dashboard/customers/+page.server.ts`                           | `DATEDIFF`, `DATE_FORMAT`                 |
-| `dashboard/customers/[id]/+page.server.ts`                      | `DATEDIFF`, `DATE_FORMAT`                 |
-| `dashboard/employees/inactive/+page.server.ts`                  | `CURDATE`, `DATE_FORMAT`, `TIMESTAMPDIFF` |
-| `dashboard/employees/attendance/[range]/+page.server.ts`        | `GROUP_CONCAT`                            |
-| `dashboard/employees/single/[id]/+layout.server.ts`             | `CURDATE`, `DATE_FORMAT`, `TIMESTAMPDIFF` |
-| `dashboard/employees/single/[id]/leave-history/+page.server.ts` | `DATEDIFF`                                |
-| `dashboard/reports/scope.server.ts`                             | `DATE_ADD`, `DATE_FORMAT`                 |
-| `dashboard/reports/details.server.ts`                           | `DATEDIFF`, `DATE_FORMAT`                 |
-| `dashboard/reports/analytics/people.server.ts`                  | `CURDATE`, `DATEDIFF`                     |
-| `dashboard/salary/add-deductions/[range]/+page.server.ts`       | `DATE_FORMAT`                             |
-| `dashboard/salary/add-overtime/[range]/+page.server.ts`         | `DATE_FORMAT`                             |
-| `dashboard/salary/add-payroll/[range]/+page.server.ts`          | `DATEDIFF`                                |
-| `dashboard/supplies/[id]/+page.server.ts`                       | `DATE_FORMAT`                             |
-| `dashboard/supplies/[id]/damaged/[range]/+page.server.ts`       | `DATE_FORMAT`                             |
-| `dashboard/supplies/[id]/ranges/[range]/+page.server.ts`        | `DATE_FORMAT`                             |
+Six left this list when the database's clock moved to UTC (`db/connection.ts`): an inline
+`CURDATE()` became wrong for three hours after midnight, so every one was moved onto `today()`,
+`yearsSince`, `daysBetween` and `isoDate`. There is no `CURDATE` anywhere in `src/routes` now, and
+there must not be one again.
+
+| File                                                            | Uses                      |
+| --------------------------------------------------------------- | ------------------------- |
+| `dashboard/employees/attendance/[range]/+page.server.ts`        | `GROUP_CONCAT`            |
+| `dashboard/employees/single/[id]/leave-history/+page.server.ts` | `DATEDIFF`                |
+| `dashboard/reports/scope.server.ts`                             | `DATE_ADD`, `DATE_FORMAT` |
+| `dashboard/reports/details.server.ts`                           | `DATEDIFF`, `DATE_FORMAT` |
+| `dashboard/salary/add-deductions/[range]/+page.server.ts`       | `DATE_FORMAT`             |
+| `dashboard/salary/add-overtime/[range]/+page.server.ts`         | `DATE_FORMAT`             |
+| `dashboard/salary/add-payroll/[range]/+page.server.ts`          | `DATEDIFF`                |
+| `dashboard/supplies/[id]/+page.server.ts`                       | `DATE_FORMAT`             |
+| `dashboard/supplies/[id]/damaged/[range]/+page.server.ts`       | `DATE_FORMAT`             |
+| `dashboard/supplies/[id]/ranges/[range]/+page.server.ts`        | `DATE_FORMAT`             |
 
 Plus `CONCAT` in 8 route files — SQLite spells it `||` — of which 7 are the same hand-written
 `TRIM(CONCAT(...))` full-name fragment that CLAUDE.md §2 already wants extracted. One extraction

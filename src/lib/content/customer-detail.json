@@ -2,42 +2,50 @@
 	"match": "/dashboard/customers/",
 	"languages": {
 		"en": {
-			"title": "Customer Details",
-			"summary": "One customer: their details, address and contacts.",
+			"title": "Payer",
+			"summary": "One employer or insurer: their details and contacts, the bills sent to them across patients, and what they still owe.",
 			"sections": [
 				{
-					"heading": "What you can do",
-					"body": "Edit the details, the address and the contact people. Take care with the TIN: it is what identifies the organisation on paperwork, and correcting it later means correcting documents already issued."
+					"heading": "Bills",
+					"body": "Every issued bill whose Bill to is this payer, with the patient it is for. Only people who may handle bills see this part. A bill is sent here by choosing the payer under Bill to while it is still a draft; a patient linked to this payer has it chosen already."
 				},
 				{
-					"heading": "System information",
-					"body": "Who entered the customer and when, and whether it has been approved."
+					"heading": "Taking their payment",
+					"body": "Press Take a payment and enter an amount against each bill the payment covers — one bank transfer can settle many patients' bills. Each bill's status follows, and the payment gets one receipt number. Cash needs the cash drawer open at this branch."
+				},
+				{
+					"heading": "Details",
+					"body": "Edit the details, the address and the contact people. Take care with the TIN: it identifies the organisation on paperwork."
 				}
 			],
 			"links": [
 				{
-					"label": "Full guide — Finance",
-					"href": "/dashboard/help#section-finance"
+					"label": "Full guide — Billing",
+					"href": "/dashboard/help#section-billing"
 				}
 			]
 		},
 		"am": {
-			"title": "የደንበኛ ዝርዝሮች",
-			"summary": "አንድ ደንበኛ፦ ዝርዝሮቹ፣ አድራሻውና ተጠሪዎቹ።",
+			"title": "ከፋይ",
+			"summary": "አንድ አሠሪ ወይም መድን ሰጪ፦ ዝርዝሮቹና ተጠሪዎቹ፣ በተለያዩ ታካሚዎች ስም የተላኩለት ደረሰኞች፣ እና አሁንም ያለበት ዕዳ።",
 			"sections": [
 				{
-					"heading": "ማድረግ የሚችሉት",
-					"body": "ዝርዝሮቹን፣ አድራሻውንና ተጠሪዎቹን ማስተካከል። በTIN ይጠንቀቁ፦ ድርጅቱን በሰነዶች ላይ የሚለየው እሱ ነው፤ በኋላ ማስተካከል የተሰጡ ሰነዶችን ማስተካከል ማለት ነው።"
+					"heading": "ደረሰኞች",
+					"body": "\"Bill to\" ይህ ከፋይ የሆነ እያንዳንዱ የተሰጠ ደረሰኝ፣ ከታካሚው ስም ጋር። ይህን ክፍል የሚያዩት ደረሰኝ መያዝ የሚችሉ ብቻ ናቸው። ደረሰኝ ገና ረቂቅ ሳለ በ\"Bill to\" ከፋዩን በመምረጥ ወደዚህ ይላካል፤ ከዚህ ከፋይ ጋር የተገናኘ ታካሚ ከሆነ አስቀድሞ ተመርጧል።"
 				},
 				{
-					"heading": "የሥርዓት መረጃ",
-					"body": "ደንበኛውን ማን እንዳስገባውና መቼ፣ እና መጽደቁን።"
+					"heading": "ክፍያቸውን መቀበል",
+					"body": "\"Take a payment\"ን ይጫኑና ክፍያው ለሚሸፍነው እያንዳንዱ ደረሰኝ መጠን ያስገቡ — አንድ የባንክ ዝውውር የብዙ ታካሚዎችን ደረሰኞች ሊከፍል ይችላል። የእያንዳንዱ ደረሰኝ ሁኔታ ይለወጣል፤ ክፍያው አንድ የደረሰኝ ቁጥር ያገኛል። ጥሬ ገንዘብ በዚህ ቅርንጫፍ የገንዘብ መሳቢያው ክፍት መሆንን ይፈልጋል።"
+				},
+				{
+					"heading": "ዝርዝሮች",
+					"body": "ዝርዝሮቹን፣ አድራሻውንና ተጠሪዎቹን ማስተካከል። በTIN ይጠንቀቁ፦ ድርጅቱን በሰነዶች ላይ የሚለየው እሱ ነው።"
 				}
 			],
 			"links": [
 				{
-					"label": "ሙሉ መመሪያ — ፋይናንስ",
-					"href": "/dashboard/help#section-finance"
+					"label": "ሙሉ መመሪያ — ክፍያ",
+					"href": "/dashboard/help#section-billing"
 				}
 			]
 		}

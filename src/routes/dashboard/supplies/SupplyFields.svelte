@@ -5,7 +5,9 @@
 	import { fly } from 'svelte/transition';
 	import type { supplyItemSchema } from './add-supplies/schema';
 
-	type SupplyItem = z.infer<typeof supplyItemSchema>;
+	// The schema's input type, which is what both pages' forms arrive as: the coerced fields are
+	// still `unknown` until they are parsed, and the output type would not accept them.
+	type SupplyItem = z.input<typeof supplyItemSchema>;
 
 	/**
 	 * The fields of a stock item, shared by the add page and the item's edit form so the two cannot
@@ -95,7 +97,7 @@
 	label="Expires"
 	name="tracksExpiry"
 	type="checkboxSingle"
-	placeholder="Goes off — every delivery must carry the date on the box, and the oldest lot is used first"
+	placeholder="Goes off — every delivery must carry the date on the box, and the lot that expires soonest is used first"
 	{errors}
 	{form}
 />

@@ -97,9 +97,11 @@
 		year = false,
 		futureDays = false,
 		image = '',
+		compress = true,
 		disabled = false,
 		id = undefined,
-		description = undefined
+		description = undefined,
+		allowEmpty = undefined
 	}: {
 		label: string;
 		/** The superforms `$form` store. Indexed by `name`. */
@@ -120,11 +122,19 @@
 		year?: boolean;
 		futureDays?: boolean;
 		image?: string;
+		/** Files only: shrink an image before upload. Off for a radiograph, whose detail is the point. */
+		compress?: boolean;
 		disabled?: boolean;
 		/** Defaults to `name`, which is unique within a form. Set it when two forms share a page. */
 		id?: string;
 		/** Hint shown under the field, and announced with it. */
 		description?: string;
+		/**
+		 * Dates only: start blank rather than on today. Defaults to "when the field is optional". A
+		 * required date that must be read off something — the expiry on a box — sets it, because
+		 * today pre-filled is a value nobody entered, and saved unread it is a wrong one.
+		 */
+		allowEmpty?: boolean;
 	} = $props();
 
 	let showPassword = $state(false);
@@ -176,11 +186,17 @@
 			aria-describedby={describedBy}
 		/>
 	{:else if type === 'file'}
-		<FileUpload {name} {form} {image} {placeholder} />
+		<FileUpload {name} {form} {image} {placeholder} {compress} />
 	{:else if type === 'select'}
 		<SelectComp {name} {label} bind:value={$form[name]} {items} />
 	{:else if type === 'date'}
-		<DatePicker bind:data={$form[name]} {oldDays} {year} {futureDays} allowEmpty={!required} />
+		<DatePicker
+			bind:data={$form[name]}
+			{oldDays}
+			{year}
+			{futureDays}
+			allowEmpty={allowEmpty ?? !required}
+		/>
 		<input type="hidden" {name} bind:value={$form[name]} />
 	{:else if type === 'dateMultiple'}
 		<DateRangePicker bind:data={$form[name]} {oldDays} {year} {futureDays} />

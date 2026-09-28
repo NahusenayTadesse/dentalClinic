@@ -4,7 +4,7 @@
 	import GitMerge from '@lucide/svelte/icons/git-merge';
 	import { page } from '$app/state';
 	import { Badge } from '$lib/components/ui/badge/index.js';
-	import { formatEthiopianDate } from '$lib/global.svelte';
+	import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 
 	/**
 	 * What stays on screen whichever tab of the chart is open: who the patient is, the alerts to
@@ -27,8 +27,21 @@
 	const base = $derived(`/dashboard/patients/${p.id}`);
 	const tabs = $derived([
 		{ label: 'Overview', href: base },
-		{ label: 'Dental chart', href: `${base}/chart` }
+		{ label: 'Dental chart', href: `${base}/chart` },
+		{ label: 'Treatment plans', href: `${base}/plans` },
+		{ label: 'Notes', href: `${base}/notes` },
+		{ label: 'Prescriptions', href: `${base}/prescriptions` },
+		{ label: 'Files', href: `${base}/files` },
+		{ label: 'Consents', href: `${base}/consents` },
+		// Money is not every chart reader's to see: the tab is there only for `billing.invoice`.
+		...(data.can.bill ? [{ label: 'Billing', href: `${base}/billing` }] : [])
 	]);
+
+	/** The overview is current on its own path only; every other tab also on the pages below it. */
+	function isCurrent(href: string) {
+		const path = page.url.pathname;
+		return href === base ? path === base : path === href || path.startsWith(`${href}/`);
+	}
 </script>
 
 <div class="mx-auto flex max-w-305 flex-col gap-6 p-4 md:p-8">
@@ -39,6 +52,11 @@
 			<Badge variant="secondary">{p.fileNo ? `File ${p.fileNo}` : 'No file number'}</Badge>
 			<Badge variant="outline">{p.sex === 'female' ? 'Female' : 'Male'} · {ageText}</Badge>
 			{#if p.bloodType}<Badge variant="outline">Blood {p.bloodType}</Badge>{/if}
+			{#if data.balance}
+				<a href="{base}/billing">
+					<Badge variant="destructive">Owes {formatETB(data.balance)}</Badge>
+				</a>
+			{/if}
 		</div>
 
 		{#if data.fromOtherBranch}
@@ -99,13 +117,13 @@
 		</section>
 	{/if}
 
-	<nav class="flex gap-1 border-b" aria-label="Patient record">
+	<nav class="flex gap-1 overflow-x-auto border-b" aria-label="Patient record">
 		{#each tabs as tab (tab.href)}
-			{@const current = page.url.pathname === tab.href}
+			{@const current = isCurrent(tab.href)}
 			<a
 				href={tab.href}
 				aria-current={current ? 'page' : undefined}
-				class="-mb-px border-b-2 px-4 py-2 text-sm font-medium {current
+				class="-mb-px shrink-0 border-b-2 px-4 py-2 text-sm font-medium {current
 					? 'border-primary text-foreground'
 					: 'border-transparent text-muted-foreground hover:text-foreground'}"
 			>

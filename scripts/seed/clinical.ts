@@ -18,7 +18,6 @@ import { appointment } from '../../src/lib/server/db/schema/scheduling';
 import { procedures } from '../../src/lib/server/db/schema/procedures';
 import { invoice, invoiceLine, invoicePayment } from '../../src/lib/server/db/schema/invoices';
 import { transactions } from '../../src/lib/server/db/schema/finance';
-import { treatmentPlan, treatmentPlanItem } from '../../src/lib/server/db/schema/treatmentPlans';
 import {
 	prescription,
 	prescriptionItem,
@@ -239,6 +238,8 @@ export async function seedClinicalRecord(db: SeedDb) {
 					patientId: visit.patientId,
 					branchId: visit.branchId,
 					occurredOn: issuedOn as never,
+					// Numbered like the bill it pays, so a seeded receipt is never blank on paper.
+					receiptNumber: `SEED-R-${visit.id}`,
 					approvalStatus: 'approved'
 				} as never)
 				.$returningId();
@@ -268,31 +269,7 @@ export async function seedClinicalRecord(db: SeedDb) {
 			});
 		}
 
-		if (chance(0.15)) {
-			const [plan] = await db
-				.insert(treatmentPlan)
-				.values({
-					patientId: visit.patientId,
-					providerId: visit.providerId,
-					branchId: visit.branchId,
-					status: pick(['draft', 'presented', 'accepted', 'partial']),
-					presentedOn: issuedOn as never,
-					validUntil: localDate(between(60, 200)) as never,
-					note: 'Seed treatment plan'
-				})
-				.$returningId();
-
-			const item = pick(menu);
-			const fee = item.price ?? pick(FEES);
-			await db.insert(treatmentPlanItem).values({
-				treatmentPlanId: plan.id,
-				description: item.name,
-				quantity: 1,
-				unitPrice: fee,
-				lineTotal: fee,
-				decision: pick(['pending', 'accepted', 'declined'])
-			});
-		}
+		// Treatment plans are seeded from the planned work on the chart, by `./plans.ts`.
 
 		if (medicines.length && chance(0.2)) {
 			const [script] = await db

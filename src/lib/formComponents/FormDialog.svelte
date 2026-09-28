@@ -47,7 +47,8 @@
 		open = $bindable(false),
 		seed,
 		hideTrigger = false,
-		resetOnSuccess = false
+		resetOnSuccess = false,
+		files = false
 	}: {
 		title: string;
 		/** The named action the form posts to, e.g. `?/editIdentity`. */
@@ -80,6 +81,8 @@
 		 * dialog keeps what was saved, which is what the default does.
 		 */
 		resetOnSuccess?: boolean;
+		/** The fields include a file: posted as multipart, which a file needs to arrive at all. */
+		files?: boolean;
 	} = $props();
 
 	// Seeded once from the load; after a save superforms replaces it with what the server returned.
@@ -116,7 +119,14 @@
 			{/if}
 		{/snippet}
 
-		<form {action} method="post" use:enhance id={formId} class="flex w-full flex-col gap-4 p-4">
+		<form
+			{action}
+			method="post"
+			enctype={files ? 'multipart/form-data' : undefined}
+			use:enhance
+			id={formId}
+			class="flex w-full flex-col gap-4 p-4"
+		>
 			<Errors allErrors={$allErrors} />
 
 			{@render fields({ form, errors, values: $form })}

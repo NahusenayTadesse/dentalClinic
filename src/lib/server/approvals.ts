@@ -19,6 +19,8 @@ import {
 	transactions
 } from '$lib/server/db/schema';
 import { employeeFullName } from '$lib/server/employeeName';
+import { settleInvoiceRequests } from '$lib/server/invoiceWrites';
+import { settleRefunds } from '$lib/server/payments';
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 type Db = typeof db | Tx;
@@ -71,6 +73,14 @@ export type ApprovalEntity = {
 	 * to leave the world exactly as it found it.
 	 */
 	onApprove?: (ids: number[], database: Db) => Promise<void>;
+	/**
+	 * Runs inside the settling transaction once these ids have been rejected — only for records
+	 * where the thing waiting was a *change to* a record that already stood, not the record itself.
+	 * A bill's discount or void is that: refusing it has to put the bill back as it was, payable
+	 * and in the balance, rather than leave a live bill marked rejected. A new record rejected
+	 * outright has no such hook, and should not get one.
+	 */
+	onReject?: (ids: number[], database: Db) => Promise<void>;
 };
 
 /** Where each kind of record can be opened. Spelled once so a path change lands everywhere. */
@@ -205,7 +215,7 @@ export const APPROVAL_ENTITIES: ApprovalEntity[] = [
 	},
 	{
 		key: 'customers',
-		label: 'Customers',
+		label: 'Payers',
 		singular: 'customer',
 		table: customers,
 		listHref: '/dashboard/customers',
@@ -227,25 +237,31 @@ export const APPROVAL_ENTITIES: ApprovalEntity[] = [
 		label: 'Discounts and Voids',
 		singular: 'invoice',
 		table: invoice,
-		listHref: '/dashboard/invoices',
+		listHref: '/dashboard/billing',
 		summary: () => ({
 			number: invoice.invoiceNumber,
 			patient: patientName(invoice.patientId),
 			patientId: invoice.patientId,
-			total: invoice.total,
+			subtotal: invoice.subtotal,
 			discount: invoice.discount,
-			status: invoice.status
+			total: invoice.total,
+			// Set when the request is a void; empty when it is a discount.
+			voidReason: invoice.voidReason
 		}),
 		links: {
 			patient: { idKey: 'patientId', href: HREF.patient }
-		}
+		},
+		// A bill waits here for one of two reasons — its discount, or a void — and the decision
+		// does different things to each (`settleInvoiceRequests`).
+		onApprove: (ids, database) => settleInvoiceRequests(ids, 'approved', database),
+		onReject: (ids, database) => settleInvoiceRequests(ids, 'rejected', database)
 	},
 	{
 		key: 'refunds',
 		label: 'Refunds',
 		singular: 'refund',
 		table: transactions,
-		listHref: '/dashboard/salary/transactions',
+		listHref: '/dashboard/billing',
 		summary: () => ({
 			description: transactions.description,
 			patient: patientName(transactions.patientId),
@@ -255,7 +271,10 @@ export const APPROVAL_ENTITIES: ApprovalEntity[] = [
 		}),
 		links: {
 			patient: { idKey: 'patientId', href: HREF.patient }
-		}
+		},
+		// Approving is when the money goes back: numbered, out of the drawer if cash, and the bill
+		// and the payment it reverses brought up to date (`settleRefunds`).
+		onApprove: (ids, database) => settleRefunds(ids, 'approved', database)
 	}
 ];
 
@@ -552,6 +571,9 @@ export async function settleApprovals(input: {
 	// After the rows are approved, not before: the hook reads them back in their settled state.
 	if (decision === 'approved' && entity.onApprove) {
 		await entity.onApprove(allowed, database);
+	}
+	if (decision === 'rejected' && entity.onReject) {
+		await entity.onReject(allowed, database);
 	}
 
 	return {

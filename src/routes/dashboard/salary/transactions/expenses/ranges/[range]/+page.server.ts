@@ -1,13 +1,5 @@
 import { db } from '$lib/server/db';
-import {
-	paymentMethods,
-	transactions,
-	expenses,
-	expensesType,
-	transactionServices,
-	transactionSupplies,
-	user
-} from '$lib/server/db/schema';
+import { paymentMethods, transactions, expenses, expensesType, user } from '$lib/server/db/schema';
 import { and, desc, eq, sql } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
 

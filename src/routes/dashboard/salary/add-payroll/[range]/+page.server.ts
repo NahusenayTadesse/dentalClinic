@@ -26,6 +26,7 @@ import { and, count, or, lte, gte, eq, isNull, sql } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
 import { paymentMethods as paymentMethodList } from '$lib/server/fastData';
 import { incomeTaxSql, pensionRates } from '$lib/server/payrollMath';
+import { commissionByStaff } from '$lib/server/commission';
 
 import { payrollSchema, type EmployeeFormType } from './schema';
 import type { PageServerLoad, Actions } from '../$types';
@@ -45,8 +46,11 @@ export const load: PageServerLoad = async ({ params }) => {
 
 	const { startDate, endDate } = ethiopianRange(monthNumber, year);
 
-	const start = `${startDate.year}-${startDate.month}-${startDate.day}`;
-	const end = `${endDate.year}-${endDate.month}-${endDate.day}`;
+	// Zero-padded ISO days. Unpadded ('2026-9-11') is not ISO, so JavaScript parses it as local
+	// time where ISO would be UTC; and the completion day of a procedure is compared as a string.
+	const pad = (n: number) => String(n).padStart(2, '0');
+	const start = `${startDate.year}-${pad(startDate.month)}-${pad(startDate.day)}`;
+	const end = `${endDate.year}-${pad(endDate.month)}-${pad(endDate.day)}`;
 
 	// The two pension shares, found by who pays them — see `pensionRate` for why not by position.
 	const rates = pensionRates(
@@ -95,6 +99,8 @@ export const load: PageServerLoad = async ({ params }) => {
 		.where(and(currentMonthFilter(missingDays.day, start, end), notDeleted(missingDays)))
 		.groupBy(missingDays.staffId)
 		.as('missing_sub');
+
+	const commissionSub = commissionByStaff(start, end);
 
 	const taxBands = await db
 		.select({ threshold: taxType.threshold, rate: taxType.rate, deduction: taxType.deduction })
@@ -146,6 +152,7 @@ export const load: PageServerLoad = async ({ params }) => {
     COALESCE(${salarySub.proRatedAmount}, 0) +
     COALESCE(${otSub.total}, 0) +
     COALESCE(${bonusSub.total}, 0) +
+    COALESCE(${commissionSub.commission}, 0) +
     COALESCE(${salarySub.proRatedHousing}, 0) +
     COALESCE(${salarySub.proRatedTransport}, 0) +
     COALESCE(${salarySub.proRatedPosition}, 0)
@@ -188,6 +195,7 @@ export const load: PageServerLoad = async ({ params }) => {
 			employmentStatus: employmentStatuses.name,
 			overtime: otSub.total,
 			bonus: bonusSub.total,
+			commission: sql<number>`COALESCE(${commissionSub.commission}, 0)`,
 			absent: missingSub.missedCount,
 			deductions: deductionSub.total,
 			branch: branch.name,
@@ -214,6 +222,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		.leftJoin(paymentMethods, eq(staffAccounts.paymentMethodId, paymentMethods.id))
 		.leftJoin(otSub, eq(otSub.staffId, employee.id))
 		.leftJoin(bonusSub, eq(bonusSub.staffId, employee.id))
+		.leftJoin(commissionSub, eq(commissionSub.staffId, employee.id))
 		.leftJoin(deductionSub, eq(deductionSub.staffId, employee.id))
 		.leftJoin(missingSub, eq(missingSub.staffId, employee.id))
 		.leftJoin(
@@ -254,6 +263,7 @@ export const load: PageServerLoad = async ({ params }) => {
 			employmentStatuses.id,
 			otSub.total,
 			bonusSub.total,
+			commissionSub.commission,
 			deductionSub.total,
 			missingSub.missedCount
 		);
@@ -401,7 +411,7 @@ export const actions: Actions = {
 					basicSalary: emp.basicSalary.toString(),
 					overtimeAmount: emp.overtime.toString(),
 					deductions: emp.deductions.toString(), // Matches schema key
-					commissionAmount: '0',
+					commissionAmount: emp.commission.toString(),
 					bonusAmount: emp.bonus.toString(),
 					allowances: '0',
 					transportAllowance: emp.transportAllowance.toString(),
@@ -425,22 +435,23 @@ export const actions: Actions = {
 					// notes and receiptLink will default to null/default automatically
 				}));
 
-				// Using upsert logic in case you re-run payroll for the same period
 				await tx.insert(payrollEntries).values(entryValues);
-
-				return message(form, {
-					type: 'success',
-					text: `Successfully Paid ${employees.length} employees`
-				});
 			});
-		} catch (err) {
-			console.error(err?.message);
+
+			// Outside the transaction. It was returned from inside the callback, which only makes it
+			// the transaction's result: the action itself returned nothing, and a run that had paid
+			// everyone never said so.
+			return message(form, {
+				type: 'success',
+				text: `Successfully Paid ${employees.length} employees`
+			});
+		} catch (err: unknown) {
+			// Loud in the log, quiet to the client (CLAUDE.md §9).
+			console.error('runPayroll failed', err);
 			return message(
 				form,
-				{ type: 'error', text: `Error: ${err?.message}` },
-				{
-					status: 500
-				}
+				{ type: 'error', text: 'The payroll run could not be saved. Nothing was paid.' },
+				{ status: 500 }
 			);
 		}
 	}

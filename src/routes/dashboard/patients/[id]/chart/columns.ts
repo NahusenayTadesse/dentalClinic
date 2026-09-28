@@ -4,19 +4,13 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 import { PROCEDURE_STATUS_LABEL, isProcedureStatus } from '$lib/procedureStatus';
-import RowButton from './RowButton.svelte';
+import RowButton from '$lib/components/RowButton.svelte';
 import StatusCell from './StatusCell.svelte';
 import type { PageData } from './$types';
+import { whereLabel } from '$lib/teeth';
 
 /** One row of the procedure table, as the chart tab loads it. */
 export type ProcedureRow = PageData['procedures'][number];
-
-/** Where a procedure is: its span, its tooth and surfaces, or the whole mouth. */
-export function whereLabel(row: Pick<ProcedureRow, 'toothId' | 'surfaces' | 'toothRange'>): string {
-	if (row.toothRange) return row.toothRange.replaceAll(',', ', ');
-	if (row.toothId === null) return 'Whole mouth';
-	return row.surfaces ? `${row.toothId} ${row.surfaces}` : String(row.toothId);
-}
 
 function sortable(name: string) {
 	return ({ column }: HeaderContext<ProcedureRow, unknown>) =>

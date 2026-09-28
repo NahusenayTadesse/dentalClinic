@@ -20,13 +20,7 @@ import {
 	overTime,
 	overTimeType
 } from '../../src/lib/server/db/schema/staff';
-import {
-	expenses,
-	expensesType,
-	transactions,
-	transactionServices,
-	transactionSupplies
-} from '../../src/lib/server/db/schema/finance';
+import { expenses, expensesType, transactions } from '../../src/lib/server/db/schema/finance';
 import { customers, customerContacts } from '../../src/lib/server/db/schema/customers';
 import { dentalLab } from '../../src/lib/server/db/schema/labCases';
 import { damagedSupplies, supplies } from '../../src/lib/server/db/schema/inventory';
@@ -261,63 +255,13 @@ export async function seedRelationships(db: SeedDb) {
 }
 
 /**
- * Sales lines — which services and supplies each incoming transaction was for.
- *
- * The money reports and the supply detail page read these; without them a clinic that has taken
- * money still reports nothing sold, which is the shape of an empty database rather than of a bug.
- */
-export async function seedSalesLines(db: SeedDb) {
-	if (!(await isEmpty(db, transactionServices, 'transaction_services'))) return;
-
-	const [taken, serviceList, items, staff] = await Promise.all([
-		db
-			.select({ id: transactions.id, amount: transactions.amount })
-			.from(transactions)
-			.where(eq(transactions.direction, 'in'))
-			.limit(200),
-		db.select({ id: services.id }).from(services),
-		db.select({ id: supplies.id }).from(supplies),
-		db.select({ id: employee.id }).from(employee).limit(30)
-	]);
-
-	if (!taken.length || !serviceList.length || !staff.length) return;
-
-	const { pick, chance, between } = randomness(20261003);
-
-	for (const txn of taken) {
-		const price = Number(txn.amount) || between(300, 2000);
-
-		await db.insert(transactionServices).values({
-			staffId: pick(staff).id,
-			transactionId: txn.id,
-			serviceId: pick(serviceList).id,
-			price: money(price),
-			total: money(price)
-		});
-
-		// A minority of visits also sell something off the shelf.
-		if (items.length && chance(0.2)) {
-			await db.insert(transactionSupplies).values({
-				transactionId: txn.id,
-				supplyId: pick(items).id,
-				quantity: between(1, 3),
-				unitPrice: money(between(40, 300))
-			});
-		}
-	}
-
-	console.log(`Seeded sales lines for ${taken.length} transactions.`);
-}
-
-/**
  * A few files on patient charts, pointing at one real file in the store.
  *
  * `patient_file` rows whose `stored_name` is invented would 404 when opened, which teaches the
  * wrong thing about the file route. This copies one placeholder into the store under a random
  * name of the shape `server/files.ts` produces, and every seeded row points at it.
  */
-export async function seedPatientFiles(db: SeedDb, storedName: string | null) {
-	if (!storedName) return;
+export async function seedPatientFiles(db: SeedDb, storedNames: (count: number) => string[]) {
 	if (!(await isEmpty(db, patientFile, 'patient_file'))) return;
 
 	const visits = await db
@@ -329,16 +273,17 @@ export async function seedPatientFiles(db: SeedDb, storedName: string | null) {
 		.from(appointment)
 		.where(eq(appointment.status, 'completed'))
 		.limit(60);
-	if (!visits.length) return;
+	const names = storedNames(visits.length);
+	if (!visits.length || names.length < visits.length) return;
 
 	const { pick } = randomness(20261004);
 
-	for (const visit of visits) {
+	for (const [i, visit] of visits.entries()) {
 		await db.insert(patientFile).values({
 			patientId: visit.patientId,
 			appointmentId: visit.id,
 			kind: pick(['radiograph', 'photo', 'paperRecord']),
-			storedName,
+			storedName: names[i],
 			originalName: 'seed-placeholder.png',
 			mimeType: 'image/png',
 			takenOn: visit.startsAt.toISOString().slice(0, 10) as never,

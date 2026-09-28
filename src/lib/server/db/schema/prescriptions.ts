@@ -16,6 +16,7 @@ import { branchRef } from './branches';
 import { patient } from './patients';
 import { provider } from './providers';
 import { appointment } from './scheduling';
+import { allergen } from './allergies';
 
 /**
  * A medicine the clinic prescribes.
@@ -93,6 +94,16 @@ export const medicine = mysqlTable(
 		bleedingRisk: boolean('bleeding_risk').notNull().default(false),
 		osteonecrosisRisk: boolean('osteonecrosis_risk').notNull().default(false),
 		immunosuppression: boolean('immunosuppression').notNull().default(false),
+
+		/**
+		 * The allergy a patient would have to this medicine because of what it is — amoxicillin is a
+		 * penicillin, ibuprofen an NSAID. With the allergen's name matched against the generic name,
+		 * this is how a prescription finds out it clashes with an allergy on the chart
+		 * (`$lib/allergyClash.ts`). One class, not several: a medicine a dentist writes belongs to
+		 * one allergy family, and a join table would put a many-to-many picker on a lookup screen
+		 * for a relationship that is never more than one.
+		 */
+		allergenId: int('allergen_id').references(() => allergen.id, { onDelete: 'set null' }),
 
 		/** Whether it appears on the Ethiopian Essential Medicines List. */
 		isOnEml: boolean('is_on_eml').notNull().default(true),

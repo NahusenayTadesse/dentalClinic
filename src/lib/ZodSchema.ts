@@ -355,14 +355,19 @@ export const inventoryAdjustmentFormSchema = z.object({
 });
 export type InventoryAdjustmentForm = z.infer<typeof inventoryAdjustmentFormSchema>;
 
+/**
+ * A damage report. Who is responsible is optional — most breakage is nobody's to pay for — and
+ * only required, by the action, when the cost is to come out of their pay.
+ */
 export const damagedFormSchema = z.object({
-	damagedBy: z.coerce.string('Employee is required'),
-	quantity: z.coerce.string('Quantity must be greater than 0'),
+	damagedBy: z.coerce.string().nullable().optional(),
+	quantity: z.coerce.string('Enter how many were damaged'),
 
 	reason: z.string().max(255).optional(),
 
-	// Move .optional() inside the field definition
-	deductable: z.boolean('Deductable is required').default(true)
+	// Off by default: taking money from someone's pay is a choice made on purpose, not a default
+	// left ticked. It was on, and a report with no employee chosen then failed.
+	deductable: z.boolean().default(false)
 });
 
 export type DamagedForm = z.infer<typeof damagedFormSchema>;

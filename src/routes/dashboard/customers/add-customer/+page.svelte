@@ -26,10 +26,13 @@
 </script>
 
 <svelte:head>
-	<title>Add New Customer</title>
+	<title>Add a Payer</title>
 </svelte:head>
 
-<FormCard title="Add New Customer" description="Add a new customer to the system">
+<FormCard
+	title="Add a payer"
+	description="An employer or insurer that pays some patients' bills. A patient's payer is chosen on their registration; each bill can be sent to one."
+>
 	<form use:enhance action="?/addCustomer" id="main" class="flex flex-col gap-4" method="POST">
 		<Errors allErrors={$allErrors} />
 
@@ -40,7 +43,7 @@
 			{form}
 			{errors}
 			required={true}
-			placeholder="Enter Customer Name"
+			placeholder="Payer's Name"
 		/>
 		<InputComp
 			label="Email"
@@ -49,7 +52,7 @@
 			{form}
 			{errors}
 			required={false}
-			placeholder="Enter Customer Email"
+			placeholder="Payer's Email"
 		/>
 		<InputComp
 			label="Phone"
@@ -58,7 +61,7 @@
 			{form}
 			{errors}
 			required={true}
-			placeholder="Enter Customer Phone"
+			placeholder="Payer's Phone"
 		/>
 
 		<InputComp
@@ -68,7 +71,7 @@
 			{form}
 			{errors}
 			required={true}
-			placeholder="Enter Customer Tin Number"
+			placeholder="Payer's Tin Number"
 		/>
 
 		<InputComp
@@ -78,7 +81,7 @@
 			{form}
 			{errors}
 			required={true}
-			placeholder="Enter Customer Subcity"
+			placeholder="Payer's Subcity"
 			items={data?.subcityList}
 		/>
 
@@ -89,7 +92,7 @@
 			{form}
 			{errors}
 			required={true}
-			placeholder="Enter Customer Sefer"
+			placeholder="Payer's Sefer"
 		/>
 		<InputComp
 			label="Kebele"
@@ -98,7 +101,7 @@
 			{form}
 			{errors}
 			required={true}
-			placeholder="Enter Customer Kebele"
+			placeholder="Payer's Kebele"
 		/>
 		<InputComp
 			label="Building Name"
@@ -107,7 +110,7 @@
 			{form}
 			{errors}
 			required={false}
-			placeholder="Enter Customer Building Name"
+			placeholder="Payer's Building Name"
 		/>
 
 		<InputComp
@@ -117,7 +120,7 @@
 			{form}
 			{errors}
 			required={false}
-			placeholder="Enter Customer Floor Number"
+			placeholder="Payer's Floor Number"
 		/>
 
 		<InputComp
@@ -127,16 +130,16 @@
 			{form}
 			{errors}
 			required={false}
-			placeholder="Enter Customer House or Office Number"
+			placeholder="Payer's House or Office Number"
 		/>
 
 		<Button type="submit" class="mt-4" form="main">
 			{#if $delayed}
-				<LoadingBtn name="Adding Customer" />
+				<LoadingBtn name="Adding the payer" />
 			{:else}
 				<Plus class="h-4 w-4" />
 
-				Add Customer
+				Add the payer
 			{/if}
 		</Button>
 	</form>

@@ -3,7 +3,7 @@
 	import Search from '@lucide/svelte/icons/search';
 	import { Button } from '$lib/components/ui/button';
 	import DataTable from '$lib/components/Table/data-table.svelte';
-	import { columns } from './columns';
+	import { columns, owesColumn } from './columns';
 
 	let { data } = $props();
 
@@ -71,7 +71,7 @@
 
 	<DataTable
 		data={data.patients}
-		{columns}
+		columns={data.showBalance ? [...columns, owesColumn] : columns}
 		fileName="Patients"
 		charts
 		dateFilter="Registered"
