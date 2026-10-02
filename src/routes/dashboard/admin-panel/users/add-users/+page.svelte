@@ -6,7 +6,7 @@
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { addUserSchema } from '$lib/ZodSchema';
 	import { superForm } from 'sveltekit-superforms/client';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 
 	let { data } = $props();
 

@@ -2,7 +2,7 @@
 	import { Button, buttonVariants } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Calendar } from '@nahu/admin-kit/components/ui/calendar/index.js';
 	import * as Popover from '@nahu/admin-kit/components/ui/popover/index.js';
-	import { cn } from '$lib/utils.js';
+	import { cn } from '@nahu/admin-kit/utils.js';
 	import { CalendarDate, getLocalTimeZone, today, parseDate } from '@internationalized/date';
 	import { untrack } from 'svelte';
 	import { CalendarIcon } from '@lucide/svelte';

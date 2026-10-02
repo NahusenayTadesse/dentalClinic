@@ -42,7 +42,7 @@
 		setServerSort,
 		type Facet,
 		type ServerTable
-	} from './table-state.svelte';
+	} from '@nahu/admin-kit/components/Table/table-state.svelte.js';
 
 	/**
 	 * The table: rows, per-column filters, a chart pane, and paging — in one component, in either

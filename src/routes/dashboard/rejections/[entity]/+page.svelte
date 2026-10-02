@@ -2,9 +2,9 @@
 	import { makeColumns } from '$lib/components/approvals/columns';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
-	import FormCard from '$lib/formComponents/FormCard.svelte';
+	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Undo2, X, PartyPopper, ArrowBigLeft, ArrowRight } from '@lucide/svelte';
 	import { superForm } from 'sveltekit-superforms/client';

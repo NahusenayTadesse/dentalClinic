@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createForm } from '$lib/forms/createForm';
 	import { getWeekdayName } from '$lib/global.svelte';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { SquarePen, Save } from '@lucide/svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';

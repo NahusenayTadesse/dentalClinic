@@ -9,7 +9,7 @@
 	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 	import CompleteVisit from './complete-visit.svelte';
 	import { createForm } from '$lib/forms/createForm';

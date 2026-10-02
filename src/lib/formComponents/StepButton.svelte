@@ -4,7 +4,7 @@
 	import type { IconProps } from '@lucide/svelte';
 	import * as AlertDialog from '@nahu/admin-kit/components/ui/alert-dialog/index.js';
 	import { Button, type ButtonVariant } from '@nahu/admin-kit/components/ui/button/index.js';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { createForm } from '$lib/forms/createForm';
 
 	/**

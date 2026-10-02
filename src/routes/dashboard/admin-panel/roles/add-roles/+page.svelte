@@ -5,7 +5,7 @@
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { createRoleSchema } from './schema';
 	import { superForm } from 'sveltekit-superforms/client';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 
 	let { data } = $props();
@@ -29,7 +29,7 @@
 	);
 
 	import { toast } from 'svelte-sonner';
-	import FormCard from '$lib/formComponents/FormCard.svelte';
+	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	// $effect(() => {
 	// 	if ($message) {

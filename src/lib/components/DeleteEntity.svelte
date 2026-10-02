@@ -2,7 +2,7 @@
 	import * as AlertDialog from '@nahu/admin-kit/components/ui/alert-dialog/index.js';
 	import Button from '@nahu/admin-kit/components/ui/button/button.svelte';
 	import { buttonVariants } from '@nahu/admin-kit/components/ui/button/index.js';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { enhance } from '$app/forms';
 	import { Trash } from '@lucide/svelte';
 

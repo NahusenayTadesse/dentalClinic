@@ -4,7 +4,7 @@
 	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import Copy from '$lib/Copy.svelte';
-	import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+	import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 	import Statuses from '$lib/components/Table/statuses.svelte';
 	import Edit from './editQualification.svelte';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
@@ -12,7 +12,7 @@
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 
 	import { Plus } from '@lucide/svelte';
 	import type { SuperValidated } from 'sveltekit-superforms';

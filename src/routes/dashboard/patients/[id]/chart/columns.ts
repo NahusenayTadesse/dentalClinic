@@ -1,10 +1,10 @@
 import type { ColumnDef, HeaderContext } from '@tanstack/table-core';
 import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
-import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 import { PROCEDURE_STATUS_LABEL, isProcedureStatus } from '$lib/procedureStatus';
-import RowButton from '$lib/components/RowButton.svelte';
+import RowButton from '@nahu/admin-kit/components/RowButton.svelte';
 import StatusCell from './StatusCell.svelte';
 import type { PageData } from './$types';
 import { whereLabel } from '$lib/teeth';

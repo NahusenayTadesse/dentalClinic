@@ -7,7 +7,7 @@
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import PatientPicker from '$lib/components/PatientPicker.svelte';
 	import { createForm } from '$lib/forms/createForm';
 	import { bookAppointment, type BookAppointment } from '$lib/forms/appointmentSchemas';

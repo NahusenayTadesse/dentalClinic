@@ -1,7 +1,7 @@
 import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableActions from './data-table-actions.svelte';
-import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 import Copy from '$lib/Copy.svelte';
 
 export const familyMembers = [

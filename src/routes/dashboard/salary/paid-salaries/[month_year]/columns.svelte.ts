@@ -12,7 +12,7 @@ type AdjustmentRow = NonNullable<PageData['adjustments']>[number];
 
 import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
-import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 import { formatETB } from '$lib/global.svelte';
 import Checkbox from '@nahu/admin-kit/components/ui/checkbox/checkbox.svelte';
 import { Link } from '@lucide/svelte';

@@ -3,7 +3,7 @@ import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Statuses from '$lib/components/Table/statuses.svelte';
 import DataTableActions from './data-table-actions.svelte';
-import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 import type { PageData } from './$types';
 
 /** One row of the role list, taken straight from the load so the two cannot drift. */

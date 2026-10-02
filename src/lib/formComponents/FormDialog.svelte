@@ -8,7 +8,7 @@
 	import { createForm } from '$lib/forms/createForm';
 	import DialogComp from './DialogComp.svelte';
 	import Errors from './Errors.svelte';
-	import LoadingBtn from './LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 
 	/**
 	 * A dialog holding one form: the trigger, the form, its errors and its submit button.

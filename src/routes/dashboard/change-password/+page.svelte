@@ -5,7 +5,7 @@
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import type { Snapshot } from '@sveltejs/kit';
 	import * as Card from '@nahu/admin-kit/components/ui/card/index.js';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { goto } from '$app/navigation';
 
 	import { Eye, Plus, EyeClosed } from '@lucide/svelte';

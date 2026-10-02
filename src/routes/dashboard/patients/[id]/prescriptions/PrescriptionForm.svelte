@@ -10,7 +10,7 @@
 	import { Label } from '@nahu/admin-kit/components/ui/label/index.js';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import RiskAcknowledgement from '$lib/formComponents/RiskAcknowledgement.svelte';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import { createForm } from '$lib/forms/createForm';

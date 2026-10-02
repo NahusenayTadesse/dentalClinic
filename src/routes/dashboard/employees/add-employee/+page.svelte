@@ -5,8 +5,8 @@
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { add } from './schema';
 	import { createForm, confirmLeave } from '$lib/forms/createForm';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import FormCard from '$lib/formComponents/FormCard.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
+	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
 	import Input from '$lib/formComponents/InputComp.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 

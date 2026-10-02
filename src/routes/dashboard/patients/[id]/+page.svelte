@@ -19,7 +19,7 @@
 	import Section from '$lib/components/Section.svelte';
 	import SingleTable from '$lib/components/SingleTable.svelte';
 	import LookupSection from '$lib/components/lookup/LookupSection.svelte';
-	import { childActionPaths } from '$lib/components/lookup/actions';
+	import { childActionPaths } from '@nahu/admin-kit/components/lookup/actions.js';
 	import FormDialog from '$lib/formComponents/FormDialog.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';

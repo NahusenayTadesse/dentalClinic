@@ -5,7 +5,7 @@ import type { PageData } from './$types';
 type RowData = NonNullable<PageData['userList']>[number];
 
 import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
-import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 export const columns: ColumnDef<RowData>[] = [
 	{

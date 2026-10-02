@@ -5,7 +5,7 @@
 	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { createForm } from '$lib/forms/createForm';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 	import { payment } from '$lib/forms/payment';

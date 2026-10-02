@@ -5,7 +5,7 @@
 	import type { Snapshot } from '@sveltejs/kit';
 
 	import { Textarea } from '@nahu/admin-kit/components/ui/textarea/index.js';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 
 	import * as Card from '@nahu/admin-kit/components/ui/card/index.js';
 	import { Plus, Upload, X } from '@lucide/svelte';

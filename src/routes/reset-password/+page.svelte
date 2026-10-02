@@ -14,7 +14,7 @@
 	import { Label } from '@nahu/admin-kit/components/ui/label/index.js';
 	import { ArrowLeftIcon, ArrowRight, TriangleAlert } from '@lucide/svelte';
 	import { resetPasswordSchema as schema } from './schema';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 
 	let { data } = $props();

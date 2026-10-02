@@ -6,7 +6,7 @@
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { createForm } from '$lib/forms/createForm';
 	import { formatETB } from '$lib/global.svelte';
 	import { outcomeOf, PLAN_STATUS_LABEL } from '$lib/treatmentPlanStatus';

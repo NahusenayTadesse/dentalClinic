@@ -4,13 +4,13 @@
 	let { data } = $props();
 	import { superForm } from 'sveltekit-superforms/client';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { Plus } from '@lucide/svelte';
 
 	const { form, errors, enhance, delayed, message } = superForm(data.form, {});
 
 	import { toast } from 'svelte-sonner';
-	import FormCard from '$lib/formComponents/FormCard.svelte';
+	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
 	$effect(() => {
 		if ($message) {
 			if ($message.type === 'error') {

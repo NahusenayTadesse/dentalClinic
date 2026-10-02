@@ -5,7 +5,7 @@ import type { ComponentProps } from 'svelte';
 import type { ColumnDef } from '@tanstack/table-core';
 import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTable from './data-table.svelte';
-import DataTableSort from './data-table-sort.svelte';
+import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 
 type Row = { id: number; name: string; amount: number };
 

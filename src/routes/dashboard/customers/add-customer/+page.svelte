@@ -2,7 +2,7 @@
 	import { createForm, confirmLeave } from '$lib/forms/createForm';
 	import type { Snapshot } from '@sveltejs/kit';
 
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 
 	import { Plus } from '@lucide/svelte';
@@ -22,7 +22,7 @@
 
 	export const snapshot: Snapshot = { capture, restore };
 
-	import FormCard from '$lib/formComponents/FormCard.svelte';
+	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
 </script>
 
 <svelte:head>

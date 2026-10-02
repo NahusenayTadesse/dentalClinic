@@ -1,5 +1,5 @@
 import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
-import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import { Checkbox } from '@nahu/admin-kit/components/ui/checkbox/index.js';
 import { formatETB, formatEthiopianDate } from '$lib/global.svelte';

@@ -2,7 +2,7 @@
 	import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
-	import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+	import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 	import Statuses from '$lib/components/Table/statuses.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
@@ -93,7 +93,7 @@
 	let { data } = $props();
 	import { superForm } from 'sveltekit-superforms/client';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { Plus } from '@lucide/svelte';
 
 	const { form, errors, enhance, delayed, message } = superForm(data.form, {});

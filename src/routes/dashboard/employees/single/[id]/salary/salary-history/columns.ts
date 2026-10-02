@@ -7,7 +7,7 @@ type RowData = NonNullable<PageData['salaryHistory']>[number];
 
 import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 // Assuming a new actions component
-import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 import { formatETB } from '$lib/global.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import { User } from '@lucide/svelte';

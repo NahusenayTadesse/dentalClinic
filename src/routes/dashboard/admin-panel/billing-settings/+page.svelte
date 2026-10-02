@@ -1,9 +1,9 @@
 <script lang="ts">
 	import Save from '@lucide/svelte/icons/save';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import FormCard from '$lib/formComponents/FormCard.svelte';
+	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { createForm } from '$lib/forms/createForm';
 	import { billingSettings } from './schema';
 

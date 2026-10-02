@@ -4,7 +4,7 @@
 	import type { Snapshot } from '@sveltejs/kit';
 
 	import { Textarea } from '@nahu/admin-kit/components/ui/textarea/index.js';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 
 	import * as Card from '@nahu/admin-kit/components/ui/card/index.js';
 	import { Plus } from '@lucide/svelte';
@@ -20,7 +20,7 @@
 	import { CalendarIcon } from '@lucide/svelte';
 	import * as Popover from '@nahu/admin-kit/components/ui/popover/index.js';
 
-	import { cn } from '$lib/utils.js';
+	import { cn } from '@nahu/admin-kit/utils.js';
 	import { buttonVariants } from '@nahu/admin-kit/components/ui/button/index.js';
 
 	let { data } = $props();

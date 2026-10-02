@@ -2,7 +2,7 @@ import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.
 import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableActions from './data-table-actions.svelte';
-import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 import { formatEthiopianDate, fileUrl } from '$lib/global.svelte';
 
 /**

@@ -3,7 +3,7 @@
 	import CheckCheck from '@lucide/svelte/icons/check-check';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Errors from '$lib/formComponents/Errors.svelte';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { createForm } from '$lib/forms/createForm';
 	import { completeVisit, type CompleteVisit } from '$lib/forms/appointmentSchemas';
 	import { formatETB } from '$lib/global.svelte';

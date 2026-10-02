@@ -30,14 +30,14 @@
 
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import { superForm } from 'sveltekit-superforms/client';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { fly } from 'svelte/transition';
 
 	const { form, errors, enhance, delayed, message, allErrors } = superForm(data.form, {
 		dataType: 'json'
 	});
 	import { toast } from 'svelte-sonner';
-	import FormCard from '$lib/formComponents/FormCard.svelte';
+	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
 	import LeaveSelectionSummary from '../LeaveSelectionSummary.svelte';
 
 	$effect(() => {

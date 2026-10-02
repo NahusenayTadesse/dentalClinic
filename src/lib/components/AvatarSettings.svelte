@@ -4,7 +4,7 @@
 
 	import { LogOut, KeyRound } from '@lucide/svelte';
 	import { enhance } from '$app/forms';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { goto } from '$app/navigation';
 	let { data }: { data: string | undefined } = $props();
 

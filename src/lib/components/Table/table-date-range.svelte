@@ -7,7 +7,7 @@
 	import RangeCalendar from '@nahu/admin-kit/components/ui/range-calendar/range-calendar.svelte';
 	import * as Popover from '@nahu/admin-kit/components/ui/popover/index.js';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import { setServerParams } from './table-state.svelte';
+	import { setServerParams } from '@nahu/admin-kit/components/Table/table-state.svelte.js';
 
 	/**
 	 * A date window for a server-mode table, written to `dateStart`/`dateEnd`.

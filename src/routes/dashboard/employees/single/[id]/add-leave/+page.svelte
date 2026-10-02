@@ -2,7 +2,7 @@
 	import { createForm, confirmLeave } from '$lib/forms/createForm';
 	import type { Snapshot } from '@sveltejs/kit';
 
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import { page } from '$app/state';
 
@@ -24,7 +24,7 @@
 
 	export const snapshot: Snapshot = { capture, restore };
 
-	import FormCard from '$lib/formComponents/FormCard.svelte';
+	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
 
 	// Same helper the server stores with, so the figure shown here is the figure recorded.
 	let duration = $derived(

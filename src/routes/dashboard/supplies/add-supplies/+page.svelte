@@ -2,12 +2,12 @@
 	import { createForm, confirmLeave } from '$lib/forms/createForm';
 	import type { Snapshot } from '@sveltejs/kit';
 
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 
 	import { Plus } from '@lucide/svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { supplyItemSchema } from './schema';
-	import FormCard from '$lib/formComponents/FormCard.svelte';
+	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
 	import SupplyFields from '../SupplyFields.svelte';
 
 	let { data } = $props();

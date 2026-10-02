@@ -11,7 +11,7 @@
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Table2, ChartColumnBig } from '@lucide/svelte';
 	import { formatETB } from '$lib/global.svelte';
-	import { THEME, fade, type ThemeName } from './palette';
+	import { THEME, fade, type ThemeName } from '@nahu/admin-kit/components/reports/palette.js';
 	import type { ReportChartData } from '../../../routes/dashboard/reports/types';
 
 	let { chart }: { chart: ReportChartData } = $props();

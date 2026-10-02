@@ -8,7 +8,7 @@
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import MonthYear from '$lib/formComponents/MonthYear.svelte';
 	import { createForm } from '$lib/forms/createForm';
 	import { formatETB } from '$lib/global.svelte';

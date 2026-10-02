@@ -5,7 +5,7 @@ import type { PageData } from './$types';
 type RowData = NonNullable<PageData['suppliers']>[number];
 
 import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
-import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 import Statuses from '$lib/components/Table/statuses.svelte';
 import Copy from '$lib/Copy.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';

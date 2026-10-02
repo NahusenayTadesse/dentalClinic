@@ -5,7 +5,7 @@
 	import TrendingUp from '@lucide/svelte/icons/trending-up';
 	import Activity from '@lucide/svelte/icons/activity';
 	import * as Select from '@nahu/admin-kit/components/ui/select/index.js';
-	import type { Facet } from './table-state.svelte';
+	import type { Facet } from '@nahu/admin-kit/components/Table/table-state.svelte.js';
 
 	/**
 	 * The chart pane beside the table.

@@ -5,7 +5,7 @@
 	import * as Command from '@nahu/admin-kit/components/ui/command/index.js';
 	import * as Popover from '@nahu/admin-kit/components/ui/popover/index.js';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import { cn } from '$lib/utils.js';
+	import { cn } from '@nahu/admin-kit/utils.js';
 	import { selectItem, type Item } from '$lib/global.svelte';
 
 	let {

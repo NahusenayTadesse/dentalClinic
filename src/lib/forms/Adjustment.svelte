@@ -2,7 +2,7 @@
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Pen } from '@lucide/svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 	// `Infer<>` needs the zod schema itself; importing the already inferred type
 	// and wrapping it again leaves every `$form.x` untyped.

@@ -5,7 +5,7 @@
 	import type { DateRange } from 'bits-ui';
 	import * as Popover from '@nahu/admin-kit/components/ui/popover/index.js';
 
-	import { cn } from '$lib/utils.js';
+	import { cn } from '@nahu/admin-kit/utils.js';
 	import { buttonVariants } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Button from '@nahu/admin-kit/components/ui/button/button.svelte';
 	import { isMobile } from '$lib/global.svelte';

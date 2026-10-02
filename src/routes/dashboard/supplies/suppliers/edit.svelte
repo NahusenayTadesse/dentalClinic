@@ -1,5 +1,5 @@
 <script lang="ts">
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { SquarePen, Save } from '@lucide/svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import type { Edit } from './schema';
@@ -66,7 +66,7 @@
 
 	import { toast } from 'svelte-sonner';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import Messages from '$lib/formComponents/Messages.svelte';
+	import Messages from '@nahu/admin-kit/formComponents/Messages.svelte';
 	$effect(() => {
 		if ($message) {
 			if ($message.type === 'error') {

@@ -5,7 +5,7 @@
 	import * as Command from '@nahu/admin-kit/components/ui/command/index.js';
 	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import type { Facet } from './table-state.svelte';
+	import type { Facet } from '@nahu/admin-kit/components/Table/table-state.svelte.js';
 
 	/**
 	 * The filter for one column, living in that column's header.

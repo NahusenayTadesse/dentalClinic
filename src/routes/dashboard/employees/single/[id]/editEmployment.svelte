@@ -5,7 +5,7 @@
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import { editEmployment, type EditEmployment } from './schema';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import { SquarePen, Save } from '@lucide/svelte';
 	import type { SuperValidated } from 'sveltekit-superforms';
