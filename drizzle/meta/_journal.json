@@ -393,6 +393,13 @@
       "when": 1790982156971,
       "tag": "0055_sterilisation",
       "breakpoints": true
+    },
+    {
+      "idx": 56,
+      "version": "5",
+      "when": 1790983089460,
+      "tag": "0056_controlled_medicines",
+      "breakpoints": true
     }
   ]
 }

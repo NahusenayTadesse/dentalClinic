@@ -105,6 +105,15 @@ export const medicine = mysqlTable(
 		 */
 		allergenId: int('allergen_id').references(() => allergen.id, { onDelete: 'set null' }),
 
+		/**
+		 * Under the Ethiopian Food and Drug Authority's control: a narcotic (tramadol, codeine,
+		 * pethidine) or a psychotropic (diazepam, midazolam). Null for everything else. Stock of a
+		 * controlled medicine is kept to the register's rules — a delivery names its batch and
+		 * supplier, an issue names its patient or says why — and has its own register and monthly
+		 * return (`server/controlledDrugs.ts`).
+		 */
+		controlClass: mysqlEnum('control_class', ['narcotic', 'psychotropic']),
+
 		/** Whether it appears on the Ethiopian Essential Medicines List. */
 		isOnEml: boolean('is_on_eml').notNull().default(true),
 

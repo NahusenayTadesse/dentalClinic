@@ -29,8 +29,15 @@ const crud = contentCrud({
 			optionsKey: 'allergenList'
 		}
 	],
-	// "No family" arrives as `''`, which is not an id.
-	transform: (values) => ({ ...values, allergenId: Number(values.allergenId) || null })
+	// "No family" arrives as `''`, which is not an id; "not controlled" as `''`, which is not a class.
+	transform: (values) => ({
+		...values,
+		allergenId: Number(values.allergenId) || null,
+		controlClass:
+			values.controlClass === 'narcotic' || values.controlClass === 'psychotropic'
+				? values.controlClass
+				: null
+	})
 });
 
 /*

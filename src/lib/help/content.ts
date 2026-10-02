@@ -742,6 +742,37 @@ export const HELP_SECTIONS: HelpSection[] = [
 				]
 			},
 			{
+				id: 'controlled-medicines',
+				title: 'Controlled medicines: the register and the monthly return',
+				summary:
+					'Tramadol, diazepam and the like, kept to the Food and Drug Authority’s rules: every unit in with its batch and supplier, every unit out to a named patient, and a monthly return.',
+				where: 'Menu → **Supplies → Controlled Medicines** → `/dashboard/supplies/controlled`',
+				permission: 'supplies_suppliers.manage',
+				steps: [
+					'Under **Clinic Setup → Medicines**, set **EFDA control** to Narcotic or Psychotropic for each controlled medicine. A new clinic has tramadol, diazepam and midazolam marked already.',
+					'Make sure each one’s stock item is linked to the medicine on its stock page.',
+					'Receive deliveries on the stock item’s page with the **batch number** and the **supplier** — both are required for a controlled medicine.',
+					'Issue a dose by removing stock and choosing the **patient**. A count correction instead needs the reason written.',
+					'At the end of the month, open **Controlled Medicines**, check the closing balance against the shelf, and **Print** the return for signature.'
+				],
+				notes: [
+					'There is no separate register book to keep: the register is the stock ledger, with the balance added. A movement cannot be in one and not the other.',
+					'For the month in progress the closing balance is compared with what the lots hold. A difference means stock moved without a register line, and the screen says so in red.',
+					'Each branch keeps its own register and files its own return.'
+				],
+				keywords: [
+					'controlled',
+					'narcotic',
+					'psychotropic',
+					'tramadol',
+					'diazepam',
+					'efda',
+					'register',
+					'pharmacy',
+					'drug'
+				]
+			},
+			{
 				id: 'treatment-plans',
 				title: 'Treatment plans and case acceptance',
 				summary:
@@ -2305,6 +2336,21 @@ export const ROUTE_MAP: RouteEntry[] = [
 		purpose: 'One periodontal exam on paper, under the branch letterhead, for a referral.',
 		permission: 'patients.view',
 		group: 'Patients'
+	},
+	{
+		path: '/dashboard/supplies/controlled',
+		title: 'Controlled medicines',
+		purpose:
+			'The narcotic and psychotropic register, and the monthly return for the Food and Drug Authority.',
+		permission: 'supplies_suppliers.manage',
+		group: 'Supplies'
+	},
+	{
+		path: '/dashboard/supplies/controlled/print',
+		title: 'Controlled medicines (printed)',
+		purpose: 'The monthly return and one medicine’s register, on the letterhead, for signature.',
+		permission: 'supplies_suppliers.manage',
+		group: 'Supplies'
 	},
 	{
 		path: '/dashboard/sterilisation',

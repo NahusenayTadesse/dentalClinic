@@ -198,8 +198,13 @@ Credit income keeps many clinics running, so this matters more than it looks.
   pack is used once, never past its date or from a failed cycle. A spore test that grows fails the
   cycle after the fact and lists the patients to call. Sterilisers are set up per branch; the log is
   branch-scoped. Not done: reading the autoclave's own data port, single-instrument tracking.
-- **Controlled-medicine register** for the Ethiopian Food and Drug Authority, built on the stock lots
-  already tracked (`supply_batch`, `moveStock`, and the trace from a lot to its patients).
+- ✅ **Controlled-medicine register — done.** Medicines carry an EFDA control class (narcotic or
+  psychotropic; tramadol, diazepam and midazolam come marked on a new install). Controlled stock
+  is received only with its batch and supplier, and issued only to a named patient or with the
+  reason written. **Supplies → Controlled Medicines** reads the stock ledger as the register —
+  every line with its lot, supplier or patient, who recorded it, and the running balance — checks
+  the balance against the shelf, and prints the monthly return for signature. Not done: the
+  authority's electronic submission (none is published for clinics).
 - **Orthodontic cases:** progress over months, with instalment payment plans — orthodontics is
   usually paid monthly.
 

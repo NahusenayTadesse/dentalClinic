@@ -1,6 +1,6 @@
 import { monthlyReturn } from '$lib/server/hmisReport';
 import { formatEthiopianYearMonth } from '$lib/global.svelte';
-import { requestedPeriod } from './period.server';
+import { periodFromUrl } from '$lib/ethiopianMonth';
 import type { PageServerLoad } from './$types';
 
 /**
@@ -12,7 +12,7 @@ import type { PageServerLoad } from './$types';
  * report, for the same audience.
  */
 export const load: PageServerLoad = async ({ url, locals }) => {
-	const period = requestedPeriod(url);
+	const period = periodFromUrl(url, 'last');
 	// The picker binds the plain `<month name>_<year>`; the helper hands it back URL-encoded.
 	const month = decodeURIComponent(formatEthiopianYearMonth(period.year, period.month));
 	const branchId = locals.branch.active;

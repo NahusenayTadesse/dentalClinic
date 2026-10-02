@@ -1,0 +1,49 @@
+{
+	"path": "/dashboard/supplies/controlled",
+	"languages": {
+		"en": {
+			"title": "Controlled medicines",
+			"summary": "The register of narcotic and psychotropic medicines at this branch, and the monthly return for the Food and Drug Authority.",
+			"sections": [
+				{
+					"heading": "Which medicines",
+					"body": "A medicine is controlled when it is marked Narcotic or Psychotropic under Clinic Setup → Medicines (tramadol, codeine and pethidine are narcotic; diazepam and midazolam psychotropic). Its stock item must be linked to it, on the stock item's page."
+				},
+				{
+					"heading": "How stock moves",
+					"body": "Controlled stock moves on its stock item's page like any other, with two extra rules. A delivery must give its batch number and supplier. An issue must name the patient it was given to; anything else — a count correction — must say why in words. Damage and expiry are written off with their reason, as always."
+				},
+				{
+					"heading": "The register",
+					"body": "Choose a month. The return lists every controlled item: opening balance, received, issued, written off, adjusted and closing. Click a medicine to see its register: every movement with its batch, the supplier or the patient, who recorded it, and the balance after it. For the month in progress, the closing balance is checked against what is on the shelf; a red line means stock moved without a register entry — count it and record the difference with the reason."
+				},
+				{
+					"heading": "Filing it",
+					"body": "Print gives the return and the chosen medicine's register on the branch letterhead, with lines for the pharmacist and the head of the clinic to sign."
+				}
+			]
+		},
+		"am": {
+			"title": "ቁጥጥር የሚደረግባቸው መድኃኒቶች",
+			"summary": "በዚህ ቅርንጫፍ ያሉ የናርኮቲክና የሳይኮትሮፒክ መድኃኒቶች መዝገብ፣ እና ለምግብና መድኃኒት ባለሥልጣን የሚቀርበው ወርሃዊ ሪፖርት።",
+			"sections": [
+				{
+					"heading": "የትኞቹ መድኃኒቶች",
+					"body": "መድኃኒት በClinic Setup → Medicines ላይ Narcotic ወይም Psychotropic ተብሎ ሲመዘገብ ቁጥጥር የሚደረግበት ይሆናል (ትራማዶል፣ ኮዴይን — ናርኮቲክ፤ ዳያዜፓም፣ ሚዳዞላም — ሳይኮትሮፒክ)። የክምችት ዕቃው ከመድኃኒቱ ጋር መያያዝ አለበት።"
+				},
+				{
+					"heading": "ክምችት እንዴት እንደሚንቀሳቀስ",
+					"body": "ገቢ የባች ቁጥሩንና አቅራቢውን መግለጽ አለበት። ወጪ የተሰጠውን ታካሚ መጥቀስ አለበት፤ ሌላ ማንኛውም — የቆጠራ ማስተካከያ — ምክንያቱን በቃላት መግለጽ አለበት።"
+				},
+				{
+					"heading": "መዝገቡ",
+					"body": "ወር ይምረጡ። ሪፖርቱ እያንዳንዱን መድኃኒት ያሳያል፦ የመጀመሪያ ቀሪ፣ ገቢ፣ ወጪ፣ የተሰረዘ፣ ማስተካከያና የመጨረሻ ቀሪ። መድኃኒቱን ሲጫኑ እያንዳንዱን እንቅስቃሴ ከቀሪው ጋር ያያሉ። ለአሁኑ ወር ቀሪው ከመደርደሪያው ጋር ይነጻጸራል፤ ቀይ መስመር ያለ መዝገብ የተንቀሳቀሰ ክምችት ማለት ነው።"
+				},
+				{
+					"heading": "ማቅረብ",
+					"body": "Print ሪፖርቱንና የተመረጠውን መድኃኒት መዝገብ በቅርንጫፉ የደብዳቤ ራስ ላይ፣ ለፋርማሲስቱና ለክሊኒኩ ኃላፊ ፊርማ መስመሮች ጋር ያትማል።"
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,1 @@
+ALTER TABLE `medicine` ADD `control_class` enum('narcotic','psychotropic');

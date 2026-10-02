@@ -81,6 +81,17 @@ export const config: LookupConfig = {
 			falseLabel: '—'
 		},
 		{
+			name: 'controlClass',
+			label: 'EFDA control',
+			type: 'select',
+			required: false,
+			choices: [
+				{ value: '', name: 'Not controlled' },
+				{ value: 'narcotic', name: 'Narcotic' },
+				{ value: 'psychotropic', name: 'Psychotropic' }
+			]
+		},
+		{
 			name: 'isOnEml',
 			label: 'On the Essential Medicines List',
 			type: 'checkbox',

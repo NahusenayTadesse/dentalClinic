@@ -558,6 +558,32 @@ export async function seedMedicines() {
 			notes: 'With food',
 			sortOrder: 23
 		},
+		// Controlled (EFDA): kept on the register, not the open shelf.
+		{
+			genericName: 'Tramadol',
+			strength: '50mg',
+			form: 'capsule',
+			controlClass: 'narcotic',
+			notes: 'Controlled: record each issue on the register',
+			sortOrder: 24
+		},
+		{
+			genericName: 'Diazepam',
+			strength: '5mg',
+			form: 'tablet',
+			controlClass: 'psychotropic',
+			notes: 'Controlled: for an anxious patient before treatment',
+			sortOrder: 25
+		},
+		{
+			genericName: 'Midazolam',
+			strength: '5mg/ml',
+			form: 'injection',
+			controlClass: 'psychotropic',
+			isPrescribable: false,
+			notes: 'Controlled: sedation in the clinic only',
+			sortOrder: 26
+		},
 
 		// Topical and local.
 		{ genericName: 'Chlorhexidine gluconate', strength: '0.2%', form: 'mouthwash', sortOrder: 40 },

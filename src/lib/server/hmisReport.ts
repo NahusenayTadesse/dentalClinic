@@ -30,6 +30,7 @@
  * the module off the portability ledger (CLAUDE.md §10); a month at one clinic is a few thousand
  * rows at most.
  */
+import type { MonthPeriod } from '$lib/ethiopianMonth';
 import { and, eq, gte, inArray, isNotNull, lt, lte, min, ne, sql } from 'drizzle-orm';
 
 import { db } from '$lib/server/db';
@@ -46,14 +47,7 @@ import { notDeleted } from '$lib/server/softDelete';
 import { isoDate } from '$lib/server/db/dialect';
 import { livePatient } from '$lib/server/patients';
 import { clinicDate, clinicDayRange } from '$lib/clinicTime';
-import {
-	countInto,
-	emptyTally,
-	hmisBand,
-	type HmisPeriod,
-	type HmisSex,
-	type Tally
-} from '$lib/hmisReport';
+import { countInto, emptyTally, hmisBand, type HmisSex, type Tally } from '$lib/hmisReport';
 
 /** One diagnosis line of the return. */
 export type CaseLine = { conditionId: number; name: string; hmisCode: string; tally: Tally };
@@ -71,7 +65,7 @@ export type Uncounted = {
 /** The whole return for one branch and one month. */
 export type MonthlyReturn = {
 	facility: { id: number; name: string | null; address: string | null; phone: string | null };
-	period: HmisPeriod;
+	period: MonthPeriod;
 	visits: { new: Tally; repeat: Tally };
 	cases: CaseLine[];
 	uncounted: Uncounted;
@@ -85,7 +79,7 @@ type Reader = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
  */
 export async function monthlyReturn(
 	branchId: number,
-	period: HmisPeriod,
+	period: MonthPeriod,
 	reader: Reader = db
 ): Promise<MonthlyReturn | null> {
 	const [facility] = await reader

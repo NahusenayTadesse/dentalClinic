@@ -219,6 +219,7 @@ export const NAVIGATION: NavItem[] = [
 		items: [
 			{ title: 'Stock Levels', url: '/dashboard/supplies', icon: List },
 			{ title: 'Add Supply', url: '/dashboard/supplies/add-supplies', icon: Plus },
+			{ title: 'Controlled Medicines', url: '/dashboard/supplies/controlled', icon: ShieldAlert },
 			{ title: 'Suppliers', url: '/dashboard/supplies/suppliers', icon: Sheet },
 			{
 				title: 'Add Supplier',

@@ -16,6 +16,8 @@ const fields = {
 	bleedingRisk: z.boolean().default(false),
 	osteonecrosisRisk: z.boolean().default(false),
 	immunosuppression: z.boolean().default(false),
+	/** `''` for not controlled — see `medicine.controlClass`. */
+	controlClass: z.string().optional(),
 	isOnEml: z.boolean().default(true),
 	notes: z.string().max(255).optional(),
 	sortOrder: z.coerce.number().int().min(0).default(0),

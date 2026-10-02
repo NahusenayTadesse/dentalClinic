@@ -14,7 +14,8 @@ import {
 import { inRollback, type TestTx } from '$lib/testing/rollback';
 import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { fromClinic } from '$lib/clinicTime';
-import { hmisPeriod, tallyTotals } from '$lib/hmisReport';
+import { tallyTotals } from '$lib/hmisReport';
+import { monthPeriod } from '$lib/ethiopianMonth';
 import { monthlyReturn } from './hmisReport';
 
 /**
@@ -28,7 +29,7 @@ describe('monthlyReturn', async () => {
 	const [elsewhere] = here
 		? await db.select({ id: branch.id }).from(branch).where(ne(branch.id, here.id)).limit(1)
 		: [];
-	const period = hmisPeriod(5, 2025);
+	const period = monthPeriod(5, 2025);
 
 	async function build(tx: TestTx) {
 		const coded = await insertReturningId(tx, condition, {

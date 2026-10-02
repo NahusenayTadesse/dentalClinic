@@ -18,9 +18,11 @@ import {
 	damagedSupplies,
 	transactions,
 	suppliesAdjustments,
-	patient
+	patient,
+	medicine
 } from '$lib/server/db/schema';
 import { livePatient } from '$lib/server/patients';
+import { controlledRefusal } from '$lib/controlledDrugs';
 import { eq, and, isNotNull, desc } from 'drizzle-orm';
 import { notDeleted, softDeleteSupply } from '$lib/server/softDelete';
 import { requireSuperAdmin } from '$lib/server/permissions';
@@ -178,6 +180,29 @@ export const actions: Actions = {
 				.limit(1);
 			if (!someone) return setError(form, 'patientId', 'Choose the patient again.');
 		}
+		/*
+		 * A controlled medicine moves only to the register's rules (`$lib/controlledDrugs.ts`): a
+		 * delivery with its batch and supplier, an issue to a named patient or with the reason in
+		 * words. Asked here because this is where controlled stock moves; the register reads the
+		 * ledger rows this action writes.
+		 */
+		const [control] = await db
+			.select({ controlClass: medicine.controlClass })
+			.from(supplies)
+			.innerJoin(medicine, eq(medicine.id, supplies.medicineId))
+			.where(eq(supplies.id, id))
+			.limit(1);
+		if (control?.controlClass) {
+			const refusal = controlledRefusal({
+				intent,
+				batchNumber: form.data.batchNumber ?? null,
+				supplierId,
+				patientId,
+				reason: reason ?? null
+			});
+			if (refusal) return setError(form, refusal.field, refusal.text);
+		}
+
 		const total = adjustment * Number(costPerItem ?? 0);
 
 		// Buying stock spends money, so it has to come out of a named account.

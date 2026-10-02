@@ -74,6 +74,7 @@ export const nav: Record<string, string> = {
 	'Consent Forms': 'የስምምነት ቅጾች',
 	Sterilisation: 'የመሣሪያ ማምከን',
 	Sterilisers: 'ማምከኛ ማሽኖች',
+	'Controlled Medicines': 'ቁጥጥር የሚደረግባቸው መድኃኒቶች',
 	Allergens: 'አለርጂ አምጪዎች',
 	Conditions: 'ሕመሞች',
 	Specialties: 'ስፔሻሊቲዎች',

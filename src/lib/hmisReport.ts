@@ -19,8 +19,6 @@
  * Non-goals: submitting anything. The return is printed or downloaded and entered into DHIS2 or
  * handed to the health office by a person; this system has no connection to either.
  */
-import { ethiopianToIso, ethiopianYearEnd } from '$lib/ethiopianCalendar';
-import { getMonthNumber } from '$lib/global.svelte';
 
 /** The age groups, in column order. `max` is inclusive, in completed years. */
 export const HMIS_AGE_BANDS = [
@@ -95,30 +93,4 @@ export function tallyTotals(tally: Tally): Record<HmisSex | 'all', number> {
 		female += tally[key].female;
 	}
 	return { male, female, all: male + female };
-}
-
-/** The Ethiopian month a return is for, and its Gregorian first and last day. */
-export type HmisPeriod = { month: number; year: number; start: string; end: string };
-
-/**
- * The reporting period for an Ethiopian month (1–12) and year. Nehase runs on to the eve of the
- * next Meskerem 1, which takes in Pagume whether it has five days or six that year.
- */
-export function hmisPeriod(month: number, year: number): HmisPeriod {
-	const start = ethiopianToIso(year, month, 1);
-	const end = month === 12 ? ethiopianYearEnd(year) : ethiopianToIso(year, month, 30);
-	return { month, year, start, end };
-}
-
-/**
- * The period a `?month=<month name>_<year>` parameter names — the format the month picker writes
- * and the attendance register reads — or null when it names no real month.
- */
-export function hmisPeriodFromParam(param: string | null): HmisPeriod | null {
-	if (!param) return null;
-	const [name, y] = param.split('_');
-	const month = getMonthNumber(name ?? '');
-	const year = Number(y);
-	if (month < 1 || month > 12 || !Number.isInteger(year) || year < 1900 || year > 2200) return null;
-	return hmisPeriod(month, year);
 }
