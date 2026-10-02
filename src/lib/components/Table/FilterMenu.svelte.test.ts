@@ -11,7 +11,7 @@ const data = [
 
 describe('FilterMenu.svelte', () => {
 	it('renders the Table Filters and Chart toggle buttons, both closed by default', async () => {
-		render(FilterMenu, { data, filterKeys: ['department'] });
+		await render(FilterMenu, { data, filterKeys: ['department'] });
 
 		await expect.element(page.getByText('Table Filters')).toBeInTheDocument();
 		await expect.element(page.getByRole('button', { name: /^Chart/ })).toBeInTheDocument();
@@ -19,7 +19,7 @@ describe('FilterMenu.svelte', () => {
 	});
 
 	it('opens the filter panel and narrows results by a selected value', async () => {
-		render(FilterMenu, { data, filterKeys: ['department'] });
+		await render(FilterMenu, { data, filterKeys: ['department'] });
 
 		await userEvent.click(page.getByText('Table Filters'));
 		await expect.element(page.getByText('Showing 3 of 3 records')).toBeInTheDocument();
@@ -32,14 +32,14 @@ describe('FilterMenu.svelte', () => {
 	});
 
 	it('opens the chart panel with a chart-type picker and one tab per filter key', async () => {
-		render(FilterMenu, { data, filterKeys: ['department', 'status'] });
+		await render(FilterMenu, { data, filterKeys: ['department', 'status'] });
 
 		await userEvent.click(page.getByRole('button', { name: /^Chart/ }));
 
 		// Clicking the "Chart" toggle sets `type = 'bar'` immediately, so the picker
 		// shows "Bar" (not its unselected "Chart Type" placeholder) right away.
 		await expect.element(page.getByText('Bar', { exact: true })).toBeInTheDocument();
-		await expect.element(page.getByRole('button', { name: 'Department' })).toBeInTheDocument();
-		await expect.element(page.getByRole('button', { name: 'Status' })).toBeInTheDocument();
+		await expect.element(page.getByRole('button', { name: 'Departments' })).toBeInTheDocument();
+		await expect.element(page.getByRole('button', { name: 'Statuses' })).toBeInTheDocument();
 	});
 });

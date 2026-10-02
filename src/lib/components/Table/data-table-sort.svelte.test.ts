@@ -5,14 +5,14 @@ import DataTableSort from './data-table-sort.svelte';
 
 describe('data-table-sort.svelte', () => {
 	it('renders the column name', async () => {
-		render(DataTableSort, { name: 'Amount' });
+		await render(DataTableSort, { name: 'Amount' });
 
 		await expect.element(page.getByRole('button', { name: 'Amount' })).toBeInTheDocument();
 	});
 
 	it('calls the provided onclick handler when clicked', async () => {
 		const onclick = vi.fn();
-		render(DataTableSort, { name: 'Amount', onclick });
+		await render(DataTableSort, { name: 'Amount', onclick });
 
 		await userEvent.click(page.getByRole('button', { name: 'Amount' }));
 

@@ -10,25 +10,25 @@ const items = [
 
 describe('SelectComp.svelte', () => {
 	it('shows a "Select <field>" placeholder when nothing is selected', async () => {
-		render(SelectComp, { name: 'employmentStatus', items, value: undefined });
+		await render(SelectComp, { name: 'employmentStatus', items, value: undefined });
 
 		await expect.element(page.getByText('Select employment Status')).toBeInTheDocument();
 	});
 
 	it('shows the matching item name when a value is already selected', async () => {
-		render(SelectComp, { name: 'employmentStatus', items, value: 2 });
+		await render(SelectComp, { name: 'employmentStatus', items, value: 2 });
 
 		await expect.element(page.getByRole('button')).toHaveTextContent('Inactive');
 	});
 
 	it('matches string and number values for the same option (String coercion)', async () => {
-		render(SelectComp, { name: 'employmentStatus', items, value: '2' });
+		await render(SelectComp, { name: 'employmentStatus', items, value: '2' });
 
 		await expect.element(page.getByRole('button')).toHaveTextContent('Inactive');
 	});
 
 	it('opens the list and selects an option on click', async () => {
-		render(SelectComp, { name: 'employmentStatus', items, value: undefined });
+		await render(SelectComp, { name: 'employmentStatus', items, value: undefined });
 
 		await userEvent.click(page.getByRole('button'));
 		await userEvent.click(page.getByRole('option', { name: 'Active', exact: true }));

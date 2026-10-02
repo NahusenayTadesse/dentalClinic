@@ -51,7 +51,7 @@ const staffColumns: ColumnDef<Staff, unknown>[] = [
  * `ColumnDef<Row>` as unassignable to `ColumnDef<unknown>` — eleven errors describing the test
  * harness rather than the component. One wrapper carries the row type through instead.
  */
-function renderTable<T>(props: {
+async function renderTable<T>(props: {
 	data: T[];
 	columns: ColumnDef<T, unknown>[];
 	defaultPageSize?: number;
@@ -71,7 +71,7 @@ function renderTable<T>(props: {
 
 describe('data-table.svelte', () => {
 	it('renders a header per column and a row per data item', async () => {
-		const screen = renderTable({ data: rows, columns });
+		const screen = await renderTable({ data: rows, columns });
 
 		await expect.element(page.getByRole('cell', { name: 'Alice' })).toBeInTheDocument();
 		await expect.element(page.getByRole('cell', { name: 'Bob' })).toBeInTheDocument();
@@ -80,13 +80,13 @@ describe('data-table.svelte', () => {
 	});
 
 	it('shows the empty state when there is no data', async () => {
-		renderTable({ data: [], columns });
+		await renderTable({ data: [], columns });
 
 		await expect.element(page.getByText('Nothing found here.')).toBeInTheDocument();
 	});
 
 	it('filters rows by the global search box', async () => {
-		renderTable({ data: rows, columns });
+		await renderTable({ data: rows, columns });
 
 		await userEvent.fill(page.getByPlaceholder('Search Table...'), 'Bob');
 
@@ -96,7 +96,7 @@ describe('data-table.svelte', () => {
 	});
 
 	it('hides a column when it is unchecked from the "Columns" menu', async () => {
-		const screen = renderTable({ data: rows, columns });
+		const screen = await renderTable({ data: rows, columns });
 
 		expect(screen.container.textContent).toContain('Name');
 
@@ -107,19 +107,19 @@ describe('data-table.svelte', () => {
 	});
 
 	it('sorts rows when a sortable column header is clicked (desc, then asc)', async () => {
-		renderTable({ data: rows, columns });
+		await renderTable({ data: rows, columns });
 
 		// Unsorted: insertion order, Alice (300) first.
-		await expect.element(page.getByRole('row').nth(1)).toHaveTextContent('Alice');
+		await expect.element(page.getByRole('row').nth(1)).toMatchTextContent('Alice');
 
 		await userEvent.click(page.getByRole('button', { name: 'Amount' }));
 		// TanStack's default toggle cycle starts descending: Alice (300) stays first.
-		await expect.element(page.getByRole('row').nth(1)).toHaveTextContent('Alice');
-		await expect.element(page.getByRole('row').nth(3)).toHaveTextContent('Bob');
+		await expect.element(page.getByRole('row').nth(1)).toMatchTextContent('Alice');
+		await expect.element(page.getByRole('row').nth(3)).toMatchTextContent('Bob');
 
 		await userEvent.click(page.getByRole('button', { name: 'Amount' }));
 		// Second click: ascending, Bob (100) first.
-		await expect.element(page.getByRole('row').nth(1)).toHaveTextContent('Bob');
+		await expect.element(page.getByRole('row').nth(1)).toMatchTextContent('Bob');
 	});
 
 	/*
@@ -128,7 +128,7 @@ describe('data-table.svelte', () => {
 	 * into the DOM and the pager never appeared.
 	 */
 	it('paginates client-side at the default page size', async () => {
-		renderTable({ data: manyRows, columns, defaultPageSize: 10 });
+		await renderTable({ data: manyRows, columns, defaultPageSize: 10 });
 
 		await expect
 			.element(page.getByRole('cell', { name: 'Row 1', exact: true }))
@@ -148,7 +148,7 @@ describe('data-table.svelte', () => {
 	});
 
 	it('counts facets over every row and filters on one', async () => {
-		renderTable({
+		await renderTable({
 			data: staff,
 			columns: staffColumns,
 			facetKeys: ['department'],
@@ -163,7 +163,7 @@ describe('data-table.svelte', () => {
 
 		// Three clinical, one reception — counted off all four rows, not off the page.
 		await expect.element(clinical).toBeInTheDocument();
-		await expect.element(clinical).toHaveTextContent('3');
+		await expect.element(clinical).toMatchTextContent('3');
 
 		await userEvent.click(clinical);
 		await expect.element(page.getByRole('cell', { name: 'Abebe' })).not.toBeInTheDocument();
@@ -176,7 +176,7 @@ describe('data-table.svelte', () => {
 	 * In server mode the tally must come from the server and must not be derived from `data`.
 	 */
 	it('uses the server facet tally, never the page it was handed', async () => {
-		renderTable({
+		await renderTable({
 			data: staff.slice(0, 2), // one "page" of a much larger result
 			columns: staffColumns,
 			facetKeys: ['department'],
@@ -207,7 +207,7 @@ describe('data-table.svelte', () => {
 	 * did `Number(...)` on it, and the page came back with no table at all.
 	 */
 	it('sends the facet value, not the label the reader sees', async () => {
-		renderTable({
+		await renderTable({
 			data: staff.slice(0, 2),
 			columns: staffColumns,
 			facetKeys: ['department'],
@@ -223,11 +223,11 @@ describe('data-table.svelte', () => {
 		const option = page.getByRole('option', { name: /Clinical/ });
 		await expect.element(option).toBeInTheDocument();
 		// The id never reaches the screen; the name never reaches the URL.
-		await expect.element(option).not.toHaveTextContent('902');
+		await expect.element(option).not.toMatchTextContent('902');
 	});
 
 	it('shows no facets in server mode when the server computed none', async () => {
-		const screen = renderTable({
+		const screen = await renderTable({
 			data: staff.slice(0, 2),
 			columns: staffColumns,
 			facetKeys: ['department'],
@@ -239,7 +239,7 @@ describe('data-table.svelte', () => {
 	});
 
 	it('does not re-slice rows the server already paged', async () => {
-		renderTable({
+		await renderTable({
 			data: manyRows.slice(10, 20), // page two, handed to us whole
 			columns,
 			server: { pagination: { page: 2, pageSize: 10, total: 25 } }
@@ -270,7 +270,7 @@ describe('data-table.svelte', () => {
 	 * beside them, so opening it never hides a column.
 	 */
 	it('keeps the chart closed until asked, then opens it above the rows', async () => {
-		const screen = renderTable({
+		const screen = await renderTable({
 			data: staff,
 			columns: staffColumns,
 			facetKeys: ['department'],
@@ -292,13 +292,13 @@ describe('data-table.svelte', () => {
 	});
 
 	it('offers no chart button when the page asked for none', async () => {
-		renderTable({ data: staff, columns: staffColumns, facetKeys: ['department'] });
+		await renderTable({ data: staff, columns: staffColumns, facetKeys: ['department'] });
 
 		await expect.element(page.getByRole('button', { name: 'Charts' })).not.toBeInTheDocument();
 	});
 
 	it('takes the height it is given', async () => {
-		const screen = renderTable({ data: manyRows, columns, height: '400px' });
+		const screen = await renderTable({ data: manyRows, columns, height: '400px' });
 
 		const frame = screen.container.querySelector('[data-testid="table-frame"]');
 		expect(frame?.getAttribute('style')).toContain('height: 400px');
@@ -306,14 +306,14 @@ describe('data-table.svelte', () => {
 	});
 
 	it('defaults to 80vh rather than a fixed row area', async () => {
-		const screen = renderTable({ data: manyRows, columns });
+		const screen = await renderTable({ data: manyRows, columns });
 
 		const frame = screen.container.querySelector('[data-testid="table-frame"]');
 		expect(frame?.getAttribute('style')).toContain('height: 80vh');
 	});
 
 	it('offers Print and Export to CSV actions in the export menu', async () => {
-		const screen = renderTable({ data: rows, columns, fileName: 'MyReport' });
+		const screen = await renderTable({ data: rows, columns, fileName: 'MyReport' });
 
 		// The export trigger is icon-only (no accessible name), so `name: ''` isn't a
 		// usable filter for getByRole (Playwright treats an empty name as "no filter").

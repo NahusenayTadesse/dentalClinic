@@ -6,7 +6,7 @@ import DataTableLinks from './data-table-links.svelte';
 
 describe('data-table-links.svelte', () => {
 	it('renders a link with the given name pointed at link/id', async () => {
-		render(DataTableLinks, { id: '42', name: 'View Employee', link: '/dashboard/employees' });
+		await render(DataTableLinks, { id: '42', name: 'View Employee', link: '/dashboard/employees' });
 
 		const link = page.getByRole('link', { name: 'View Employee' });
 		await expect.element(link).toBeInTheDocument();
@@ -14,7 +14,7 @@ describe('data-table-links.svelte', () => {
 	});
 
 	it('renders an icon when IconComp is provided', async () => {
-		const screen = render(DataTableLinks, {
+		const screen = await render(DataTableLinks, {
 			id: '1',
 			name: 'Edit',
 			link: '/dashboard/items',
@@ -30,7 +30,7 @@ describe('data-table-links.svelte', () => {
 	 * permissions, which is the safe default — so an `entity` mention renders as text here.
 	 */
 	it('renders an entity mention as plain text when the viewer may not open it', async () => {
-		const screen = render(DataTableLinks, { id: 7, name: 'Dr Alem', entity: 'employee' });
+		const screen = await render(DataTableLinks, { id: 7, name: 'Dr Alem', entity: 'employee' });
 
 		await expect.element(page.getByText('Dr Alem')).toBeInTheDocument();
 		expect(
@@ -41,7 +41,7 @@ describe('data-table-links.svelte', () => {
 
 	it('still renders an explicit link with no permission check', async () => {
 		// The original form, kept for the 71 call sites and for targets that are not records.
-		render(DataTableLinks, { id: '9', name: 'View Reciept', link: '/dashboard/files' });
+		await render(DataTableLinks, { id: '9', name: 'View Reciept', link: '/dashboard/files' });
 
 		await expect
 			.element(page.getByRole('link', { name: 'View Reciept' }))
@@ -49,7 +49,11 @@ describe('data-table-links.svelte', () => {
 	});
 
 	it('renders plain text when there is no id to point at', async () => {
-		const screen = render(DataTableLinks, { id: null, name: 'Unassigned', link: '/dashboard/x' });
+		const screen = await render(DataTableLinks, {
+			id: null,
+			name: 'Unassigned',
+			link: '/dashboard/x'
+		});
 
 		await expect.element(page.getByText('Unassigned')).toBeInTheDocument();
 		expect(screen.container.querySelector('a')).toBeNull();
@@ -57,9 +61,9 @@ describe('data-table-links.svelte', () => {
 
 	it('opens in a new tab when target is set', async () => {
 		// `target` is also a reserved Svelte mount-option name, so it must be passed
-		// under an explicit `props` key here or vitest-browser-svelte's render()
+		// under an explicit `props` key here or vitest-browser-svelte's await render()
 		// misinterprets the whole props object as mount options instead of props.
-		render(DataTableLinks, {
+		await render(DataTableLinks, {
 			props: {
 				id: '1',
 				name: 'Open',

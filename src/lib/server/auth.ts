@@ -41,7 +41,9 @@ export const auth = betterAuth({
 				await sendPasswordResetEmail(user.email, url, user.name);
 			} catch (err) {
 				console.error('Failed to send password reset email:', err);
-				throw new Error('We could not send the reset email. Please try again in a moment.');
+				throw new Error('We could not send the reset email. Please try again in a moment.', {
+					cause: err
+				});
 			}
 		},
 		resetPasswordTokenExpiresIn: RESET_EXPIRES_IN,

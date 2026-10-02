@@ -14,13 +14,13 @@ const fakeTable = {
 
 describe('Table/pdf.svelte', () => {
 	it('renders a download trigger button', async () => {
-		render(Pdf, { fileName: 'Report', table: fakeTable });
+		await render(Pdf, { fileName: 'Report', table: fakeTable });
 
 		await expect.element(page.getByRole('button')).toBeInTheDocument();
 	});
 
 	it('offers Print and Export to CSV once opened', async () => {
-		render(Pdf, { fileName: 'Report', table: fakeTable });
+		await render(Pdf, { fileName: 'Report', table: fakeTable });
 
 		await userEvent.click(page.getByRole('button'));
 

@@ -30,14 +30,7 @@ import { canVisit } from './routeAccess';
 
 /** The kinds of record that have a page of their own. */
 export type EntityKind =
-	| 'employee'
-	| 'customer'
-	| 'supplier'
-	| 'supply'
-	| 'user'
-	| 'role'
-	| 'salary'
-	| 'patient';
+	'employee' | 'customer' | 'supplier' | 'supply' | 'user' | 'role' | 'salary' | 'patient';
 
 /**
  * Base path per kind. The record's id is appended.

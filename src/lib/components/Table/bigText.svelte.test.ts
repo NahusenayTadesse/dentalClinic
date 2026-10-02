@@ -5,13 +5,13 @@ import BigText from './bigText.svelte';
 
 describe('bigText.svelte', () => {
 	it('shows short text as-is with no truncation', async () => {
-		render(BigText, { text: 'Short text' });
+		await render(BigText, { text: 'Short text' });
 
 		await expect.element(page.getByText('Short text', { exact: true })).toBeInTheDocument();
 	});
 
 	it('truncates long text to 15 characters plus an ellipsis', async () => {
-		render(BigText, { text: 'This is a very long piece of text' });
+		await render(BigText, { text: 'This is a very long piece of text' });
 
 		// "This is a very " is 15 chars + '...'
 		await expect.element(page.getByText('This is a very ...')).toBeInTheDocument();
@@ -19,7 +19,7 @@ describe('bigText.svelte', () => {
 
 	it('reveals the full text in a popover when the truncated trigger is clicked', async () => {
 		const longText = 'This is a very long piece of text';
-		render(BigText, { text: longText });
+		await render(BigText, { text: longText });
 
 		await userEvent.click(page.getByText('This is a very ...'));
 

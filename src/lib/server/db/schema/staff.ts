@@ -560,4 +560,3 @@ export const staffQualificationRelations = relations(qualification, ({ one }) =>
 		references: [employee.id]
 	})
 }));
-

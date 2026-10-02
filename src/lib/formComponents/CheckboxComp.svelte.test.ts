@@ -11,7 +11,7 @@ const items = [
 
 describe('CheckboxComp.svelte', () => {
 	it('renders a checkbox for every item plus a "Select All" checkbox', async () => {
-		render(CheckboxComp, { items, checkedValues: [] });
+		await render(CheckboxComp, { items, checkedValues: [] });
 
 		await expect.element(page.getByText('Select All')).toBeInTheDocument();
 		await expect.element(page.getByText('Apples')).toBeInTheDocument();
@@ -20,7 +20,7 @@ describe('CheckboxComp.svelte', () => {
 	});
 
 	it('pre-checks items that are already in checkedValues', async () => {
-		render(CheckboxComp, { items, checkedValues: [2] });
+		await render(CheckboxComp, { items, checkedValues: [2] });
 
 		const checkboxes = page.getByRole('checkbox');
 		await expect.element(checkboxes.nth(2)).toBeChecked(); // Bananas
@@ -28,7 +28,7 @@ describe('CheckboxComp.svelte', () => {
 	});
 
 	it('checks an item when its label is clicked', async () => {
-		render(CheckboxComp, { items, checkedValues: [] });
+		await render(CheckboxComp, { items, checkedValues: [] });
 
 		await userEvent.click(page.getByText('Apples'));
 
@@ -36,7 +36,7 @@ describe('CheckboxComp.svelte', () => {
 	});
 
 	it('"Select All" checks every item', async () => {
-		render(CheckboxComp, { items, checkedValues: [] });
+		await render(CheckboxComp, { items, checkedValues: [] });
 
 		await userEvent.click(page.getByText('Select All'));
 
@@ -48,7 +48,7 @@ describe('CheckboxComp.svelte', () => {
 	});
 
 	it('"Select All" un-checks every item when all are already checked', async () => {
-		render(CheckboxComp, { items, checkedValues: [1, 2, 3] });
+		await render(CheckboxComp, { items, checkedValues: [1, 2, 3] });
 
 		await userEvent.click(page.getByText('Select All'));
 

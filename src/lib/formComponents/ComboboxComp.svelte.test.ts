@@ -10,22 +10,22 @@ const items = [
 
 describe('ComboboxComp.svelte', () => {
 	it('shows a "Select <field>" placeholder when nothing is selected', async () => {
-		render(ComboboxComp, { name: 'subcity', items, value: undefined, required: false });
+		await render(ComboboxComp, { name: 'subcity', items, value: undefined, required: false });
 
 		await expect.element(page.getByText('Select subcity')).toBeInTheDocument();
 	});
 
 	it('shows the matching item name when a value is already selected', async () => {
-		render(ComboboxComp, { name: 'subcity', items, value: 2, required: false });
+		await render(ComboboxComp, { name: 'subcity', items, value: 2, required: false });
 
 		await expect.element(page.getByRole('combobox')).toHaveTextContent('Bahir Dar');
 	});
 
 	it('opens the list, filters via search, and selects an option on click', async () => {
-		render(ComboboxComp, { name: 'subcity', items, value: undefined, required: false });
+		await render(ComboboxComp, { name: 'subcity', items, value: undefined, required: false });
 
 		await userEvent.click(page.getByRole('combobox'));
-		await userEvent.fill(page.getByPlaceholder('Search subcity...'), 'Bahir');
+		await userEvent.fill(page.getByPlaceholder('Search Subcity...'), 'Bahir');
 
 		await expect.element(page.getByText('Addis Ababa')).not.toBeInTheDocument();
 		await userEvent.click(page.getByText('Bahir Dar'));
@@ -34,10 +34,10 @@ describe('ComboboxComp.svelte', () => {
 	});
 
 	it('shows an empty state when the search matches nothing', async () => {
-		render(ComboboxComp, { name: 'subcity', items, value: undefined, required: false });
+		await render(ComboboxComp, { name: 'subcity', items, value: undefined, required: false });
 
 		await userEvent.click(page.getByRole('combobox'));
-		await userEvent.fill(page.getByPlaceholder('Search subcity...'), 'zzzzz');
+		await userEvent.fill(page.getByPlaceholder('Search Subcity...'), 'zzzzz');
 
 		await expect.element(page.getByText('No subcity found.')).toBeInTheDocument();
 	});

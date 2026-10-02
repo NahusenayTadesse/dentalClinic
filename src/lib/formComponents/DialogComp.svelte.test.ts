@@ -12,7 +12,7 @@ function textSnippet(text: string) {
 
 describe('DialogComp.svelte', () => {
 	it('renders a trigger button with the title, closed by default', async () => {
-		render(DialogComp, {
+		await render(DialogComp, {
 			title: 'Delete',
 			variant: 'destructive',
 			children: textSnippet('Are you sure?')
@@ -23,7 +23,7 @@ describe('DialogComp.svelte', () => {
 	});
 
 	it('opens the dialog and shows the title and children when the trigger is clicked', async () => {
-		render(DialogComp, {
+		await render(DialogComp, {
 			title: 'Edit Item',
 			variant: 'default',
 			children: textSnippet('Form goes here')
@@ -37,7 +37,7 @@ describe('DialogComp.svelte', () => {
 	});
 
 	it('renders a description when provided', async () => {
-		render(DialogComp, {
+		await render(DialogComp, {
 			title: 'Edit Item',
 			description: 'Update the details below',
 			variant: 'default',
@@ -50,7 +50,7 @@ describe('DialogComp.svelte', () => {
 	});
 
 	it('is open by default when bind:open is initialised to true', async () => {
-		render(DialogComp, {
+		await render(DialogComp, {
 			title: 'Already Open',
 			variant: 'default',
 			open: true,
@@ -62,7 +62,7 @@ describe('DialogComp.svelte', () => {
 	});
 
 	it('closes when the dialog is dismissed (Escape key)', async () => {
-		render(DialogComp, {
+		await render(DialogComp, {
 			title: 'Closable',
 			variant: 'default',
 			open: true,

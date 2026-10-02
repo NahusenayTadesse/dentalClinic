@@ -49,14 +49,7 @@ export type SectionKey =
 	| 'patient-access';
 
 export type SectionGroup =
-	| 'Clinic'
-	| 'Payroll'
-	| 'People'
-	| 'Compensation'
-	| 'Time & Leave'
-	| 'Stock'
-	| 'Money'
-	| 'System';
+	'Clinic' | 'Payroll' | 'People' | 'Compensation' | 'Time & Leave' | 'Stock' | 'Money' | 'System';
 
 export type SectionMeta = {
 	key: SectionKey;

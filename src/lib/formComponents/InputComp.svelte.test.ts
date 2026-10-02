@@ -14,7 +14,7 @@ describe('InputComp.svelte', () => {
 		const form = writable<Record<string, unknown>>({ name: '' });
 		const errors = writable<Record<string, unknown>>({});
 
-		render(InputComp, { label: 'Name', form, errors, type: 'text', name: 'name' });
+		await render(InputComp, { label: 'Name', form, errors, type: 'text', name: 'name' });
 
 		await expect.element(page.getByLabelText('Name')).toBeInTheDocument();
 	});
@@ -23,7 +23,7 @@ describe('InputComp.svelte', () => {
 		const form = writable<Record<string, unknown>>({ name: '' });
 		const errors = writable<Record<string, unknown>>({ name: ['Name is required'] });
 
-		const screen = render(InputComp, {
+		const screen = await render(InputComp, {
 			label: 'Name',
 			form,
 			errors,
@@ -46,7 +46,13 @@ describe('InputComp.svelte', () => {
 		const form = writable<Record<string, unknown>>({ name: '' });
 		const errors = writable<Record<string, unknown>>({});
 
-		const screen = render(InputComp, { label: 'Name', form, errors, type: 'text', name: 'name' });
+		const screen = await render(InputComp, {
+			label: 'Name',
+			form,
+			errors,
+			type: 'text',
+			name: 'name'
+		});
 
 		const input = screen.container.querySelector('input') as HTMLInputElement;
 		expect(input.getAttribute('aria-invalid')).toBeNull();
@@ -57,12 +63,24 @@ describe('InputComp.svelte', () => {
 		const form = writable<Record<string, unknown>>({ qty: 0, note: '' });
 		const errors = writable<Record<string, unknown>>({});
 
-		const number = render(InputComp, { label: 'Qty', form, errors, type: 'number', name: 'qty' });
+		const number = await render(InputComp, {
+			label: 'Qty',
+			form,
+			errors,
+			type: 'number',
+			name: 'qty'
+		});
 		expect(number.container.querySelector('input')?.getAttribute('step')).toBe('any');
 
 		// `step="any"` used to go on text inputs too, where it means nothing, and on numbers it
 		// switched off step validation entirely.
-		const text = render(InputComp, { label: 'Note', form, errors, type: 'text', name: 'note' });
+		const text = await render(InputComp, {
+			label: 'Note',
+			form,
+			errors,
+			type: 'text',
+			name: 'note'
+		});
 		expect(text.container.querySelectorAll('input')[0]?.getAttribute('step')).toBeNull();
 	});
 
@@ -70,7 +88,7 @@ describe('InputComp.svelte', () => {
 		const form = writable<Record<string, unknown>>({ name: '' });
 		const errors = writable<Record<string, unknown>>({});
 
-		render(InputComp, { label: 'Name', form, errors, type: 'text', name: 'name' });
+		await render(InputComp, { label: 'Name', form, errors, type: 'text', name: 'name' });
 
 		await userEvent.fill(page.getByRole('textbox'), 'John Doe');
 
@@ -81,7 +99,7 @@ describe('InputComp.svelte', () => {
 		const form = writable<Record<string, unknown>>({ description: '' });
 		const errors = writable<Record<string, unknown>>({});
 
-		render(InputComp, {
+		await render(InputComp, {
 			label: 'Description',
 			form,
 			errors,
@@ -102,7 +120,14 @@ describe('InputComp.svelte', () => {
 			{ value: false, name: 'Inactive' }
 		];
 
-		render(InputComp, { label: 'Status', form, errors, type: 'select', name: 'status', items });
+		await render(InputComp, {
+			label: 'Status',
+			form,
+			errors,
+			type: 'select',
+			name: 'status',
+			items
+		});
 
 		await userEvent.click(page.getByRole('button'));
 		await userEvent.click(page.getByRole('option', { name: 'Active', exact: true }));
@@ -114,7 +139,7 @@ describe('InputComp.svelte', () => {
 		const form = writable<Record<string, unknown>>({ agree: false });
 		const errors = writable<Record<string, unknown>>({});
 
-		render(InputComp, {
+		await render(InputComp, {
 			label: 'Agreement',
 			form,
 			errors,
@@ -133,7 +158,7 @@ describe('InputComp.svelte', () => {
 		const form = writable<Record<string, unknown>>({ name: '' });
 		const errors = writable<Record<string, unknown>>({ name: 'Name is required' });
 
-		render(InputComp, { label: 'Name', form, errors, type: 'text', name: 'name' });
+		await render(InputComp, { label: 'Name', form, errors, type: 'text', name: 'name' });
 
 		await expect.element(page.getByText('Name is required')).toBeInTheDocument();
 	});
@@ -144,7 +169,7 @@ describe('InputComp.svelte', () => {
 			name: { _errors: ['Name is required', 'Name must be at least 2 characters'] }
 		});
 
-		render(InputComp, { label: 'Name', form, errors, type: 'text', name: 'name' });
+		await render(InputComp, { label: 'Name', form, errors, type: 'text', name: 'name' });
 
 		await expect.element(page.getByText('Name is required')).toBeInTheDocument();
 		await expect.element(page.getByText('Name must be at least 2 characters')).toBeInTheDocument();
@@ -154,7 +179,13 @@ describe('InputComp.svelte', () => {
 		const form = writable<Record<string, unknown>>({ name: '' });
 		const errors = writable<Record<string, unknown>>({});
 
-		const screen = render(InputComp, { label: 'Name', form, errors, type: 'text', name: 'name' });
+		const screen = await render(InputComp, {
+			label: 'Name',
+			form,
+			errors,
+			type: 'text',
+			name: 'name'
+		});
 
 		expect(screen.container.querySelector('.text-red-500')).toBeNull();
 	});

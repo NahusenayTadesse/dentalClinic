@@ -7,14 +7,14 @@ import Messages from './Messages.svelte';
 describe('Messages.svelte', () => {
 	it('renders nothing when the message store is empty', async () => {
 		const message = writable(undefined);
-		const screen = render(Messages, { message });
+		const screen = await render(Messages, { message });
 
 		expect(screen.container.textContent?.trim()).toBe('');
 	});
 
 	it('renders a success message in green', async () => {
 		const message = writable({ type: 'success', text: 'Saved successfully' });
-		render(Messages, { message });
+		await render(Messages, { message });
 
 		const el = page.getByText('Saved successfully');
 		await expect.element(el).toBeInTheDocument();
@@ -23,7 +23,7 @@ describe('Messages.svelte', () => {
 
 	it('renders an error message in red', async () => {
 		const message = writable({ type: 'error', text: 'Something went wrong' });
-		render(Messages, { message });
+		await render(Messages, { message });
 
 		const el = page.getByText('Something went wrong');
 		await expect.element(el).toBeInTheDocument();

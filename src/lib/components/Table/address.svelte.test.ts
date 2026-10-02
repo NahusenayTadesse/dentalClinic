@@ -5,7 +5,7 @@ import Address from './address.svelte';
 
 describe('Table/address.svelte', () => {
 	it('shows a "No address information" message when every field is empty', async () => {
-		render(Address, {});
+		await render(Address, {});
 
 		await userEvent.click(page.getByRole('button'));
 
@@ -13,7 +13,7 @@ describe('Table/address.svelte', () => {
 	});
 
 	it('lists every populated address field once opened', async () => {
-		render(Address, {
+		await render(Address, {
 			subcity: 'Bole',
 			street: 'Main Street',
 			kebele: '05',
@@ -37,7 +37,7 @@ describe('Table/address.svelte', () => {
 	 * template listed all six fields, so an address with two of them showed four empty rows.
 	 */
 	it('omits fields that are not provided', async () => {
-		render(Address, { subcity: 'Bole', street: 'Main Street' });
+		await render(Address, { subcity: 'Bole', street: 'Main Street' });
 
 		await userEvent.click(page.getByRole('button'));
 
@@ -47,7 +47,7 @@ describe('Table/address.svelte', () => {
 	});
 
 	it('truncates a long concatenated address in the trigger label', async () => {
-		render(Address, {
+		await render(Address, {
 			subcity: 'A Very Long Subcity Name',
 			street: 'A Very Long Street Name'
 		});

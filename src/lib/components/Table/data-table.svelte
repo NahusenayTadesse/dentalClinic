@@ -510,7 +510,7 @@
 							</Table.Row>
 						{:else}
 							<Table.Row>
-								<Table.Cell colspan={columns.length} class="text-center font-2xl">
+								<Table.Cell colspan={columns.length} class="font-2xl text-center">
 									<div class="flex flex-row items-center justify-center gap-2">
 										<Frown class="animate-bounce" /> Nothing found here.
 									</div>

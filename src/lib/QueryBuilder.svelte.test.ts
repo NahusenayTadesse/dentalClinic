@@ -10,7 +10,7 @@ import QueryBuilder from './QueryBuilder.svelte';
  */
 describe('QueryBuilder.svelte', () => {
 	it('renders the default title and description', async () => {
-		render(QueryBuilder, { defaultOpen: true });
+		await render(QueryBuilder, { defaultOpen: true });
 
 		await expect.element(page.getByText('Query Builder')).toBeInTheDocument();
 		await expect
@@ -19,7 +19,7 @@ describe('QueryBuilder.svelte', () => {
 	});
 
 	it('renders a custom title and description', async () => {
-		render(QueryBuilder, {
+		await render(QueryBuilder, {
 			defaultOpen: true,
 			title: 'Employee Filters',
 			description: 'Narrow down the list'
@@ -30,14 +30,14 @@ describe('QueryBuilder.svelte', () => {
 	});
 
 	it('hides the search box when showSearch is false', async () => {
-		render(QueryBuilder, { defaultOpen: true, showSearch: false });
+		await render(QueryBuilder, { defaultOpen: true, showSearch: false });
 
 		await expect.element(page.getByPlaceholder('Search rows...')).not.toBeInTheDocument();
 	});
 
 	it('emits onQueryChange with the trimmed search term on submit (manual mode)', async () => {
 		const onQueryChange = vi.fn();
-		render(QueryBuilder, { defaultOpen: true, onQueryChange });
+		await render(QueryBuilder, { defaultOpen: true, onQueryChange });
 
 		await userEvent.fill(page.getByPlaceholder('Search rows...'), '  Addis  ');
 		await userEvent.keyboard('{Enter}');
@@ -48,7 +48,7 @@ describe('QueryBuilder.svelte', () => {
 
 	it('does not emit onQueryChange while typing in manual mode (no debounce fire)', async () => {
 		const onQueryChange = vi.fn();
-		render(QueryBuilder, { defaultOpen: true, onQueryChange, submitMode: 'manual' });
+		await render(QueryBuilder, { defaultOpen: true, onQueryChange, submitMode: 'manual' });
 
 		await userEvent.fill(page.getByPlaceholder('Search rows...'), 'Addis');
 
@@ -57,7 +57,7 @@ describe('QueryBuilder.svelte', () => {
 
 	it('changes page size and emits onQueryChange', async () => {
 		const onQueryChange = vi.fn();
-		render(QueryBuilder, { defaultOpen: true, onQueryChange, initialPageSize: 20 });
+		await render(QueryBuilder, { defaultOpen: true, onQueryChange, initialPageSize: 20 });
 
 		await expect.element(page.getByText('20 per page')).toBeInTheDocument();
 
@@ -71,7 +71,7 @@ describe('QueryBuilder.svelte', () => {
 
 	it('shows the active filter count and a "Clear all" button once a filter changes, then clears it', async () => {
 		const onQueryChange = vi.fn();
-		render(QueryBuilder, { defaultOpen: true, onQueryChange, initialPageSize: 20 });
+		await render(QueryBuilder, { defaultOpen: true, onQueryChange, initialPageSize: 20 });
 
 		await userEvent.click(page.getByText('20 per page'));
 		await userEvent.click(page.getByRole('option', { name: '100 per page' }));
@@ -85,13 +85,13 @@ describe('QueryBuilder.svelte', () => {
 	});
 
 	it('shows a loading badge with custom text when isLoading is true', async () => {
-		render(QueryBuilder, { defaultOpen: true, isLoading: true, loadingText: 'Fetching…' });
+		await render(QueryBuilder, { defaultOpen: true, isLoading: true, loadingText: 'Fetching…' });
 
 		await expect.element(page.getByText('Fetching…')).toBeInTheDocument();
 	});
 
 	it('shows the total result count, pluralised correctly', async () => {
-		const { rerender } = render(QueryBuilder, { defaultOpen: true, totalResults: 1 });
+		const { rerender } = await render(QueryBuilder, { defaultOpen: true, totalResults: 1 });
 		await expect.element(page.getByText('1 result')).toBeInTheDocument();
 
 		await rerender({ totalResults: 5 });
@@ -101,7 +101,7 @@ describe('QueryBuilder.svelte', () => {
 	// --- Collapsing --------------------------------------------------------
 
 	it('starts collapsed: the panel is a single button until it is clicked', async () => {
-		render(QueryBuilder, { title: 'Site Query' });
+		await render(QueryBuilder, { title: 'Site Query' });
 
 		await expect.element(page.getByPlaceholder('Search rows...')).not.toBeInTheDocument();
 
@@ -111,7 +111,7 @@ describe('QueryBuilder.svelte', () => {
 	});
 
 	it('collapses again from the Hide button', async () => {
-		render(QueryBuilder, { defaultOpen: true });
+		await render(QueryBuilder, { defaultOpen: true });
 
 		await expect.element(page.getByPlaceholder('Search rows...')).toBeInTheDocument();
 
@@ -121,14 +121,14 @@ describe('QueryBuilder.svelte', () => {
 	});
 
 	it('keeps the result count visible while collapsed', async () => {
-		render(QueryBuilder, { totalResults: 12 });
+		await render(QueryBuilder, { totalResults: 12 });
 
 		await expect.element(page.getByText('12 results')).toBeInTheDocument();
 		await expect.element(page.getByPlaceholder('Search rows...')).not.toBeInTheDocument();
 	});
 
 	it('stays open with no Hide button when collapsible is false', async () => {
-		render(QueryBuilder, { collapsible: false });
+		await render(QueryBuilder, { collapsible: false });
 
 		await expect.element(page.getByPlaceholder('Search rows...')).toBeInTheDocument();
 		await expect.element(page.getByRole('button', { name: /Hide/i })).not.toBeInTheDocument();
@@ -140,7 +140,7 @@ describe('QueryBuilder.svelte', () => {
 	// active, and `Clear all` reset the filters to themselves.
 
 	it('counts filters that arrived in the URL as active', async () => {
-		render(QueryBuilder, {
+		await render(QueryBuilder, {
 			defaultOpen: true,
 			initialSearch: 'Addis',
 			initialCustomFilters: { branchId: '4' }
@@ -150,14 +150,14 @@ describe('QueryBuilder.svelte', () => {
 	});
 
 	it('counts a page size that arrived in the URL as active', async () => {
-		render(QueryBuilder, { defaultOpen: true, initialPageSize: 100 });
+		await render(QueryBuilder, { defaultOpen: true, initialPageSize: 100 });
 
 		await expect.element(page.getByText('1 active filter')).toBeInTheDocument();
 	});
 
 	it('clears filters that arrived in the URL rather than restoring them', async () => {
 		const onQueryChange = vi.fn();
-		render(QueryBuilder, {
+		await render(QueryBuilder, {
 			defaultOpen: true,
 			onQueryChange,
 			initialSearch: 'Addis',
@@ -176,7 +176,7 @@ describe('QueryBuilder.svelte', () => {
 	});
 
 	it('does not count a date range that matches the page default', async () => {
-		render(QueryBuilder, {
+		await render(QueryBuilder, {
 			defaultOpen: true,
 			showDate: true,
 			initialStart: '2026-01-01',
@@ -189,7 +189,7 @@ describe('QueryBuilder.svelte', () => {
 	});
 
 	it('counts a date range that differs from the page default', async () => {
-		render(QueryBuilder, {
+		await render(QueryBuilder, {
 			defaultOpen: true,
 			showDate: true,
 			initialStart: '2026-03-01',
@@ -204,7 +204,7 @@ describe('QueryBuilder.svelte', () => {
 	// --- Staying in step with the URL --------------------------------------
 
 	it('resyncs the controls when the query changes underneath it', async () => {
-		const { rerender } = render(QueryBuilder, {
+		const { rerender } = await render(QueryBuilder, {
 			defaultOpen: true,
 			initialSearch: 'Addis',
 			initialPageSize: 20,
