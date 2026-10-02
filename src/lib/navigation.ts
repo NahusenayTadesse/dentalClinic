@@ -52,6 +52,7 @@ import MapPin from '@lucide/svelte/icons/map-pin';
 import Megaphone from '@lucide/svelte/icons/megaphone';
 import OctagonMinus from '@lucide/svelte/icons/octagon-minus';
 import Phone from '@lucide/svelte/icons/phone';
+import DatabaseBackup from '@lucide/svelte/icons/database-backup';
 import MessageSquare from '@lucide/svelte/icons/message-square';
 import Smartphone from '@lucide/svelte/icons/smartphone';
 import PhoneCall from '@lucide/svelte/icons/phone-call';
@@ -294,6 +295,12 @@ export const NAVIGATION: NavItem[] = [
 			{ title: 'Admin Panel', url: '/dashboard/admin-panel', icon: UserRoundCog },
 			{ title: 'Users', url: '/dashboard/admin-panel/users', section: 'access', icon: Users },
 			{ title: 'Roles', url: '/dashboard/admin-panel/roles', section: 'access', icon: Users },
+			{
+				title: 'Backups',
+				url: '/dashboard/admin-panel/backups',
+				section: 'access',
+				icon: DatabaseBackup
+			},
 			{
 				title: 'Regions',
 				url: '/dashboard/admin-panel/regions',

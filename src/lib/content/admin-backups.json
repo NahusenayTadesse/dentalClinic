@@ -1,0 +1,61 @@
+{
+	"path": "/dashboard/admin-panel/backups",
+	"languages": {
+		"en": {
+			"title": "Backups",
+			"summary": "The nightly database backups on this server, a copy elsewhere, and a check that the newest one restores.",
+			"sections": [
+				{
+					"heading": "Every night",
+					"body": "A cron job calls the backup every night (see Help → Reports → Backups for the line to add). The last 14 backups are kept. A red warning shows when the newest is more than two days old — the sign the cron job has stopped."
+				},
+				{
+					"heading": "Off this server",
+					"body": "Set BACKUP_COPY_DIR in the server's .env to a folder on another disk: a USB drive left plugged in, another computer's share, or a folder a cloud drive syncs. Each backup is copied there too. Without it, a dead disk takes the backups with it."
+				},
+				{
+					"heading": "Does it restore?",
+					"body": "Check the newest restores loads the newest backup into a scratch database, counts its patients, appointments, bills and procedures, and throws it away. Nothing live is touched. Run it after an update, and the weekly cron can run it for you."
+				},
+				{
+					"heading": "Who can do what",
+					"body": "Anyone with settings.manage can see this screen; only a super administrator can back up or run the check, since a backup holds every record. Restoring over the live database is done by a person at the server, never from here."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Reports",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		},
+		"am": {
+			"title": "ምትኬዎች",
+			"summary": "በዚህ ሰርቨር ላይ የሚገኙ የየምሽቱ የመረጃ ቋት ምትኬዎች፣ በሌላ ቦታ ያለ ቅጂ፣ እና አዲሱ ምትኬ መመለስ መቻሉን ማረጋገጫ።",
+			"sections": [
+				{
+					"heading": "በየምሽቱ",
+					"body": "የcron ሥራ በየምሽቱ ምትኬውን ይጠራል። የመጨረሻዎቹ 14 ምትኬዎች ይቀመጣሉ። አዲሱ ምትኬ ከሁለት ቀን በላይ ከሆነ ቀይ ማስጠንቀቂያ ይታያል — የcron ሥራው መቆሙን የሚያሳይ ምልክት ነው።"
+				},
+				{
+					"heading": "ከዚህ ሰርቨር ውጭ",
+					"body": "በሰርቨሩ .env ላይ BACKUP_COPY_DIRን በሌላ ዲስክ ላይ ወዳለ አቃፊ ያስቀምጡ፤ ተሰክቶ የሚቆይ USB፣ የሌላ ኮምፒውተር ማጋሪያ፣ ወይም በደመና የሚሰመር አቃፊ። እያንዳንዱ ምትኬ እዚያም ይገለበጣል።"
+				},
+				{
+					"heading": "ይመለሳል ወይ?",
+					"body": "«Check the newest restores» አዲሱን ምትኬ ወደ ጊዜያዊ የመረጃ ቋት ጭኖ ታካሚዎችን፣ ቀጠሮዎችን፣ ሂሳቦችንና ሕክምናዎችን ይቆጥራል፣ ከዚያ ያጠፋዋል። ቀጥታ ያለው ምንም አይነካም።"
+				},
+				{
+					"heading": "ማን ምን ማድረግ ይችላል",
+					"body": "ይህን ገጽ settings.manage ያለው ሁሉ ማየት ይችላል፤ ምትኬ መሥራትና ማረጋገጥ የሚችለው ሱፐር አድሚን ብቻ ነው። በቀጥታ ቋቱ ላይ መመለስ በሰርቨሩ ላይ ባለ ሰው ይሠራል፣ ከዚህ ፈጽሞ አይደለም።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሪፖርቶች",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		}
+	}
+}

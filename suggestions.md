@@ -153,12 +153,20 @@ Credit income keeps many clinics running, so this matters more than it looks.
   decides those on the claim — and undoing a co-payment bill when the payer's bill is voided (the
   manager voids both).
 
-### 7. Coping with power and internet cuts
+### 7. ✅ Coping with power and internet cuts — backups done
 
 - Run on a local server on the clinic's network, so a cut to the internet is not a cut to the
   clinic. SQLite in WAL mode is already a planned install target (CLAUDE.md §10).
 - Automatic off-site backups. `/dashboard/backup` exists; a restore that is rehearsed matters more
   than the button.
+- **Done:** the app now makes its own backups (`server/backups.ts`): a consistent `mariadb-dump`,
+  gzipped, every night from cron (`/api/cron/backup`, its own secret), the last 14 kept, and
+  copied to `BACKUP_COPY_DIR` when set — a USB drive, another machine, a synced folder. **Admin
+  Panel → Backups** shows them, warns when the newest is over two days old, and **checks the newest
+  restores** by loading it into a scratch database and counting the core tables (`?verify=1` does it
+  from cron). Before this, nothing in the repo wrote a backup at all.
+- **Not done:** offline use in the browser itself. Running on the clinic's own network covers an
+  internet cut; a browser that keeps working when the server is off is a different application.
 
 ---
 

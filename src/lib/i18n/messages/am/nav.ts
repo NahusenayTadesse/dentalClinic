@@ -81,6 +81,7 @@ export const nav: Record<string, string> = {
 	'Admin Panel': 'የአስተዳደር ፓነል',
 	Users: 'ተጠቃሚዎች',
 	Roles: 'ሚናዎች',
+	Backups: 'ምትኬዎች',
 	Departments: 'የሥራ ክፍሎች',
 	Positions: 'የሥራ መደቦች',
 	'Educational Level': 'የትምህርት ደረጃ',

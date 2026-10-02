@@ -1480,6 +1480,38 @@ export const HELP_SECTIONS: HelpSection[] = [
 				]
 			},
 			{
+				id: 'backups',
+				title: 'Backups, and power or internet cuts',
+				summary:
+					'The database is backed up every night, copied off the server, and checked to restore — so a dead disk or a power cut loses a day at most.',
+				where: 'Menu → **Admin Panel → Backups** → `/dashboard/admin-panel/backups`',
+				permission: 'settings.manage to read; a super admin to back up or check',
+				steps: [
+					'Set **BACKUP_CRON_SECRET** in the server’s `.env`, and add a nightly cron job: `curl -fsS -H "Authorization: Bearer $BACKUP_CRON_SECRET" https://your-domain/api/cron/backup`. Once a week, add `?verify=1` to also prove the backup restores.',
+					'Set **BACKUP_COPY_DIR** to a folder on another disk — a USB drive left plugged in, or another computer’s shared folder — so each backup is copied off the server. A folder synced to a cloud drive works too.',
+					'Open **Backups** now and then: it warns when the newest backup is more than two days old, and shows when the restore check last passed.',
+					'**Back up now** before anything risky — an update, a move to new hardware.'
+				],
+				notes: [
+					'The last 14 backups are kept on the server, and the last 14 in the copy folder.',
+					'**Check the newest restores** loads it into a scratch database, counts patients, appointments, bills and procedures, and throws the scratch copy away. Nothing in the live database is touched.',
+					'Run the system on a computer in the clinic, on the clinic’s own network, with a UPS: a cut to the internet then stops nothing but texts and gateway payments, and a power cut is covered by the UPS long enough to shut down cleanly.',
+					'**Download** in the top bar takes the newest backup together with the uploaded files, for keeping on another machine.',
+					'Restoring over the live database is deliberately not a button: it replaces everything, and is done by a person at the server.'
+				],
+				keywords: [
+					'backup',
+					'restore',
+					'power cut',
+					'internet',
+					'ups',
+					'disaster',
+					'recovery',
+					'usb',
+					'cron'
+				]
+			},
+			{
 				id: 'audit-log',
 				title: 'The audit log',
 				summary:
@@ -2519,6 +2551,14 @@ export const ROUTE_MAP: RouteEntry[] = [
 		title: 'Users',
 		purpose: 'Accounts, roles, special permissions and password resets.',
 		permission: 'users.manage',
+		group: 'Admin panel'
+	},
+	{
+		path: '/dashboard/admin-panel/backups',
+		title: 'Backups',
+		purpose:
+			'The nightly database backups on this server, a copy elsewhere, and a check that the newest restores.',
+		permission: 'settings.manage; a super admin to run',
 		group: 'Admin panel'
 	},
 	{

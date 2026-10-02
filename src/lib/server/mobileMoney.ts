@@ -114,26 +114,37 @@ export async function setReconciled(
 	found: boolean,
 	refusals: { notHere: string }
 ): Promise<void> {
+	// Only the transaction row is locked. Locking through a join to `payment_methods` held its rows
+	// too, and every payment taken meanwhile — which checks its method's row — waited on the tick.
 	const [row] = await tx
 		.select({
 			id: transactions.id,
+			paymentMethodId: transactions.paymentMethodId,
 			reconciledAt: transactions.reconciledAt,
 			reconciledBy: transactions.reconciledBy
 		})
 		.from(transactions)
-		.innerJoin(paymentMethods, eq(paymentMethods.id, transactions.paymentMethodId))
 		.where(
 			and(
 				eq(transactions.id, transactionId),
 				eq(transactions.direction, 'in'),
-				inArray(paymentMethods.kind, [...TRANSFER_KINDS]),
 				notDeleted(transactions),
 				branchFilter(transactions.branchId, event.locals.branch)
 			)
 		)
 		.limit(1)
 		.for('update');
-	refuseUnless(Boolean(row), refusals.notHere);
+	const [method] = row?.paymentMethodId
+		? await tx
+				.select({ kind: paymentMethods.kind })
+				.from(paymentMethods)
+				.where(eq(paymentMethods.id, row.paymentMethodId))
+				.limit(1)
+		: [];
+	refuseUnless(
+		Boolean(row) && (TRANSFER_KINDS as readonly string[]).includes(method?.kind ?? ''),
+		refusals.notHere
+	);
 
 	const after = found
 		? {
@@ -142,11 +153,12 @@ export async function setReconciled(
 			}
 		: { reconciledAt: null, reconciledBy: null };
 	await tx.update(transactions).set(after).where(eq(transactions.id, row.id));
+	const before = { reconciledAt: row.reconciledAt, reconciledBy: row.reconciledBy };
 	await recordAudit(tx, event, {
 		table: 'transactions',
 		recordId: row.id,
 		action: 'update',
-		before: row,
+		before,
 		after
 	});
 }
