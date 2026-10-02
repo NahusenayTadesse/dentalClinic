@@ -3,7 +3,7 @@
 	import MoonIcon from '@lucide/svelte/icons/moon';
 
 	import { resetMode, setMode } from 'mode-watcher';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+	import * as DropdownMenu from '@nahu/admin-kit/components/ui/dropdown-menu/index.js';
 	import { buttonVariants } from '@nahu/admin-kit/components/ui/button/index.js';
 </script>
 

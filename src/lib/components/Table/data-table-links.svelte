@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Component } from 'svelte';
 	import type { IconProps } from '@lucide/svelte';
-	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
+	import * as Tooltip from '@nahu/admin-kit/components/ui/tooltip/index.js';
 	import { Button, type ButtonVariant } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { buttonVariants } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { entityHref, type EntityKind } from '$lib/entityLinks';

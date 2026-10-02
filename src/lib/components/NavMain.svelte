@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Collapsible from '@nahu/admin-kit/components/ui/collapsible/index.js';
-	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
+	import * as Sidebar from '@nahu/admin-kit/components/ui/sidebar/index.js';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';

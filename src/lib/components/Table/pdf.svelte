@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Download, Grid3x3, Printer } from '@lucide/svelte';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index';
+	import * as DropdownMenu from '@nahu/admin-kit/components/ui/dropdown-menu/index.js';
 	import { page } from '$app/state';
 	import Papa from 'papaparse';
 

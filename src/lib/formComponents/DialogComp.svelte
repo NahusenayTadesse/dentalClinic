@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Dialog from '$lib/components/ui/dialog/index.js';
+	import * as Dialog from '@nahu/admin-kit/components/ui/dialog/index.js';
 	import { Button, type ButtonVariant } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Trash } from '@lucide/svelte';
 	import type { Snippet } from 'svelte';

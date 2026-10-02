@@ -1,5 +1,5 @@
 <script lang="ts">
-	import RangeCalendar from '$lib/components/ui/range-calendar/range-calendar.svelte';
+	import RangeCalendar from '@nahu/admin-kit/components/ui/range-calendar/range-calendar.svelte';
 	import { CalendarDate, type DateValue } from '@internationalized/date';
 	import { CalendarIcon, SlidersHorizontal } from '@lucide/svelte';
 	import type { DateRange } from 'bits-ui';

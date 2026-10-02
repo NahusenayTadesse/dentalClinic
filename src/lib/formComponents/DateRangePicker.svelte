@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button, buttonVariants } from '@nahu/admin-kit/components/ui/button/index.js';
-	import { Calendar } from '$lib/components/ui/calendar';
+	import { Calendar } from '@nahu/admin-kit/components/ui/calendar/index.js';
 	import * as Popover from '@nahu/admin-kit/components/ui/popover/index.js';
 	import ScrollArea from '@nahu/admin-kit/components/ui/scroll-area/scroll-area.svelte';
 	import { cn } from '$lib/utils.js';

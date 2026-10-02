@@ -4,7 +4,7 @@
 	import { getLocalTimeZone, parseDate, today, type DateValue } from '@internationalized/date';
 	import type { DateRange } from 'bits-ui';
 
-	import RangeCalendar from '$lib/components/ui/range-calendar/range-calendar.svelte';
+	import RangeCalendar from '@nahu/admin-kit/components/ui/range-calendar/range-calendar.svelte';
 	import * as Popover from '@nahu/admin-kit/components/ui/popover/index.js';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { setServerParams } from './table-state.svelte';

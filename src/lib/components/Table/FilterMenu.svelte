@@ -31,7 +31,7 @@
 	import { toast } from 'svelte-sonner';
 	import { fly, fade } from 'svelte/transition';
 	import { buttonVariants } from '@nahu/admin-kit/components/ui/button/index.js';
-	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
+	import * as Tooltip from '@nahu/admin-kit/components/ui/tooltip/index.js';
 
 	type ChartType = 'bar' | 'pie' | 'doughnut' | 'line' | 'polarArea' | 'radar';
 

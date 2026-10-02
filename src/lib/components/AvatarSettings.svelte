@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+	import * as DropdownMenu from '@nahu/admin-kit/components/ui/dropdown-menu/index.js';
 	import * as Avatar from '@nahu/admin-kit/components/ui/avatar/index.js';
 
 	import { LogOut, KeyRound } from '@lucide/svelte';

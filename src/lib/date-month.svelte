@@ -5,7 +5,7 @@
 		PopoverContent,
 		PopoverTrigger
 	} from '@nahu/admin-kit/components/ui/popover/index.js';
-	import { Calendar } from '$lib/components/ui/calendar';
+	import { Calendar } from '@nahu/admin-kit/components/ui/calendar/index.js';
 	import { CalendarIcon } from '@lucide/svelte';
 	import { getLocalTimeZone, type CalendarDate } from '@internationalized/date';
 	import { formatEthiopianDate } from './global.svelte';

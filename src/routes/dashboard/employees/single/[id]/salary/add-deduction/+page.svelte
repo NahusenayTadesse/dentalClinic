@@ -3,7 +3,7 @@
 	import { Label } from '@nahu/admin-kit/components/ui/label/index.js';
 	import type { Snapshot } from '@sveltejs/kit';
 
-	import { Textarea } from '$lib/components/ui/textarea/index.js';
+	import { Textarea } from '@nahu/admin-kit/components/ui/textarea/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import DatePicker from '$lib/formComponents/DatePicker.svelte';
 

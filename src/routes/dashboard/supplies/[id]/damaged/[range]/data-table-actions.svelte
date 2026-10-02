@@ -1,7 +1,7 @@
 <script lang="ts">
 	import EllipsisIcon from '@lucide/svelte/icons/ellipsis';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+	import * as DropdownMenu from '@nahu/admin-kit/components/ui/dropdown-menu/index.js';
 	import { Download, ExternalLink, Eye } from '@lucide/svelte';
 	import { dropdownClass, fileUrl } from '$lib/global.svelte';
 

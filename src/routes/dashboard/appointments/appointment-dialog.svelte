@@ -4,7 +4,7 @@
 	import FlaskConical from '@lucide/svelte/icons/flask-conical';
 	import ExternalLink from '@lucide/svelte/icons/external-link';
 
-	import * as Dialog from '$lib/components/ui/dialog/index.js';
+	import * as Dialog from '@nahu/admin-kit/components/ui/dialog/index.js';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import InputComp from '$lib/formComponents/InputComp.svelte';

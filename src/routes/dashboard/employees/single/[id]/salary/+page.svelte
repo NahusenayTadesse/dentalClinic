@@ -3,7 +3,7 @@
 	import { Label } from '@nahu/admin-kit/components/ui/label/index.js';
 	import type { Snapshot } from '@sveltejs/kit';
 
-	import { Textarea } from '$lib/components/ui/textarea/index.js';
+	import { Textarea } from '@nahu/admin-kit/components/ui/textarea/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 
 	import * as Card from '@nahu/admin-kit/components/ui/card/index.js';
@@ -81,7 +81,7 @@
 	$form.taxAmount = 0;
 
 	import { getLocalTimeZone, today } from '@internationalized/date';
-	import { RangeCalendar } from '$lib/components/ui/range-calendar/index.js';
+	import { RangeCalendar } from '@nahu/admin-kit/components/ui/range-calendar/index.js';
 	import Errors from '$lib/formComponents/Errors.svelte';
 
 	const start = today(getLocalTimeZone());

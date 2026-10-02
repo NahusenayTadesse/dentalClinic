@@ -21,7 +21,7 @@
 	type FormStore = Writable<Record<string, any>>;
 	/* eslint-enable @typescript-eslint/no-explicit-any */
 	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
-	import { Textarea } from '$lib/components/ui/textarea/index';
+	import { Textarea } from '@nahu/admin-kit/components/ui/textarea/index.js';
 	import { Label } from '@nahu/admin-kit/components/ui/label/index.js';
 	import { Checkbox } from '@nahu/admin-kit/components/ui/checkbox/index.js';
 	import CircleAlert from '@lucide/svelte/icons/circle-alert';

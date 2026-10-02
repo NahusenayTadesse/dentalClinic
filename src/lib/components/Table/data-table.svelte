@@ -21,7 +21,7 @@
 
 	import { createSvelteTable, FlexRender } from '@nahu/admin-kit/components/ui/data-table/index.js';
 	import * as Table from '@nahu/admin-kit/components/ui/table/index.js';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+	import * as DropdownMenu from '@nahu/admin-kit/components/ui/dropdown-menu/index.js';
 	import { ScrollArea } from '@nahu/admin-kit/components/ui/scroll-area/index.js';
 	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';

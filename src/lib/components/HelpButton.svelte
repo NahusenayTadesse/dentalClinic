@@ -3,7 +3,7 @@
 	import CircleQuestionMark from '@lucide/svelte/icons/circle-question-mark';
 	import ExternalLink from '@lucide/svelte/icons/external-link';
 	import ArrowRight from '@lucide/svelte/icons/arrow-right';
-	import * as Sheet from '$lib/components/ui/sheet/index.js';
+	import * as Sheet from '@nahu/admin-kit/components/ui/sheet/index.js';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Separator } from '@nahu/admin-kit/components/ui/separator/index.js';
 	import { resolveHelp } from '$lib/Registry';

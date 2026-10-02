@@ -1,9 +1,9 @@
 <script lang="ts">
-	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
+	import * as Sidebar from '@nahu/admin-kit/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
 	import { appSurface } from '$lib/global.svelte';
 	import Logo from '$lib/components/Logo.svelte';
-	import { useSidebar } from '$lib/components/ui/sidebar/index.js';
+	import { useSidebar } from '@nahu/admin-kit/components/ui/sidebar/index.js';
 	import { canVisit } from '$lib/routeAccess';
 	import { NAVIGATION, type NavItem } from '$lib/navigation';
 

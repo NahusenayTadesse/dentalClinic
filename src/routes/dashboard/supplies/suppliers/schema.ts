@@ -1,4 +1,4 @@
-import type { Description } from '$lib/components/ui/sheet';
+import type { Description } from '@nahu/admin-kit/components/ui/sheet/index.js';
 import { z } from 'zod/v4';
 
 export const add = z.object({
