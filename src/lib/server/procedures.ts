@@ -23,7 +23,7 @@
  * Non-goals: billing (an invoice snapshots procedures; it does not live here), treatment plans
  * (they quote procedures), and periodontal charting (see `$lib/teeth.ts`).
  */
-import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, gte, inArray, lte, sql } from 'drizzle-orm';
 import type { RequestEvent } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
@@ -36,6 +36,7 @@ import {
 	services
 } from '$lib/server/db/schema';
 import { notDeleted } from '$lib/server/softDelete';
+import { branchFilter, type BranchContext } from '$lib/server/branchScope';
 import { WriteRefused } from '$lib/server/childCrud';
 import { providerEmployee, providerName } from '$lib/server/appointments';
 import { clinicDate, clinicToday } from '$lib/clinicTime';
@@ -473,4 +474,77 @@ export async function recordVisitWork(
 	}
 
 	return recorded;
+}
+
+/* ── Production ─────────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Work completed between two clinic days (inclusive) at this branch, one row per procedure, with
+ * its clinician, service and fee — production, the clinical report's base. Production is the fee
+ * of work done, not money collected (that is billing's); it is what `commissionByStaff` pays on.
+ */
+export async function completedWork(
+	from: string,
+	to: string,
+	branch: Pick<BranchContext, 'active'>
+) {
+	return db
+		.select({
+			id: procedures.id,
+			patientId: procedures.patientId,
+			providerId: procedures.providerId,
+			provider: providerName,
+			serviceId: procedures.serviceId,
+			service: services.name,
+			fee: procedures.fee,
+			completedOn: procedures.completedOn
+		})
+		.from(procedures)
+		.leftJoin(services, eq(services.id, procedures.serviceId))
+		.leftJoin(provider, eq(provider.id, procedures.providerId))
+		.leftJoin(providerEmployee, eq(providerEmployee.id, provider.employeeId))
+		.where(
+			and(
+				eq(procedures.status, 'completed'),
+				gte(procedures.completedOn, from),
+				lte(procedures.completedOn, to),
+				notDeleted(procedures),
+				branchFilter(procedures.branchId, branch)
+			)
+		);
+}
+
+/**
+ * An appointment was cancelled or missed: the planned work it held is free to be booked again.
+ * Done work keeps its visit — it happened there. One audit row on the appointment, naming what was
+ * released. Returns how many procedures were released.
+ */
+export async function releaseBookedWork(
+	tx: Tx,
+	event: AuditRequest,
+	appointmentId: number
+): Promise<number> {
+	const held = await tx
+		.select({ id: procedures.id })
+		.from(procedures)
+		.where(
+			and(
+				eq(procedures.appointmentId, appointmentId),
+				eq(procedures.status, 'planned'),
+				notDeleted(procedures)
+			)
+		);
+	if (!held.length) return 0;
+	const ids = held.map((h) => h.id);
+	await tx
+		.update(procedures)
+		.set({ appointmentId: null, updatedBy: event.locals.user?.id })
+		.where(inArray(procedures.id, ids));
+	await recordAudit(tx, event, {
+		table: 'appointment',
+		recordId: appointmentId,
+		action: 'update',
+		detail: { releasedWork: ids }
+	});
+	return ids.length;
 }

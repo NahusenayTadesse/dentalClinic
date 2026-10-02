@@ -57,6 +57,10 @@ export type AuditedTable =
 	| 'transactions'
 	| 'expenses'
 	| 'cash_session'
+	// pay adjustments: each changes what an employee is paid (`server/payrollLedger.ts`)
+	| 'over_time'
+	| 'bonuses'
+	| 'deductions'
 	// controlled stock
 	| 'supplies_adjustments'
 	| 'supply_batch'

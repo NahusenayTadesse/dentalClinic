@@ -3,6 +3,8 @@ import { z } from 'zod/v4';
 const fields = {
 	name: z.string('Name is required').min(2).max(80),
 	defaultMinutes: z.coerce.number().int().min(5).max(480).default(30),
+	/** Zero — or blank, which coerces to it — brings nobody back; `recallAfterVisit` reads both as none. */
+	recallIntervalMonths: z.coerce.number().int().min(0).max(60).default(0),
 	/** Hex, so the day view can use it directly without parsing anything at render time. */
 	colour: z
 		.string()

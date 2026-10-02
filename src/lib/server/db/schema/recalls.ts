@@ -46,10 +46,10 @@ export const recall = mysqlTable(
 		branchId: branchRef(),
 
 		/** The date the patient becomes due. The column every recall query sorts and filters on. */
-		dueOn: date('due_on').notNull(),
+		dueOn: date('due_on', { mode: 'string' }).notNull(),
 
 		/** What this recall follows — the visit that set the interval running. */
-		lastVisitOn: date('last_visit_on'),
+		lastVisitOn: date('last_visit_on', { mode: 'string' }),
 
 		/**
 		 * `due`       — waiting, not yet contacted or not yet booked

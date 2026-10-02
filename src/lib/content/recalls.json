@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/recalls",
+	"languages": {
+		"en": {
+			"title": "Recalls",
+			"summary": "Patients due back at this branch who have not booked yet.",
+			"sections": [
+				{
+					"heading": "Where recalls come from",
+					"body": "Nobody types them. When a visit is completed in the diary and its appointment type has a recall interval — a check-up every six months, say — the patient is put on this list, due that many months later. Set the interval on Clinic Setup → Appointment Types; 0 means the type brings nobody back."
+				},
+				{
+					"heading": "Working the list",
+					"body": "The longest overdue are at the top. Ring the patient, then Log a call: no answer, spoke (they will call back), declined, or stop (moved away, treated elsewhere). Declined and stopped recalls leave the list; the calls column stops a patient being rung a fourth time.\n\nBook opens the diary with the patient and the kind of visit already chosen. The booking takes them off the list by itself; if that appointment is cancelled or missed, they come back on."
+				},
+				{
+					"heading": "The figures",
+					"body": "Due in this window, overdue, booked, and — of the recalls settled either way — the share that came back. Choose how far ahead to look with the buttons over the table.\n\nNeeds the appointments.book permission."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Appointments",
+					"href": "/dashboard/help#section-appointments"
+				}
+			]
+		},
+		"am": {
+			"title": "የተመላሽ ጥሪዎች",
+			"summary": "በዚህ ቅርንጫፍ ተመልሰው መምጣት ያለባቸውና ገና ቀጠሮ ያልያዙ ታካሚዎች።",
+			"sections": [
+				{
+					"heading": "ከየት ይመጣሉ",
+					"body": "ማንም አይጽፋቸውም። አንድ ጉብኝት በቀጠሮ መዝገቡ ሲጠናቀቅና የቀጠሮው ዓይነት የመመለሻ ጊዜ ካለው — ለምሳሌ በየስድስት ወሩ ምርመራ — ታካሚው ከዚያ ወራት በኋላ እንዲመለስ በዚህ ዝርዝር ላይ ይገባል። ጊዜውን በክሊኒክ ዝግጅት → የቀጠሮ ዓይነቶች ያስቀምጡ፤ 0 ማለት ማንንም አይመልስም።"
+				},
+				{
+					"heading": "ዝርዝሩን መሥራት",
+					"body": "ብዙ የዘገዩት ከላይ ናቸው። ለታካሚው ይደውሉ፣ ከዚያ ጥሪ ይመዝግቡ፦ አልተነሳም፣ ተነጋግረናል፣ አልፈለገም፣ ወይም ይቁም። ያልፈለጉና የቆሙ ከዝርዝሩ ይወጣሉ።\n\nቀጠሮ ያዝ የቀጠሮ መዝገቡን ታካሚውና የጉብኝቱ ዓይነት ተመርጠው ይከፍታል። ቀጠሮው በራሱ ከዝርዝሩ ያወጣቸዋል፤ ቀጠሮው ከተሰረዘ ወይም ካልመጡ ይመለሳሉ።"
+				},
+				{
+					"heading": "አሃዞቹ",
+					"body": "በዚህ ጊዜ ውስጥ የደረሱ፣ የዘገዩ፣ ቀጠሮ የያዙ፣ እና ከተቋጩት ውስጥ የተመለሱት ድርሻ።\n\nየappointments.book ፈቃድ ይፈልጋል።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ቀጠሮዎች",
+					"href": "/dashboard/help#section-appointments"
+				}
+			]
+		}
+	}
+}

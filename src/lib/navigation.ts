@@ -36,6 +36,7 @@ import Coins from '@lucide/svelte/icons/coins';
 import Contact from '@lucide/svelte/icons/contact';
 import Container from '@lucide/svelte/icons/container';
 import FlaskConical from '@lucide/svelte/icons/flask-conical';
+import BellRing from '@lucide/svelte/icons/bell-ring';
 import GitBranch from '@lucide/svelte/icons/git-branch';
 import GraduationCap from '@lucide/svelte/icons/graduation-cap';
 import HeartPulse from '@lucide/svelte/icons/heart-pulse';
@@ -127,6 +128,8 @@ export const NAVIGATION: NavItem[] = [
 		items: [
 			{ title: 'Day View', url: '/dashboard/appointments', icon: CalendarDays },
 			{ title: 'Appointment List', url: '/dashboard/appointments/list', icon: List },
+			{ title: 'Recalls', url: '/dashboard/recalls', icon: BellRing },
+			{ title: 'Lab Work', url: '/dashboard/lab-cases', icon: FlaskConical },
 			{ title: 'Dentists', url: '/dashboard/providers', icon: Stethoscope }
 		]
 	},
@@ -189,12 +192,9 @@ export const NAVIGATION: NavItem[] = [
 		items: [
 			{ title: 'Paid Salaries', url: '/dashboard/salary/paid-salaries', icon: Banknote },
 			{ title: 'All UnPaid Salaries', url: '/dashboard/salary/add-payroll', icon: BanknoteArrowUp },
-			{ title: 'All OverTime', url: '/dashboard/salary/add-overtime', icon: BanknoteArrowUp },
-			{
-				title: 'All Deductions',
-				url: '/dashboard/salary/add-deductions',
-				icon: BanknoteArrowDown
-			},
+			{ title: 'Overtime', url: '/dashboard/salary/ledger/overtime', icon: BanknoteArrowUp },
+			{ title: 'Bonuses', url: '/dashboard/salary/ledger/bonuses', icon: BanknoteArrowUp },
+			{ title: 'Deductions', url: '/dashboard/salary/ledger/deductions', icon: BanknoteArrowDown },
 			{ title: 'Transactions', url: '/dashboard/salary/transactions', icon: ScanLine },
 			{ title: 'Expenses', url: '/dashboard/salary/transactions/expenses', icon: Coins }
 		]
@@ -229,6 +229,7 @@ export const NAVIGATION: NavItem[] = [
 		icon: ChartArea,
 		items: [
 			{ title: 'Overview', url: '/dashboard/reports', icon: LayoutDashboard },
+			{ title: 'Clinic', url: '/dashboard/reports/clinic', icon: Stethoscope },
 			{ title: 'People', url: '/dashboard/reports/people', icon: Users },
 			{ title: 'Payroll', url: '/dashboard/reports/payroll', icon: Banknote },
 			{ title: 'Compensation', url: '/dashboard/reports/compensation', icon: Coins },

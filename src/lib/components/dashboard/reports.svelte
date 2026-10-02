@@ -7,13 +7,11 @@
 		ShoppingBagIcon,
 		UserCheckIcon,
 		DollarSignIcon,
-		CreditCardIcon,
 		ClipboardListIcon,
 		UsersIcon
 	} from '@lucide/svelte';
 
 	type TodayReport = {
-		id: number;
 		bookedAppointments: number;
 		productsSold: number;
 		serviceRendered: number;

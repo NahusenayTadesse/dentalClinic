@@ -364,6 +364,43 @@ export async function receivables(branch: Pick<BranchContext, 'active'>) {
 }
 
 /**
+ * Every bill at this branch with money still owing on it, one row each, oldest first — patients'
+ * and payers' both, since an aging report is about the clinic's money, not who chases it. The
+ * Who Owes lists group the same bills by debtor; this keeps the bill and its issue date, which is
+ * what aging is counted from.
+ */
+export async function openBills(branch: Pick<BranchContext, 'active'>) {
+	const paid = paidPerInvoice();
+	const rows = await db
+		.select({
+			id: invoice.id,
+			invoiceNumber: invoice.invoiceNumber,
+			patientId: invoice.patientId,
+			patient: patientFullName,
+			payer: customers.name,
+			issuedOn: invoice.issuedOn,
+			dueOn: invoice.dueOn,
+			total: invoice.total,
+			paid: paid.paid
+		})
+		.from(invoice)
+		.innerJoin(patient, eq(patient.id, invoice.patientId))
+		.leftJoin(customers, eq(customers.id, invoice.customerId))
+		.leftJoin(paid, eq(paid.invoiceId, invoice.id))
+		.where(
+			and(
+				inArray(invoice.status, ['issued', 'partly']),
+				notDeleted(invoice),
+				branchFilter(invoice.branchId, branch)
+			)
+		)
+		.orderBy(asc(invoice.issuedOn), asc(invoice.id));
+	return rows
+		.map((r) => ({ ...r, owed: cents(r.total - Number(r.paid ?? 0)) }))
+		.filter((r) => r.owed > 0);
+}
+
+/**
  * The bills billed to one employer or insurer, across every patient, with what each still owes —
  * the payer's own account. Drafts are not shown: nothing is owed on them yet.
  */

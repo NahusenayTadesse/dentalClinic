@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/salary/ledger",
+	"languages": {
+		"en": {
+			"title": "Overtime, Bonuses and Deductions",
+			"summary": "Every pay adjustment, over any period, before and after it is paid.",
+			"sections": [
+				{
+					"heading": "Reading the list",
+					"body": "One row per entry. Choose any date range — a week, a quarter, a year — not only a month. Search an employee or a reason, filter by department, position, type and whether payroll has paid it, and sort any column. The figures at the top and the charts count everything the filters match, not just the page you see.\n\nThe tabs switch between overtime, bonuses and deductions and keep your dates."
+				},
+				{
+					"heading": "Recording",
+					"body": "Record opens one form for one or many employees: tick them (the list searches), then the date and the details. Overtime asks for the type and the hours, and is priced for each person from their approved salary on that day and the type's rate; it is refused, by name, for anyone with no salary that day, and above the type's hour limit. A bonus or deduction asks for the amount; a deduction also says what kind and why.\n\nAll or nothing: if one chosen employee cannot be recorded, nobody is."
+				},
+				{
+					"heading": "Paid months are closed",
+					"body": "An entry dated in a period an employee has already been paid for would never be paid, so it is refused. Paid entries show 'Paid — closed' and cannot be changed or removed. Record a correction in the next unpaid month instead.\n\nNeeds salary.manage. Removing an entry is a super administrator's, and every change is on the audit trail."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Finance",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		},
+		"am": {
+			"title": "የትርፍ ሰዓት፣ ጉርሻና ቅናሾች",
+			"summary": "ማንኛውም የደመወዝ ማስተካከያ፣ በማንኛውም ጊዜ፣ ከመከፈሉ በፊትና በኋላ።",
+			"sections": [
+				{
+					"heading": "ዝርዝሩን ማንበብ",
+					"body": "ለእያንዳንዱ ግቤት አንድ መስመር። ማንኛውንም የቀን ክልል ይምረጡ — ሳምንት፣ ሩብ ዓመት፣ ዓመት — ወር ብቻ አይደለም። ሠራተኛ ወይም ምክንያት ይፈልጉ፣ በክፍል፣ በሥራ መደብ፣ በዓይነትና በደመወዝ መከፈሉ ያጣሩ። ከላይ ያሉት አሃዞችና ገበታዎች ማጣሪያው የሚያገኘውን ሁሉ ይቆጥራሉ።"
+				},
+				{
+					"heading": "መመዝገብ",
+					"body": "መዝግብ ለአንድ ወይም ለብዙ ሠራተኞች አንድ ቅጽ ይከፍታል። የትርፍ ሰዓት ዓይነትና ሰዓት ይጠይቃል፣ በዚያ ቀን ካለው የጸደቀ ደመወዝና ከዓይነቱ መጠን ይሰላል። ጉርሻ ወይም ቅናሽ መጠን ይጠይቃል።\n\nሁሉም ወይም ምንም፦ አንዱ መመዝገብ ካልቻለ ማንም አይመዘገብም።"
+				},
+				{
+					"heading": "የተከፈሉ ወራት ተዘግተዋል",
+					"body": "ሠራተኛው ቀድሞ በተከፈለበት ጊዜ የተመዘገበ ግቤት ፈጽሞ ስለማይከፈል አይፈቀድም። የተከፈሉ ግቤቶች ሊለወጡ ወይም ሊወገዱ አይችሉም።\n\nsalary.manage ይፈልጋል። ማስወገድ የዋና አስተዳዳሪ ነው።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ፋይናንስ",
+					"href": "/dashboard/help#section-finance"
+				}
+			]
+		}
+	}
+}

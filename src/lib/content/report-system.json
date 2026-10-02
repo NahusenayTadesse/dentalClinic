@@ -16,6 +16,10 @@
 				{
 					"heading": "Every report works the same way",
 					"body": "Set the date range and the filters at the top — both ends of the range are included, and the query follows you when you move to another report. Choose a section below the charts to load the rows behind them, then filter, print or export that table like any other in the system."
+				},
+				{
+					"heading": "Patient record access",
+					"body": "The Patient Record Access ledger lists every opening of a patient's chart in the range: who, which part, which patient, from which branch. Search a member of staff's name to see what they have been opening, or a patient's to see who opened theirs."
 				}
 			],
 			"links": [
@@ -40,6 +44,10 @@
 				{
 					"heading": "ሁሉም ሪፖርቶች በአንድ መንገድ ይሠራሉ",
 					"body": "ከላይ የቀን ክልሉንና ማጣሪያዎቹን ያስቀምጡ — ሁለቱም ጫፎች ይካተታሉ፤ ወደ ሌላ ሪፖርት ሲሄዱም መጠይቁ አብሮ ይመጣል። ከገበታዎቹ በታች ያለውን ክፍል መርጠው ከበስተጀርባ ያሉትን መስመሮች ይጫኑ፤ ከዚያ እንደማንኛውም ሠንጠረዥ ያጣሩ፣ ያትሙ ወይም ወደ ውጭ ያውጡ።"
+				},
+				{
+					"heading": "የታካሚ መዝገብ መዳረሻ",
+					"body": "የታካሚ መዝገብ መዳረሻ መዝገብ በክልሉ ውስጥ የታካሚ መዝገብ የተከፈተበትን ሁሉ ይዘረዝራል፦ ማን፣ የትኛው ክፍል፣ የትኛው ታካሚ፣ ከየትኛው ቅርንጫፍ። የሠራተኛ ስም ፈልገው ምን እንደከፈቱ፣ ወይም የታካሚ ስም ፈልገው ማን እንደከፈተ ይዩ።"
 				}
 			],
 			"links": [

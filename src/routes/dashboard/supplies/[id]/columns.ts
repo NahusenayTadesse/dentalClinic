@@ -11,6 +11,7 @@ import Copy from '$lib/Copy.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import ExpiryCell from '$lib/components/Table/expiry-cell.svelte';
 import { ethiopianDate } from '$lib/tableCells';
+import { LOT_WARNING_DAYS } from '$lib/expiry';
 export const columns: ColumnDef<RowData>[] = [
 	{
 		accessorKey: 'index',
@@ -75,12 +76,6 @@ export const columns: ColumnDef<RowData>[] = [
 	}
 ];
 
-/**
- * How far ahead a lot counts as expiring. Three months is the window to use a box up, move it to
- * the busier chair, or ask the supplier to swap it, before it has to be written off.
- */
-export const LOT_WARNING_DAYS = 90;
-
 type LotRow = PageData['lots'][number];
 
 /**
@@ -113,5 +108,50 @@ export const lotColumns: ColumnDef<LotRow>[] = [
 		accessorKey: 'supplier',
 		header: 'Supplier',
 		cell: ({ row }) => row.original.supplier ?? '—'
+	}
+];
+
+type RecipientRow = NonNullable<PageData['recipients']>[number];
+
+/**
+ * Who received this item, lot by lot — the trace a recall notice is checked against. The lot
+ * number is the facet, because the notice names one; the patient links to their chart.
+ */
+export const recipientColumns: ColumnDef<RecipientRow>[] = [
+	{
+		id: 'batchNumber',
+		header: 'Lot number',
+		accessorFn: (row) => row.batchNumber ?? 'No lot number'
+	},
+	{
+		id: 'expiryDate',
+		header: 'Lot expires',
+		accessorFn: (row) => row.expiryDate,
+		cell: ({ row }) => ethiopianDate(row.original.expiryDate)
+	},
+	{
+		id: 'patient',
+		header: 'Patient',
+		accessorFn: (row) => row.patient,
+		cell: ({ row }) =>
+			renderComponent(DataTableLinks, {
+				entity: 'patient',
+				id: row.original.patientId,
+				name: row.original.patient
+			})
+	},
+	{ id: 'fileNo', header: 'File', accessorFn: (row) => row.fileNo ?? '—' },
+	{
+		id: 'phone',
+		header: 'Phone',
+		accessorFn: (row) => row.phone ?? '',
+		cell: ({ row }) => renderComponent(Copy, { data: row.original.phone ?? '' })
+	},
+	{ id: 'quantity', header: 'Quantity', accessorFn: (row) => Math.abs(row.quantity) },
+	{
+		id: 'at',
+		header: 'Given',
+		accessorFn: (row) => row.at,
+		cell: ({ row }) => ethiopianDate(row.original.at)
 	}
 ];

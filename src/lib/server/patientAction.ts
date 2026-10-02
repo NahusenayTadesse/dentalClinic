@@ -50,19 +50,42 @@ export function patientAction<S extends z.ZodObject>(
 }
 
 /**
- * `patientAction` for a record that is not a patient — an employer or insurer paying bills. `owner`
- * resolves the live record the path names, and throws its own 404 when there is none; it runs after
- * the form is read, so a bad form is answered before the database is asked.
+ * `patientAction` for an owner the path does not simply name — an employer or insurer paying
+ * bills, or a lab case moved from the board, whose patient is found from the case. `owner` resolves
+ * it from the path or the posted form, and throws its own 404 when there is none; it runs after the
+ * form is read, so a bad form is answered before the database is asked.
  */
 export async function ownedAction<S extends z.ZodObject>(
 	event: RequestEvent,
 	permission: string,
 	schema: S,
-	owner: () => Promise<number>,
+	owner: (data: Infer<S, 'zod4'>) => Promise<number>,
 	write: (
 		tx: Tx,
 		input: { ownerId: number; data: Infer<S, 'zod4'> }
 	) => Promise<string | { redirect: string; text: string }>
+) {
+	return formAction(event, permission, schema, async (data) => {
+		const ownerId = await owner(data);
+		return (tx) => write(tx, { ownerId, data });
+	});
+}
+
+/**
+ * The core of every action above, for a write no single record owns — a pay adjustment recorded
+ * for several employees at once. The permission, the posted form, the write in a transaction, a
+ * `WriteRefused` answered under its field, anything else logged and reported as a failure.
+ *
+ * `prepare` runs after the form is valid and before the transaction, for whatever must be resolved
+ * first (an owner's 404); it hands back the write.
+ */
+export async function formAction<S extends z.ZodObject>(
+	event: RequestEvent,
+	permission: string,
+	schema: S,
+	prepare: (
+		data: Infer<S, 'zod4'>
+	) => Promise<(tx: Tx) => Promise<string | { redirect: string; text: string }>>
 ) {
 	requirePermission(event.locals, permission);
 	// A form posted as JSON (the answer) is read the same way: superforms tells the two apart.
@@ -70,11 +93,11 @@ export async function ownedAction<S extends z.ZodObject>(
 	if (!form.valid) {
 		return message(form, { type: 'error' as const, text: 'Check the form.' }, { status: 400 });
 	}
-	const ownerId = await owner();
+	const write = await prepare(form.data);
 
 	let outcome: string | { redirect: string; text: string };
 	try {
-		outcome = await db.transaction((tx) => write(tx, { ownerId, data: form.data }));
+		outcome = await db.transaction((tx) => write(tx));
 	} catch (err: unknown) {
 		if (err instanceof WriteRefused) return refused(form, err);
 		console.error(`[action] ${event.url.pathname} failed:`, err);

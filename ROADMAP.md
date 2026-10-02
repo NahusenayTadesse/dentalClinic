@@ -27,7 +27,7 @@ half-wired, with a named gap. **⬜ not started** means only the schema and the 
 | `patient_contacts`, `_emergency_contacts`                   | ✅     | chart sections, `patients.edit`                                                                                              |
 | `referral_source`, `allergen`, `condition`, `contact_types` | ✅     | admin-panel lookups                                                                                                          |
 | `patient.mergedInto`                                        | 🟡     | the chart follows a merged record, but **nothing can merge two**. `possibleDuplicates` warns at registration and stops there |
-| `patient_access_log`                                        | 🟡     | written on every chart open. **No screen reads it**, so a "who looked at this patient" question still needs SQL              |
+| `patient_access_log`                                        | ✅     | the chart's **Access log** tab, and Reports → System → Patient Record Access (per user)                                      |
 | `medicine`                                                  | ✅     | `admin-panel/medicines`; also the medication picker on the chart                                                             |
 
 ### Scheduling
@@ -54,8 +54,8 @@ half-wired, with a named gap. **⬜ not started** means only the schema and the 
 | `prescription_item`   | ⬜     | seed only                                                                                                           |
 | `patient_file`        | 🟡     | counted on the chart. `server/files.ts` and `/dashboard/files/[name]` are ready, with no upload screen for patients |
 | `patient_consent`     | 🟡     | counted on the chart; no screen                                                                                     |
-| `recall`              | ⬜     | seeded and branch-scoped; no screen and no job                                                                      |
-| `lab_case`            | ⬜     | no screen. Its lab list (`dental_lab`) is a working lookup                                                          |
+| `recall`              | ✅     | **Recalls** list, kept by the diary's own writes; next recall on the chart overview                                 |
+| `lab_case`            | ✅     | **Lab Work** board, the chart's Lab work tab, badges on the day view                                                |
 
 ### Money
 
@@ -74,11 +74,11 @@ half-wired, with a named gap. **⬜ not started** means only the schema and the 
 
 ### Stock
 
-| Table                                          | Status | Gap                                                                                                                                                                                  |
-| ---------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `supplies`, `supply_types`, `supply_suppliers` | ✅     |                                                                                                                                                                                      |
-| `supplies_adjustments`, `damaged_supplies`     | ✅     | through `moveStock`                                                                                                                                                                  |
-| `supply_batch`                                 | 🟡     | expiry, lot number and supplier are recorded on delivery and listed on the item's page; expired lots are never issued. No dashboard warning yet, and no trace from a lot to patients |
+| Table                                          | Status | Gap                                                                                                                                                                                              |
+| ---------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `supplies`, `supply_types`, `supply_suppliers` | ✅     |                                                                                                                                                                                                  |
+| `supplies_adjustments`, `damaged_supplies`     | ✅     | through `moveStock`                                                                                                                                                                              |
+| `supply_batch`                                 | ✅     | expiry, lot and supplier on delivery; expired lots never issued; an expiring-stock card on the dashboard; a removal can name the patient, and the item's page traces each lot to who received it |
 
 ### Staff, access and the system
 
@@ -128,18 +128,20 @@ half-wired, with a named gap. **⬜ not started** means only the schema and the 
   moved. It is now one transaction, and tested.
 - ~~**A payroll run never confirmed.**~~ Fixed. The success message was returned from inside the
   transaction, so the action returned nothing. Its dates are now zero-padded ISO days.
-- **The payroll run trusts the figures the browser posts back.** The page computes every payslip,
-  sends it to the browser, and the action writes what comes back — gross, tax and net included.
-  CLAUDE.md §9 says the server decides those; the action should recompute from the same query. The
-  file also carries type errors from its `date` columns being in `Date` mode while it passes
-  strings, which is a mode change across the payroll tables rather than a local fix.
+- ~~**The payroll run trusts the figures the browser posts back.**~~ Fixed. The payslip query is
+  `server/payrollRun.ts`, read by the page and by the action; the action takes only who, which
+  account, the date and the receipt, and recomputes every amount inside the paying transaction. A
+  selection the server would not pay (already paid, deactivated, unapproved) is refused whole, and
+  the month comes from the route, not the form. Verified by posting a run with every figure set to
+  1 birr: the real payslips were written. The payroll date columns moved to `mode: 'string'`, which
+  cleared the file's type errors; closing a salary on approval now uses `addClinicDays`. On the way:
+  the run never accumulated `totalPenalities`, the paid-salaries **Over Time** column read a field
+  the load never had, and its adjustments' **Created By** link pointed at an id it never selected.
 - ~~**Services have no price.**~~ Done (migration 0028). `services` has `price`, `area` (what the
   chart asks for) and `removesTooth`, and the seed catalogue is priced in birr.
 - ~~**The chart is near its size limit.**~~ Done. The chart is a layout with tabs; the overview's
   server file went from 584 lines to 402, and no chart file is over 402.
-- **Reports have no clinical sections.** `reports/sections.ts` has 23 sections, all HR, payroll,
-  stock or money. None covers production per dentist, case acceptance, recalls due, receivables or
-  cash variance.
+- ~~**Reports have no clinical sections.**~~ Done in Stage 6: a **Clinic** report page.
 - ~~**Every `defaultNow()` timestamp read three hours late.**~~ Fixed. Database sessions run in
   UTC (`db/connection.ts`, tested). "Today" comes from the clinic's clock, and migration 0035
   moved the `deleted_at` stamps already written in local time.
@@ -269,8 +271,11 @@ before the answer or removed — with a reason each time. Every change is a row 
 lists them with the quote's first total, lines changed after the patient agreed are flagged, and a
 reprinted quote says it was revised and what it first came to.
 
-Not done: booking the agreed work straight from the plan, and a case-acceptance section in
-Reports.
+**Done: booking the agreed work.** An answered plan with agreed work not yet booked offers **Book
+the agreed work**, which opens the diary with the patient and the plan. The booking reserves that
+work to the visit (`reservePlanWork`, one audit row on the plan), where the completion panel already
+ticks it; cancelling or a no-show frees it again (`releaseBookedWork`). The case-acceptance section
+is in the Clinic report, Stage 6.
 
 ### Stage 3: Billing, payments and the cash drawer
 
@@ -392,6 +397,23 @@ Shared along the way: `refuseUnless` (was in three modules), `checkedProvider`, 
 2. **Lab cases:** sent, due back, received, fitted or remake, linked to the procedure they serve
    and shown on the chart and the day view. Include an "overdue from the lab" list.
 
+**Done.**
+
+- **Recalls** (`server/recalls.ts`): kept by the diary, not a job — the roadmap's `job_run`
+  suggestion turned out unnecessary, because everything that changes a recall is already a write in
+  `appointmentActions.ts`. Completing a visit closes the recall it answered and, if its type has a
+  `recallIntervalMonths` (now editable on Appointment Types), creates the next one, month-end safe
+  (`addClinicMonths`). Booking marks a due recall booked; cancelling or a no-show releases it.
+  **Appointments → Recalls** lists who is due, longest overdue first, with call logging (no answer,
+  call back, declined, stop) and **Book**, which opens the diary with the patient and visit type
+  chosen. The chart overview says when the patient is next due.
+- **Lab cases** (`server/labCases.ts`, `$lib/labCaseStatus.ts`): the moves are one table shared
+  by the buttons and the server. Each move dates itself; the due date is the lab's promise or its
+  usual turnaround. A remake sends the same case back and counts it (migration 0043). The chart has
+  a **Lab work** tab (send, move); **Appointments → Lab Work** is the branch's board with how each
+  lab has kept its promises; the day view marks a patient whose work is back or overdue. Audited,
+  under the new `lab_cases.manage`; opening the tab is in the access log (migration 0044).
+
 ### Stage 6: Oversight and reports
 
 **Tables:** `patient_access_log`, `supply_batch`, plus report sections over Stages 1–5
@@ -404,13 +426,45 @@ Shared along the way: `refuseUnless` (was in three modules), `checkedProvider`, 
    dentist, procedures by service, case acceptance, recalls due or missed, receivables aging, cash
    variance, lab turnaround.
 
+**Done.**
+
+- **Access log** (`server/accessLog.ts`): the chart's **Access log** tab lists every opening and
+  printing, by part of the chart, across merged records, for `audit_logs.view` only; the overview's
+  short list now says which part was opened. Reports → System has a **Patient Record Access**
+  ledger, searchable by staff or patient name.
+- **Stock lots:** the dashboard lists lots at the branch that have expired on the shelf or expire
+  within 90 days (`expiringLots`; the window, `LOT_WARNING_DAYS`, moved to `$lib/expiry.ts` so the
+  item page and the dashboard agree). Taking stock out can name the patient it was used for, which
+  records a `dispensed` movement; the item's page lists **Who received it, by lot** for
+  `patients.view` holders (`lotRecipients`). Stock used without naming a patient still cannot be
+  traced — that is a habit for the clinic, not something the schema can supply.
+- **Clinic report** (`reports/clinic.server.ts`, `/dashboard/reports/clinic`, new `reports.clinic`):
+  production by dentist and by service, case acceptance, recalls (missed ones named), receivables
+  aging (a snapshot as of today), cash drawer counts and lab turnaround — eight tiles, three
+  charts, seven ledgers. Every figure comes from the reader a working screen already uses
+  (`completedWork`, `presentedPlans`, `openBills`, `closedSessions`, `labPerformance`), aggregated
+  in TypeScript to stay off the portability ledger, and scoped by `locals.branch` (§15) rather
+  than the report's old branch filter. Patients in its ledgers link through `entityLinks`.
+
 ### Stage 7: Pay down the ERP residue (runs alongside the others)
 
 - Split the files over 500 lines listed in CLAUDE.md §6 when their feature is next touched.
 - Migrate the remaining 59 forms onto `createForm` as each page is touched.
 - Shrink the help and route-map backlogs as screens get their help.
 - Drop the tables that Stage 0 and Stage 3 decided to retire.
-- Make the payroll run recompute what it writes instead of trusting the posted figures (§2 above).
+- ~~Make the payroll run recompute what it writes instead of trusting the posted figures.~~ Done.
+
+**Done: the payroll screens are one design.** Overtime, bonuses and deductions are one ledger route
+(`/dashboard/salary/ledger/[kind]`, `server/payrollLedger.ts` + `payrollLedgerWrites.ts`) over any
+period instead of two copied month pages, and bonuses have a list for the first time. Paid Salaries
+is every payslip over any period (`server/payslips.ts`), each linking to its month's run page. All of
+them are server-driven tables: date range, search, sort, paging, facets and totals over the whole
+result. The payroll run keeps its month, with the table's own facets in place of `FilterMenu`, and
+posts only who is paid. Fixed on the way: overtime priced from any salary row and duplicated per
+salary row in bulk, refusals that did not roll back, `amount_per_hour` never written, adjustments
+accepted into paid months. The three adjustment tables are now audited. Still on the old month
+pages: attendance (`employees/attendance/[range]`) and the transactions and expenses `ranges/[range]`
+copies of their server-driven lists.
 
 ---
 

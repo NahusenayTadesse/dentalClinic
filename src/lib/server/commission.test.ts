@@ -45,8 +45,8 @@ describe('commission', async () => {
 				const salary = (startDate: string, endDate: string | null, percentage: string) => ({
 					staffId: dentist.employeeId,
 					amount: '10000',
-					startDate: new Date(startDate),
-					endDate: endDate ? new Date(endDate) : null,
+					startDate,
+					endDate,
 					officeCommission: true,
 					percentage,
 					approvalStatus: 'approved' as const
@@ -91,7 +91,7 @@ describe('commission', async () => {
 				await tx.insert(salaries).values({
 					staffId: dentist.employeeId,
 					amount: '10000',
-					startDate: new Date('2031-01-01'),
+					startDate: '2031-01-01',
 					officeCommission: true,
 					percentage: '30',
 					approvalStatus: 'pending'

@@ -74,8 +74,10 @@ const DESCRIPTIONS: Record<string, string> = {
 	'attendance.manage': 'Record and correct attendance',
 	'audit_logs.view': 'Read the audit trail',
 	'branches.view_all': 'See data from every branch, and switch between them',
-	'customers.record': 'Maintain corporate billing customers',
+	'customers.record': 'Maintain payers — the employers and insurers who pay for some patients',
 	'employees.create_followup': 'Open and follow up employee records',
+	'lab_cases.manage':
+		'Send work to dental laboratories, receive it, record it fitted, and see the lab board',
 	'leaves.view_approved': 'See approved leave',
 	'patients.clinical': 'Change a patient’s allergies, conditions, medicines and medical history',
 	'patients.edit': 'Change a patient’s details, contacts and billing',
@@ -88,6 +90,8 @@ const DESCRIPTIONS: Record<string, string> = {
 		'Draw up treatment plans, present them, record the patient’s answer, and see the follow-up list',
 	'rejections.reopen': 'Put a rejected record back into its queue',
 	'rejections.view': 'See rejected records',
+	'reports.clinic':
+		'Read the clinic report: production per dentist, case acceptance, recalls, what is owed, cash counts and lab turnaround',
 	'reports.finance': 'Read the money and payroll reports',
 	'reports.hr': 'Read the people and leave reports',
 	'roles.manage': 'Create roles and decide what they may do',

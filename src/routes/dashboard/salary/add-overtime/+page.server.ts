@@ -1,7 +1,10 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { currentEthiopianMonthParam } from '$lib/global.svelte';
 
+/**
+ * The old month-by-month overtime page. It is now one ledger over any period
+ * (`/dashboard/salary/ledger/overtime`); this keeps the old link and its bookmarks working.
+ */
 export const load: PageServerLoad = async () => {
-	redirect(303, `/dashboard/salary/add-overtime/${currentEthiopianMonthParam()}`);
+	redirect(308, '/dashboard/salary/ledger/overtime');
 };

@@ -36,7 +36,12 @@ export const bookAppointment = z
 		operatoryId: optionalId,
 		note: z.preprocess(blank, z.string().trim().max(500).optional()),
 		isNewPatient: z.boolean().default(false),
-		isAsap: z.boolean().default(false)
+		isAsap: z.boolean().default(false),
+		/**
+		 * Booked from a treatment plan: the plan's agreed, unbooked work is reserved to this visit
+		 * (`reservePlanWork`). The server re-reads which work that is; the id only says which plan.
+		 */
+		planId: optionalId
 	})
 	.superRefine((data, ctx) => {
 		if (data.walkIn) return;

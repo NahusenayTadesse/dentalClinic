@@ -5,17 +5,14 @@ import { and, count, desc, eq, gt, inArray, max, min, sql, sum } from 'drizzle-o
 import { db } from '$lib/server/db';
 import {
 	appointment,
-	branch,
 	clinicalNote,
 	invoice,
 	invoicePayment,
 	patient,
-	patientAccessLog,
 	patientConsent,
 	patientFile,
 	prescription,
-	treatmentPlan,
-	user
+	treatmentPlan
 } from '$lib/server/db/schema';
 import { notDeleted } from '$lib/server/softDelete';
 import { requirePermission } from '$lib/server/permissions';
@@ -39,7 +36,8 @@ import { openPlan } from '$lib/server/treatmentPlans';
 import { patientBalance } from '$lib/server/billing';
 import { clinicToday } from '$lib/clinicTime';
 import { loadMerge, mergeAction } from './merge';
-import { mergedInto } from '$lib/server/patientMerge';
+import { patientRecall } from '$lib/server/recalls';
+import { patientAccessHistory } from '$lib/server/accessLog';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
 
 /**
@@ -65,12 +63,13 @@ export const load: PageServerLoad = async (event) => {
 		reachForm,
 		historyForm,
 		appointments,
-		merge
+		merge,
+		nextRecall
 	] = await Promise.all([
 		loadSections(id),
 		loadOptions(),
 		loadSummary(id),
-		can.seeViews ? loadRecentViews(id) : Promise.resolve(null),
+		can.seeViews ? patientAccessHistory(id, 15) : Promise.resolve(null),
 		superValidate(
 			{
 				fileNo: record.fileNo ?? undefined,
@@ -104,7 +103,8 @@ export const load: PageServerLoad = async (event) => {
 		),
 		// Every branch's: the chart is the patient's, not this branch's (§15). Latest first.
 		appointmentQuery(eq(appointment.patientId, id)).orderBy(desc(appointment.startsAt)).limit(15),
-		loadMerge(record, event.locals)
+		loadMerge(record, event.locals),
+		patientRecall(id)
 	]);
 
 	return {
@@ -112,6 +112,8 @@ export const load: PageServerLoad = async (event) => {
 		options,
 		summary,
 		appointments,
+		nextRecall,
+		today: clinicToday(),
 		recentViews,
 		merge,
 		forms: { identity: identityForm, reach: reachForm, history: historyForm }
@@ -257,27 +259,6 @@ async function loadSummary(patientId: number) {
 }
 
 /** The last people to open this chart — shown only to those who may read the audit trail. */
-async function loadRecentViews(patientId: number) {
-	// Views of records merged into this one are views of this patient: the log is not rewritten on a
-	// merge (it is evidence), so it is read across them instead.
-	const ids = [patientId, ...(await mergedInto(patientId))];
-	return db
-		.select({
-			id: patientAccessLog.id,
-			user: user.name,
-			userId: user.id,
-			action: patientAccessLog.action,
-			branch: branch.name,
-			viewedAt: patientAccessLog.viewedAt
-		})
-		.from(patientAccessLog)
-		.leftJoin(user, eq(user.id, patientAccessLog.userId))
-		.leftJoin(branch, eq(branch.id, patientAccessLog.branchId))
-		.where(inArray(patientAccessLog.patientId, ids))
-		.orderBy(desc(patientAccessLog.viewedAt))
-		.limit(15);
-}
-
 /**
  * Writes to the patient row itself, audited, in one transaction.
  *

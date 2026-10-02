@@ -3,6 +3,7 @@ import { and, eq, isNotNull } from 'drizzle-orm';
 
 import { db } from './db';
 import {
+	appointment,
 	patient,
 	procedures,
 	provider,
@@ -22,8 +23,12 @@ import {
 	plannableProcedures,
 	presentPlan,
 	removeLine,
-	updateLine
+	reservePlanWork,
+	updateLine,
+	workToBook
 } from './treatmentPlans';
+import { releaseBookedWork } from './procedures';
+import { insertReturningId } from './db/insert';
 
 /**
  * A plan is a record of what a patient was told and what they said, so the rules that matter are
@@ -340,4 +345,63 @@ describe('treatment plans', async () => {
 		});
 		expect(message).toMatch(/not on this patient/);
 	});
+
+	it.skipIf(!ready)(
+		'books only agreed work, holds it to the visit, and frees it when the visit is cancelled',
+		async () => {
+			const result = await inRollback(async (tx) => {
+				const [a, b] = await plannedWork(tx);
+				const planId = await createPlan(tx, request, {
+					patientId: someone.id,
+					procedureIds: [a, b],
+					providerId: null,
+					note: null,
+					branchId: 1
+				});
+				// The patient agreed to the first and declined the second.
+				const lines = await tx
+					.select({ id: treatmentPlanItem.id, procedureId: treatmentPlanItem.procedureId })
+					.from(treatmentPlanItem)
+					.where(eq(treatmentPlanItem.treatmentPlanId, planId));
+				for (const line of lines) {
+					await tx
+						.update(treatmentPlanItem)
+						.set({ decision: line.procedureId === a ? 'accepted' : 'declined' })
+						.where(eq(treatmentPlanItem.id, line.id));
+				}
+
+				const before = (await workToBook(someone.id, planId, tx)).map((w) => w.procedureId);
+				const visit = await insertReturningId(tx, appointment, {
+					patientId: someone.id,
+					branchId: 1,
+					startsAt: new Date(Date.now() + 86_400_000),
+					durationMinutes: 30,
+					status: 'scheduled'
+				});
+				const reserved = await reservePlanWork(tx, request, {
+					patientId: someone.id,
+					planId,
+					appointmentId: visit
+				});
+				const [held] = await tx
+					.select({ appointmentId: procedures.appointmentId })
+					.from(procedures)
+					.where(eq(procedures.id, a));
+				const whileBooked = await workToBook(someone.id, planId, tx);
+
+				await tx.update(appointment).set({ status: 'cancelled' }).where(eq(appointment.id, visit));
+				const released = await releaseBookedWork(tx, request, visit);
+				const after = (await workToBook(someone.id, planId, tx)).map((w) => w.procedureId);
+				return { agreed: a, before, reserved, held, whileBooked, released, after, visit };
+			});
+
+			// The declined line is not offered.
+			expect(result.before).toEqual([result.agreed]);
+			expect(result.reserved).toBe(1);
+			expect(result.held.appointmentId).toBe(result.visit);
+			expect(result.whileBooked).toHaveLength(0);
+			expect(result.released).toBe(1);
+			expect(result.after).toEqual(result.before);
+		}
+	);
 });

@@ -14,7 +14,7 @@
  * Non-goal: denominations. The count is a total typed in; a clinic that counts note by note does so
  * on paper and types the sum.
  */
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, lt, sql } from 'drizzle-orm';
 
 import { db } from '$lib/server/db';
 import { cashSession, transactions, user } from '$lib/server/db/schema';
@@ -106,7 +106,19 @@ export async function drawerState(branch: Pick<BranchContext, 'active'>) {
 		};
 	}
 
-	const closed = await db
+	return { open, closed: await closedSessions(branch, { limit: 30 }) };
+}
+
+/**
+ * Closed drawers at this branch, newest first, each with its variance — counted less expected,
+ * derived here and never stored (see the schema). The drawer screen asks for the last thirty; the
+ * clinic report asks for those closed inside its range, as instants (`from` inclusive, `to` not).
+ */
+export async function closedSessions(
+	branch: Pick<BranchContext, 'active'>,
+	{ from, to, limit }: { from?: Date; to?: Date; limit?: number } = {}
+) {
+	const query = db
 		.select({
 			id: cashSession.id,
 			openedAt: cashSession.openedAt,
@@ -119,24 +131,23 @@ export async function drawerState(branch: Pick<BranchContext, 'active'>) {
 			closedBy: user.name
 		})
 		.from(cashSession)
+		// Attribution, so not filtered: a deleted user still closed the drawer (§9).
 		.leftJoin(user, eq(user.id, cashSession.closedBy))
 		.where(
 			and(
 				eq(cashSession.status, 'closed'),
+				from ? gte(cashSession.closedAt, from) : undefined,
+				to ? lt(cashSession.closedAt, to) : undefined,
 				notDeleted(cashSession),
 				branchFilter(cashSession.branchId, branch)
 			)
 		)
-		.orderBy(desc(cashSession.closedAt))
-		.limit(30);
-
-	return {
-		open,
-		closed: closed.map((s) => ({
-			...s,
-			variance: cents((s.countedAmount ?? 0) - (s.expectedAmount ?? 0))
-		}))
-	};
+		.orderBy(desc(cashSession.closedAt));
+	const rows = await (limit ? query.limit(limit) : query);
+	return rows.map((s) => ({
+		...s,
+		variance: cents((s.countedAmount ?? 0) - (s.expectedAmount ?? 0))
+	}));
 }
 
 /** Opens the branch's drawer with the float in it. Refused while one is already open. */

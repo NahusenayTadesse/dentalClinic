@@ -1,12 +1,24 @@
 <script lang="ts">
-	import AppointmentCard from '$lib/components/dashboard/appointment-card.svelte';
 	import ReorderList from '$lib/components/dashboard/reorder-list.svelte';
-	import { PackageIcon, BoxIcon } from '@lucide/svelte';
+	import { BoxIcon, CalendarClock } from '@lucide/svelte';
 
 	import Reports from '$lib/components/dashboard/reports.svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte';
 
 	let { data } = $props();
+
+	/** Each lot as the card says it: expired, or the day it expires. */
+	const expiringItems = $derived(
+		data.expiring.map((lot) => ({
+			name: lot.supply,
+			quantity: lot.quantity,
+			detail: `${lot.quantity} left${lot.batchNumber ? ` · lot ${lot.batchNumber}` : ''} · ${
+				lot.expiryDate ? formatEthiopianDate(new Date(lot.expiryDate)) : ''
+			}`,
+			badge: lot.expiryDate && lot.expiryDate < data.today ? 'Expired' : 'Expiring',
+			href: `/dashboard/supplies/${lot.supplyId}`
+		}))
+	);
 </script>
 
 <svelte:head>
@@ -32,11 +44,6 @@
 		     tables that went with the prune; the clinic needs its own headline. -->
 		<Reports report={data.todayReport} />
 
-		<!-- Stats Grid -->
-		<!-- <div class="mb-8 grid gap-6">
-			<AppointmentCard count={data.nofAppointments} />
-		</div> -->
-
 		<!-- Reorder Items Grid -->
 		<div class="mb-8 grid gap-6 md:grid-cols-2">
 			<ReorderList
@@ -44,6 +51,13 @@
 				description="Items below reorder level"
 				items={data.reorderSupplies}
 				icon={BoxIcon}
+			/>
+			<ReorderList
+				title="Stock Expiring"
+				description="Lots that have expired or expire within three months"
+				items={expiringItems}
+				icon={CalendarClock}
+				emptyText="Nothing on the shelf is close to its expiry date"
 			/>
 		</div>
 

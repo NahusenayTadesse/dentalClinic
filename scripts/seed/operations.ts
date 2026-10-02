@@ -9,7 +9,7 @@
  * Non-goal: payroll runs themselves. A run is the app's own calculation, and seeding fake results
  * would put figures on screen that nothing produced — run payroll in the app instead.
  */
-import { eq, isNull } from 'drizzle-orm';
+import { and, eq, inArray, isNull } from 'drizzle-orm';
 
 import {
 	bonuses,
@@ -22,7 +22,8 @@ import {
 } from '../../src/lib/server/db/schema/staff';
 import { expenses, expensesType, transactions } from '../../src/lib/server/db/schema/finance';
 import { customers, customerContacts } from '../../src/lib/server/db/schema/customers';
-import { dentalLab } from '../../src/lib/server/db/schema/labCases';
+import { dentalLab, labCase } from '../../src/lib/server/db/schema/labCases';
+import { procedures } from '../../src/lib/server/db/schema/procedures';
 import { damagedSupplies, supplies } from '../../src/lib/server/db/schema/inventory';
 import {
 	appointment,
@@ -158,6 +159,81 @@ export async function seedLabWork(db: SeedDb) {
 	]);
 
 	console.log('Seeded dental laboratories.');
+}
+
+/**
+ * Lab cases for the crowns, bridges and dentures already charted, spread across the life of a case
+ * — a docket being prepared, work at the lab (some of it overdue), work back to fit, fitted, and a
+ * remake — so the lab board, the chart's Lab work tab and the lab turnaround report each have
+ * something in every state to show.
+ */
+export async function seedLabCases(db: SeedDb) {
+	if (!(await isEmpty(db, labCase, 'lab_case'))) return;
+
+	const labs = await db
+		.select({ id: dentalLab.id, turnaround: dentalLab.typicalTurnaroundDays })
+		.from(dentalLab)
+		.where(isNull(dentalLab.deletedAt));
+	const work = await db
+		.select({
+			id: procedures.id,
+			patientId: procedures.patientId,
+			serviceId: procedures.serviceId,
+			service: services.name,
+			providerId: procedures.providerId,
+			branchId: procedures.branchId,
+			toothId: procedures.toothId,
+			toothRange: procedures.toothRange
+		})
+		.from(procedures)
+		.innerJoin(services, eq(services.id, procedures.serviceId))
+		.where(and(inArray(procedures.status, ['planned', 'completed']), isNull(procedures.deletedAt)));
+	const prosthetic = work.filter((w) => /crown|bridge|denture/i.test(w.service)).slice(0, 40);
+	if (!labs.length || !prosthetic.length) return;
+
+	const { pick, chance, between } = randomness(20261002);
+	for (const [i, w] of prosthetic.entries()) {
+		const lab = pick(labs);
+		const turnaround = lab.turnaround ?? 7;
+		// Cycle through the states, so every one is there whatever the count.
+		const state = (['draft', 'sent', 'overdue', 'received', 'fitted', 'fitted', 'remake'] as const)[
+			i % 7
+		];
+		const sentAgo = state === 'sent' ? between(1, turnaround - 1) : between(turnaround + 2, 60);
+		const sentOn = state === 'draft' ? null : localDate(-sentAgo);
+		const dueOn =
+			state === 'draft'
+				? null
+				: state === 'remake'
+					? localDate(between(2, turnaround))
+					: localDate(-sentAgo + turnaround);
+		// Some late, some early: the turnaround report has a spread to show.
+		const receivedOn =
+			state === 'received' || state === 'fitted'
+				? localDate(-sentAgo + turnaround + (chance(0.3) ? between(1, 5) : -between(0, 2)))
+				: null;
+		await db.insert(labCase).values({
+			patientId: w.patientId,
+			labId: lab.id,
+			procedureId: w.id,
+			serviceId: w.serviceId,
+			providerId: w.providerId,
+			branchId: w.branchId,
+			toothId: w.toothId,
+			toothRange: w.toothRange,
+			shade: pick(['A1', 'A2', 'A3', 'B1', null]),
+			labFee: money(between(800, 6000)),
+			instructions: `${w.service} (seed)`,
+			status: state === 'overdue' ? 'sent' : state,
+			sentOn,
+			dueOn,
+			receivedOn,
+			fittedOn: state === 'fitted' && receivedOn ? localDate(-between(0, 3)) : null,
+			remakes: state === 'remake' ? 1 : 0
+		});
+	}
+
+	console.log(`Seeded ${prosthetic.length} lab cases.`);
 }
 
 /** Stock written off, which is what the damaged-supplies screen lists. */

@@ -27,7 +27,10 @@ import { insertReturningId } from '$lib/server/db/insert';
 import { recordAudit } from '$lib/server/audit';
 import { hasPermission, requirePermission } from '$lib/server/permissions';
 import { WriteRefused } from '$lib/server/childCrud';
-import { recordVisitWork } from '$lib/server/procedures';
+import { recordVisitWork, releaseBookedWork } from '$lib/server/procedures';
+import { reservePlanWork } from '$lib/server/treatmentPlans';
+import { recallAfterVisit, recallOnBooking, recallReleased } from '$lib/server/recalls';
+import { formatEthiopianDate } from '$lib/global.svelte';
 import { branchFilter } from '$lib/server/branchScope';
 import { notDeleted } from '$lib/server/softDelete';
 import { livePatient } from '$lib/server/patients';
@@ -180,15 +183,35 @@ export const appointmentActions = {
 					action: 'create',
 					detail: data.walkIn ? { walkIn: true } : undefined
 				});
-				return { problems: [] };
+				// A due recall for this kind of visit is answered by this booking (`server/recalls.ts`).
+				await recallOnBooking(tx, event.locals.user?.id, {
+					id,
+					patientId: data.patientId,
+					appointmentTypeId: data.appointmentTypeId ?? null,
+					branchId,
+					startsAt
+				});
+				// Booked from a treatment plan: the agreed work is this visit's to do.
+				const reserved = data.planId
+					? await reservePlanWork(tx, event, {
+							patientId: data.patientId,
+							planId: data.planId,
+							appointmentId: id
+						})
+					: 0;
+				return { problems: [], reserved };
 			});
 
 			if (result.problems.length) {
 				return message(form, { type: 'error', text: result.problems.join(' ') }, { status: 409 });
 			}
+			const booked = data.walkIn ? 'Walk-in added and marked arrived' : 'Appointment booked';
+			const reserved = 'reserved' in result ? result.reserved : 0;
 			return message(form, {
 				type: 'success',
-				text: data.walkIn ? 'Walk-in added and marked arrived' : 'Appointment booked'
+				text: reserved
+					? `${booked} · ${reserved} planned ${reserved === 1 ? 'procedure' : 'procedures'} booked for it`
+					: booked
 			});
 		} catch (err: unknown) {
 			console.error('[appointments] book failed:', err);
@@ -225,6 +248,11 @@ export const appointmentActions = {
 					before: row,
 					after: values
 				});
+				// A missed visit leaves the patient still due: the recall it held is open again.
+				if (to === 'noShow') {
+					await recallReleased(tx, event.locals.user?.id, id);
+					await releaseBookedWork(tx, event, id);
+				}
 				return 'saved' as const;
 			});
 
@@ -306,7 +334,8 @@ export const appointmentActions = {
 				});
 
 				const recorded = await recordVisitWork(tx, event, row, { procedureIds, serviceIds });
-				return { kind: 'saved' as const, recorded };
+				const nextRecall = await recallAfterVisit(tx, event.locals.user?.id, row);
+				return { kind: 'saved' as const, recorded, nextRecall };
 			});
 
 			if (outcome.kind === 'missing') {
@@ -327,7 +356,10 @@ export const appointmentActions = {
 				outcome.recorded === 0
 					? ''
 					: ` · ${outcome.recorded} ${outcome.recorded === 1 ? 'procedure' : 'procedures'} recorded`;
-			return message(form, { type: 'success', text: `Visit completed${work}` });
+			const recall = outcome.nextRecall
+				? ` · next due ${formatEthiopianDate(new Date(outcome.nextRecall))}`
+				: '';
+			return message(form, { type: 'success', text: `Visit completed${work}${recall}` });
 		} catch (err: unknown) {
 			// Thrown inside the transaction, so the completion rolled back with the work.
 			if (err instanceof WriteRefused) {
@@ -366,6 +398,8 @@ export const appointmentActions = {
 					before: row,
 					after: values
 				});
+				await recallReleased(tx, event.locals.user?.id, row.id);
+				await releaseBookedWork(tx, event, row.id);
 				return 'saved' as const;
 			});
 
@@ -459,12 +493,23 @@ export const appointmentActions = {
 };
 
 /** The empty forms the five actions post, for a load to hand its page. */
-export async function appointmentForms(prefill: { patientId?: number } = {}) {
+export async function appointmentForms(
+	prefill: {
+		patientId?: number;
+		appointmentTypeId?: number;
+		durationMinutes?: number;
+		planId?: number;
+		note?: string;
+	} = {}
+) {
 	const [book, move, status, cancel, complete] = await Promise.all([
 		superValidate(
 			{
 				patientId: prefill.patientId,
-				durationMinutes: 30,
+				appointmentTypeId: prefill.appointmentTypeId,
+				durationMinutes: prefill.durationMinutes ?? 30,
+				planId: prefill.planId,
+				note: prefill.note,
 				walkIn: false,
 				isNewPatient: false,
 				isAsap: false

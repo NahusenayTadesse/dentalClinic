@@ -17,8 +17,10 @@ import {
 	deductions,
 	damagedSupplies,
 	transactions,
-	suppliesAdjustments
+	suppliesAdjustments,
+	patient
 } from '$lib/server/db/schema';
+import { livePatient } from '$lib/server/patients';
 import { eq, and, isNotNull, desc } from 'drizzle-orm';
 import { notDeleted, softDeleteSupply } from '$lib/server/softDelete';
 import { requireSuperAdmin } from '$lib/server/permissions';
@@ -136,6 +138,8 @@ export const actions: Actions = {
 		const { intent, quantity, costPerItem, reason, reciept, paymentMethod } = form.data;
 		const expiryDate = form.data.expiryDate || null;
 		const supplierId = Number(form.data.supplierId) || null;
+		// Only a removal is used on a patient; a delivery naming one would be nonsense, so it is dropped.
+		const patientId = intent === 'remove' ? Number(form.data.patientId) || null : null;
 
 		if (!id) {
 			return message(form, { type: 'error', text: 'Unexpected Error: Supply ID not provided' });
@@ -165,6 +169,14 @@ export const actions: Actions = {
 					'That is today or already past — expired stock is not received.'
 				);
 			}
+		}
+		if (patientId !== null) {
+			const [someone] = await db
+				.select({ id: patient.id })
+				.from(patient)
+				.where(and(eq(patient.id, patientId), livePatient()))
+				.limit(1);
+			if (!someone) return setError(form, 'patientId', 'Choose the patient again.');
 		}
 		const total = adjustment * Number(costPerItem ?? 0);
 
@@ -225,7 +237,8 @@ export const actions: Actions = {
 						suppliesId: id,
 						adjustment: lot.quantity,
 						batchId: lot.batchId,
-						movementType: adjustment > 0 ? 'received' : 'correction',
+						movementType: adjustment > 0 ? 'received' : patientId ? 'dispensed' : 'correction',
+						patientId,
 						costPerItem: costPerItem ? String(costPerItem) : null,
 						total: total ? String(total) : null,
 						reason,
@@ -344,7 +357,7 @@ export const actions: Actions = {
 						reason,
 						amount: (quantity * unitCost).toFixed(2),
 						// A `date` column in Date mode; midnight UTC of the clinic's day is that day.
-						deductionDate: new Date(clinicToday()),
+						deductionDate: clinicToday(),
 						createdBy: locals.user?.id
 					});
 				}

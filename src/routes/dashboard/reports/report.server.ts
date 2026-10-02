@@ -1,6 +1,6 @@
 import { parseFilters, type ReportFilters } from './filters';
 import { resolveSection, type SectionGroup } from './sections';
-import { loadSection } from './details.server';
+import { loadSection, type DetailResult } from './details.server';
 import type { ReportChartData, Stat } from './types';
 
 export type Domain = { stats: Stat[]; charts: ReportChartData[] };
@@ -30,12 +30,15 @@ async function safe(
  * analytics module, and fetch a page of whichever ledger is open.
  *
  * Each route differs only in its group and its module, so keeping the shape
- * here means a new report is a five-line `+page.server.ts`.
+ * here means a new report is a five-line `+page.server.ts`. `loadDetail` is the
+ * ledger loader: the shared `loadSection` unless a page brings its own, as the
+ * clinic report does to read through the branch the viewer is working at.
  */
 export async function loadReport(
 	url: URL,
 	group: SectionGroup,
-	run: (filters: ReportFilters) => Promise<Domain>
+	run: (filters: ReportFilters) => Promise<Domain>,
+	loadDetail: (filters: ReportFilters) => Promise<DetailResult> = loadSection
 ) {
 	const requested = parseFilters(url);
 	const filters: ReportFilters = {
@@ -45,7 +48,7 @@ export async function loadReport(
 
 	const [domain, detail] = await Promise.all([
 		safe(group, () => run(filters)),
-		loadSection(filters)
+		loadDetail(filters)
 	]);
 
 	return {

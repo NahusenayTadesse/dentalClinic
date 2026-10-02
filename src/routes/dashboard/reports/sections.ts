@@ -36,10 +36,20 @@ export type SectionKey =
 	// Commercial
 	| 'customers'
 	| 'branches'
+	// Clinic — loaded by `clinic.server.ts`, not `details.server.ts`
+	| 'production'
+	| 'procedures-by-service'
+	| 'case-acceptance'
+	| 'recalls-due'
+	| 'receivables-aging'
+	| 'cash-variance'
+	| 'lab-turnaround'
 	// System
-	| 'audit-log';
+	| 'audit-log'
+	| 'patient-access';
 
 export type SectionGroup =
+	| 'Clinic'
 	| 'Payroll'
 	| 'People'
 	| 'Compensation'
@@ -59,6 +69,56 @@ export type SectionMeta = {
 };
 
 export const SECTIONS: SectionMeta[] = [
+	{
+		key: 'production',
+		label: 'Production by Dentist',
+		group: 'Clinic',
+		description: 'Each dentist’s completed work in the range: procedures, patients and fees.',
+		filterKeys: []
+	},
+	{
+		key: 'procedures-by-service',
+		label: 'Procedures by Service',
+		group: 'Clinic',
+		description: 'How often each service was completed in the range, and what it earned.',
+		filterKeys: []
+	},
+	{
+		key: 'case-acceptance',
+		label: 'Case Acceptance',
+		group: 'Clinic',
+		description: 'Treatment plans presented in the range: what was quoted and what was agreed.',
+		filterKeys: ['status']
+	},
+	{
+		key: 'recalls-due',
+		label: 'Recalls',
+		group: 'Clinic',
+		description: 'Recalls that fell due in the range, and whether the patient came back.',
+		filterKeys: ['status', 'visit']
+	},
+	{
+		key: 'receivables-aging',
+		label: 'Receivables Aging',
+		group: 'Clinic',
+		description: 'Every issued bill still owing today, by how long ago it was issued.',
+		filterKeys: ['bucket', 'payer']
+	},
+	{
+		key: 'cash-variance',
+		label: 'Cash Drawer Counts',
+		group: 'Clinic',
+		description: 'Drawers closed in the range: what was expected, what was counted.',
+		filterKeys: ['closedBy']
+	},
+	{
+		key: 'lab-turnaround',
+		label: 'Lab Turnaround',
+		group: 'Clinic',
+		description: 'Work sent to each laboratory in the range: days taken, lateness and remakes.',
+		filterKeys: []
+	},
+
 	{
 		key: 'payroll-runs',
 		label: 'Payroll Runs',
@@ -237,10 +297,19 @@ export const SECTIONS: SectionMeta[] = [
 		group: 'System',
 		description: 'Who changed what inside the range.',
 		filterKeys: ['action', 'tableName', 'user']
+	},
+	{
+		key: 'patient-access',
+		label: 'Patient Record Access',
+		group: 'System',
+		description:
+			'Who opened which patient’s chart inside the range. Search a name to follow one person.',
+		filterKeys: ['user', 'part', 'branch']
 	}
 ];
 
 export const SECTION_GROUPS: SectionGroup[] = [
+	'Clinic',
 	'Payroll',
 	'People',
 	'Compensation',
@@ -271,6 +340,12 @@ export type ReportPage = {
 };
 
 export const REPORT_PAGES: ReportPage[] = [
+	{
+		slug: 'clinic',
+		group: 'Clinic',
+		title: 'Clinic',
+		blurb: 'Production, case acceptance, recalls, what is owed, the cash drawer and lab work.'
+	},
 	{
 		slug: 'people',
 		group: 'People',

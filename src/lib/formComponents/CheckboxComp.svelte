@@ -1,33 +1,39 @@
 <script lang="ts">
 	import { Checkbox } from '$lib/components/ui/checkbox';
+	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { type Item } from '$lib/global.svelte';
 
+	/**
+	 * A checklist bound to an array of ids, with "Select all".
+	 *
+	 * `searchable` adds a box that narrows the list — for long lists such as every employee a pay
+	 * adjustment can be recorded for. "Select all" then means all *shown*, and ticked items that
+	 * the search hides stay ticked: narrowing the view must never quietly untick someone.
+	 */
 	let {
 		items = [],
-		checkedValues = $bindable()
-	}: { items: Item[]; checkedValues?: string[] | number[] } = $props();
+		checkedValues = $bindable(),
+		searchable = false,
+		id = 'checklist'
+	}: {
+		items: Item[];
+		checkedValues?: string[] | number[];
+		searchable?: boolean;
+		/** Prefixes the boxes' ids, so two checklists on one page do not share them. */
+		id?: string;
+	} = $props();
 
-	// const handleChange = (itemValue: string, isChecked: boolean) => {
-	// 	const current = (checkedValues ?? []) as string[];
-	// 	if (isChecked) {
-	// 		checkedValues = [...current, itemValue];
-	// 	} else {
-	// 		checkedValues = current.filter((v) => v !== itemValue);
-	// 	}
-	// };
+	let term = $state('');
 
-	// let allSelected = $derived((checkedValues ?? []).length === items.length && items.length > 0);
-	// let someSelected = $derived((checkedValues ?? []).length > 0 && !allSelected);
+	const shown = $derived(
+		term.trim()
+			? items.filter((item) => String(item.name).toLowerCase().includes(term.trim().toLowerCase()))
+			: items
+	);
 
-	// function toggleSelectAll() {
-	// 	if (allSelected) {
-	// 		checkedValues = [];
-	// 	} else {
-	// 		checkedValues = items.map((item) => String(item.value));
-	// 	}
-	// }
-	//
+	const checked = $derived(new Set((checkedValues ?? []).map(String)));
+
 	const handleChange = (itemValue: string, isChecked: boolean) => {
 		const current = (checkedValues ?? []).map(String); // normalise for comparison
 		if (isChecked) {
@@ -37,41 +43,52 @@
 		}
 	};
 
-	let allSelected = $derived((checkedValues ?? []).length === items.length && items.length > 0);
-	let someSelected = $derived((checkedValues ?? []).length > 0 && !allSelected);
+	let allSelected = $derived(
+		shown.length > 0 && shown.every((item) => checked.has(String(item.value)))
+	);
+	let someSelected = $derived(
+		!allSelected && shown.some((item) => checked.has(String(item.value)))
+	);
 
 	function toggleSelectAll() {
-		if (allSelected) {
-			checkedValues = [];
-		} else {
-			checkedValues = items.map((item) => Number(item.value)); // numbers here too
-		}
+		const ids = shown.map((item) => String(item.value));
+		const others = [...checked].filter((v) => !ids.includes(v));
+		checkedValues = (allSelected ? others : [...others, ...ids]).map(Number);
 	}
 </script>
 
-<div class="flex items-center gap-2 border-b pb-1">
-	<Label for="select-all" class="flex cursor-pointer items-center gap-2 font-medium">
+{#if searchable}
+	<Input type="search" placeholder="Search…" bind:value={term} aria-label="Search the list" />
+{/if}
+
+<div class="flex items-center justify-between gap-2 border-b pb-1">
+	<Label for="{id}-all" class="flex cursor-pointer items-center gap-2 font-medium">
 		<Checkbox
-			id="select-all"
+			id="{id}-all"
 			checked={allSelected}
 			indeterminate={someSelected}
 			onCheckedChange={toggleSelectAll}
 		/>
-		Select All
+		{term.trim() ? `Select all ${shown.length} shown` : 'Select All'}
 	</Label>
+	{#if searchable}
+		<span class="text-sm text-muted-foreground">{checked.size} chosen</span>
+	{/if}
 </div>
 
-<div class="flex flex-col gap-2">
-	{#each items as item (item.value)}
+<div class="flex flex-col gap-2 {searchable ? 'max-h-64 overflow-y-auto' : ''}">
+	{#each shown as item (item.value)}
 		<div class="flex items-center gap-2">
-			<Label for={String(item.value)} class="cursor-pointer font-normal">
+			<Label for="{id}-{item.value}" class="cursor-pointer font-normal">
 				<Checkbox
-					id={String(item.value)}
-					checked={(checkedValues ?? []).map(String).includes(String(item.value))}
+					id="{id}-{item.value}"
+					checked={checked.has(String(item.value))}
 					onCheckedChange={(c) => handleChange(String(item.value), c)}
 				/>
 				{item.name}
 			</Label>
 		</div>
+	{:else}
+		<p class="text-sm text-muted-foreground">Nothing matches.</p>
 	{/each}
 </div>

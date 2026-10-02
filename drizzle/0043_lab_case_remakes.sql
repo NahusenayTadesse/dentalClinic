@@ -1,0 +1,1 @@
+ALTER TABLE `lab_case` ADD `remakes` int DEFAULT 0 NOT NULL;

@@ -2,7 +2,7 @@
 	import { edit as schema } from './schema';
 	import { createForm } from '$lib/forms/createForm';
 	import SupplyFields from '../SupplyFields.svelte';
-	import { columns, lotColumns } from './columns';
+	import { columns, lotColumns, recipientColumns } from './columns';
 	import Section from '$lib/components/Section.svelte';
 	let { data } = $props();
 
@@ -10,7 +10,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import { ArrowLeft, Pencil, Save, History, Boxes } from '@lucide/svelte';
+	import { ArrowLeft, Pencil, Save, History, Boxes, Users } from '@lucide/svelte';
 	import type { Snapshot } from '@sveltejs/kit';
 
 	import SingleView from '$lib/components/SingleView.svelte';
@@ -148,5 +148,27 @@
 		{/if}
 	</Section>
 </div>
+
+{#if data.recipients}
+	<!-- The lot trace: a supplier's recall names a lot number; search for it here. -->
+	<div class="w-full py-4">
+		<Section title="Who received it, by lot" IconComp={Users} style="identityIcon">
+			{#if data.recipients.length}
+				<DataTable
+					data={data.recipients}
+					columns={recipientColumns}
+					facetKeys={['batchNumber']}
+					fileName="{data.supply?.name} recipients"
+					height="auto"
+				/>
+			{:else}
+				<p class="text-sm text-muted-foreground">
+					None of this item has been recorded as used for a patient. Name the patient when taking
+					stock out, and a recall of a lot can be traced to who had it.
+				</p>
+			{/if}
+		</Section>
+	</div>
+{/if}
 
 <DataTable data={data?.suppliers} {columns} fileName="{data?.supply?.name} Suppliers List" />

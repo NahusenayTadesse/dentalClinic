@@ -1,13 +1,8 @@
 <script lang="ts">
-	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
 	import ClipboardList from '@lucide/svelte/icons/clipboard-list';
 	import MessageSquareReply from '@lucide/svelte/icons/message-square-reply';
 	import Pencil from '@lucide/svelte/icons/pencil';
-	import Plus from '@lucide/svelte/icons/plus';
-	import Printer from '@lucide/svelte/icons/printer';
 	import Send from '@lucide/svelte/icons/send';
-	import Trash from '@lucide/svelte/icons/trash-2';
-	import CircleCheck from '@lucide/svelte/icons/circle-check';
 	import History from '@lucide/svelte/icons/history';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
@@ -29,6 +24,7 @@
 	import ProcedurePicker from '$lib/components/ProcedurePicker.svelte';
 	import StepButton from '$lib/formComponents/StepButton.svelte';
 	import AnswerForm from './AnswerForm.svelte';
+	import PlanActions from './PlanActions.svelte';
 	import {
 		addWork,
 		editLine,
@@ -118,46 +114,19 @@
 </svelte:head>
 
 <div class="flex flex-col gap-6">
-	<div class="flex flex-wrap items-center gap-2">
-		<Button href={base} variant="ghost" size="sm"><ArrowLeft class="size-4" /> All plans</Button>
-		<div class="ml-auto flex flex-wrap gap-2">
-			<Button href="{base}/{plan.id}/quote" target="_blank" variant="outline" size="sm">
-				<Printer class="size-4" />
-				{draft ? 'Print draft' : 'Print quote'}
-			</Button>
-			{#if addable}
-				<Button size="sm" variant="outline" onclick={() => (addOpen = true)}>
-					<Plus class="size-4" /> Add work
-				</Button>
-			{/if}
-			{#if data.canPlan && draft}
-				<StepButton
-					id="discard-plan"
-					action="?/discard"
-					data={data.forms.confirm}
-					label="Discard draft"
-					icon={Trash}
-					variant="ghost"
-					confirm={{
-						title: 'Discard this draft?',
-						description:
-							'Nobody has seen it yet, so nothing is lost but the draft. The work stays planned on the chart.',
-						action: 'Discard'
-					}}
-				/>
-			{/if}
-			{#if data.canPlan && canComplete(plan.status, data.progress.done, data.progress.total)}
-				<StepButton
-					id="complete-plan"
-					action="?/complete"
-					data={data.forms.confirm}
-					label="Mark plan completed"
-					icon={CircleCheck}
-					variant="default"
-				/>
-			{/if}
-		</div>
-	</div>
+	<PlanActions
+		{base}
+		planId={plan.id}
+		patientId={data.patient.id}
+		{draft}
+		{addable}
+		canPlan={data.canPlan}
+		canBook={data.can.book}
+		toBook={data.toBook}
+		completable={canComplete(plan.status, data.progress.done, data.progress.total)}
+		confirm={data.forms.confirm}
+		onadd={() => (addOpen = true)}
+	/>
 
 	<Section title="Treatment plan" IconComp={ClipboardList} style="identityIcon">
 		{#snippet editDialog()}

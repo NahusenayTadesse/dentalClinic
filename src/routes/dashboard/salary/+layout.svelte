@@ -21,16 +21,11 @@
 			match: 'prefix'
 		},
 		{
-			title: 'All Overtime',
-			href: '/dashboard/salary/add-overtime',
+			// One entry for the three adjustment ledgers: the page has its own tabs between them.
+			title: 'Overtime, Bonuses & Deductions',
+			href: '/dashboard/salary/ledger/overtime',
 			IconComp: Sheet,
-			match: 'prefix'
-		},
-		{
-			title: 'All Deductions',
-			href: '/dashboard/salary/add-deductions',
-			IconComp: Sheet,
-			match: 'prefix'
+			match: (path) => path.startsWith('/dashboard/salary/ledger')
 		},
 		{
 			title: 'Transactions',

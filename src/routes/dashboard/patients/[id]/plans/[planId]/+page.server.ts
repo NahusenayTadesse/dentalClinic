@@ -16,7 +16,8 @@ import {
 	plannableProcedures,
 	presentPlan,
 	removeLine,
-	updateLine
+	updateLine,
+	workToBook
 } from '$lib/server/treatmentPlans';
 import { addClinicDays, clinicToday } from '$lib/clinicTime';
 import { DEFAULT_VALID_DAYS, canAddLines, planTotals } from '$lib/treatmentPlanStatus';
@@ -49,9 +50,11 @@ export const load: PageServerLoad = async (event) => {
 	await logPatientView(patient.id, 'treatmentPlan', event, { recordId: planId });
 
 	const today = clinicToday();
-	const [plannable, adjustments, forms] = await Promise.all([
+	const [plannable, adjustments, toBook, forms] = await Promise.all([
 		canAddLines(plan.status) ? plannableProcedures(patient.id) : Promise.resolve([]),
 		planAdjustments(planId),
+		// Agreed work no live appointment holds yet: what "Book the agreed work" would take.
+		workToBook(patient.id, planId),
 		Promise.all([
 			superValidate(zod4(addWork)),
 			superValidate(zod4(editLine)),
@@ -74,6 +77,7 @@ export const load: PageServerLoad = async (event) => {
 		adjustments,
 		originalTotal: originalTotal(planTotals(plan.lines).quoted, adjustments),
 		progress: acceptedProgress(plan.lines),
+		toBook: toBook.length,
 		plannable,
 		forms: {
 			add: addForm,

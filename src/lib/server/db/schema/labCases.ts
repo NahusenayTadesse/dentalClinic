@@ -111,11 +111,18 @@ export const labCase = mysqlTable(
 			.notNull()
 			.default('draft'),
 
-		sentOn: date('sent_on'),
+		sentOn: date('sent_on', { mode: 'string' }),
 		/** What the laboratory promised. */
-		dueOn: date('due_on'),
-		receivedOn: date('received_on'),
-		fittedOn: date('fitted_on'),
+		dueOn: date('due_on', { mode: 'string' }),
+		receivedOn: date('received_on', { mode: 'string' }),
+		fittedOn: date('fitted_on', { mode: 'string' }),
+
+		/**
+		 * How many times it has gone back to the laboratory. The status says whether it is out on a
+		 * remake *now*; this says how often it has been, which is the figure that decides whether
+		 * a clinic keeps using a laboratory once the case is fitted and the status reads `fitted`.
+		 */
+		remakes: int('remakes').notNull().default(0),
 
 		/** What the laboratory charges. `mode: 'number'` per CLAUDE.md §9. */
 		labFee: decimal('lab_fee', { precision: 10, scale: 2, mode: 'number' }),

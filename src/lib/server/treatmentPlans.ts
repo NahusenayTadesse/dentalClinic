@@ -37,6 +37,7 @@ import {
 	inArray,
 	isNotNull,
 	isNull,
+	lte,
 	notInArray,
 	or,
 	sql,
@@ -45,6 +46,7 @@ import {
 
 import { db } from '$lib/server/db';
 import {
+	appointment,
 	branch,
 	patient,
 	procedures,
@@ -61,7 +63,7 @@ import {
 	softDeleteTreatmentPlanItem
 } from '$lib/server/softDelete';
 import { WriteRefused, refuseUnless } from '$lib/server/childCrud';
-import { checkedProvider } from '$lib/server/appointments';
+import { NOT_LIVE, checkedProvider } from '$lib/server/appointments';
 import { auditChanges, recordAudit, type AuditRequest } from '$lib/server/audit';
 import { insertReturningId } from '$lib/server/db/insert';
 import { providerEmployee, providerName } from '$lib/server/appointments';
@@ -399,6 +401,135 @@ export async function acceptanceSince(since: string, branch: Pick<BranchContext,
 		accepted: Math.round(accepted * 100) / 100,
 		rate: quoted > 0 ? Math.round((accepted / quoted) * 1000) / 10 : null
 	};
+}
+
+/**
+ * The plans presented between two clinic days (inclusive), with what each quoted and what was
+ * agreed — the rows behind `acceptanceSince`'s figures, for the clinic report's ledger. A quote
+ * past its date reads as expired here as everywhere else (`effectiveStatus`).
+ */
+export async function presentedPlans(
+	from: string,
+	to: string,
+	branch: Pick<BranchContext, 'active'>
+) {
+	const totals = planTotals();
+	const rows = await db
+		.select({
+			id: treatmentPlan.id,
+			patientId: treatmentPlan.patientId,
+			patient: patientFullName,
+			status: treatmentPlan.status,
+			presentedOn: treatmentPlan.presentedOn,
+			decidedOn: treatmentPlan.decidedOn,
+			validUntil: treatmentPlan.validUntil,
+			quoted: totals.quoted,
+			accepted: totals.accepted
+		})
+		.from(treatmentPlan)
+		.innerJoin(patient, eq(patient.id, treatmentPlan.patientId))
+		.leftJoin(totals, eq(totals.planId, treatmentPlan.id))
+		.where(
+			and(
+				gte(treatmentPlan.presentedOn, from),
+				lte(treatmentPlan.presentedOn, to),
+				notDeleted(treatmentPlan),
+				branchFilter(treatmentPlan.branchId, branch)
+			)
+		)
+		.orderBy(desc(treatmentPlan.presentedOn), desc(treatmentPlan.id));
+	const today = clinicToday();
+	return rows.map((r) => ({
+		...r,
+		status: effectiveStatus(r.status, r.validUntil, today),
+		quoted: Number(r.quoted ?? 0),
+		accepted: Number(r.accepted ?? 0)
+	}));
+}
+
+/* ── Booking the agreed work ────────────────────────────────────────────────────────────────── */
+
+/**
+ * The work on a plan that a booking can take: lines the patient agreed to, whose procedure is still
+ * planned and not already held by a live appointment. Work held by a cancelled or missed visit is
+ * free again — that visit is not going to do it.
+ *
+ * A booking reserves it by setting `procedures.appointmentId`, which the procedure's schema has
+ * always meant as "the visit it happens at" and which the completion panel already reads: work
+ * linked to the visit starts ticked there. So booking from a plan is the missing half of a path
+ * that was otherwise built — nothing ever made the link.
+ */
+export async function workToBook(patientId: number, planId: number, reader: Reader = db) {
+	return reader
+		.select({
+			procedureId: procedures.id,
+			description: treatmentPlanItem.description,
+			toothId: procedures.toothId,
+			surfaces: procedures.surfaces,
+			toothRange: procedures.toothRange
+		})
+		.from(treatmentPlanItem)
+		.innerJoin(
+			treatmentPlan,
+			and(
+				eq(treatmentPlan.id, treatmentPlanItem.treatmentPlanId),
+				eq(treatmentPlan.patientId, patientId),
+				notDeleted(treatmentPlan)
+			)
+		)
+		.innerJoin(
+			procedures,
+			and(
+				eq(procedures.id, treatmentPlanItem.procedureId),
+				eq(procedures.patientId, patientId),
+				eq(procedures.status, 'planned'),
+				notDeleted(procedures)
+			)
+		)
+		.leftJoin(
+			appointment,
+			and(
+				eq(appointment.id, procedures.appointmentId),
+				notInArray(appointment.status, [...NOT_LIVE]),
+				notDeleted(appointment)
+			)
+		)
+		.where(
+			and(
+				eq(treatmentPlanItem.treatmentPlanId, planId),
+				eq(treatmentPlanItem.decision, 'accepted'),
+				notDeleted(treatmentPlanItem),
+				// No live visit holds it: never linked, or linked to one that will not happen.
+				isNull(appointment.id)
+			)
+		)
+		.orderBy(asc(treatmentPlanItem.sortOrder), asc(treatmentPlanItem.id));
+}
+
+/**
+ * Reserves a plan's agreed work to a new appointment, in the booking's transaction. Returns how
+ * many procedures it took — none is not an error, since the work may have been booked meanwhile.
+ * One audit row for the plan, naming the visit and the procedures: the operation, not a row per
+ * procedure (CLAUDE.md §11).
+ */
+export async function reservePlanWork(
+	tx: Tx,
+	event: AuditRequest,
+	{ patientId, planId, appointmentId }: { patientId: number; planId: number; appointmentId: number }
+): Promise<number> {
+	const ids = (await workToBook(patientId, planId, tx)).map((w) => w.procedureId);
+	if (!ids.length) return 0;
+	await tx
+		.update(procedures)
+		.set({ appointmentId, updatedBy: event.locals.user?.id })
+		.where(inArray(procedures.id, ids));
+	await recordAudit(tx, event, {
+		table: 'treatment_plan',
+		recordId: planId,
+		action: 'update',
+		detail: { booked: { appointmentId, procedureIds: ids } }
+	});
+	return ids.length;
 }
 
 /* ── Writing ────────────────────────────────────────────────────────────────────────────────── */

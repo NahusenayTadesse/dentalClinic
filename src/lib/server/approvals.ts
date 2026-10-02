@@ -6,6 +6,7 @@
 // route reads it — `/dashboard/approvals/[entity]` serves all of them.
 import { error } from '@sveltejs/kit';
 import { and, eq, inArray, isNull, ne, sql, type AnyColumn, type SQL } from 'drizzle-orm';
+import { addClinicDays } from '$lib/clinicTime';
 import { db } from '$lib/server/db';
 import { notDeleted } from '$lib/server/softDelete';
 import {
@@ -150,8 +151,9 @@ export const APPROVAL_ENTITIES: ApprovalEntity[] = [
 				.where(inArray(salaries.id, ids));
 
 			for (const row of approved) {
-				const dayBefore = new Date(row.startDate);
-				dayBefore.setDate(dayBefore.getDate() - 1);
+				// Calendar arithmetic on the ISO day. It was a `Date` moved with local `setDate`,
+				// which on a UTC-midnight day can land two days back in a zone west of Greenwich.
+				const dayBefore = addClinicDays(row.startDate, -1);
 
 				await database
 					.update(salaries)

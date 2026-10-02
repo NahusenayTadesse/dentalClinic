@@ -86,7 +86,8 @@ compile error rather than a silent omission.
   `patient_file`
 - the clinical record: `clinical_note`, `procedures`, `prescription`, `prescription_item`,
   `treatment_plan`, `treatment_plan_item`, `lab_case`, `appointment`
-- money: `invoice`, `invoice_line`, `invoice_payment`, `transactions`, `expenses`, `cash_session`
+- money: `invoice`, `invoice_line`, `invoice_payment`, `transactions`, `expenses`, `cash_session`,
+  and the pay adjustments `over_time`, `bonuses`, `deductions` — each changes what someone is paid
 - controlled stock: `supplies_adjustments`, `supply_batch`, `damaged_supplies`
 - who may do what: `user`, `roles`, `role_permissions`, `special_permissions`, `employee`
 

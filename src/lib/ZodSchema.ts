@@ -339,6 +339,13 @@ export const inventoryAdjustmentFormSchema = z.object({
 	supplierId: z.coerce.string().nullable().optional(),
 
 	/**
+	 * Who stock taken out was used for, when it was used on a patient — a removal naming one is
+	 * recorded as dispensed to them, which is what lets a lot recall find the patients who had it.
+	 * A string for the same reason as `supplierId`; the action reads `''` as nobody.
+	 */
+	patientId: z.coerce.string().nullable().optional(),
+
+	/**
 	 * Bank account the stock was paid from. Optional because removing stock costs
 	 * nothing; the action requires it whenever there is money to move.
 	 */

@@ -12,6 +12,13 @@ export const config: LookupConfig = {
 	fields: [
 		{ name: 'name', label: 'Name', type: 'text' },
 		{ name: 'defaultMinutes', label: 'Default Minutes', type: 'number' },
+		{
+			name: 'recallIntervalMonths',
+			label: 'Recall After (months)',
+			type: 'number',
+			required: false,
+			placeholder: '6 for a check-up; 0 for none'
+		},
 		{ name: 'colour', label: 'Colour', type: 'text', required: false, placeholder: '#2563eb' },
 		{ name: 'description', label: 'Description', type: 'text', required: false },
 		{ name: 'sortOrder', label: 'Order', type: 'number', required: false },

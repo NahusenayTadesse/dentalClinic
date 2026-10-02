@@ -1,3 +1,4 @@
+import { ethiopianDate } from '$lib/tableCells';
 import type { ColumnDef } from '@tanstack/table-core';
 import type { PageData } from './$types';
 
@@ -7,10 +8,13 @@ type RowData = NonNullable<PageData['salaryHistory']>[number];
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 // Assuming a new actions component
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
-import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
+import { formatETB } from '$lib/global.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import { User } from '@lucide/svelte';
 import Statuses from '$lib/components/Table/statuses.svelte';
+
+/** A decimal column's value for `formatETB`: the driver hands decimals back as strings. */
+const amount = (value: unknown) => (value === null || value === undefined ? null : Number(value));
 
 export const columns: ColumnDef<RowData>[] = [
 	// 1. Row Index
@@ -64,7 +68,7 @@ export const columns: ColumnDef<RowData>[] = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: (info) => {
-			return formatETB(info.getValue(), true);
+			return formatETB(amount(info.getValue()), true);
 		}
 	},
 	{
@@ -75,7 +79,7 @@ export const columns: ColumnDef<RowData>[] = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: (info) => {
-			return formatETB(info.getValue(), true);
+			return formatETB(amount(info.getValue()), true);
 		}
 	},
 	{
@@ -86,7 +90,7 @@ export const columns: ColumnDef<RowData>[] = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: (info) => {
-			return formatETB(info.getValue(), true);
+			return formatETB(amount(info.getValue()), true);
 		}
 	},
 
@@ -98,7 +102,7 @@ export const columns: ColumnDef<RowData>[] = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: (info) => {
-			return formatETB(info.getValue(), true);
+			return formatETB(amount(info.getValue()), true);
 		}
 	},
 
@@ -110,7 +114,7 @@ export const columns: ColumnDef<RowData>[] = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: (info) => {
-			return formatETB(info.getValue(), true);
+			return formatETB(amount(info.getValue()), true);
 		}
 	},
 
@@ -147,7 +151,8 @@ export const columns: ColumnDef<RowData>[] = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		// Show 'N/A' if the payroll entry is null
-		cell: (info) => formatEthiopianDate(info.getValue()) || 'Salary Not Entered',
+		// `ethiopianDate` takes the ISO day the column now returns (`mode: 'string'`).
+		cell: (info) => (info.getValue() ? ethiopianDate(info.getValue()) : 'Salary Not Entered'),
 		enableSorting: false // Usually not sortable
 	},
 
@@ -159,7 +164,7 @@ export const columns: ColumnDef<RowData>[] = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		// Show 'N/A' if the payroll entry is null
-		cell: (info) => formatEthiopianDate(info.getValue()) || 'Current Salary',
+		cell: (info) => (info.getValue() ? ethiopianDate(info.getValue()) : 'Current Salary'),
 		enableSorting: false // Usually not sortable
 	},
 

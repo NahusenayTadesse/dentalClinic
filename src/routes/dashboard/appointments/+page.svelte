@@ -244,6 +244,7 @@
 		data={data.forms.book}
 		{prefill}
 		patient={data.bookPatient}
+		plan={data.bookPlan}
 		providers={data.providers}
 		types={data.types}
 		chairs={data.chairs}

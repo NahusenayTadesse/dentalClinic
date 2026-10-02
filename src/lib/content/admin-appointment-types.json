@@ -16,6 +16,10 @@
 				{
 					"heading": "Retiring an entry",
 					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
+				},
+				{
+					"heading": "Recall after",
+					"body": "How many months after a visit of this type the patient should come back — 6 for a check-up, 1 for an orthodontic adjustment, 0 for none. Completing such a visit puts the patient on the Recalls list, due that many months later."
 				}
 			],
 			"links": [
@@ -40,6 +44,10 @@
 				{
 					"heading": "መዝገብን ከአገልግሎት ማስወጣት",
 					"body": "\"Inactive\" ያድርጉት። ከምርጫ ዝርዝሮቹ ይወጣል፤ ቀድሞ የተጠቀሙበት መዝገቦች ሁሉ ግን ማሳየታቸውን ይቀጥላሉ። መሰረዝ ለስህተት ብቻ ነው፤ ሊሰርዝ የሚችለውም ሱፐር አድሚን ብቻ ነው።"
+				},
+				{
+					"heading": "ከዚህ በኋላ መመለስ",
+					"body": "የዚህ ዓይነት ጉብኝት ከተደረገ ከስንት ወር በኋላ ታካሚው መመለስ እንዳለበት — ለምርመራ 6፣ ለኦርቶዶንቲክ ማስተካከያ 1፣ ለምንም 0። እንዲህ ያለ ጉብኝት ሲጠናቀቅ ታካሚው በተመላሽ ጥሪዎች ዝርዝር ላይ ይገባል።"
 				}
 			],
 			"links": [

@@ -404,8 +404,9 @@ export const salaries = mysqlTable(
 			.notNull()
 			.default('0'),
 		amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
-		startDate: date('start_date').notNull(),
-		endDate: date('end_date'),
+		// `mode: 'string'`: calendar days, compared as ISO strings by the payroll run.
+		startDate: date('start_date', { mode: 'string' }).notNull(),
+		endDate: date('end_date', { mode: 'string' }),
 
 		...secureFields,
 		...approvalFields
@@ -429,7 +430,8 @@ export const bonuses = mysqlTable(
 		staffId: int('staff_id').references(() => employee.id, { onDelete: 'set null' }),
 		description: varchar('description', { length: 255 }),
 		amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
-		bonusDate: date('bonus_date').notNull(),
+		// `mode: 'string'`: a calendar day, compared as ISO by payroll and the adjustment ledgers.
+		bonusDate: date('bonus_date', { mode: 'string' }).notNull(),
 		...secureFields
 	},
 	(table) => [
@@ -451,7 +453,7 @@ export const overTime = mysqlTable(
 		}),
 		hours: decimal('hours', { precision: 10, scale: 2 }).notNull(),
 		total: decimal('total', { precision: 10, scale: 2 }).notNull(),
-		date: date('date').notNull(),
+		date: date('date', { mode: 'string' }).notNull(),
 		...secureFields
 	},
 	(table) => [
@@ -478,7 +480,7 @@ export const deductions = mysqlTable(
 		reason: varchar('reason', { length: 255 }).notNull(),
 
 		amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
-		deductionDate: date('deduction_date').notNull(),
+		deductionDate: date('deduction_date', { mode: 'string' }).notNull(),
 		warningType: varchar('warning_type', { length: 100 }),
 		warningReason: varchar('warning_reason', { length: 255 }),
 		...secureFields

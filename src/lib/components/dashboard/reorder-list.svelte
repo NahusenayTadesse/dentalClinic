@@ -8,20 +8,39 @@
 	} from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { AlertCircleIcon } from '@lucide/svelte';
+	import type { IconProps } from '@lucide/svelte';
+	import type { Component } from 'svelte';
 
+	/**
+	 * A dashboard card listing stock that needs someone's attention. Built for items below their
+	 * reorder line; the expiring-lots card is the second user, so a row may say its own detail and
+	 * badge, and link to where it is dealt with. Left out, both read as the reorder list always has.
+	 */
 	interface Item {
 		name: string;
 		quantity: number;
+		/** The line under the name. Defaults to the quantity. */
+		detail?: string;
+		/** Defaults to "Low Stock". */
+		badge?: string;
+		href?: string;
 	}
 
 	interface Props {
 		title: string;
 		description: string;
 		items: Item[];
-		icon: any;
+		icon: Component<IconProps>;
+		emptyText?: string;
 	}
 
-	const { title, description, items, icon: Icon }: Props = $props();
+	const {
+		title,
+		description,
+		items,
+		icon: Icon,
+		emptyText = 'No items need reordering'
+	}: Props = $props();
 	const isEmpty = $derived(items.length === 0);
 </script>
 
@@ -44,25 +63,29 @@
 					<div class="mb-3 rounded-full bg-muted p-3">
 						<AlertCircleIcon class="size-5 text-muted-foreground" />
 					</div>
-					<p class="text-sm text-muted-foreground">No items need reordering</p>
+					<p class="text-sm text-muted-foreground">{emptyText}</p>
 				</div>
 			{:else}
 				<div class="flex max-h-64 flex-col gap-2 overflow-y-auto">
 					{#each items as item, index (index)}
-						<div
+						<svelte:element
+							this={item.href ? 'a' : 'div'}
+							href={item.href}
 							class="group flex items-center justify-between rounded-lg bg-muted/50 p-3 transition-colors duration-200 hover:bg-muted"
 							style="animation-delay: {(index + 1) * 50}ms;"
 						>
 							<div class="min-w-0 flex-1">
 								<p class="truncate text-sm font-medium text-foreground">{item.name}</p>
-								<p class="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+								<p class="text-xs text-muted-foreground">
+									{item.detail ?? `Qty: ${item.quantity}`}
+								</p>
 							</div>
 							<Badge
 								variant="outline"
 								class="ml-2 shrink-0 border-destructive/20 bg-destructive/10 text-destructive"
-								>Low Stock</Badge
+								>{item.badge ?? 'Low Stock'}</Badge
 							>
-						</div>
+						</svelte:element>
 					{/each}
 				</div>
 			{/if}

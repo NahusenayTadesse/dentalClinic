@@ -6,8 +6,8 @@
 			"summary": "Payslips already paid, month by month — and how to correct one.",
 			"sections": [
 				{
-					"heading": "Reading a month",
-					"body": "Pick the month at the top. Every payslip for it is listed with its gross, tax, pension, allowances, deductions and net.\n\nHide the columns you do not need before printing — payroll is a wide table, and it reads far better with half of it switched off. The print picks landscape paper by itself for wide tables."
+					"heading": "Reading the history",
+					"body": "Every payslip ever paid, one row each. Choose any date range, or a month from the Month filter; narrow by department, position, how it was paid or its status; search a name; sort any column. The figures at the top — gross, tax, both pension shares, net — count everything that matches, not just this page.\n\nClick a month to open that run's own page: every payslip of the month, its bank receipts, its adjustments, and finalising it. Hide the columns you do not need before printing — payroll is a wide table."
 				},
 				{
 					"heading": "Correcting a payslip",
@@ -30,8 +30,8 @@
 			"summary": "አስቀድመው የተከፈሉ የደመወዝ ወረቀቶች በወር በወር — እንዲሁም አንዱን እንዴት ማረም እንደሚቻል።",
 			"sections": [
 				{
-					"heading": "አንድን ወር ማንበብ",
-					"body": "ከላይ ወሩን ይምረጡ። የዚያ ወር እያንዳንዱ የደመወዝ ወረቀት ከጠቅላላ፣ ከግብር፣ ከጡረታ፣ ከአበሎች፣ ከተቀናሾችና ከተጣራ ጋር ይዘረዘራል።\n\nከማተምዎ በፊት የማይፈልጓቸውን ዓምዶች ይደብቁ — ደመወዝ ሰፊ ሠንጠረዥ ነው፤ ግማሹ ሲጠፋ በጣም ይነበባል። ሰፊ ሠንጠረዦችን ሲያትሙ ወረቀቱን ራሱ ይመርጣል።"
+					"heading": "ታሪኩን ማንበብ",
+					"body": "የተከፈለ እያንዳንዱ የደመወዝ ወረቀት፣ አንድ መስመር። ማንኛውንም የቀን ክልል ወይም ከወር ማጣሪያ አንድ ወር ይምረጡ፤ በክፍል፣ በሥራ መደብ፣ በክፍያ መንገድ ወይም በሁኔታ ያጣሩ፤ ስም ይፈልጉ። ከላይ ያሉት አሃዞች የሚዛመዱትን ሁሉ ይቆጥራሉ።\n\nየአንድን ወር ክፍያ ገጽ ለመክፈት ወሩን ይጫኑ፦ የወሩ ወረቀቶች፣ የባንክ ደረሰኞች፣ ማስተካከያዎችና ማጠናቀቂያ።"
 				},
 				{
 					"heading": "የደመወዝ ወረቀት ማረም",

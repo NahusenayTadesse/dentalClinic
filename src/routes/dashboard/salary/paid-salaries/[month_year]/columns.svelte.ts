@@ -1,15 +1,24 @@
+import { ethiopianDate } from '$lib/tableCells';
 import type { ColumnDef } from '@tanstack/table-core';
 import type { PageData } from './$types';
 
-/** One row of the table this file describes, taken from the load so the two cannot drift. */
-type RowData = NonNullable<PageData['payrollReciept']>[number];
+/*
+ * One row of each table this file describes, taken from the load so the two cannot drift. The
+ * payslip table was typed against the receipts, which is why every payslip field read as missing.
+ */
+type RowData = NonNullable<PageData['payrollData']>[number];
+type ReceiptRow = NonNullable<PageData['payrollReciept']>[number];
+type AdjustmentRow = NonNullable<PageData['adjustments']>[number];
 
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
-import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
+import { formatETB } from '$lib/global.svelte';
 import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
 import { Link } from '@lucide/svelte';
+
+/** A decimal column's value for `formatETB`: the driver hands decimals back as strings. */
+const amount = (value: unknown) => (value === null || value === undefined ? null : Number(value));
 
 export const columns: ColumnDef<RowData>[] = [
 	{
@@ -95,19 +104,20 @@ export const columns: ColumnDef<RowData>[] = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {
-			return formatETB(row.original.basicSalary);
+			return formatETB(amount(row.original.basicSalary));
 		}
 	},
 
 	{
-		accessorKey: 'overtime',
+		// `overTime` is what the load calls it; `overtime` left this column blank.
+		accessorKey: 'overTime',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
 				name: 'Over Time',
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {
-			return formatETB(row.original.overtime);
+			return formatETB(amount(row.original.overTime));
 		}
 	},
 
@@ -119,7 +129,7 @@ export const columns: ColumnDef<RowData>[] = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {
-			return formatETB(row.original.transportAllowance, true);
+			return formatETB(amount(row.original.transportAllowance), true);
 		}
 	},
 
@@ -131,7 +141,7 @@ export const columns: ColumnDef<RowData>[] = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {
-			return formatETB(row.original.positionAllowance, true);
+			return formatETB(amount(row.original.positionAllowance), true);
 		}
 	},
 
@@ -143,7 +153,7 @@ export const columns: ColumnDef<RowData>[] = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {
-			return formatETB(row.original.housingAllowance, true);
+			return formatETB(amount(row.original.housingAllowance), true);
 		}
 	},
 
@@ -155,7 +165,7 @@ export const columns: ColumnDef<RowData>[] = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {
-			return formatETB(row.original.nonTaxable, true);
+			return formatETB(amount(row.original.nonTaxable), true);
 		}
 	},
 
@@ -167,7 +177,7 @@ export const columns: ColumnDef<RowData>[] = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {
-			return formatETB(row.original.gross, true);
+			return formatETB(amount(row.original.gross), true);
 		}
 	},
 
@@ -185,7 +195,7 @@ export const columns: ColumnDef<RowData>[] = [
 
 			// const amount = missingDays * (totalPay / 30);
 
-			return formatETB(row.original.attendancePenality, true);
+			return formatETB(amount(row.original.attendancePenality), true);
 		}
 	},
 
@@ -198,7 +208,7 @@ export const columns: ColumnDef<RowData>[] = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {
-			return formatETB(row.original.penEm, true);
+			return formatETB(amount(row.original.penEm), true);
 		}
 	},
 	{
@@ -210,7 +220,7 @@ export const columns: ColumnDef<RowData>[] = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {
-			return formatETB(row.original.penOrg, true);
+			return formatETB(amount(row.original.penOrg), true);
 		}
 	},
 
@@ -239,7 +249,7 @@ export const columns: ColumnDef<RowData>[] = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		cell: ({ row }) => {
-			return formatETB(row.original.taxAmount, true);
+			return formatETB(amount(row.original.taxAmount), true);
 		}
 	},
 
@@ -260,7 +270,7 @@ export const columns: ColumnDef<RowData>[] = [
 			// const penalityAmount = missingDays * (totalPay / 30);
 			// const total = totalPay - (penalityAmount + Number(tax));
 
-			return formatETB(row.original.netPay, true);
+			return formatETB(amount(row.original.netPay), true);
 		}
 	},
 
@@ -275,7 +285,7 @@ export const columns: ColumnDef<RowData>[] = [
 	}
 ];
 
-export const reciepts = [
+export const reciepts: ColumnDef<ReceiptRow>[] = [
 	// 1. Row Index
 	//
 
@@ -305,7 +315,7 @@ export const reciepts = [
 				name: 'Amount',
 				onclick: column.getToggleSortingHandler()
 			}),
-		cell: (info) => formatETB(info.getValue(), true)
+		cell: (info) => formatETB(amount(info.getValue()), true)
 	},
 	{
 		accessorKey: 'paidDate',
@@ -314,7 +324,7 @@ export const reciepts = [
 				name: 'Amount',
 				onclick: column.getToggleSortingHandler()
 			}),
-		cell: (info) => formatEthiopianDate(info.getValue())
+		cell: (info) => ethiopianDate(info.getValue())
 	},
 	{
 		accessorKey: 'payPeriodStart',
@@ -323,7 +333,7 @@ export const reciepts = [
 				name: 'Start Date',
 				onclick: column.getToggleSortingHandler()
 			}),
-		cell: (info) => formatEthiopianDate(info.getValue())
+		cell: (info) => ethiopianDate(info.getValue())
 	},
 	{
 		accessorKey: 'payPeriodEnd',
@@ -332,7 +342,7 @@ export const reciepts = [
 				name: 'End Date',
 				onclick: column.getToggleSortingHandler()
 			}),
-		cell: (info) => formatEthiopianDate(info.getValue())
+		cell: (info) => ethiopianDate(info.getValue())
 	},
 	{
 		accessorKey: 'recieptLink',
@@ -372,7 +382,7 @@ export const reciepts = [
 	}
 ];
 
-export const adjustmentColumns = [
+export const adjustmentColumns: ColumnDef<AdjustmentRow>[] = [
 	{
 		id: 'index',
 		header: '#',
@@ -419,7 +429,7 @@ export const adjustmentColumns = [
 				name: 'Basic Salary',
 				onclick: column.getToggleSortingHandler()
 			}),
-		cell: (info) => formatETB(info.getValue(), true)
+		cell: (info) => formatETB(amount(info.getValue()), true)
 	},
 	{
 		accessorKey: 'commissionAmount',
@@ -428,7 +438,7 @@ export const adjustmentColumns = [
 				name: 'Commission',
 				onclick: column.getToggleSortingHandler()
 			}),
-		cell: (info) => formatETB(info.getValue(), true)
+		cell: (info) => formatETB(amount(info.getValue()), true)
 	},
 	{
 		accessorKey: 'overtimeAmount',
@@ -437,7 +447,7 @@ export const adjustmentColumns = [
 				name: 'Over Time',
 				onclick: column.getToggleSortingHandler()
 			}),
-		cell: (info) => formatETB(info.getValue(), true)
+		cell: (info) => formatETB(amount(info.getValue()), true)
 	},
 	{
 		accessorKey: 'bonusAmount',
@@ -446,7 +456,7 @@ export const adjustmentColumns = [
 				name: 'Bonus',
 				onclick: column.getToggleSortingHandler()
 			}),
-		cell: (info) => formatETB(info.getValue(), true)
+		cell: (info) => formatETB(amount(info.getValue()), true)
 	},
 	{
 		accessorKey: 'deductions',
@@ -455,7 +465,7 @@ export const adjustmentColumns = [
 				name: 'Deduction',
 				onclick: column.getToggleSortingHandler()
 			}),
-		cell: (info) => formatETB(info.getValue(), true)
+		cell: (info) => formatETB(amount(info.getValue()), true)
 	},
 	{
 		accessorKey: 'allowances',
@@ -464,7 +474,7 @@ export const adjustmentColumns = [
 				name: 'Allowances',
 				onclick: column.getToggleSortingHandler()
 			}),
-		cell: (info) => formatETB(info.getValue(), true)
+		cell: (info) => formatETB(amount(info.getValue()), true)
 	},
 	{
 		accessorKey: 'transportAllowance',
@@ -473,7 +483,7 @@ export const adjustmentColumns = [
 				name: 'Transport Allowance',
 				onclick: column.getToggleSortingHandler()
 			}),
-		cell: (info) => formatETB(info.getValue(), true)
+		cell: (info) => formatETB(amount(info.getValue()), true)
 	},
 	{
 		accessorKey: 'positionAllowance',
@@ -482,7 +492,7 @@ export const adjustmentColumns = [
 				name: 'Position Allowance',
 				onclick: column.getToggleSortingHandler()
 			}),
-		cell: (info) => formatETB(info.getValue(), true)
+		cell: (info) => formatETB(amount(info.getValue()), true)
 	},
 	{
 		accessorKey: 'housingAllowance',
@@ -491,7 +501,7 @@ export const adjustmentColumns = [
 				name: 'Housing Allowance',
 				onclick: column.getToggleSortingHandler()
 			}),
-		cell: (info) => formatETB(info.getValue(), true)
+		cell: (info) => formatETB(amount(info.getValue()), true)
 	},
 	{
 		accessorKey: 'nonTaxableAllowance',
@@ -500,7 +510,7 @@ export const adjustmentColumns = [
 				name: 'Non-Taxable',
 				onclick: column.getToggleSortingHandler()
 			}),
-		cell: (info) => formatETB(info.getValue(), true)
+		cell: (info) => formatETB(amount(info.getValue()), true)
 	},
 	{
 		accessorKey: 'grossAmount',
@@ -509,7 +519,7 @@ export const adjustmentColumns = [
 				name: 'Gross Amount',
 				onclick: column.getToggleSortingHandler()
 			}),
-		cell: (info) => formatETB(info.getValue(), true)
+		cell: (info) => formatETB(amount(info.getValue()), true)
 	},
 	{
 		accessorKey: 'netAmount',
@@ -518,7 +528,7 @@ export const adjustmentColumns = [
 				name: 'Net Amount',
 				onclick: column.getToggleSortingHandler()
 			}),
-		cell: (info) => formatETB(info.getValue(), true)
+		cell: (info) => formatETB(amount(info.getValue()), true)
 	},
 	{
 		accessorKey: 'amount',
@@ -528,7 +538,7 @@ export const adjustmentColumns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 
-		cell: (info) => formatETB(info.getValue(), true)
+		cell: (info) => formatETB(amount(info.getValue()), true)
 	},
 	{
 		accessorKey: 'transaction',
@@ -580,7 +590,7 @@ export const adjustmentColumns = [
 				name: 'Created At',
 				onclick: column.getToggleSortingHandler()
 			}),
-		cell: (info) => formatEthiopianDate(info.getValue())
+		cell: (info) => ethiopianDate(info.getValue())
 	},
 	{
 		accessorKey: 'addedBy',
@@ -592,7 +602,7 @@ export const adjustmentColumns = [
 		cell: ({ row }) => {
 			// Use staffId for the link, but ensure staffName is selected in the query
 			return renderComponent(DataTableLinks, {
-				id: row.original.createdById,
+				id: row.original.createdBy,
 				name: row.original.addedBy, // Fallback for safety
 				entity: 'user',
 				target: '_blank'

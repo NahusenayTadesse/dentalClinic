@@ -2,11 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { eq } from 'drizzle-orm';
 
 import { inRollback, type TestTx } from '$lib/testing/rollback';
+import { db } from './db';
 import { addClinicDays, clinicToday } from '$lib/clinicTime';
-import { moveStock } from './stock';
+import { expiringLots, lotRecipients, moveStock } from './stock';
 import { softDeleteDamagedSupply } from './softDelete';
 import { insertReturningId } from './db/insert';
-import { damagedSupplies, supplies, suppliesAdjustments, supplyTypes } from './db/schema';
+import { damagedSupplies, patient, supplies, suppliesAdjustments, supplyTypes } from './db/schema';
 import { supplyBatch } from './db/schema/batches';
 
 /**
@@ -122,5 +123,63 @@ describe('undoing a damage report', () => {
 		});
 
 		expect(left).toEqual([2, 3, 5]);
+	});
+});
+
+describe('reading lots', async () => {
+	// Borrowed: a patient row needs a dozen unrelated columns (CLAUDE.md §16).
+	const [someone] = await db.select({ id: patient.id }).from(patient).limit(1);
+
+	it.skipIf(!someone)(
+		'traces a lot to the patients it was dispensed to, and no one else',
+		async () => {
+			const found = await inRollback(async (tx) => {
+				const item = await stocked(tx);
+				const [{ batchId, quantity }] = await moveStock(tx, { supplyId: item.supplyId, delta: -1 });
+				// One dispense naming the patient, one correction naming nobody.
+				await tx.insert(suppliesAdjustments).values({
+					suppliesId: item.supplyId,
+					adjustment: quantity,
+					batchId,
+					movementType: 'dispensed',
+					patientId: someone.id
+				});
+				await tx.insert(suppliesAdjustments).values({
+					suppliesId: item.supplyId,
+					adjustment: -1,
+					batchId,
+					movementType: 'correction'
+				});
+				return { batchId, rows: await lotRecipients(item.supplyId, tx) };
+			});
+
+			expect(found.rows).toHaveLength(1);
+			expect(found.rows[0]).toMatchObject({ patientId: someone.id, batchId: found.batchId });
+		}
+	);
+
+	it('warns of lots expiring soon or expired on the shelf, not far-off or empty ones', async () => {
+		const ids = await inRollback(async (tx) => {
+			const item = await stocked(tx);
+			const today = clinicToday();
+			const farOff = await insertReturningId(tx, supplyBatch, {
+				supplyId: item.supplyId,
+				quantity: 4,
+				expiryDate: addClinicDays(today, 400)
+			});
+			const emptied = await insertReturningId(tx, supplyBatch, {
+				supplyId: item.supplyId,
+				quantity: 0,
+				expiryDate: addClinicDays(today, 5)
+			});
+			const lots = await expiringLots({ active: null }, 90, tx);
+			return { item, farOff, emptied, found: lots.map((l) => l.id) };
+		});
+
+		expect(ids.found).toContain(ids.item.expired);
+		expect(ids.found).toContain(ids.item.dated);
+		expect(ids.found).not.toContain(ids.item.undated);
+		expect(ids.found).not.toContain(ids.farOff);
+		expect(ids.found).not.toContain(ids.emptied);
 	});
 });

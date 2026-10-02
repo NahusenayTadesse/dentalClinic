@@ -33,8 +33,11 @@
 		{ label: 'Prescriptions', href: `${base}/prescriptions` },
 		{ label: 'Files', href: `${base}/files` },
 		{ label: 'Consents', href: `${base}/consents` },
+		{ label: 'Lab work', href: `${base}/lab` },
 		// Money is not every chart reader's to see: the tab is there only for `billing.invoice`.
-		...(data.can.bill ? [{ label: 'Billing', href: `${base}/billing` }] : [])
+		...(data.can.bill ? [{ label: 'Billing', href: `${base}/billing` }] : []),
+		// Who has looked is the audit trail's question, not the chart's: `audit_logs.view` only.
+		...(data.can.seeViews ? [{ label: 'Access log', href: `${base}/access` }] : [])
 	]);
 
 	/** The overview is current on its own path only; every other tab also on the pages below it. */

@@ -85,6 +85,21 @@ export function addClinicDays(date: string, days: number): string {
 }
 
 /**
+ * A clinic-local date moved by whole months, kept to the month's last day when the day does not
+ * exist there: six months after 31 August is 28 February, not 3 March. A recall due "in six months"
+ * that slid into the month after would be called a month late.
+ */
+export function addClinicMonths(date: string, months: number): string {
+	const [y, m, d] = date.split('-').map(Number);
+	const target = new Date(Date.UTC(y, m - 1 + months, 1));
+	const lastDay = new Date(
+		Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0)
+	).getUTCDate();
+	target.setUTCDate(Math.min(d, lastDay));
+	return target.toISOString().slice(0, 10);
+}
+
+/**
  * The same instant on the Ethiopian clock, which is how most patients say a time.
  *
  * The Ethiopian day starts at dawn, so the hour count is six behind the international one: 7:00 is

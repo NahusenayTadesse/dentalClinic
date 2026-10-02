@@ -1,0 +1,1 @@
+ALTER TABLE `patient_access_log` MODIFY COLUMN `record_type` enum('summary','allergies','conditions','medications','note','prescription','file','procedure','treatmentPlan','invoice','consent','labCase') NOT NULL;

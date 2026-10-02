@@ -42,6 +42,14 @@
 					"body": "The Consents tab records what the patient agreed to — treatment, surgery, anaesthetic, radiographs, photographs, sharing records — how, and when. For a child, say who gave it and their relationship. A verbal consent must name the clinician who witnessed it. Attach a signed form on the Files tab first, then choose it here. A consent is never deleted: to withdraw it, give the reason, and it is dated."
 				},
 				{
+					"heading": "Lab work",
+					"body": "Crowns, bridges and dentures sent to a dental laboratory for this patient, from any branch. Send to a lab: choose the laboratory and, if you can, the charted work it is for — its tooth comes with it. Leave the due date empty to use the lab's usual turnaround.\n\nEach case then moves on with one button: received when it comes back, fitted when the patient has it, or sent back for a remake (counted against the lab). Work back from the lab shows on the patient's appointment in the day view, so it is not forgotten at the chair.\n\nReading is anyone who can open the chart; sending and moving cases needs lab_cases.manage."
+				},
+				{
+					"heading": "Access log",
+					"body": "Every time a part of this chart was opened or printed: by whom, which tab, from which branch and when. It is the answer when a patient asks who has seen their record. Openings by the same person within a few minutes count once.\n\nThe tab and the short list on the overview are shown only to holders of audit_logs.view."
+				},
+				{
 					"heading": "Duplicate records",
 					"body": "A super admin sees Duplicate records at the bottom of the overview: other records with the same name or phone. Merge into this chart moves everything from that record here — visits, treatment, bills, notes, allergies — and turns it into a pointer to this chart, so its old file number still leads here. An allergy both records have is kept once. It is recorded, and not undone from the screen."
 				},
@@ -100,6 +108,14 @@
 				{
 					"heading": "ስምምነቶች",
 					"body": "የስምምነቶች ክፍል ታካሚው የተስማማበትን ይመዘግባል — ሕክምና፣ ቀዶ ሕክምና፣ ማደንዘዣ፣ ራጅ፣ ፎቶ፣ መረጃ ማጋራት — እንዴትና መቼ። ለሕፃን ማን እንደሰጠውና ዝምድናውን ይናገሩ። በቃል የተሰጠ ስምምነት የመሰከረውን ክሊኒሻን መጥቀስ አለበት። የተፈረመ ቅጽ መጀመሪያ በፋይሎች ክፍል ያያይዙ፣ ከዚያ እዚህ ይምረጡት። ስምምነት አይሰረዝም፦ ለማንሳት ምክንያቱን ይስጡ፣ ቀኑም ይመዘገባል።"
+				},
+				{
+					"heading": "የላቦራቶሪ ሥራ",
+					"body": "ለዚህ ታካሚ ወደ የጥርስ ላቦራቶሪ የተላኩ ዘውዶች፣ ድልድዮችና ሰው ሠራሽ ጥርሶች፣ ከማንኛውም ቅርንጫፍ። ወደ ላቦራቶሪ ላክ፦ ላቦራቶሪውን ይምረጡ፤ ከተቻለም ሥራው የሚያገለግለውን በቻርቱ ላይ ያለ ሕክምና ይምረጡ — ጥርሱ አብሮ ይመጣል። የሚመለስበትን ቀን ባዶ ከተዉት የላቦራቶሪው የተለመደ ጊዜ ይወሰዳል።\n\nከዚያ እያንዳንዱ ሥራ በአንድ ቁልፍ ይቀጥላል፦ ሲመለስ ተቀብሏል፣ ታካሚው ሲገጠምለት ተገጥሟል፣ ወይም እንደገና እንዲሠራ ተመልሷል (በላቦራቶሪው ላይ ይቆጠራል)። ከላቦራቶሪ የተመለሰ ሥራ በዕለቱ እይታ ላይ በታካሚው ቀጠሮ ይታያል።\n\nማየት መዝገቡን የሚከፍት ሁሉ ይችላል፤ መላክና ማንቀሳቀስ lab_cases.manage ይፈልጋል።"
+				},
+				{
+					"heading": "የመዳረሻ መዝገብ",
+					"body": "የዚህ መዝገብ ማንኛውም ክፍል በተከፈተ ወይም በታተመ ቁጥር፦ በማን፣ የትኛው ትር፣ ከየትኛው ቅርንጫፍና መቼ። ታካሚ መዝገቡን ማን እንዳየ ሲጠይቅ መልሱ ይህ ነው። በጥቂት ደቂቃዎች ውስጥ በአንድ ሰው የተደረጉ መክፈቶች አንድ ጊዜ ይቆጠራሉ።\n\nትሩና በአጠቃላይ እይታው ላይ ያለው አጭር ዝርዝር ለaudit_logs.view ባለቤቶች ብቻ ይታያሉ።"
 				},
 				{
 					"heading": "የተደጋገሙ መዝገቦች",

@@ -20,6 +20,8 @@ import {
 import { addClinicDays, clinicDayRange, clinicToday, isIsoDate } from '$lib/clinicTime';
 import { canMove, isAppointmentStatus } from '$lib/appointmentStatus';
 import { visitWork } from '$lib/server/procedures';
+import { labStatusFor } from '$lib/server/labCases';
+import { workToBook } from '$lib/server/treatmentPlans';
 import type { PageServerLoad } from './$types';
 
 /**
@@ -30,8 +32,10 @@ import type { PageServerLoad } from './$types';
  * instead, and asked to pick a branch for the grid (CLAUDE.md §15).
  *
  * `?date=YYYY-MM-DD` chooses the day; `?book=<patientId>` opens the booking form for that patient —
- * the "Book appointment" button on the patient chart lands here; `?open=<appointmentId>` opens one
- * appointment, which is where the list's rows point.
+ * the "Book appointment" button on the patient chart lands here — and `&type=<appointmentTypeId>`
+ * chooses the kind of visit, which is how a recall books the check-up it is for, and
+ * `&plan=<planId>` books a treatment plan's agreed work, which the booking then reserves;
+ * `?open=<appointmentId>` opens one appointment, which is where the list's rows point.
  */
 export const load: PageServerLoad = async ({ url, locals }) => {
 	const asked = url.searchParams.get('date');
@@ -54,11 +58,23 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 				.limit(1)
 		: [];
 
-	const [forms, providers, types] = await Promise.all([
-		appointmentForms({ patientId: bookPatient?.id }),
-		bookableProviders(),
-		appointmentTypes()
-	]);
+	const [providers, types] = await Promise.all([bookableProviders(), appointmentTypes()]);
+	// A type from the link only if it is one on offer; its usual length comes with it.
+	const bookType = types.find((t) => t.value === Number(url.searchParams.get('type')));
+	// From a treatment plan: its agreed work not yet booked. Only when there is some — a plan whose
+	// work is all booked or done books an ordinary appointment.
+	const planId = Number(url.searchParams.get('plan')) || null;
+	const planWork = bookPatient && planId ? await workToBook(bookPatient.id, planId) : [];
+	const bookPlan = planWork.length
+		? { id: planId as number, work: planWork.map((w) => w.description) }
+		: null;
+	const forms = await appointmentForms({
+		patientId: bookPatient?.id,
+		appointmentTypeId: bookPatient ? bookType?.value : undefined,
+		durationMinutes: bookPatient ? bookType?.defaultMinutes : undefined,
+		planId: bookPlan?.id,
+		note: bookPlan ? `Treatment plan: ${bookPlan.work.join('; ')}`.slice(0, 500) : undefined
+	});
 
 	const shared = {
 		day,
@@ -69,6 +85,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		providers,
 		types,
 		bookPatient: bookPatient ?? null,
+		bookPlan,
 		openId,
 		canBook: hasPermission(locals, BOOK_PERMISSION),
 		canChart: hasPermission(locals, 'patients.clinical')
@@ -103,10 +120,13 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	const showWork =
 		shared.canBook && hasPermission(locals, 'patients.view') && completable.length > 0;
 
-	// The alerts a clinician needs on the block itself: who not to give penicillin, who bleeds.
-	const [flags, work] = await Promise.all([
-		flagsFor([...new Set(rows.map((r) => r.patientId))]),
-		visitWork(showWork ? completable : [])
+	// The alerts a clinician needs on the block itself: who not to give penicillin, who bleeds —
+	// and whether the crown they are coming in to have fitted is back from the lab.
+	const patientIds = [...new Set(rows.map((r) => r.patientId))];
+	const [flags, work, lab] = await Promise.all([
+		flagsFor(patientIds),
+		visitWork(showWork ? completable : []),
+		labStatusFor(patientIds)
 	]);
 
 	return {
@@ -121,7 +141,8 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 				severeAllergies:
 					f?.allergies.filter((a) => a.severity === 'severe').map((a) => a.name) ?? [],
 				medicineAlerts: f?.medicineAlerts ?? [],
-				work: work.get(row.id) ?? null
+				work: work.get(row.id) ?? null,
+				lab: lab.get(row.patientId) ?? null
 			};
 		})
 	};

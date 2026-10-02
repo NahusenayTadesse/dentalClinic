@@ -1,0 +1,45 @@
+{
+	"match": "/dashboard/lab-cases",
+	"languages": {
+		"en": {
+			"title": "Lab Work",
+			"summary": "Work at this branch that is out at a laboratory, overdue, or back and waiting to be fitted.",
+			"sections": [
+				{
+					"heading": "Open cases",
+					"body": "Every case not yet fitted or cancelled: a docket still being prepared, work at the lab (soonest due first, overdue marked), and work back and ready to fit. Each row moves on with one button — sent, received, fitted, sent back for a remake, or cancelled. Sending and sending back use the laboratory's usual turnaround as the due date.\n\nNew work is sent from the patient's Lab work tab, where the tooth and the treatment are."
+				},
+				{
+					"heading": "How the laboratories have done",
+					"body": "For work sent in the past year: how many cases, the turnaround the lab says, the days it actually took on average, how many came back late and by how much, and how many went back for a remake. It is the table to read before deciding which laboratory gets the next crown.\n\nNeeds the lab_cases.manage permission."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Appointments",
+					"href": "/dashboard/help#section-appointments"
+				}
+			]
+		},
+		"am": {
+			"title": "የላቦራቶሪ ሥራ",
+			"summary": "በዚህ ቅርንጫፍ በላቦራቶሪ ያለ፣ የዘገየ፣ ወይም ተመልሶ ለመግጠም የሚጠብቅ ሥራ።",
+			"sections": [
+				{
+					"heading": "ክፍት ሥራዎች",
+					"body": "ገና ያልተገጠመ ወይም ያልተሰረዘ ሥራ ሁሉ፦ በዝግጅት ላይ ያለ፣ በላቦራቶሪ ያለ (የዘገየው ምልክት አለው)፣ እና ተመልሶ ለመግጠም ዝግጁ የሆነ። እያንዳንዱ መስመር በአንድ ቁልፍ ይቀጥላል።\n\nአዲስ ሥራ ከታካሚው የላቦራቶሪ ሥራ ትር ይላካል።"
+				},
+				{
+					"heading": "ላቦራቶሪዎቹ እንዴት ሠሩ",
+					"body": "ባለፈው ዓመት ለተላከ ሥራ፦ ስንት ሥራ፣ ላቦራቶሪው የሚለው ጊዜ፣ በአማካይ የፈጀው ቀን፣ ስንቱ ዘግይቶ እንደመጣ፣ እና ስንቱ እንደገና እንዲሠራ እንደተመለሰ።\n\nየlab_cases.manage ፈቃድ ይፈልጋል።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ቀጠሮዎች",
+					"href": "/dashboard/help#section-appointments"
+				}
+			]
+		}
+	}
+}

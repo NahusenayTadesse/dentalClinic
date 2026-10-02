@@ -25,9 +25,10 @@ import {
 	supplyCategories,
 	suppliers as supplierOptions
 } from '$lib/server/fastData';
-import { onHand } from '$lib/server/stock';
+import { lotRecipients, onHand } from '$lib/server/stock';
+import { hasPermission } from '$lib/server/permissions';
 
-export const load: LayoutServerLoad = async ({ params }) => {
+export const load: LayoutServerLoad = async ({ params, locals }) => {
 	const { id } = params;
 	const form = await superValidate(zod4(schema));
 	const adjustForm = await superValidate(zod4(adjustSchema));
@@ -114,8 +115,14 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		throw error(404, 'Supply not found, it has been deleted or never have existed.');
 	}
 
+	// Names patients, so only for someone who may read patient records (CLAUDE.md §9).
+	const recipients = hasPermission(locals, 'patients.view')
+		? await lotRecipients(Number(id))
+		: null;
+
 	return {
 		supply,
+		recipients,
 		form,
 		adjustForm,
 		damagedForm,

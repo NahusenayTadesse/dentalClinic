@@ -457,6 +457,49 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'Chairs are managed under **Admin Panel → Chairs**. A branch with no chairs has an empty day view.'
 				],
 				keywords: ['no-show report', 'history', 'search appointments']
+			},
+			{
+				id: 'recalls',
+				title: 'Bringing patients back',
+				summary:
+					'A completed check-up puts the patient on the recall list for their next one. The desk rings them and books it.',
+				where: 'Menu → **Appointments → Recalls** → `/dashboard/recalls`',
+				permission: 'appointments.book',
+				steps: [
+					'Give each appointment type that should bring a patient back its interval under **Clinic Setup → Appointment Types** — 6 for a check-up or a scale and polish, 1 for an orthodontic adjustment, 0 for none.',
+					'Open **Recalls**. The longest overdue are at the top; choose how far ahead to look with the buttons over the table.',
+					'Ring the patient and **Log a call**: no answer, spoke, declined, or stop.',
+					'**Book** opens the diary with the patient and the visit already chosen.'
+				],
+				notes: [
+					'Nobody types a recall. Completing a visit of a type with an interval creates the next one, due that many months after the visit, and closes the one it answered.',
+					'Booking takes the patient off the list by itself. If that appointment is cancelled or missed, the recall comes back.',
+					'A declined recall is kept, so the patient is not rung again for it.',
+					'The patient’s chart says when they are next due, beside their appointments.'
+				],
+				keywords: ['recall', 'check-up', 'six months', 'reminder', 'come back', 'due']
+			},
+			{
+				id: 'lab-work',
+				title: 'Work sent to a dental laboratory',
+				summary:
+					'Crowns, bridges and dentures are tracked from the docket to the fitting, with the date the laboratory promised.',
+				where:
+					'The patient’s **Lab work** tab to send; Menu → **Appointments → Lab Work** → `/dashboard/lab-cases` for the board',
+				permission: 'lab_cases.manage',
+				steps: [
+					'On the patient’s chart, open **Lab work → Send to a lab**. Choose the laboratory and the charted work it is for; its tooth comes with it.',
+					'Leave **Due back** empty to use the laboratory’s usual turnaround, or enter the day they promised.',
+					'When the parcel comes back, press **Received from the lab**; when the patient has it, **Fitted**.',
+					'Work that came back wrong goes back with **Send back for a remake**, which counts against the laboratory.'
+				],
+				notes: [
+					'The **Lab Work** board lists everything at this branch not yet fitted, with what is overdue.',
+					'The day view marks a patient whose lab work is back or overdue, and the appointment says which.',
+					'**How the laboratories have done**, under the board, shows each lab’s real turnaround, lateness and remakes over the past year.',
+					'Laboratories and their usual turnaround are set under **Clinic Setup → Dental Labs**.'
+				],
+				keywords: ['lab', 'laboratory', 'crown', 'bridge', 'denture', 'remake', 'technician']
 			}
 		]
 	},
@@ -516,7 +559,7 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'The red alerts panel lists severe allergies, medicines with a bleeding, bone or immunity risk, and other allergies — and warns when the medical history was never taken or is over a year old.',
 					'Tick **I asked the medical history questions today** only when you did. Correcting a note is not taking a history, and marking it would make an old history look current.',
 					'Marking a condition resolved or a medicine stopped records the date by itself.',
-					'Every change to a chart is written to the audit trail, and every opening of a chart is recorded in the access log. Holders of **Read the audit trail** see who opened it at the bottom of the page.'
+					'Every change to a chart is written to the audit trail, and every opening of a chart is recorded in the access log. Holders of **Read the audit trail** see the last few at the bottom of the page and the whole log on the **Access log** tab.'
 				],
 				keywords: ['allergy', 'condition', 'medication', 'warfarin', 'history', 'emergency contact']
 			},
@@ -1048,21 +1091,22 @@ export const HELP_SECTIONS: HelpSection[] = [
 				id: 'payroll-cycle',
 				title: 'The monthly payroll cycle',
 				summary:
-					'Attendance first, then overtime and deductions, then the run, then the receipt — in that order, every month.',
+					'Attendance first, then overtime, bonuses and deductions, then the run, then the receipt — in that order, every month.',
 				where: 'Menu → **Finance**',
 				permission: 'salary.manage',
 				steps: [
 					'Make sure **attendance** for the month is entered and every new hire has been **approved**.',
-					'Enter **overtime** for the month (`Finance → All OverTime`).',
-					'Enter **deductions** for the month (`Finance → All Deductions`).',
+					'Record **overtime**, **bonuses** and **deductions** dated in the month (`Finance → Overtime / Bonuses / Deductions`).',
 					'Open **All UnPaid Salaries** for the month.',
-					'Check the totals panel: gross, tax, pension, allowances, deductions, net.',
-					'Choose the payment method, set the payment date and attach the transfer receipt.',
-					'Press **Run payroll**. The run is created, every payslip written, and the transaction recorded — all in one go.',
+					'Check the figures at the top: gross, tax, pension and net, for everyone or for those ticked.',
+					'Tick who is being paid, press **Pay**, choose the account, the payment date and attach the transfer receipt.',
+					'Pay. The run is created, every payslip written, and the transaction recorded — all in one go.',
 					'The run then waits in the **Payroll Runs** approval queue.'
 				],
 				notes: [
 					'The whole run is one transaction: if anything fails, nothing is written. You will never find half a month paid.',
+					'**The figures on screen are a preview.** Each payslip is worked out again at the moment it is paid, from the same rules, so an overtime entry recorded after the page was opened is still paid — and nothing typed or changed in the browser can alter an amount.',
+					'Somebody already paid for the month is refused rather than paid twice; reload the page and they are gone from the list.',
 					'Unapproved employees are refused with a count, so if the total looks light, check the approvals queue before you check your arithmetic.',
 					'Attach the bank transfer receipt at the moment you run it. That receipt is what reconciles the payroll to the bank statement.',
 					'**Commission** is worked out, not entered. A salary with Commission set to Yes earns its percentage of the fees of every procedure the employee completed in the month, at the rate in force on the day of the work, and it is added to gross pay and taxed with it. Procedures not yet marked completed on the chart are not paid on.'
@@ -1082,42 +1126,47 @@ export const HELP_SECTIONS: HelpSection[] = [
 			},
 			{
 				id: 'payroll-months',
-				title: 'Choosing a payroll month',
-				summary: 'Payroll screens are addressed by month, and open on the current one by default.',
+				title: 'Months and periods',
+				summary: 'Paying is done a month at a time; reading is done over any period you choose.',
 				notes: [
-					'Landing on **All UnPaid Salaries** without naming a month sends you to the current month; **Paid Salaries** opens on the last month that was paid.',
-					'The month is in the address (`Meskerem_2017`), so a link to a particular month can be bookmarked or sent to somebody.',
-					'Change months from the selector at the top of the page rather than by editing the address.'
+					'**All UnPaid Salaries** is a month — a payroll run pays one — and opens on the current month. Change it with the selector at the top; the month is in the address, so a link to it can be sent.',
+					'**Paid Salaries**, **Overtime**, **Bonuses** and **Deductions** are not months. Choose any date range, or the Month filter on Paid Salaries, and the totals at the top count everything that matches.'
 				],
-				keywords: ['month', 'period', 'ethiopian', 'unpaid', 'paid', 'select month']
+				keywords: ['month', 'period', 'ethiopian', 'unpaid', 'paid', 'select month', 'range']
 			},
 			{
 				id: 'overtime-deductions',
-				title: 'Overtime, deductions and bonuses',
-				summary: 'The variable parts of a payslip, entered per month before the run.',
-				where: "Menu → **Finance → All OverTime / All Deductions**, or an employee's salary page",
+				title: 'Overtime, bonuses and deductions',
+				summary:
+					'The variable parts of a payslip: dated entries the next run picks up, kept in one list each.',
+				where:
+					'Menu → **Finance → Overtime / Bonuses / Deductions** → `/dashboard/salary/ledger/overtime`',
+				permission: 'salary.manage',
 				steps: [
-					'Enter overtime against the month, choosing the overtime type — the rate belongs to the type, set in **Admin Panel → Overtime Types**.',
-					'Enter deductions against the month: advances, penalties, loans, anything to be taken off.',
-					"Bonuses are entered on the individual employee's salary page.",
-					'All of it is picked up by the payroll run for that month.'
+					'Open the list and press **Record**.',
+					'Tick one or more employees — the list searches — then the date.',
+					'Overtime: choose the type and the hours. The pay is worked out for each person from their approved salary on that day and the type’s rate, set in **Admin Panel → Overtime Types**.',
+					'A bonus or a deduction: the amount, and for a deduction what kind and why.',
+					'Everything dated in a month is paid by that month’s run.'
 				],
 				notes: [
-					'Enter these **before** the run. Anything added afterwards belongs to the next month, or has to go through a payroll adjustment.'
+					'All or nothing: if one chosen employee cannot be recorded — not approved, no salary that day, over the type’s hour limit — nobody is, and the message says who.',
+					'**A paid month is closed.** An entry dated where an employee has already been paid would never be paid, so it is refused; paid entries cannot be changed or removed. Record a correction in the next unpaid month, or adjust the payslip.',
+					'Each list filters by any date range, department, position, type and whether it has been paid, and totals what matches. The tabs switch lists and keep your dates.',
+					'Every entry, change and removal is on the audit trail. Removing one is a super administrator’s.'
 				],
 				keywords: ['overtime', 'deduction', 'bonus', 'advance', 'penalty', 'allowance', 'variable']
 			},
 			{
 				id: 'paid-salaries',
 				title: 'Paid salaries and adjustments',
-				summary:
-					'What has already been paid, month by month, and how to correct a payslip after the fact.',
+				summary: 'Every payslip ever paid, over any period, and how to correct one after the fact.',
 				where: 'Menu → **Finance → Paid Salaries** → `/dashboard/salary/paid-salaries`',
 				steps: [
-					'Open **Paid Salaries** and pick the month.',
-					'Every payslip for the month is listed, with its gross, tax, pension, deductions and net.',
-					'Print or export the sheet for the file, or for the bank.',
-					'To correct one payslip, open it and use **Adjust**.'
+					'Open **Paid Salaries**. Choose a date range or a month, and narrow by department, position, how it was paid or status.',
+					'The totals at the top — gross, tax, both pension shares, net — count everything that matches.',
+					'Click a month to open that run: its payslips, its bank receipts, its adjustments, and finalising it.',
+					'To correct one payslip, open its run and use **Adjust**.'
 				],
 				notes: [
 					'An adjustment is a new record, not an edit of the original payslip. The original stays exactly as it was paid, and the adjustment carries the correction with its own approval — that is what keeps a paid month auditable.',
@@ -1269,7 +1318,7 @@ export const HELP_SECTIONS: HelpSection[] = [
 		id: 'reports',
 		title: 'Reports',
 		blurb:
-			'Nine report pages over the same data, each with charts and totals on top and the underlying ledger underneath.',
+			'Ten report pages over the same data, each with charts and totals on top and the underlying ledger underneath.',
 		topics: [
 			{
 				id: 'reports-how',
@@ -1277,8 +1326,7 @@ export const HELP_SECTIONS: HelpSection[] = [
 				summary:
 					'Set the date range and the scope at the top; the charts and the totals answer for that slice; then pick a ledger to see the rows behind them.',
 				where: 'Menu → **Reports** → `/dashboard/reports`',
-				permission:
-					'reports.finance, reports.hr, reports.customer_site or audit_logs.view, by page',
+				permission: 'reports.clinic, reports.finance, reports.hr or audit_logs.view, by page',
 				steps: [
 					'Choose the **start** and **end** dates. Both ends are included.',
 					'Press **Filters** and narrow the scope: department, position, branch, customer, employment status, education, gender, employee, payment method, expense type — plus a search over the open ledger and a page size. The badge on the button counts how many narrowings are active.',
@@ -1297,19 +1345,21 @@ export const HELP_SECTIONS: HelpSection[] = [
 			{
 				id: 'reports-pages',
 				title: 'What each report covers',
-				summary: 'Eight pages, grouped by the question you are asking.',
+				summary: 'Nine pages, grouped by the question you are asking.',
 				steps: [
 					'**Overview** (`/dashboard/reports`) — the company at a glance: payroll and revenue together.',
+					'**Clinic** — production per dentist, procedures by service, case acceptance, recalls, what is owed and for how long, cash drawer counts and lab turnaround.',
 					'**People** — headcount, hires, terminations, the workforce as it stands.',
 					'**Payroll** — runs, payslips, adjustments, receipts and salary changes.',
 					'**Compensation** — bonuses, overtime, commissions and deductions.',
 					'**Time & Leave** — attendance, leaves taken and leave granted.',
 					'**Stock** — stock levels, supply adjustments and damaged items.',
 					'**Money** — transactions, expenses and services rendered.',
-					'**System** — the audit log: who did what, and when.'
+					'**System** — the audit log: who did what, and when; and the patient record access log: who opened whose chart.'
 				],
 				notes: [
-					'The permissions split the same way the questions do: `reports.hr` for people and leave, `reports.finance` for the money and stock pages, `audit_logs.view` for the system report.',
+					'The permissions split the same way the questions do: `reports.clinic` for the clinic page, `reports.hr` for people and leave, `reports.finance` for the money and stock pages, `audit_logs.view` for the system report.',
+					'The clinic report reads the branch chosen in the top bar. Production there is the fee of work completed, not money collected — that is the Money report.',
 					'The stock report is also linked from the supplies menu, because that is where you are standing when you want it.'
 				],
 				keywords: [
@@ -1335,6 +1385,25 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'It is a report like any other: set the range, filter it, export it.'
 				],
 				keywords: ['audit', 'log', 'history', 'who did', 'trail', 'system', 'security']
+			},
+			{
+				id: 'access-log',
+				title: 'Who has opened a patient’s chart',
+				summary:
+					'Every opening and printing of a part of a patient’s chart is recorded. Read it per patient, or per member of staff.',
+				where:
+					'The patient’s **Access log** tab, or Menu → **Reports → System** → section **Patient Record Access**',
+				permission: 'audit_logs.view',
+				steps: [
+					'For one patient — when they ask who has seen their record — open their chart and the **Access log** tab.',
+					'For one member of staff, open the System report, choose **Patient Record Access**, set the range, and search their name.'
+				],
+				notes: [
+					'Each row says which part of the chart was opened — notes, prescriptions, billing — not only that the chart was.',
+					'Repeat openings by the same person within ten minutes count once, so the log shows visits rather than clicks.',
+					'Views of a record merged into another are shown under the surviving chart.'
+				],
+				keywords: ['access', 'privacy', 'who looked', 'viewed', 'opened', 'confidential']
 			}
 		]
 	},
@@ -1736,6 +1805,21 @@ export const ROUTE_MAP: RouteEntry[] = [
 		group: 'Appointments'
 	},
 	{
+		path: '/dashboard/recalls',
+		title: 'Recalls',
+		purpose: 'Patients due back who have not booked: ring them, log the call, book the visit.',
+		permission: 'appointments.book',
+		group: 'Appointments'
+	},
+	{
+		path: '/dashboard/lab-cases',
+		title: 'Lab work',
+		purpose:
+			'Work out at laboratories, overdue, or back to fit — and how each laboratory has kept its promises.',
+		permission: 'lab_cases.manage',
+		group: 'Appointments'
+	},
+	{
 		path: '/dashboard/admin-panel/chairs',
 		title: 'Chairs',
 		purpose: 'The dental chairs at each branch — the columns of the appointment day view.',
@@ -1998,6 +2082,20 @@ export const ROUTE_MAP: RouteEntry[] = [
 		group: 'Patients'
 	},
 	{
+		path: '/dashboard/patients/[id]/lab',
+		title: 'Patient lab work',
+		purpose: 'What has been sent to a laboratory for the patient, where it is, and sending more.',
+		permission: 'patients.view (lab_cases.manage to send and move)',
+		group: 'Patients'
+	},
+	{
+		path: '/dashboard/patients/[id]/access',
+		title: 'Access log',
+		purpose: 'Who opened or printed each part of the patient’s chart, and when.',
+		permission: 'audit_logs.view',
+		group: 'Patients'
+	},
+	{
 		path: '/dashboard/patients/[id]/billing',
 		title: 'Patient billing',
 		purpose: 'What the patient owes, their work not yet billed, their bills, and taking a payment.',
@@ -2136,23 +2234,25 @@ export const ROUTE_MAP: RouteEntry[] = [
 		group: 'Finance'
 	},
 	{
-		path: '/dashboard/salary/add-overtime/[range]',
-		title: 'Overtime',
-		purpose: 'Overtime for a month, by type, before the run.',
+		path: '/dashboard/salary/ledger/[kind]',
+		title: 'Overtime, bonuses and deductions',
+		purpose:
+			'Every pay adjustment over any period: filter, total, record for several employees at once.',
 		permission: 'salary.manage',
 		group: 'Finance'
 	},
 	{
-		path: '/dashboard/salary/add-deductions/[range]',
-		title: 'Deductions',
-		purpose: 'Advances, penalties and other deductions for a month.',
+		path: '/dashboard/salary/paid-salaries',
+		title: 'Paid salaries',
+		purpose:
+			'Every payslip ever paid, over any period: filtered, totalled, and linked to its month’s run.',
 		permission: 'salary.manage',
 		group: 'Finance'
 	},
 	{
 		path: '/dashboard/salary/paid-salaries/[month_year]',
-		title: 'Paid salaries',
-		purpose: 'Payslips already paid, month by month.',
+		title: 'A payroll run',
+		purpose: 'One month’s payslips, its bank receipts and adjustments, and finalising it.',
 		permission: 'salary.manage',
 		group: 'Finance'
 	},
@@ -2284,6 +2384,14 @@ export const ROUTE_MAP: RouteEntry[] = [
 		title: 'Stock report',
 		purpose: 'Stock levels, adjustments and damaged supplies.',
 		permission: 'reports.finance',
+		group: 'Reports'
+	},
+	{
+		path: '/dashboard/reports/clinic',
+		title: 'Clinic report',
+		purpose:
+			'Production per dentist, procedures by service, case acceptance, recalls, receivables aging, cash counts and lab turnaround.',
+		permission: 'reports.clinic',
 		group: 'Reports'
 	},
 	{

@@ -1,39 +1,21 @@
 import { z } from 'zod/v4';
 import { ACCEPTED_FILE_TYPES, MAX_FILE_SIZE } from '$lib/zodschemas/appointmentSchema';
 
+/**
+ * Paying a month's payroll. The form says **who** — the ticked employees — and how it was paid:
+ * the account, the day and the bank receipt. It carries no amount: the action recomputes every
+ * payslip inside the transaction that pays it (`server/payrollRun.ts`). It used to post each
+ * employee's whole payslip back, and write what it was given.
+ */
 export const payrollSchema = z.object({
+	/** The run's month, `<month>_<year>`. Checked against the page's own month by the action. */
 	month: z.string('Month is required'),
-	start: z.string(),
-	end: z.string(),
-	paymentDate: z.string('Payment Date is required'),
-	paymentMethod: z.number('Payment method is required'),
-	employees: z.array(
-		z.object({
-			id: z.union([z.string(), z.number()]),
-			name: z.string(),
-			basicSalary: z.coerce.number(),
-			positionAllowance: z.coerce.number().default(0),
-			housingAllowance: z.coerce.number().default(0),
-			transportAllowance: z.coerce.number().default(0),
-			nonTaxable: z.coerce.number().default(0),
-			account: z.string().nullable(),
-			paymentMethodId: z.coerce.number().nullable(),
-			employmentStatus: z.string().nullable(),
-			overtime: z.coerce.number().default(0),
-			bonus: z.coerce.number().default(0),
-			absent: z.coerce.number().default(0),
-			attendancePenality: z.coerce.number().default(0),
-			commission: z.coerce.number().default(0),
-			deductions: z.coerce.number().default(0),
-			gross: z.coerce.number().default(0),
-			taxable: z.coerce.number().default(0),
-			taxAmount: z.coerce.number().default(0),
-			netPay: z.coerce.number().default(0),
-			penEm: z.coerce.number().default(0),
-			penOrg: z.coerce.number().default(0)
-		})
-	),
-
+	paymentDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Choose the payment date'),
+	paymentMethod: z.coerce
+		.number('Choose the account it was paid from')
+		.int()
+		.positive('Choose the account it was paid from'),
+	staffIds: z.array(z.coerce.number().int().positive()).min(1, 'Tick who is being paid.'),
 	reciept: z
 		.instanceof(File, {
 			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
@@ -46,4 +28,4 @@ export const payrollSchema = z.object({
 		)
 });
 
-export type EmployeeFormType = z.infer<typeof payrollSchema>['employees'][number];
+export type PayrollForm = z.infer<typeof payrollSchema>;

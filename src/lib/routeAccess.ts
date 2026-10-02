@@ -99,6 +99,26 @@ export const routeRules: RouteRule[] = [
 	},
 
 	/*
+	 * Recalls: the list of patients due back, worked by whoever books appointments — a recall is
+	 * answered by a booking, and the list's only writes are logging a call and booking.
+	 */
+	{
+		prefix: '/dashboard/recalls',
+		permission: 'appointments.book'
+	},
+
+	/*
+	 * Lab work: the board of cases out at laboratories, overdue, and back to fit. Its own
+	 * permission, because receiving a parcel from the courier and fitting what was in it is a
+	 * different job from charting — often a nurse's or the front desk's. The patient's Lab work tab
+	 * sits under `/dashboard/patients` and checks the same permission in each action.
+	 */
+	{
+		prefix: '/dashboard/lab-cases',
+		permission: 'lab_cases.manage'
+	},
+
+	/*
 	 * Treatment plans: the follow-up list of quotes awaiting an answer, and — checked in each action
 	 * on the patient's plans tab, which sits under `/dashboard/patients` — drawing up a plan,
 	 * presenting it and recording the answer. Reading a patient's plans is the chart's own
@@ -214,6 +234,16 @@ export const routeRules: RouteRule[] = [
 	{
 		prefix: '/dashboard/reports/stock',
 		permission: 'reports.finance'
+	},
+	/*
+	 * The clinic report: production per dentist, case acceptance, recalls, receivables, the cash
+	 * drawer and lab work. Its own permission because it is the practice owner's view of the
+	 * clinical side, and the HR and finance report holders are a different audience — a payroll
+	 * officer has no business with case acceptance, nor a clinical lead with salaries.
+	 */
+	{
+		prefix: '/dashboard/reports/clinic',
+		permission: 'reports.clinic'
 	},
 	// Last, so the three specific report prefixes above still win: `find` takes
 	// the first match. The company report reads payroll and revenue

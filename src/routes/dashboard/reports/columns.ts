@@ -28,7 +28,15 @@ type Kind =
 	/** Long free text, collapsed behind a popover. */
 	| 'long'
 	/** Links through to the record's own page. */
-	| 'link';
+	| 'link'
+	/**
+	 * A patient, named by `patientId` on the row: links to their chart through `entityLinks`, which
+	 * checks the viewer may open it and falls back to plain text (CLAUDE.md §12). `link` above is the
+	 * older, unchecked form.
+	 */
+	| 'patient'
+	/** A percentage, already ×100. */
+	| 'percent';
 
 type Column = [key: string, label: string, kind?: Kind, link?: string];
 
@@ -75,6 +83,21 @@ function cell(kind: Kind, link?: string) {
 					link: link ?? ''
 				});
 			};
+		case 'patient':
+			return (info: { getValue: () => unknown; row: { original: Record<string, unknown> } }) => {
+				const value = info.getValue();
+				if (!value) return '—';
+				return renderComponent(DataTableLinks, {
+					entity: 'patient',
+					id: Number(info.row.original.patientId),
+					name: String(value)
+				});
+			};
+		case 'percent':
+			return (info: { getValue: () => unknown }) => {
+				const value = info.getValue();
+				return value === null || value === undefined ? '—' : `${NUMBER.format(Number(value))}%`;
+			};
 		default:
 			return (info: { getValue: () => unknown }) => {
 				const value = info.getValue();
@@ -114,6 +137,73 @@ const EMPLOYEE_LINK = '/dashboard/employees';
 const BRANCH_LINK = '/dashboard/admin-panel/branches';
 
 const DEFINITIONS: Record<SectionKey, Column[]> = {
+	production: [
+		['dentist', 'Dentist'],
+		['procedures', 'Procedures', 'number'],
+		['patients', 'Patients', 'number'],
+		['production', 'Production', 'money'],
+		['average', 'Average fee', 'money']
+	],
+	'procedures-by-service': [
+		['service', 'Service'],
+		['procedures', 'Done', 'number'],
+		['production', 'Production', 'money'],
+		['average', 'Average fee', 'money']
+	],
+	'case-acceptance': [
+		['presentedOn', 'Presented', 'date'],
+		['patient', 'Patient', 'patient'],
+		['status', 'Status', 'status'],
+		['quoted', 'Quoted', 'money'],
+		['accepted', 'Agreed', 'money'],
+		['rate', 'Agreed share', 'percent'],
+		['decidedOn', 'Answered', 'date']
+	],
+	'recalls-due': [
+		['dueOn', 'Due', 'date'],
+		['patient', 'Patient', 'patient'],
+		['phone', 'Phone'],
+		['visit', 'For'],
+		['status', 'Outcome', 'status'],
+		['attempts', 'Calls', 'number']
+	],
+	'receivables-aging': [
+		['invoiceNumber', 'Bill'],
+		['patient', 'Patient', 'patient'],
+		['payer', 'Billed to'],
+		['issuedOn', 'Issued', 'date'],
+		['age', 'Days', 'number'],
+		['bucket', 'Age'],
+		['owed', 'Owed', 'money']
+	],
+	'cash-variance': [
+		['closedAt', 'Closed', 'date'],
+		['closedBy', 'Counted by'],
+		['openingFloat', 'Float', 'money'],
+		['expected', 'Expected', 'money'],
+		['counted', 'Counted', 'money'],
+		['variance', 'Variance', 'money'],
+		['banked', 'Banked', 'money'],
+		['note', 'Note', 'long']
+	],
+	'lab-turnaround': [
+		['lab', 'Laboratory'],
+		['cases', 'Cases', 'number'],
+		['promised', 'Says (days)', 'number'],
+		['averageDays', 'Took (days)', 'number'],
+		['late', 'Late', 'number'],
+		['averageLateDays', 'Days late on average', 'number'],
+		['remakes', 'Remakes', 'number']
+	],
+	'patient-access': [
+		['at', 'When', 'date'],
+		['user', 'Who'],
+		['action', 'Did'],
+		['part', 'Part of the chart'],
+		['patient', 'Patient', 'patient'],
+		['branch', 'Branch'],
+		['ipAddress', 'From address']
+	],
 	'payroll-runs': [
 		['month', 'Month'],
 		['year', 'Year'],

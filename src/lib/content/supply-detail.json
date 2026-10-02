@@ -20,6 +20,10 @@
 				{
 					"heading": "Recording damage and loss",
 					"body": "Record it against the item when it happens, not at the next count. That is what makes the shrinkage visible in the stock report instead of hiding it inside a quantity that quietly changed — and a quantity that changes with no record behind it is the thing nobody can explain later.\n\nTick Deductible only when the cost is to come out of the employee's pay, and choose who. The deduction is priced at the item's last recorded delivery cost; an item with no cost on record cannot be deducted. Deleting a damage report puts the units back into the lots they came from."
+				},
+				{
+					"heading": "Tracing a lot to patients",
+					"body": "When taking stock out for a patient, name them in Change Quantity. The movement is then recorded as dispensed to that patient, and Who received it, by lot lists them under the lot it came from — so a supplier's recall notice, which names a lot number, can be traced to the patients who had it. The list is shown only to those who may open patient records."
 				}
 			],
 			"links": [
@@ -48,6 +52,10 @@
 				{
 					"heading": "ጉዳትና ብክነት መመዝገብ",
 					"body": "በተከሰተበት ጊዜ በዕቃው ላይ ይመዝግቡት እንጂ በሚቀጥለው ቆጠራ አይሁን። ብክነቱ በክምችት ሪፖርት ውስጥ እንዲታይ የሚያደርገው ይህ ነው እንጂ በዝም ብሎ በተቀየረ መጠን ውስጥ አይሸሸግም — ከበስተጀርባው መዝገብ የሌለው መጠን ደግሞ በኋላ ማንም ሊያብራራው የማይችለው ነገር ነው።\n\n\"Deductable\"ን ምልክት የሚያደርጉት ወጪው ከሠራተኛው ደመወዝ የሚቀነስ ሲሆን ብቻ ነው፤ ሠራተኛውንም ይምረጡ። ተቀናሹ የሚሰላው በዕቃው የመጨረሻ የተመዘገበ የርክክብ ዋጋ ነው፤ ዋጋ ያልተመዘገበለት ዕቃ ሊቀነስ አይችልም። የጉዳት መዝገብ ሲሰረዝ ዕቃዎቹ ወደ ወጡባቸው ሎቶች ይመለሳሉ።"
+				},
+				{
+					"heading": "ሎትን ወደ ታካሚዎች መከታተል",
+					"body": "ለታካሚ ዕቃ ሲያወጡ በብዛት ቀይር ውስጥ ስማቸውን ይምረጡ። እንቅስቃሴው ለዚያ ታካሚ እንደተሰጠ ይመዘገባል፣ እና በሎት ማን እንደተቀበለ ዝርዝሩ ይያዛል — የአቅራቢ የመመለሻ ማስታወቂያ ሎት ቁጥሩን ሲጠቅስ ወደ ታካሚዎቹ መከታተል ይቻላል። ዝርዝሩ የሚታየው የታካሚ መዝገብ ለመክፈት ለሚፈቀድላቸው ብቻ ነው።"
 				}
 			],
 			"links": [

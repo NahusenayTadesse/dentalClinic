@@ -69,6 +69,9 @@ const HELP_FAMILY = new Set([
 	'/dashboard/patients/[id]/prescriptions',
 	'/dashboard/patients/[id]/files',
 	'/dashboard/patients/[id]/consents',
+	// The lab work and access log tabs: the same chart, each covered by its own section.
+	'/dashboard/patients/[id]/lab',
+	'/dashboard/patients/[id]/access',
 	'/dashboard/employees/single/[id]/add-leave',
 	'/dashboard/employees/single/[id]/id-maker',
 	'/dashboard/employees/single/[id]/leave-history',
@@ -79,8 +82,8 @@ const HELP_FAMILY = new Set([
 	'/dashboard/employees/single/[id]/salary/change-salary',
 	'/dashboard/employees/single/[id]/salary/salary-history',
 	'/dashboard/rejections/[entity]',
-	'/dashboard/salary/add-deductions/[range]',
-	'/dashboard/salary/add-overtime/[range]',
+	// The three adjustment ledgers share `pay-adjustments.json`, as the approval queues share theirs.
+	'/dashboard/salary/ledger/[kind]',
 	'/dashboard/salary/add-payroll/[range]',
 	'/dashboard/salary/paid-salaries/[month_year]',
 	'/dashboard/salary/paid-salaries/adjust/[id]',

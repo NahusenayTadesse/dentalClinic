@@ -166,7 +166,7 @@ there must not be one again.
 | `dashboard/reports/details.server.ts`                           | `DATEDIFF`, `DATE_FORMAT` |
 | `dashboard/salary/add-deductions/[range]/+page.server.ts`       | `DATE_FORMAT`             |
 | `dashboard/salary/add-overtime/[range]/+page.server.ts`         | `DATE_FORMAT`             |
-| `dashboard/salary/add-payroll/[range]/+page.server.ts`          | `DATEDIFF`                |
+| `lib/server/payrollRun.ts` (moved from `add-payroll/[range]`)   | `DATEDIFF`                |
 | `dashboard/supplies/[id]/+page.server.ts`                       | `DATE_FORMAT`             |
 | `dashboard/supplies/[id]/damaged/[range]/+page.server.ts`       | `DATE_FORMAT`             |
 | `dashboard/supplies/[id]/ranges/[range]/+page.server.ts`        | `DATE_FORMAT`             |

@@ -1,0 +1,53 @@
+{
+	"match": "/dashboard/reports/clinic",
+	"languages": {
+		"en": {
+			"title": "Clinic Report",
+			"summary": "The clinical side of the practice at this branch: what was done, what was agreed, who came back, and what is owed.",
+			"sections": [
+				{
+					"heading": "What it covers",
+					"body": "Ledgers: Production by Dentist, Procedures by Service, Case Acceptance, Recalls, Receivables Aging, Cash Drawer Counts, Lab Turnaround.\n\nProduction is the fee of work completed in the range — what commission is paid on — not the money collected, which is the Money report's. Case acceptance is the share of answered quotes' value the patients agreed to. A recall still waiting after its date is counted as missed."
+				},
+				{
+					"heading": "Using it",
+					"body": "Receivables Aging is what is owed today on issued bills, whatever the range says — a debt has no date range. Over 90 days is the money most likely never to come in.\n\nThe report reads the branch chosen in the top bar, not the branch filter. Needs the reports.clinic permission."
+				},
+				{
+					"heading": "Every report works the same way",
+					"body": "Set the date range and the filters at the top — both ends of the range are included, and the query follows you when you move to another report. Choose a section below the charts to load the rows behind them, then filter, print or export that table like any other in the system."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Reports",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		},
+		"am": {
+			"title": "የክሊኒክ ሪፖርት",
+			"summary": "በዚህ ቅርንጫፍ የሕክምናው ጎን፦ የተሠራው፣ የተስማማበት፣ የተመለሰው፣ እና ያለ ዕዳ።",
+			"sections": [
+				{
+					"heading": "የሚሸፍነው",
+					"body": "መዝገቦች፦ ምርት በጥርስ ሐኪም፣ ሕክምናዎች በአገልግሎት፣ የሕክምና ዕቅድ ተቀባይነት፣ የተመላሽ ጥሪዎች፣ የዕዳ ዕድሜ፣ የገንዘብ መሳቢያ ቆጠራዎች፣ የላቦራቶሪ ጊዜ።\n\nምርት በክልሉ ውስጥ የተጠናቀቀ ሥራ ክፍያ ነው — ኮሚሽን የሚከፈልበት — እንጂ የተሰበሰበ ገንዘብ አይደለም።"
+				},
+				{
+					"heading": "አጠቃቀም",
+					"body": "የዕዳ ዕድሜ ዛሬ በተሰጡ ደረሰኞች ላይ ያለ ዕዳ ነው፣ ክልሉ ምንም ቢል።\n\nሪፖርቱ በላይኛው አሞሌ የተመረጠውን ቅርንጫፍ ያነባል። የreports.clinic ፈቃድ ይፈልጋል።"
+				},
+				{
+					"heading": "ሁሉም ሪፖርቶች በአንድ መንገድ ይሠራሉ",
+					"body": "ከላይ የቀን ክልሉንና ማጣሪያዎቹን ያስቀምጡ — ሁለቱም ጫፎች ይካተታሉ፤ ወደ ሌላ ሪፖርት ሲሄዱም መጠይቁ አብሮ ይመጣል። ከገበታዎቹ በታች ያለውን ክፍል መርጠው ከበስተጀርባ ያሉትን መስመሮች ይጫኑ፤ ከዚያ እንደማንኛውም ሠንጠረዥ ያጣሩ፣ ያትሙ ወይም ወደ ውጭ ያውጡ።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሪፖርቶች",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		}
+	}
+}

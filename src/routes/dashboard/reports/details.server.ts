@@ -41,6 +41,9 @@ import type { ReportFilters } from './filters';
 import { all, amountScope, inRange, n, searchScope, staffName, staffScope } from './scope.server';
 import { onHand } from '$lib/server/stock';
 import { billedLines } from './billedLines.server';
+import { accessLogCount, accessLogPage, accessLogWhere } from '$lib/server/accessLog';
+import { VIEWED_RECORD_LABEL, VIEW_ACTION_LABEL } from '$lib/accessLog';
+import { clinicDayRange } from '$lib/clinicTime';
 
 export type DetailResult = { rows: Record<string, unknown>[]; total: number };
 
@@ -1003,6 +1006,33 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 						.leftJoin(user, eq(auditLog.userId, user.id))
 						.where(where)
 			);
+		}
+
+		case 'patient-access': {
+			// The access log reads through its own module (`server/accessLog.ts`), which owns what a
+			// view row is; here it is only paged and labelled for the table.
+			const where = accessLogWhere(
+				{ from: clinicDayRange(filters.dateStart).start, to: clinicDayRange(filters.dateEnd).end },
+				search
+			);
+			const [rows, total] = await Promise.all([
+				accessLogPage(where, filters.pageSize, offset),
+				accessLogCount(where)
+			]);
+			return {
+				rows: rows.map((r) => ({
+					id: r.id,
+					at: r.viewedAt,
+					user: r.user ?? 'Deleted user',
+					patientId: r.patientId,
+					patient: r.patient,
+					part: VIEWED_RECORD_LABEL[r.recordType] ?? r.recordType,
+					action: VIEW_ACTION_LABEL[r.action] ?? r.action,
+					branch: r.branch,
+					ipAddress: r.ipAddress
+				})),
+				total
+			};
 		}
 
 		case 'payroll-runs':

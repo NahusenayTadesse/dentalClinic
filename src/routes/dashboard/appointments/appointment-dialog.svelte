@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { SuperValidated } from 'sveltekit-superforms';
 	import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
+	import FlaskConical from '@lucide/svelte/icons/flask-conical';
 	import ExternalLink from '@lucide/svelte/icons/external-link';
 
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
@@ -150,6 +151,27 @@
 					<Badge class="bg-amber-500 text-white">{alert}</Badge>
 				{/each}
 			</div>
+		{/if}
+
+		{#if appointment.lab}
+			<!-- The lab work this visit may be for: back to fit, still out, or late. -->
+			<a href="/dashboard/patients/{appointment.patientId}/lab" class="flex flex-wrap gap-2">
+				{#if appointment.lab.ready}
+					<Badge variant="secondary" class="gap-1"
+						><FlaskConical class="size-3" />Lab work back — ready to fit ({appointment.lab
+							.ready})</Badge
+					>
+				{/if}
+				{#if appointment.lab.overdue}
+					<Badge variant="destructive" class="gap-1"
+						><FlaskConical class="size-3" />Overdue from the lab ({appointment.lab.overdue})</Badge
+					>
+				{:else if appointment.lab.out}
+					<Badge variant="outline" class="gap-1"
+						><FlaskConical class="size-3" />At the lab ({appointment.lab.out})</Badge
+					>
+				{/if}
+			</a>
 		{/if}
 
 		<dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">

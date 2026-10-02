@@ -7,6 +7,8 @@ import { timeStats } from './analytics/time.server';
 import { stockStats } from './analytics/stock.server';
 import { moneyStats } from './analytics/money.server';
 import { systemStats } from './analytics/system.server';
+import { clinicStats } from './clinic.server';
+import { hasPermission } from '$lib/server/permissions';
 import type { Stat } from './types';
 
 type Domain = { stats: Stat[] };
@@ -31,6 +33,11 @@ async function safe(name: string, run: () => Promise<Domain>): Promise<Stat[]> {
  * which is the whole point of splitting the pages up.
  */
 const HEADLINES = new Set([
+	'clinic-production',
+	'clinic-acceptance',
+	'clinic-receivables',
+	'clinic-recall-return',
+
 	'headcount',
 	'hired',
 	'terminated',
@@ -72,10 +79,14 @@ const HEADLINES = new Set([
 	'job-failures'
 ]);
 
-export const load: PageServerLoad = async ({ url }) => {
+export const load: PageServerLoad = async ({ url, locals }) => {
 	const filters = parseFilters(url);
 
 	const domains = await Promise.all([
+		// Only for its holders: the clinic figures carry what patients owe (`routeRules`).
+		hasPermission(locals, 'reports.clinic')
+			? safe('clinic', () => clinicStats(filters, locals.branch))
+			: Promise.resolve([]),
 		safe('people', () => peopleStats(filters)),
 		safe('payroll', () => payrollStats(filters)),
 		safe('compensation', () => compensationStats(filters)),

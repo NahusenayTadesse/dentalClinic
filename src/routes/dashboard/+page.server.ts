@@ -7,10 +7,11 @@ import { db } from '$lib/server/db';
 import { appointment, procedures, supplies, transactions } from '$lib/server/db/schema';
 import { lte, sql, and } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
-import { onHand } from '$lib/server/stock';
+import { expiringLots, onHand } from '$lib/server/stock';
+import { LOT_WARNING_DAYS } from '$lib/expiry';
 import { storedInstant, today } from '$lib/server/db/dialect';
 import { clinicDayRange, clinicToday } from '$lib/clinicTime';
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ locals }) => {
 	const reorderSupplies = await db
 		.select({
 			name: supplies.name,
@@ -66,13 +67,16 @@ export const load: PageServerLoad = async () => {
 		.from(sql`(SELECT 1) AS one`);
 
 	/*
-	 * The headline panel here used to be expiring branch contracts, plus a write that auto-expired
-	 * any that had run out. Both went with the client-billing tables; the home page needs a new
-	 * headline built from clinic data.
+	 * Stock that is going off, at this branch: the box nobody looks at expires unnoticed, and the
+	 * box that has expired is the one somebody reaches for. The lot list on each item says the
+	 * same, but only to whoever opens that item.
 	 */
+	const expiring = await expiringLots(locals.branch, LOT_WARNING_DAYS);
 
 	return {
 		reorderSupplies,
+		expiring,
+		today: clinicToday(),
 		todayReport
 	};
 };

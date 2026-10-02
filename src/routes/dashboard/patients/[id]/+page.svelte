@@ -25,6 +25,7 @@
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 	import MergeSection from './MergeSection.svelte';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
+	import { viewedLabel } from '$lib/accessLog';
 
 	import {
 		BLOOD_TYPE_OPTIONS,
@@ -54,6 +55,7 @@
 	let { data } = $props();
 
 	const p = $derived(data.patient);
+	const base = $derived(`/dashboard/patients/${p.id}`);
 
 	const dateOf = (value: Date | string | null | undefined) =>
 		value ? formatEthiopianDate(new Date(value)) : '—';
@@ -322,6 +324,20 @@
 				</Button>
 			{/if}
 		{/snippet}
+		<!-- When they are next due back, so whoever has the chart open can book it there and then. -->
+		<p class="mb-2 text-sm">
+			{#if data.nextRecall}
+				<span class="text-muted-foreground">Next due back:</span>
+				{data.nextRecall.visit ?? 'A visit'} · {dateOf(data.nextRecall.dueOn)}
+				{#if data.nextRecall.status === 'booked'}
+					<Badge variant="secondary">Booked</Badge>
+				{:else if data.nextRecall.dueOn < data.today}
+					<Badge variant="destructive">Overdue</Badge>
+				{/if}
+			{:else}
+				<span class="text-muted-foreground">No recall is set for this patient.</span>
+			{/if}
+		</p>
 		{#if data.appointments.length}
 			<ul class="flex flex-col divide-y text-sm">
 				{#each data.appointments as a (a.id)}
@@ -384,15 +400,19 @@
 							display="inline"
 						/>
 						<span class="text-muted-foreground">
-							{view.action} · {view.branch ?? 'no branch'} · {new Date(
+							{viewedLabel(view.action, view.recordType)} · {view.branch ?? 'no branch'} · {dateOf(
 								view.viewedAt
-							).toLocaleString()}
+							)}
+							{clinicClock(view.viewedAt)}
 						</span>
 					</li>
 				{:else}
 					<li class="py-2 text-muted-foreground">No views recorded.</li>
 				{/each}
 			</ul>
+			<a class="mt-2 inline-block text-sm underline-offset-2 hover:underline" href="{base}/access">
+				The whole access log →
+			</a>
 		</Section>
 	{/if}
 </div>

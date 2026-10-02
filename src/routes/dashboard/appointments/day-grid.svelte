@@ -1,5 +1,6 @@
 <script lang="ts">
 	import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
+	import FlaskConical from '@lucide/svelte/icons/flask-conical';
 	import { clinicClock, clinicMinutes } from '$lib/clinicTime';
 	import { STATUS_LABEL, isAppointmentStatus, isLive } from '$lib/appointmentStatus';
 	import type { DayAppointment } from './types';
@@ -175,6 +176,12 @@
 								<TriangleAlert class="size-3 shrink-0 text-destructive" />
 							{/if}
 							<span class="truncate">{a.patient}</span>
+							{#if a.lab?.ready || a.lab?.overdue}
+								<FlaskConical
+									class="ml-auto size-3 shrink-0 {a.lab.overdue ? 'text-destructive' : ''}"
+									aria-label={a.lab.overdue ? 'Lab work overdue' : 'Lab work back to fit'}
+								/>
+							{/if}
 						</span>
 						<span class="truncate text-muted-foreground">
 							{clinicClock(a.startsAt)} · {a.type ?? 'Appointment'}{a.provider

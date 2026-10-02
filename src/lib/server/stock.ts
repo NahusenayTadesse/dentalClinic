@@ -23,10 +23,15 @@
  * otherwise its quantity would derive to zero. `supplies.tracksExpiry` says whether an expiry
  * date is expected on each, not whether lots exist.
  */
-import { and, asc, eq, gte, isNull, or, sql } from 'drizzle-orm';
-import { supplies } from './db/schema/inventory';
+import { and, asc, desc, eq, gt, gte, isNotNull, isNull, lte, or, sql } from 'drizzle-orm';
+import { db } from './db';
+import { supplies, suppliesAdjustments } from './db/schema/inventory';
 import { supplyBatch } from './db/schema/batches';
-import { clinicToday } from '../clinicTime';
+import { patient } from './db/schema/patients';
+import { notDeleted } from './softDelete';
+import { branchFilter, type BranchContext } from './branchScope';
+import { patientFullName } from './patients';
+import { addClinicDays, clinicToday } from '../clinicTime';
 import type { MySqlTransaction } from 'drizzle-orm/mysql-core';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -192,4 +197,83 @@ export async function returnToBatch(tx: Tx, batchId: number, quantity: number, u
 			updatedBy: userId
 		})
 		.where(eq(supplyBatch.id, batchId));
+}
+
+/**
+ * The database, or a transaction on it — so a test can read what its rollback wrote. Typed from
+ * `db.transaction` rather than as `Tx` above: a union with the loose `Tx` loses `select`'s overloads.
+ */
+type Reader = Parameters<Parameters<typeof db.transaction>[0]>[0] | typeof db;
+
+/* ── Reading lots ───────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Lots at this branch that still hold stock and expire within `withinDays` — or already have, and
+ * are still on the shelf waiting to be written off. Soonest first. The dashboard's warning: a box
+ * nobody looks at expires unnoticed, and a box that has expired is one somebody may still reach for.
+ */
+export async function expiringLots(
+	branch: Pick<BranchContext, 'active'>,
+	withinDays: number,
+	reader: Reader = db
+) {
+	const until = addClinicDays(clinicToday(), withinDays);
+	return reader
+		.select({
+			id: supplyBatch.id,
+			supplyId: supplyBatch.supplyId,
+			supply: supplies.name,
+			batchNumber: supplyBatch.batchNumber,
+			expiryDate: supplyBatch.expiryDate,
+			quantity: supplyBatch.quantity
+		})
+		.from(supplyBatch)
+		.innerJoin(supplies, and(eq(supplies.id, supplyBatch.supplyId), notDeleted(supplies)))
+		.where(
+			and(
+				eq(supplyBatch.status, 'active'),
+				gt(supplyBatch.quantity, 0),
+				isNotNull(supplyBatch.expiryDate),
+				lte(supplyBatch.expiryDate, until),
+				notDeleted(supplyBatch),
+				branchFilter(supplyBatch.branchId, branch)
+			)
+		)
+		.orderBy(asc(supplyBatch.expiryDate), asc(supplyBatch.id));
+}
+
+/**
+ * Who received stock of this item, lot by lot — the trace a supplier's recall notice needs: it
+ * names a lot number, and this says which patients had it, from which lot, and when. Only
+ * movements that named a patient (`dispensed`) are here; stock used without naming one cannot be
+ * traced, which is why the issue form asks.
+ *
+ * Patients are named, so the caller shows this only to someone who may read patient records.
+ * Every branch's: a recall does not stop at the door of the branch that received the box.
+ */
+export async function lotRecipients(supplyId: number, reader: Reader = db) {
+	return reader
+		.select({
+			id: suppliesAdjustments.id,
+			batchId: supplyBatch.id,
+			batchNumber: supplyBatch.batchNumber,
+			expiryDate: supplyBatch.expiryDate,
+			patientId: patient.id,
+			patient: patientFullName,
+			fileNo: patient.fileNo,
+			phone: patient.phone,
+			quantity: suppliesAdjustments.adjustment,
+			at: suppliesAdjustments.createdAt
+		})
+		.from(suppliesAdjustments)
+		.innerJoin(patient, eq(patient.id, suppliesAdjustments.patientId))
+		.leftJoin(supplyBatch, eq(supplyBatch.id, suppliesAdjustments.batchId))
+		.where(
+			and(
+				eq(suppliesAdjustments.suppliesId, supplyId),
+				eq(suppliesAdjustments.movementType, 'dispensed'),
+				notDeleted(suppliesAdjustments)
+			)
+		)
+		.orderBy(desc(suppliesAdjustments.createdAt), desc(suppliesAdjustments.id));
 }

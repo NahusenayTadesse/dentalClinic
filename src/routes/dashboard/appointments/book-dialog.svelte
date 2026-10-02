@@ -30,6 +30,7 @@
 		action = '?/bookAppointment',
 		prefill = {},
 		patient = null,
+		plan = null,
 		providers,
 		types,
 		chairs
@@ -39,6 +40,8 @@
 		action?: string;
 		prefill?: { date?: string; time?: string; operatoryId?: number; walkIn?: boolean };
 		patient?: { id: number; name: string; fileNo: string | null } | null;
+		/** Booking a treatment plan's agreed work: the plan, and the work the booking will take. */
+		plan?: { id: number; work: string[] } | null;
 		providers: Option[];
 		types: Option[];
 		chairs: { id: number; name: string }[];
@@ -108,6 +111,20 @@
 			<Errors allErrors={$allErrors} />
 
 			<PatientPicker {form} initial={patient} error={$errors.patientId} />
+
+			{#if plan && patient && Number($form.patientId) === patient.id}
+				<!-- The server re-reads the plan's work; the id only says which plan. -->
+				<input type="hidden" name="planId" value={plan.id} />
+				<div class="rounded-md border p-3 text-sm">
+					<p class="font-medium">Booked for the agreed treatment:</p>
+					<ul class="mt-1 list-disc pl-5 text-muted-foreground">
+						{#each plan.work as line (line)}<li>{line}</li>{/each}
+					</ul>
+					<p class="mt-1 text-muted-foreground">
+						It is reserved to this visit and ticked when the visit is completed.
+					</p>
+				</div>
+			{/if}
 
 			<InputComp
 				{form}

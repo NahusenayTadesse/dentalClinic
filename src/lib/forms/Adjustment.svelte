@@ -11,6 +11,7 @@
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import type { Item } from '$lib/global.svelte';
+	import PatientPicker from '$lib/components/PatientPicker.svelte';
 
 	type PaymentMethodOption = { value: number; name: string | null };
 
@@ -105,6 +106,14 @@
 				required={true}
 				items={employees}
 			/>
+
+			{#if $form.intent === 'remove'}
+				<!-- Named, it is a dispense: the lot it came from can then be traced to them. -->
+				<div class="flex flex-col gap-1">
+					<span class="text-sm font-medium">Used for a patient (if it was)</span>
+					<PatientPicker {form} error={$errors.patientId} />
+				</div>
+			{/if}
 
 			{#if $form.intent === 'add'}
 				<InputComp

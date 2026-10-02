@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
 	addClinicDays,
+	addClinicMonths,
 	clinicClock,
 	clinicDate,
 	clinicDayRange,
@@ -75,5 +76,12 @@ describe('appointment status moves', () => {
 		expect(isLive('cancelled')).toBe(false);
 		expect(isMovable('confirmed')).toBe(true);
 		expect(isMovable('arrived')).toBe(false);
+	});
+
+	it('adds months, keeping to the end of a shorter month', () => {
+		expect(addClinicMonths('2026-03-15', 6)).toBe('2026-09-15');
+		expect(addClinicMonths('2026-08-31', 6)).toBe('2027-02-28');
+		expect(addClinicMonths('2027-08-31', 6)).toBe('2028-02-29');
+		expect(addClinicMonths('2026-11-30', 1)).toBe('2026-12-30');
 	});
 });
