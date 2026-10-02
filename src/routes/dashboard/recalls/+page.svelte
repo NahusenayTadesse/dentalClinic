@@ -31,7 +31,8 @@
 				callSeed = { recallId: row.id, outcome: 'noAnswer', note: row.note ?? '' };
 				callOpen = true;
 			},
-			data.maxAttempts
+			data.maxAttempts,
+			data.canText
 		)
 	);
 

@@ -1,3 +1,4 @@
+import { fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 
@@ -12,6 +13,9 @@ import {
 import { addClinicDays, clinicToday } from '$lib/clinicTime';
 import { logCall } from './schema';
 import { messagesFor } from '$lib/i18n/messages';
+import { requirePermission } from '$lib/server/permissions';
+import { describeOutcome, smsReady, textRecall, textedRecalls } from '$lib/server/sms';
+import { textState } from '$lib/smsTemplates';
 import type { Actions, PageServerLoad } from './$types';
 
 /** How far ahead the list looks, in days. The desk rings the overdue first and books ahead. */
@@ -29,16 +33,42 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	const within = (WINDOWS as readonly number[]).includes(asked) ? asked : 30;
 	const until = addClinicDays(clinicToday(), within);
 
-	const [recalls, summary, form] = await Promise.all([
+	const [found, summary, form, canText] = await Promise.all([
 		dueRecalls(locals.branch, until),
 		recallSummary(locals.branch, until),
-		superValidate(zod4(logCall))
+		superValidate(zod4(logCall)),
+		smsReady()
 	]);
+	// Whether each patient can be texted, by the rule the server sends by (`textState`).
+	const texted = await textedRecalls(found.map((r) => r.id));
+	const recalls = found.map((row) => {
+		const at = texted.get(row.id) ?? null;
+		return { ...row, sms: { state: textState(row.phone, row.smsOptOut, at), at } };
+	});
 
-	return { recalls, summary, within, windows: WINDOWS, maxAttempts: MAX_ATTEMPTS, form };
+	return {
+		recalls,
+		summary,
+		within,
+		windows: WINDOWS,
+		maxAttempts: MAX_ATTEMPTS,
+		canText,
+		form
+	};
 };
 
 export const actions: Actions = {
+	/** Texts one patient the recall message. Not in a transaction: the gateway can take seconds. */
+	textRecall: async (event) => {
+		requirePermission(event.locals, RECALL_PERMISSION);
+		const words = messagesFor(event.locals.lang).common.sms;
+		const id = Number((await event.request.formData()).get('recallId'));
+		const outcome = Number.isInteger(id) && id > 0 ? await textRecall(event, id) : null;
+		if (!outcome) return fail(404, { message: { type: 'error', text: words.notFound } });
+		const reply = describeOutcome(outcome, event.locals.lang);
+		return reply.type === 'success' ? { message: reply } : fail(400, { message: reply });
+	},
+
 	/** A call logged against one recall. Not a patient's chart write, so the owner is the recall. */
 	logCall: (event) =>
 		ownedAction(

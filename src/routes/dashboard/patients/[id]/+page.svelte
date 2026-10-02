@@ -98,6 +98,7 @@
 	const reachRows = $derived([
 		{ name: r.phone, value: p.phone ?? '—' },
 		{ name: r.altPhone, value: p.altPhone ?? '—' },
+		{ name: r.textMessages, value: p.smsOptOut ? r.textsNo : r.textsYes },
 		{ name: r.heardThrough, value: p.referral ?? o.notAsked },
 		{ name: r.referredBy, value: p.referredBy ?? '—' },
 		{ name: r.billedTo, value: p.customer ?? pm.payAtDesk },
@@ -211,6 +212,14 @@
 				{#snippet fields({ form, errors })}
 					<InputComp {form} {errors} name="phone" label={pm.register.phone} type="tel" />
 					<InputComp {form} {errors} name="altPhone" label={pm.register.altPhone} type="tel" />
+					<InputComp
+						{form}
+						{errors}
+						name="smsOptOut"
+						type="checkboxSingle"
+						label={r.textMessages}
+						placeholder={r.textsOptOut}
+					/>
 					<InputComp
 						{form}
 						{errors}

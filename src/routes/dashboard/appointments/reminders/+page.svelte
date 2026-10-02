@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
+	import type { SubmitFunction } from '@sveltejs/kit';
+	import MessageSquare from '@lucide/svelte/icons/message-square';
 	import Phone from '@lucide/svelte/icons/phone';
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
@@ -23,6 +26,16 @@
 	const t = useI18n();
 	const r = $derived(t.m.appointments.reminders);
 
+	/* Texting the whole day: one press, then the list reloads with who was texted. */
+	let textingAll = $state(false);
+	const sendingAll: SubmitFunction = () => {
+		textingAll = true;
+		return async ({ update }) => {
+			await update({ reset: false });
+			textingAll = false;
+		};
+	};
+
 	let open = $state(false);
 	let seed = $state<Partial<LogReminder>>({});
 	let calling = $state('');
@@ -36,7 +49,8 @@
 						seed = { appointmentId: row.id, confirmed: row.status === 'confirmed' };
 						open = true;
 					}
-				: null
+				: null,
+			data.canRemind && data.canText
 		)
 	);
 
@@ -122,6 +136,15 @@
 		style="identityIcon"
 	>
 		{#snippet editDialog()}
+			{#if data.canRemind && data.canText && data.rows.some((row) => row.sms.state === 'ready' && row.reminderSentAt === null)}
+				<form method="post" action="?/textAll" use:enhance={sendingAll}>
+					<input type="hidden" name="date" value={data.day} />
+					<Button type="submit" size="sm" disabled={textingAll}>
+						<MessageSquare class="size-4" />
+						{t.m.common.sms.textAll}
+					</Button>
+				</form>
+			{/if}
 			<div class="ml-auto flex flex-wrap gap-1" role="group" aria-label={r.whichDay}>
 				<Button
 					size="sm"

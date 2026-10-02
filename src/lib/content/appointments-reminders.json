@@ -19,7 +19,7 @@
 				},
 				{
 					"heading": "Who can do what",
-					"body": "Anyone who can open the diary can read the list (appointments.view). Recording a reminder needs appointments.book. Nothing is sent from here: the clinic rings or texts from its own phone, and records that it did."
+					"body": "Anyone who can open the diary can read the list (appointments.view). Recording a reminder needs appointments.book. Once an SMS gateway is set up (Clinic Setup → SMS), Text sends the patient a reminder, and a text that goes out counts as reminded. Text everyone not yet reminded sends to the whole day at once. A patient who asked not to be texted, or has no mobile number, says so instead of offering the button."
 				}
 			],
 			"links": [
@@ -47,7 +47,7 @@
 				},
 				{
 					"heading": "ማን ምን ማድረግ ይችላል",
-					"body": "ዝርዝሩን ለማየት appointments.view፣ ጥሪ ለመመዝገብ appointments.book ያስፈልጋል። ከዚህ ምንም መልዕክት አይላክም፤ ክሊኒኩ በራሱ ስልክ ይደውላል ወይም ይጽፋል፣ እዚህ ይመዘግባል።"
+					"body": "ዝርዝሩን ለማየት appointments.view፣ ጥሪ ለመመዝገብ appointments.book ያስፈልጋል። የSMS አገልግሎት ሰጪ ከተዘጋጀ (የክሊኒክ ዝግጅት → SMS) «መልዕክት ላክ» ለታካሚው የማስታወሻ መልዕክት ይልካል፤ የተላከ መልዕክት እንደተደወለ ይቆጠራል። «ገና ላልተደወለላቸው ሁሉ መልዕክት ላክ» ለቀኑ ሁሉ በአንድ ጊዜ ይልካል። መልዕክት እንዳይላክላቸው የጠየቁ ወይም የሞባይል ቁጥር የሌላቸው ታካሚዎች ቁልፉ ፈንታ ያንን ያሳያሉ።"
 				}
 			],
 			"links": [

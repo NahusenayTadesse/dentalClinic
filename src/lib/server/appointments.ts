@@ -355,6 +355,7 @@ export const appointmentColumns = {
 	patient: patientFullName,
 	fileNo: patient.fileNo,
 	phone: patient.phone,
+	smsOptOut: patient.smsOptOut,
 	operatoryId: appointment.operatoryId,
 	chair: operatory.name,
 	providerId: appointment.providerId,

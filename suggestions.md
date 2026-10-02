@@ -75,7 +75,7 @@ Amharic; Afaan Oromo matters for clinics in Oromia.
   screen. Data — names, chairs, visit types, services — is shown as entered. The Amharic should be
   read by a native speaker before a clinic relies on it.
 
-### 3. SMS reminders and recalls
+### 3. ✅ SMS reminders and recalls — done
 
 Patients are phone-first. **Reminders** and **Recalls** record calls, but cannot send anything.
 
@@ -84,6 +84,16 @@ Patients are phone-first. **Reminders** and **Recalls** record calls, but cannot
 - **Build on:** `server/reminders.ts` (`recordReminder` already stamps `reminderSentAt`, so a sent
   SMS is one more way to reach that write), `server/recalls.ts`, and the no-show comparison tile,
   which will show whether SMS works better than calls.
+- **Done:** AfroMessage and GeezSMS, behind one adapter each (`server/sms/gateways.ts`), set up on
+  **Clinic Setup → SMS** by a super admin. API keys are stored encrypted (AES-256-GCM, key derived
+  from `BETTER_AUTH_SECRET`), shown only as their last four characters, and redacted in the audit
+  log. The two message templates are Amharic by default, with a live preview of segments and cost.
+  **Text** on the Reminders and Recalls lists, and **Text everyone not yet reminded** for a day;
+  a reminder text stamps the reminder. Patients can opt out (**Reaching them, and billing** on the chart). Every
+  message, sent or failed, is logged with segments and cost.
+- **Not verified against a live gateway:** the request shapes are taken from each gateway's own
+  client library and pinned by tests against a fake, but no real message has been sent. Send a
+  **Test** from the SMS screen with a real key before relying on it.
 
 ### 4. Mobile money: Telebirr and CBE Birr
 

@@ -90,6 +90,7 @@ export const load: PageServerLoad = async (event) => {
 			{
 				phone: record.phone ?? undefined,
 				altPhone: record.altPhone ?? undefined,
+				smsOptOut: record.smsOptOut,
 				referralSourceId: record.referralSourceId ?? undefined,
 				referredBy: record.referredBy ?? undefined,
 				customerId: record.customerId ?? undefined
@@ -336,6 +337,7 @@ export const actions: Actions = {
 			await updatePatient(event, {
 				phone: data.phone ?? null,
 				altPhone: data.altPhone ?? null,
+				smsOptOut: data.smsOptOut,
 				referralSourceId: data.referralSourceId ?? null,
 				referredBy: data.referredBy ?? null,
 				customerId: data.customerId ?? null

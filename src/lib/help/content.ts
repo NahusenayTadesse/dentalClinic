@@ -474,7 +474,7 @@ export const HELP_SECTIONS: HelpSection[] = [
 				notes: [
 					'**Remind again** records a later call. The column shows when the last one was, so a patient is not rung three times in an afternoon.',
 					'**No-shows when reminded** compares the last 90 days at this branch: the share of reminded patients who missed their visit, against those who were not reminded. Cancellations are not counted as missed.',
-					'Nothing is sent from the system. The clinic rings or texts from its own phone, and records it here.',
+					'With an SMS gateway set up (**Clinic Setup → SMS**), **Text** sends the reminder as a text message, which counts as reminded; **Text everyone not yet reminded** does the whole day. Messages go only to Ethiopian mobile numbers, never to a patient who asked not to be texted (tick it under **Reaching them, and billing** on the patient’s chart), and every one is logged with its cost.',
 					'A reminder is for someone who has booked. Someone due back who has not booked is a **recall**.'
 				],
 				keywords: ['reminder', 'remind', 'confirm', 'call list', 'tomorrow', 'no-show', 'sms']
@@ -2170,6 +2170,14 @@ export const ROUTE_MAP: RouteEntry[] = [
 		path: '/dashboard/admin-panel/billing-settings',
 		title: 'Billing settings',
 		purpose: 'How big a discount the front desk may give before a manager has to approve it.',
+		permission: 'settings.manage',
+		group: 'Admin panel'
+	},
+	{
+		path: '/dashboard/admin-panel/sms',
+		title: 'SMS',
+		purpose:
+			'The SMS gateway accounts and their keys, what reminders and recalls say, and every message sent with its cost.',
 		permission: 'settings.manage',
 		group: 'Admin panel'
 	},

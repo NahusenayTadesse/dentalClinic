@@ -3,6 +3,7 @@ import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Copy from '@nahu/admin-kit/Copy.svelte';
 import { ethiopianDate } from '$lib/tableCells';
+import SmsTextButton from '$lib/components/SmsTextButton.svelte';
 import RecallActions from './RecallActions.svelte';
 import type { Messages } from '$lib/i18n/messages';
 import type { PageData } from './$types';
@@ -18,7 +19,9 @@ type Row = PageData['recalls'][number];
 export function recallColumns(
 	m: Messages,
 	oncall: (row: Row) => void,
-	maxAttempts: number
+	maxAttempts: number,
+	/** Whether the Text button may send: a gateway is set up. The route already needs booking rights. */
+	canText = false
 ): ColumnDef<Row>[] {
 	const r = m.appointments.recalls;
 	return [
@@ -67,6 +70,20 @@ export function recallColumns(
 					: r.callsCell(row.original.attempts, ethiopianDate(row.original.lastContactedOn))
 		},
 		{ accessorKey: 'note', header: m.common.note, cell: ({ row }) => row.original.note ?? '' },
+		{
+			id: 'sms',
+			header: m.common.sms.column,
+			enableSorting: false,
+			cell: ({ row }) =>
+				renderComponent(SmsTextButton, {
+					action: '?/textRecall',
+					field: 'recallId',
+					id: row.original.id,
+					status: row.original.sms.state,
+					textedAt: row.original.sms.at,
+					canSend: canText
+				})
+		},
 		{
 			id: 'actions',
 			header: '',

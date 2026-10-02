@@ -91,6 +91,8 @@ compile error rather than a silent omission.
   someone is paid
 - controlled stock: `supplies_adjustments`, `supply_batch`, `damaged_supplies`
 - who may do what: `user`, `roles`, `role_permissions`, `special_permissions`, `employee`
+- credentials the clinic stores for other services: `sms_provider`, whose API key is encrypted in
+  the table and redacted in the audit row by name (`api_key`), so the log says only that it changed
 
 **Not audited** — high churn, no evidentiary value, and each row would cost the buffer pool the
 same as a patient record:

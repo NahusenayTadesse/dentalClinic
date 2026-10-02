@@ -14,6 +14,10 @@
 					"body": "The longest overdue are at the top. Ring the patient, then Log a call: no answer, spoke (they will call back), declined, or stop (moved away, treated elsewhere). Declined and stopped recalls leave the list; the calls column stops a patient being rung a fourth time.\n\nBook opens the diary with the patient and the kind of visit already chosen. The booking takes them off the list by itself; if that appointment is cancelled or missed, they come back on."
 				},
 				{
+					"heading": "Texting",
+					"body": "Once an SMS gateway is set up (Clinic Setup → SMS), Text sends the patient the recall message, worded on that screen. The column says when they were last texted; a patient who asked not to be texted, or has no mobile number, says so instead."
+				},
+				{
 					"heading": "The figures",
 					"body": "Due in this window, overdue, booked, and — of the recalls settled either way — the share that came back. Choose how far ahead to look with the buttons over the table.\n\nNeeds the appointments.book permission."
 				}
@@ -36,6 +40,10 @@
 				{
 					"heading": "ዝርዝሩን መሥራት",
 					"body": "ብዙ የዘገዩት ከላይ ናቸው። ለታካሚው ይደውሉ፣ ከዚያ ጥሪ ይመዝግቡ፦ አልተነሳም፣ ተነጋግረናል፣ አልፈለገም፣ ወይም ይቁም። ያልፈለጉና የቆሙ ከዝርዝሩ ይወጣሉ።\n\nቀጠሮ ያዝ የቀጠሮ መዝገቡን ታካሚውና የጉብኝቱ ዓይነት ተመርጠው ይከፍታል። ቀጠሮው በራሱ ከዝርዝሩ ያወጣቸዋል፤ ቀጠሮው ከተሰረዘ ወይም ካልመጡ ይመለሳሉ።"
+				},
+				{
+					"heading": "መልዕክት መላክ",
+					"body": "የSMS አገልግሎት ሰጪ ከተዘጋጀ (የክሊኒክ ዝግጅት → SMS) «መልዕክት ላክ» ለታካሚው የተመላሽ ጥሪ መልዕክት ይልካል። ዓምዱ ለመጨረሻ ጊዜ መቼ እንደተላከ ያሳያል፤ መልዕክት እንዳይላክላቸው የጠየቁ ወይም የሞባይል ቁጥር የሌላቸው ታካሚዎች ያንን ያሳያሉ።"
 				},
 				{
 					"heading": "አሃዞቹ",

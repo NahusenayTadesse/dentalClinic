@@ -132,7 +132,12 @@ export type RegisterPatient = z.infer<typeof registerPatient>;
 export const editIdentity = z.object(identityFields).superRefine(checkBirthDate);
 export type EditIdentity = z.infer<typeof editIdentity>;
 
-export const editReach = z.object({ ...contactFields, ...referralFields });
+export const editReach = z.object({
+	...contactFields,
+	...referralFields,
+	/** The patient asked not to be texted: reminders and recalls skip them (`patient.smsOptOut`). */
+	smsOptOut: z.boolean().default(false)
+});
 export type EditReach = z.infer<typeof editReach>;
 
 export const editHistory = z.object({

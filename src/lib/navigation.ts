@@ -52,6 +52,7 @@ import MapPin from '@lucide/svelte/icons/map-pin';
 import Megaphone from '@lucide/svelte/icons/megaphone';
 import OctagonMinus from '@lucide/svelte/icons/octagon-minus';
 import Phone from '@lucide/svelte/icons/phone';
+import MessageSquare from '@lucide/svelte/icons/message-square';
 import PhoneCall from '@lucide/svelte/icons/phone-call';
 import Pill from '@lucide/svelte/icons/pill';
 import Plus from '@lucide/svelte/icons/plus';
@@ -363,6 +364,12 @@ export const NAVIGATION: NavItem[] = [
 				url: '/dashboard/admin-panel/billing-settings',
 				section: 'money',
 				icon: Banknote
+			},
+			{
+				title: 'SMS',
+				url: '/dashboard/admin-panel/sms',
+				section: 'clinic',
+				icon: MessageSquare
 			},
 			{
 				title: 'Tax Bands',

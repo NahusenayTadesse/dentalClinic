@@ -159,6 +159,7 @@ export async function dueRecalls(
 			patient: patientFullName,
 			fileNo: patient.fileNo,
 			phone: patient.phone,
+			smsOptOut: patient.smsOptOut,
 			appointmentTypeId: recall.appointmentTypeId,
 			visit: appointmentType.name,
 			dueOn: recall.dueOn,

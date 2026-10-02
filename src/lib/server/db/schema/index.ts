@@ -31,3 +31,4 @@ export * from './cashSessions';
 export * from './invoices';
 export * from './settings';
 export * from './attendance';
+export * from './sms';

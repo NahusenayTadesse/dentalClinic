@@ -18,6 +18,7 @@ import {
 	prescription,
 	procedures,
 	recall,
+	smsMessage,
 	suppliesAdjustments,
 	transactions,
 	treatmentPlan
@@ -86,6 +87,8 @@ export const OWNED: Owned[] = [
 	{ name: 'prescription', table: prescription, patientId: prescription.patientId },
 	{ name: 'procedures', table: procedures, patientId: procedures.patientId },
 	{ name: 'recall', table: recall, patientId: recall.patientId },
+	// A text sent to the duplicate was sent to this person: its log row follows them.
+	{ name: 'sms_message', table: smsMessage, patientId: smsMessage.patientId },
 	{
 		name: 'supplies_adjustments',
 		table: suppliesAdjustments,

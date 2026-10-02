@@ -40,6 +40,26 @@ export const common: typeof en = {
 	ethiopianTime: (clock) => `በኢትዮጵያ ሰዓት፦ ${clock}`,
 	chooseBranch: 'ከላይኛው አሞሌ ቅርንጫፍ ይምረጡ።',
 	newVersion: 'አዲስ ስሪት አለ፤ እባክዎ ገጹን እንደገና ይጫኑ',
+	sms: {
+		column: 'መልዕክት',
+		text: 'መልዕክት ላክ',
+		textAgain: 'እንደገና ላክ',
+		textAll: 'ገና ላልተደወለላቸው ሁሉ መልዕክት ላክ',
+		texted: (when) => `መልዕክት ተልኳል ${when}`,
+		optedOut: 'መልዕክት እንዳይላክላቸው ጠይቀዋል',
+		noMobile: 'የሞባይል ቁጥር የለም',
+		ready: 'መልዕክት አልተላከም',
+		sent: 'አጭር መልዕክቱ ተልኳል',
+		failed: (reason) => `መልዕክቱ አልተላከም፦ ${reason}`,
+		skipped: {
+			optedOut: 'አልተላከም፦ ታካሚው መልዕክት እንዳይላክላቸው ጠይቀዋል።',
+			noMobile: 'አልተላከም፦ በመዝገቡ ላይ የኢትዮጵያ ሞባይል ቁጥር የለም።',
+			noGateway: 'አልተላከም፦ የSMS አገልግሎት ሰጪ አልተዘጋጀም (የክሊኒክ ዝግጅት → SMS)።'
+		},
+		notFound: 'ይህ ከእንግዲህ በዝርዝሩ ላይ የለም።',
+		summary: (sent, skipped, failed) => `${sent} ተልከዋል · ${skipped} ታልፈዋል · ${failed} አልተሳኩም`,
+		noneToSend: 'በዚህ ቀን መልዕክት የሚላክለት የቀረ የለም።'
+	},
 	crud: {
 		checkForm: 'እባክዎ የቅጹን ስህተቶች ያስተካክሉ',
 		invalid: 'ልክ ያልሆነ ጥያቄ',

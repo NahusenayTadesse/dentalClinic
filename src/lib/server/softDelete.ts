@@ -5,6 +5,7 @@ import { returnToBatch } from './stock';
 import {
 	address,
 	appointmentTypeServices,
+	smsProvider,
 	customers,
 	damagedSupplies,
 	employee,
@@ -614,4 +615,15 @@ export async function softDeleteVisitTypeServices(tx: Tx, linkIds: number[], use
 		.update(appointmentTypeServices)
 		.set(deletionStamp(userId))
 		.where(and(inArray(appointmentTypeServices.id, linkIds), notDeleted(appointmentTypeServices)));
+}
+
+/**
+ * Removes an SMS gateway account. Its messages keep their log rows, which name the gateway as text.
+ * Unmarked as the default in the same write, so a deleted account can never be the one sent through.
+ */
+export async function softDeleteSmsProvider(tx: Tx, providerId: number, userId?: string) {
+	await tx
+		.update(smsProvider)
+		.set({ ...deletionStamp(userId), isDefault: false })
+		.where(and(eq(smsProvider.id, providerId), notDeleted(smsProvider)));
 }

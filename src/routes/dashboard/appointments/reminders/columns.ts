@@ -8,6 +8,7 @@ import type { Messages } from '$lib/i18n/messages';
 import { clinicClock, clinicDate, ethiopianClock } from '$lib/clinicTime';
 import { formatEthiopianDate } from '$lib/global.svelte';
 import ReminderAction from './ReminderAction.svelte';
+import SmsTextButton from '$lib/components/SmsTextButton.svelte';
 import type { PageData } from './$types';
 
 /** One appointment on the reminder list. */
@@ -30,7 +31,9 @@ function remindedWhen(m: Messages, at: Date | string | null): string {
  */
 export function reminderColumns(
 	m: Messages,
-	onremind: ((row: Row) => void) | null
+	onremind: ((row: Row) => void) | null,
+	/** Whether the Text button may send: a gateway is set up and the viewer may remind. */
+	canText = false
 ): ColumnDef<Row>[] {
 	const r = m.appointments.reminders;
 	const columns: ColumnDef<Row>[] = [
@@ -83,6 +86,20 @@ export function reminderColumns(
 			cell: ({ row }) => remindedWhen(m, row.original.reminderSentAt)
 		}
 	];
+	columns.push({
+		id: 'sms',
+		header: m.common.sms.column,
+		enableSorting: false,
+		cell: ({ row }) =>
+			renderComponent(SmsTextButton, {
+				action: '?/textReminder',
+				field: 'appointmentId',
+				id: row.original.id,
+				status: row.original.sms.state,
+				textedAt: row.original.sms.at,
+				canSend: canText
+			})
+	});
 	if (onremind) {
 		columns.push({
 			id: 'actions',

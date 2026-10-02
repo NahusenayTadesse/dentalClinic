@@ -40,6 +40,28 @@ export const common = {
 	ethiopianTime: (clock: string) => `Ethiopian time: ${clock}`,
 	chooseBranch: 'Choose a branch in the top bar.',
 	newVersion: 'A new version is available, please reload the page',
+	/** Texting a patient from the Reminders and Recalls lists (`server/sms`). */
+	sms: {
+		column: 'Text',
+		text: 'Text',
+		textAgain: 'Text again',
+		textAll: 'Text everyone not yet reminded',
+		texted: (when: string) => `Texted ${when}`,
+		optedOut: 'Asked not to be texted',
+		noMobile: 'No mobile number',
+		ready: 'Not texted',
+		sent: 'Text message sent',
+		failed: (reason: string) => `The text was not sent: ${reason}`,
+		skipped: {
+			optedOut: 'Not sent: the patient asked not to be texted.',
+			noMobile: 'Not sent: there is no Ethiopian mobile number on the record.',
+			noGateway: 'Not sent: no SMS gateway is set up (Clinic Setup → SMS).'
+		},
+		notFound: 'That is no longer on this list.',
+		summary: (sent: number, skipped: number, failed: number) =>
+			`${sent} sent · ${skipped} skipped · ${failed} failed`,
+		noneToSend: 'Nobody left to text on this day.'
+	},
 	/** What a section of a record says after a save, built around the section's own label. */
 	crud: {
 		checkForm: 'Please check the form for errors',

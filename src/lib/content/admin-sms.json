@@ -1,0 +1,61 @@
+{
+	"path": "/dashboard/admin-panel/sms",
+	"languages": {
+		"en": {
+			"title": "SMS",
+			"summary": "Text reminders and recalls to patients through an Ethiopian SMS gateway.",
+			"sections": [
+				{
+					"heading": "Setting up a gateway",
+					"body": "Open an account with AfroMessage or GeezSMS and get an API key and an approved sender name. Then Add account here: choose the gateway, paste the key, and enter the sender name (and, for AfroMessage, the identifier id if you have one). Only a super administrator can add, change or remove an account.\n\nPress Test on the account to send a short message to your own phone before relying on it."
+				},
+				{
+					"heading": "How the key is kept",
+					"body": "The API key is encrypted before it is stored, and never shown again — only its last four characters. Changing it means typing the new one in. If the server's secret (BETTER_AUTH_SECRET) is ever changed, stored keys can no longer be read and must be entered again."
+				},
+				{
+					"heading": "What the messages say",
+					"body": "Edit the reminder and the recall. {name}, {date}, {time}, {clinic}, {phone} and {visit} are filled in when each is sent; the time is on the Ethiopian clock. The preview shows a sample message, how many segments it costs and, if you entered the price per segment, about how much. An Amharic message costs a segment per 70 characters (67 once it runs to more than one)."
+				},
+				{
+					"heading": "Who is texted",
+					"body": "Only Ethiopian mobile numbers (09… and 07…), and never a patient whose record says not to text them. Every message, sent or failed, is in the log at the bottom with what it cost."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Appointments",
+					"href": "/dashboard/help#section-appointments"
+				}
+			]
+		},
+		"am": {
+			"title": "አጭር መልዕክት (SMS)",
+			"summary": "በኢትዮጵያ የSMS አገልግሎት ሰጪ በኩል ለታካሚዎች የቀጠሮ ማስታወሻና የተመላሽ ጥሪ መልዕክት ይላኩ።",
+			"sections": [
+				{
+					"heading": "አገልግሎት ሰጪውን ማዘጋጀት",
+					"body": "ከAfroMessage ወይም ከGeezSMS አካውንት ከፍተው የAPI ቁልፍና የጸደቀ የላኪ ስም ያግኙ። ከዚያ እዚህ «Add account» ይጫኑ፤ አገልግሎት ሰጪውን ይምረጡ፣ ቁልፉን ይለጥፉ፣ የላኪውን ስም ያስገቡ። አካውንት መጨመር፣ መቀየርና ማስወገድ የሚችለው ሱፐር አድሚን ብቻ ነው።\n\nከመተማመንዎ በፊት በአካውንቱ ላይ «Test»ን ተጭነው ወደ ራስዎ ስልክ አጭር መልዕክት ይላኩ።"
+				},
+				{
+					"heading": "ቁልፉ እንዴት ይጠበቃል",
+					"body": "የAPI ቁልፉ ከመቀመጡ በፊት ይመሰጠራል፤ ዳግም አይታይም — የመጨረሻዎቹ አራት ፊደላት ብቻ ይታያሉ። የሰርቨሩ ሚስጥር (BETTER_AUTH_SECRET) ከተቀየረ የተቀመጡ ቁልፎች ሊነበቡ አይችሉም፤ እንደገና መግባት አለባቸው።"
+				},
+				{
+					"heading": "መልዕክቶቹ የሚሉት",
+					"body": "የማስታወሻውንና የተመላሽ ጥሪውን መልዕክት ያስተካክሉ። {name}፣ {date}፣ {time}፣ {clinic}፣ {phone} እና {visit} ሲላክ ይሞላሉ፤ ሰዓቱ በኢትዮጵያ አቆጣጠር ነው። ቅድመ እይታው ናሙና መልዕክት፣ ስንት ክፍል እንደሚፈጅና ዋጋውን ያሳያል። የአማርኛ መልዕክት በ70 ፊደል አንድ ክፍል ይፈጃል።"
+				},
+				{
+					"heading": "መልዕክት የሚላከው ለማን ነው",
+					"body": "ለኢትዮጵያ የሞባይል ቁጥሮች (09… እና 07…) ብቻ፣ መልዕክት እንዳይላክለት የጠየቀ ታካሚ ፈጽሞ አይላክለትም። የተላከም ያልተላከም እያንዳንዱ መልዕክት ከዋጋው ጋር ከታች ባለው መዝገብ ይገኛል።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ቀጠሮዎች",
+					"href": "/dashboard/help#section-appointments"
+				}
+			]
+		}
+	}
+}

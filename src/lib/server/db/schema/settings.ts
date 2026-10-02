@@ -1,5 +1,7 @@
 // settings.ts - The handful of choices a clinic makes about how it runs, and document numbering.
 import { mysqlTable, int, decimal, varchar, timestamp } from 'drizzle-orm/mysql-core';
+// Relative, not `$lib/…`: drizzle-kit loads the schema without SvelteKit's aliases.
+import { DEFAULT_SMS_TEMPLATES } from '../../../smsTemplates';
 import { sql } from 'drizzle-orm';
 import { user } from './user';
 
@@ -30,6 +32,18 @@ export const clinicSettings = mysqlTable('clinic_settings', {
 	})
 		.notNull()
 		.default(10),
+
+	/**
+	 * The text of an appointment reminder and of a recall, with `{name}`, `{date}`, `{time}`,
+	 * `{clinic}`, `{phone}` and `{visit}` filled in when sent (`$lib/smsTemplates.ts`). Amharic by
+	 * default, because that is what patients read; the clinic edits them on the SMS screen.
+	 */
+	smsReminderTemplate: varchar('sms_reminder_template', { length: 320 })
+		.notNull()
+		.default(DEFAULT_SMS_TEMPLATES.reminder),
+	smsRecallTemplate: varchar('sms_recall_template', { length: 320 })
+		.notNull()
+		.default(DEFAULT_SMS_TEMPLATES.recall),
 
 	updatedBy: varchar('updated_by', { length: 255 }).references(() => user.id, {
 		onDelete: 'set null'

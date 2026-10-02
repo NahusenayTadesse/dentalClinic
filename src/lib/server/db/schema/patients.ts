@@ -121,6 +121,13 @@ export const patient = mysqlTable(
 		phone: varchar('phone', { length: 20 }),
 		altPhone: varchar('alt_phone', { length: 20 }),
 
+		/**
+		 * The patient asked not to be sent text messages. Reminders and recalls skip them and say so
+		 * on the list; the desk can still ring. A flag on the patient rather than per phone number,
+		 * because it is the person who said no.
+		 */
+		smsOptOut: boolean('sms_opt_out').notNull().default(false),
+
 		bloodType: mysqlEnum('blood_type', ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
 
 		/**
