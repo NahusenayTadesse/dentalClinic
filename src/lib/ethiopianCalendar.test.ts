@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ethiopianToIso } from './ethiopianCalendar';
+import { ethiopianToIso, ethiopianYearEnd } from './ethiopianCalendar';
 
 describe('ethiopianToIso', () => {
 	it('puts the new year on the right day either side of a leap year', () => {
@@ -13,5 +13,12 @@ describe('ethiopianToIso', () => {
 		// 1 Megabit 2016 — the library this replaced said 9 March.
 		expect(ethiopianToIso(2016, 7, 1)).toBe('2024-03-10');
 		expect(ethiopianToIso(2018, 7, 1)).toBe('2026-03-10');
+	});
+});
+
+describe('ethiopianYearEnd', () => {
+	it('ends on the last day of Pagume, five days or six', () => {
+		expect(ethiopianYearEnd(2018)).toBe('2026-09-10');
+		expect(ethiopianYearEnd(2015)).toBe('2023-09-11');
 	});
 });

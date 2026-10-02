@@ -18,4 +18,12 @@ describe('payrollPeriod', () => {
 		const days = (Date.parse(period.end) - Date.parse(period.start)) / 86_400_000 + 1;
 		expect(days).toBe(30);
 	});
+
+	it('is right in the year after an Ethiopian leap year', () => {
+		// The library this replaced put both a day early: the new year fell on 12 September.
+		expect(payrollPeriod('መስከረም_2016')).toMatchObject({ start: '2023-09-12', end: '2023-10-11' });
+		expect(payrollPeriod('መስከረም_2020')).toMatchObject({ start: '2027-09-12', end: '2027-10-11' });
+		// And after the Gregorian leap day, when it stayed a day early all year.
+		expect(payrollPeriod('መጋቢት_2016')).toMatchObject({ start: '2024-03-10', end: '2024-04-08' });
+	});
 });

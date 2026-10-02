@@ -56,3 +56,13 @@ export function ethiopianToIso(year: number, month: number, day: number): string
 	const date = new Date(start.getTime() + ((month - 1) * 30 + (day - 1)) * 86_400_000);
 	return date.toISOString().slice(0, 10);
 }
+
+/**
+ * The last Gregorian day of an Ethiopian year — the last day of Pagume, whether it has five days or
+ * six — as `YYYY-MM-DD`. Where a period has to run to the end of the year: payroll's Pagume, and
+ * the HMIS return's Nehase, which takes Pagume in.
+ */
+export function ethiopianYearEnd(year: number): string {
+	const next = Date.parse(`${ethiopianToIso(year + 1, 1, 1)}T00:00:00Z`);
+	return new Date(next - 86_400_000).toISOString().slice(0, 10);
+}

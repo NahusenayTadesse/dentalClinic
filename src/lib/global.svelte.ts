@@ -370,20 +370,18 @@ export function formatETB(amount: number | null | undefined, useAmharic: boolean
 	}
 }
 
-import { toGregorian } from 'ethiopian-calendar-new';
+import { ethiopianToIso, ethiopianYearEnd } from '$lib/ethiopianCalendar';
 
-export function ethiopianRange(month: number, year: number) {
-	if (month === 13) {
-		return {
-			startDate: toGregorian(year, month, 1),
-			endDate: toGregorian(year, month, 5)
-		};
-	}
-
-	return {
-		startDate: toGregorian(year, month, 1),
-		endDate: toGregorian(year, month, 30)
-	};
+/**
+ * The first and last Gregorian day, as `YYYY-MM-DD`, of an Ethiopian month. Pagume (13) runs to
+ * the eve of the next Meskerem 1, so it has five days or six as the year has.
+ *
+ * Through `ethiopianToIso` rather than `ethiopian-calendar-new`, which was a day early for the whole
+ * year after a leap year — every payroll period of 2016 E.C., and of 2020 E.C. had it stayed.
+ */
+export function ethiopianRange(month: number, year: number): { start: string; end: string } {
+	const start = ethiopianToIso(year, month, 1);
+	return { start, end: month === 13 ? ethiopianYearEnd(year) : ethiopianToIso(year, month, 30) };
 }
 
 const months = [

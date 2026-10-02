@@ -70,16 +70,11 @@ export type PayrollPeriod = { month: PayrollMonth; year: number; start: string; 
 export function payrollPeriod(range: string): PayrollPeriod {
 	const [m, y] = range.split('_');
 	const year = Number(y);
-	const { startDate, endDate } = ethiopianRange(getMonthNumber(m), year);
-	// Zero-padded ISO days. Unpadded ('2026-9-11') is not ISO, so JavaScript parses it as local
-	// time where ISO would be UTC; and the completion day of a procedure is compared as a string.
-	const pad = (n: number) => String(n).padStart(2, '0');
-	return {
-		month: m.trim() as PayrollMonth,
-		year,
-		start: `${startDate.year}-${pad(startDate.month)}-${pad(startDate.day)}`,
-		end: `${endDate.year}-${pad(endDate.month)}-${pad(endDate.day)}`
-	};
+	// Zero-padded ISO days, as `ethiopianRange` gives them. Unpadded ('2026-9-11') is not ISO, so
+	// JavaScript parses it as local time where ISO would be UTC; and the completion day of a
+	// procedure is compared as a string.
+	const { start, end } = ethiopianRange(getMonthNumber(m), year);
+	return { month: m.trim() as PayrollMonth, year, start, end };
 }
 
 /**

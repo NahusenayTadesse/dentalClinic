@@ -19,7 +19,7 @@
  * Non-goals: submitting anything. The return is printed or downloaded and entered into DHIS2 or
  * handed to the health office by a person; this system has no connection to either.
  */
-import { ethiopianToIso } from '$lib/ethiopianCalendar';
+import { ethiopianToIso, ethiopianYearEnd } from '$lib/ethiopianCalendar';
 import { getMonthNumber } from '$lib/global.svelte';
 
 /** The age groups, in column order. `max` is inclusive, in completed years. */
@@ -106,10 +106,8 @@ export type HmisPeriod = { month: number; year: number; start: string; end: stri
  */
 export function hmisPeriod(month: number, year: number): HmisPeriod {
 	const start = ethiopianToIso(year, month, 1);
-	const next = month === 12 ? ethiopianToIso(year + 1, 1, 1) : ethiopianToIso(year, month + 1, 1);
-	const eve = new Date(`${next}T00:00:00Z`);
-	eve.setUTCDate(eve.getUTCDate() - 1);
-	return { month, year, start, end: eve.toISOString().slice(0, 10) };
+	const end = month === 12 ? ethiopianYearEnd(year) : ethiopianToIso(year, month, 30);
+	return { month, year, start, end };
 }
 
 /**

@@ -24,7 +24,9 @@ import { allTeeth } from '$lib/server/db/schema/teeth';
 import { CURRENT_TAX_BANDS, DEFAULT_PENSION_RATES } from '$lib/server/payrollMath';
 import { MAIN_BRANCH_ID } from '$lib/server/db/schema/branches';
 import { routeRules } from '$lib/routeAccess';
-import { toEthiopian, toGregorian } from 'ethiopian-calendar-new';
+import { ethiopianToIso } from '$lib/ethiopianCalendar';
+import { getEthiopianYearMonth } from '$lib/global.svelte';
+import { clinicToday } from '$lib/clinicTime';
 
 /**
  * The permissions the system recognises, and the role that holds all of them.
@@ -762,8 +764,7 @@ export async function seedSupplyTypes() {
  * rather than approximated: a wrong closure date is worse than a missing one, because it turns
  * patients away on a day the clinic was open.
  *
- * Dates are computed with `ethiopian-calendar-new`, already a dependency, and stored as
- * Gregorian so the diary's overlap check stays a plain indexed range test. The Ethiopian month
+ * Dates are computed with `ethiopianToIso` (`$lib/ethiopianCalendar.ts`) and stored as Gregorian so the diary's overlap check stays a plain indexed range test. The Ethiopian month
  * and day ride along so next year's rows can be generated from these.
  *
  * Seeded active, but nothing here is assumed. A public holiday is a government rule rather than
@@ -781,8 +782,9 @@ export async function seedClinicClosures() {
 
 	if (existing) return;
 
-	const today = new Date();
-	const { year: ethYear } = toEthiopian(today.getFullYear(), today.getMonth() + 1, today.getDate());
+	// The clinic's today, at noon UTC so no timezone can tip it into another day.
+	const ethYear = getEthiopianYearMonth(new Date(`${clinicToday()}T12:00:00Z`))?.year;
+	if (!ethYear) return;
 
 	/** Name, Ethiopian month, Ethiopian day. */
 	const fixed: [string, number, number][] = [
@@ -798,11 +800,10 @@ export async function seedClinicClosures() {
 
 	await db.insert(clinicClosure).values(
 		fixed.map(([name, ethiopianMonth, ethiopianDay]) => {
-			const g = toGregorian(ethYear, ethiopianMonth, ethiopianDay);
-			// `toGregorian` returns a 1-based month; `Date` wants it 0-based. UTC midnight, not local:
-			// the driver writes a `Date` as UTC (`db/connection.ts`), and local midnight in Addis
-			// Ababa is the previous day there — every holiday would have moved a day early.
-			const on = new Date(Date.UTC(g.year, g.month - 1, g.day));
+			// UTC midnight, not local: the driver writes a `Date` as UTC (`db/connection.ts`), and
+			// local midnight in Addis Ababa is the previous day there — every holiday would have moved
+			// a day early.
+			const on = new Date(`${ethiopianToIso(ethYear, ethiopianMonth, ethiopianDay)}T00:00:00Z`);
 
 			return {
 				name,
