@@ -1,0 +1,41 @@
+{
+	"path": "/dashboard/salary/transactions/journal",
+	"languages": {
+		"en": {
+			"title": "Accounting export",
+			"summary": "A month of the clinic's money as journal entries, for Peachtree (Sage 50) or any ledger that imports a journal.",
+			"sections": [
+				{
+					"heading": "Set the codes once",
+					"body": "Under Account codes, type the account number from your accountant's chart of accounts for each line: patient fees, VAT payable, stock, salaries and suspense; each payment method (its cash box, bank account or wallet); and each expense type. Save. A new payment method or expense type appears here to be coded."
+				},
+				{
+					"heading": "Each month",
+					"body": "Choose the month (it starts on the last one that ended) and read the checks: every account coded, every entry balanced, and how many payments could not be placed and went to suspense. Then download Peachtree (Sage 50) for its General Journal import, or the plain journal for anything else."
+				},
+				{
+					"heading": "What is in it",
+					"body": "Money that moved: payments for bills (revenue and the VAT inside them), refunds, expenses, stock bought and salaries paid. Bills issued but not yet paid are not — they are in the receivables report. Who can: transactions.manage."
+				}
+			]
+		},
+		"am": {
+			"title": "ለሂሳብ ሶፍትዌር መላኪያ",
+			"summary": "የአንድ ወር የክሊኒኩ ገንዘብ እንቅስቃሴ እንደ ጆርናል ምዝገባዎች፣ ለPeachtree (Sage 50) ወይም ለሌላ የሂሳብ ሶፍትዌር።",
+			"sections": [
+				{
+					"heading": "ኮዶቹን አንድ ጊዜ ያስቀምጡ",
+					"body": "በAccount codes ስር ለእያንዳንዱ መስመር ከሂሳብ ባለሙያዎ የሂሳብ ዝርዝር የሂሳብ ቁጥሩን ይጻፉ፦ የታካሚ ክፍያ ገቢ፣ ቫት፣ ክምችት፣ ደመወዝ፣ እና ለእያንዳንዱ የክፍያ ዘዴና የወጪ ዓይነት።"
+				},
+				{
+					"heading": "በየወሩ",
+					"body": "ወሩን ይምረጡ፣ ፍተሻዎቹን ያንብቡ፣ ከዚያ Peachtree ወይም ተራ ጆርናል ያውርዱ።"
+				},
+				{
+					"heading": "ምን ይይዛል",
+					"body": "የተንቀሳቀሰ ገንዘብ፦ የደረሰኝ ክፍያዎች (ገቢና በውስጣቸው ያለው ቫት)፣ ተመላሾች፣ ወጪዎች፣ የተገዛ ክምችትና የተከፈለ ደመወዝ። ያልተከፈሉ ደረሰኞች አይካተቱም።"
+				}
+			]
+		}
+	}
+}

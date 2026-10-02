@@ -803,6 +803,36 @@ export const HELP_SECTIONS: HelpSection[] = [
 				]
 			},
 			{
+				id: 'accounting-export',
+				title: 'Sending the books to the accountant',
+				summary:
+					'Each month’s payments, refunds, expenses, stock bought and salaries as journal entries, ready for Peachtree (Sage 50) or any ledger.',
+				where: 'Menu → **Finance → Accounting Export** → `/dashboard/salary/transactions/journal`',
+				permission: 'transactions.manage',
+				steps: [
+					'Ask the accountant for the chart of accounts. Under **Account codes**, give a code to patient fees, VAT payable, stock, salaries and suspense, to each payment method and to each expense type. **Save the codes**.',
+					'After the month ends, open **Accounting Export**. It opens on that month.',
+					'Check the line above the buttons: nothing unmapped, nothing unbalanced, and how much went to suspense.',
+					'Download **Peachtree (Sage 50)** and import it in Peachtree as a General Journal — or the **plain journal** for another ledger — and send it to the accountant.'
+				],
+				notes: [
+					'It is the cash book: money that actually moved. A payment for a bill with VAT is split into the fee and the VAT inside it.',
+					'A payment the system cannot place — nothing records what it was for — goes to suspense, for the accountant to post. A month with a lot in suspense is worth a look first.',
+					'The export is refused while any account is unmapped, so nothing is ever posted to a code that does not exist.',
+					'With one branch chosen in the top bar it is that branch’s money; with all branches, the whole clinic’s.'
+				],
+				keywords: [
+					'accounting',
+					'peachtree',
+					'sage',
+					'journal',
+					'ledger',
+					'accountant',
+					'export',
+					'chart of accounts'
+				]
+			},
+			{
 				id: 'treatment-plans',
 				title: 'Treatment plans and case acceptance',
 				summary:
@@ -2366,6 +2396,14 @@ export const ROUTE_MAP: RouteEntry[] = [
 		purpose: 'One periodontal exam on paper, under the branch letterhead, for a referral.',
 		permission: 'patients.view',
 		group: 'Patients'
+	},
+	{
+		path: '/dashboard/salary/transactions/journal',
+		title: 'Accounting export',
+		purpose:
+			'A month of money as journal entries for Peachtree or any ledger, and the account codes.',
+		permission: 'transactions.manage',
+		group: 'Finance'
 	},
 	{
 		path: '/dashboard/supplies/controlled',

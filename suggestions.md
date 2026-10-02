@@ -217,8 +217,12 @@ Credit income keeps many clinics running, so this matters more than it looks.
 
 ## Running the business
 
-- **Export to accounting software.** Peachtree is very common here; at minimum, a chart-of-accounts
-  journal export. Every money movement is already a `transactions` row.
+- ✅ **Export to accounting software — done.** Finance → Accounting Export: a month of money (bill
+  payments split into fee and VAT, refunds, expenses, stock bought, salaries paid) as balanced
+  journal entries, downloaded for Peachtree's General Journal import or as a plain journal. The
+  clinic's account codes are set once on the same screen; the export is refused while any is
+  missing, and unplaceable rows go to suspense and are counted. Cash basis by design; payroll's own
+  tax and pension split stays in the payroll reports.
 - **Purchase orders and supplier invoices.** Stock has deliveries and issues, and the dashboard flags
   items below their reorder level — but nothing turns that into an order to a supplier, or matches
   what arrives against what was ordered.

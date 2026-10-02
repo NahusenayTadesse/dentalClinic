@@ -63,6 +63,7 @@ import Pill from '@lucide/svelte/icons/pill';
 import Plus from '@lucide/svelte/icons/plus';
 import ScanLine from '@lucide/svelte/icons/scan-line';
 import ScrollText from '@lucide/svelte/icons/scroll-text';
+import BookOpen from '@lucide/svelte/icons/book-open';
 import Smile from '@lucide/svelte/icons/smile';
 import ShieldAlert from '@lucide/svelte/icons/shield-alert';
 import Sheet from '@lucide/svelte/icons/sheet';
@@ -210,7 +211,8 @@ export const NAVIGATION: NavItem[] = [
 			{ title: 'Bonuses', url: '/dashboard/salary/ledger/bonuses', icon: BanknoteArrowUp },
 			{ title: 'Deductions', url: '/dashboard/salary/ledger/deductions', icon: BanknoteArrowDown },
 			{ title: 'Transactions', url: '/dashboard/salary/transactions', icon: ScanLine },
-			{ title: 'Expenses', url: '/dashboard/salary/transactions/expenses', icon: Coins }
+			{ title: 'Expenses', url: '/dashboard/salary/transactions/expenses', icon: Coins },
+			{ title: 'Accounting Export', url: '/dashboard/salary/transactions/journal', icon: BookOpen }
 		]
 	},
 
