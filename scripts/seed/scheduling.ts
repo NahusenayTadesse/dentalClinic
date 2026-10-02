@@ -139,9 +139,16 @@ export async function seedScheduling(db: SeedDb, branches: string[]) {
 					const startsAt = fromClinic(day, `${hh}:${mm}`);
 					const end = startsAt.getTime() + type.minutes * 60_000;
 
+					/*
+					 * Most patients are rung the day before, once that day has come. A reminded patient
+					 * misses less often, so the Reminders screen has a difference to show.
+					 */
+					const remindAt = new Date(startsAt.getTime() - 86_400_000);
+					const reminded = remindAt.getTime() < now && chance(0.6);
+
 					const status =
 						end < now
-							? chance(0.08)
+							? chance(reminded ? 0.04 : 0.14)
 								? 'noShow'
 								: chance(0.08)
 									? 'cancelled'
@@ -172,7 +179,8 @@ export async function seedScheduling(db: SeedDb, branches: string[]) {
 						status,
 						isNewPatient: chance(0.1),
 						isAsap: status === 'scheduled' && chance(0.1),
-						confirmedAt: status === 'confirmed' ? new Date(startsAt.getTime() - 86_400_000) : null,
+						confirmedAt: status === 'confirmed' ? remindAt : null,
+						reminderSentAt: reminded ? remindAt : null,
 						arrivedAt: ['arrived', 'inChair', 'completed'].includes(status) ? arrived : null,
 						seatedAt: ['inChair', 'completed'].includes(status) ? seated : null,
 						dismissedAt: status === 'completed' ? new Date(end) : null,

@@ -246,6 +246,7 @@
 		patient={data.bookPatient}
 		plan={data.bookPlan}
 		providers={data.providers}
+		availability={data.availability}
 		types={data.types}
 		chairs={data.chairs}
 	/>
@@ -263,6 +264,7 @@
 			appointment={opened}
 			forms={data.forms}
 			providers={data.providers}
+			availability={data.availability}
 			chairs={data.chairs}
 			canBook={data.canBook}
 			canChart={data.canChart}

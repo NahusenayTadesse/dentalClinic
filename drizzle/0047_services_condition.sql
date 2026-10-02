@@ -1,0 +1,2 @@
+ALTER TABLE `services` ADD `condition_id` int;--> statement-breakpoint
+ALTER TABLE `services` ADD CONSTRAINT `services_condition_id_condition_id_fk` FOREIGN KEY (`condition_id`) REFERENCES `condition`(`id`) ON DELETE set null ON UPDATE no action;

@@ -8,10 +8,12 @@
 	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
+	import RiskAcknowledgement from '@nahu/admin-kit/formComponents/RiskAcknowledgement.svelte';
 	import PatientPicker from '$lib/components/PatientPicker.svelte';
 	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import { bookAppointment, type BookAppointment } from '$lib/forms/appointmentSchemas';
-	import { ethiopianClock, fromClinic } from '$lib/clinicTime';
+	import { clinicClock, clinicToday, ethiopianClock, fromClinic } from '$lib/clinicTime';
+	import { availabilityWarnings, type ProviderAvailability } from '$lib/providerHours';
 
 	type Option = { value: number; name: string; defaultMinutes?: number };
 
@@ -32,6 +34,7 @@
 		patient = null,
 		plan = null,
 		providers,
+		availability = {},
 		types,
 		chairs
 	}: {
@@ -43,6 +46,8 @@
 		/** Booking a treatment plan's agreed work: the plan, and the work the booking will take. */
 		plan?: { id: number; work: string[] } | null;
 		providers: Option[];
+		/** Each dentist's week and leave, keyed by provider id, for the hours warning. */
+		availability?: Record<number, ProviderAvailability>;
 		types: Option[];
 		chairs: { id: number; name: string }[];
 	} = $props();
@@ -85,6 +90,18 @@
 		lastTypeId = typeId;
 		const minutes = types.find((t) => t.value === typeId)?.defaultMinutes;
 		if (minutes) untrack(() => ($form.durationMinutes = minutes));
+	});
+
+	/*
+	 * The dentist's hours against the slot, by the rule the server refuses with. A walk-in starts
+	 * now, which is also what the server checks it against.
+	 */
+	const hoursWarnings = $derived.by(() => {
+		const who = availability[Number($form.providerId)];
+		const day = $form.walkIn ? clinicToday() : String($form.date ?? '');
+		const time = $form.walkIn ? clinicClock(new Date()) : String($form.time ?? '');
+		if (!who || !day || !/^\d\d:\d\d$/.test(time)) return [];
+		return availabilityWarnings(who, day, time, Number($form.durationMinutes) || 30);
 	});
 
 	const chairOptions = $derived(chairs.map((c) => ({ value: c.id, name: c.name })));
@@ -208,7 +225,20 @@
 				/>
 			</div>
 
-			<Button type="submit" form="book-appointment">
+			<RiskAcknowledgement
+				show={hoursWarnings.length > 0}
+				name="hoursAcknowledged"
+				title="The dentist is not working then"
+				message={hoursWarnings.join(' ')}
+				confirmLabel="Book anyway"
+				bind:checked={$form.hoursAcknowledged}
+			/>
+
+			<Button
+				type="submit"
+				form="book-appointment"
+				disabled={$delayed || (hoursWarnings.length > 0 && !$form.hoursAcknowledged)}
+			>
 				{#if $delayed}
 					<LoadingBtn name="Saving" />
 				{:else}

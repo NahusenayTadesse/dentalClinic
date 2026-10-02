@@ -23,6 +23,7 @@ import {
 } from '../../src/lib/server/db/schema/staff';
 import { region, city, subcity, address } from '../../src/lib/server/db/schema/locations';
 import { serviceCategories, services } from '../../src/lib/server/db/schema/services';
+import { condition } from '../../src/lib/server/db/schema/conditions';
 import {
 	paymentMethods,
 	expensesType,
@@ -250,6 +251,17 @@ const SERVICE_CATALOGUE: Record<
 };
 
 /**
+ * What a finding service diagnoses, for the monthly health return (`services.conditionId`). Only
+ * the mappings that are unambiguous: a "Periapical lesion" may be an abscess, a granuloma or a cyst,
+ * and a retained root is a state rather than a diagnosis, so both are left for a clinician to link —
+ * the return lists them as not counted until someone does.
+ */
+const FINDING_DIAGNOSES: Record<string, string> = {
+	Caries: 'Dental caries',
+	'Fractured tooth': 'Dental trauma'
+};
+
+/**
  * The catalogue, topped up rather than skipped when it already exists.
  *
  * `price` and `area` arrived after the first seed, so a database seeded before them holds every
@@ -290,6 +302,24 @@ export async function seedServices(db: SeedDb) {
 			if (removesTooth) {
 				await db.update(services).set({ removesTooth }).where(eq(services.id, existing.id));
 			}
+		}
+	}
+
+	// Linked only while unlinked, so a choice made on the Services screen is never overwritten.
+	for (const [serviceName, conditionName] of Object.entries(FINDING_DIAGNOSES)) {
+		const [diagnosis] = await db
+			.select({ id: condition.id })
+			.from(condition)
+			.where(eq(condition.name, conditionName));
+		const [service] = await db
+			.select({ id: services.id, conditionId: services.conditionId })
+			.from(services)
+			.where(eq(services.name, serviceName));
+		if (diagnosis && service && service.conditionId === null) {
+			await db
+				.update(services)
+				.set({ conditionId: diagnosis.id })
+				.where(eq(services.id, service.id));
 		}
 	}
 

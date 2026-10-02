@@ -7,6 +7,7 @@
 	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import { completeVisit, type CompleteVisit } from '$lib/forms/appointmentSchemas';
 	import { formatETB } from '$lib/global.svelte';
+	import ServiceChecklist from '$lib/components/ServiceChecklist.svelte';
 	import type { DayAppointment } from './types';
 
 	/**
@@ -85,25 +86,12 @@
 		{/if}
 
 		{#if usual.length}
-			<fieldset class="flex flex-col gap-1" disabled={!canChart}>
-				<legend class="mb-1 text-xs text-muted-foreground uppercase">
-					Usual for {a.type ?? 'this visit'}
-				</legend>
-				{#each usual as u (u.serviceId)}
-					<label class="flex items-center gap-2 text-sm">
-						<input
-							type="checkbox"
-							name="serviceIds"
-							value={u.serviceId}
-							bind:group={$form.serviceIds}
-							class="size-4 accent-primary"
-						/>
-						{u.name}
-						{#if u.price !== null}<span class="text-muted-foreground">{formatETB(u.price)}</span
-							>{/if}
-					</label>
-				{/each}
-			</fieldset>
+			<ServiceChecklist
+				{form}
+				services={usual}
+				legend="Usual for {a.type ?? 'this visit'}"
+				disabled={!canChart}
+			/>
 		{/if}
 
 		{#if planned.length}

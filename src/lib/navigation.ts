@@ -35,6 +35,7 @@ import ClipboardList from '@lucide/svelte/icons/clipboard-list';
 import Coins from '@lucide/svelte/icons/coins';
 import Contact from '@lucide/svelte/icons/contact';
 import Container from '@lucide/svelte/icons/container';
+import FileHeart from '@lucide/svelte/icons/file-heart';
 import FlaskConical from '@lucide/svelte/icons/flask-conical';
 import BellRing from '@lucide/svelte/icons/bell-ring';
 import GitBranch from '@lucide/svelte/icons/git-branch';
@@ -50,6 +51,7 @@ import Loader from '@lucide/svelte/icons/loader';
 import MapPin from '@lucide/svelte/icons/map-pin';
 import Megaphone from '@lucide/svelte/icons/megaphone';
 import OctagonMinus from '@lucide/svelte/icons/octagon-minus';
+import Phone from '@lucide/svelte/icons/phone';
 import PhoneCall from '@lucide/svelte/icons/phone-call';
 import Pill from '@lucide/svelte/icons/pill';
 import Plus from '@lucide/svelte/icons/plus';
@@ -128,6 +130,7 @@ export const NAVIGATION: NavItem[] = [
 		items: [
 			{ title: 'Day View', url: '/dashboard/appointments', icon: CalendarDays },
 			{ title: 'Appointment List', url: '/dashboard/appointments/list', icon: List },
+			{ title: 'Reminders', url: '/dashboard/appointments/reminders', icon: Phone },
 			{ title: 'Recalls', url: '/dashboard/recalls', icon: BellRing },
 			{ title: 'Lab Work', url: '/dashboard/lab-cases', icon: FlaskConical },
 			{ title: 'Dentists', url: '/dashboard/providers', icon: Stethoscope }
@@ -230,6 +233,7 @@ export const NAVIGATION: NavItem[] = [
 		items: [
 			{ title: 'Overview', url: '/dashboard/reports', icon: LayoutDashboard },
 			{ title: 'Clinic', url: '/dashboard/reports/clinic', icon: Stethoscope },
+			{ title: 'Health Report (HMIS)', url: '/dashboard/hmis', icon: FileHeart },
 			{ title: 'People', url: '/dashboard/reports/people', icon: Users },
 			{ title: 'Payroll', url: '/dashboard/reports/payroll', icon: Banknote },
 			{ title: 'Compensation', url: '/dashboard/reports/compensation', icon: Coins },

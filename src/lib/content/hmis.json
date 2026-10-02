@@ -1,0 +1,61 @@
+{
+	"path": "/dashboard/hmis",
+	"languages": {
+		"en": {
+			"title": "Monthly Health Report (HMIS)",
+			"summary": "Visits and diagnoses for one Ethiopian month at this branch, by age group and sex, for the health office.",
+			"sections": [
+				{
+					"heading": "Choosing the month",
+					"body": "It opens on the last month that has ended, because that is the one being reported. Pick another with the month picker and press Go. Pagume is reported with Nehase. Choose the branch in the top bar: each branch is a facility and files its own return."
+				},
+				{
+					"heading": "What is counted",
+					"body": "Visits are completed appointments. A visit is New if it is the patient's first completed visit at this branch, and Repeat otherwise.\n\nDiagnoses are one case per patient per diagnosis in the month, from findings charted on the dental chart and from dental conditions with a diagnosis date on a day the patient was seen here. Suspected conditions, and medical history such as diabetes that the clinic records but does not diagnose, are not counted. Age is the patient's age on the day of the visit or diagnosis."
+				},
+				{
+					"heading": "Before you file it",
+					"body": "If anything cannot be counted, a red box at the top says what and where to fix it:\n\n• a diagnosis with no HMIS code — enter the code from the national classification under Clinic Setup → Conditions;\n• a finding whose service is not linked to a diagnosis — set Diagnosis (as a finding) under Clinic Setup → Services;\n• patients with no birth date — they are counted under Age unknown; an estimated age is enough.\n\nThe system never guesses a code. Check the age groups against the current form from your health office."
+				},
+				{
+					"heading": "Printing and downloading",
+					"body": "Print opens the return on the branch's letterhead with lines for who prepared and approved it. Download gives a spreadsheet of the same figures for entering into DHIS2. Nothing is sent to the health office from here.\n\nNeeds the reports.clinic permission."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Reports",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		},
+		"am": {
+			"title": "ወርሃዊ የጤና ሪፖርት (HMIS)",
+			"summary": "በዚህ ቅርንጫፍ ለአንድ የኢትዮጵያ ወር የተደረጉ ጉብኝቶችና ምርመራዎች፣ በዕድሜ ክፍልና በፆታ፣ ለጤና ጽሕፈት ቤት።",
+			"sections": [
+				{
+					"heading": "ወሩን መምረጥ",
+					"body": "ያለፈው ሙሉ ወር ላይ ይከፈታል፤ ሪፖርት የሚደረገው እሱ ነውና። ሌላ ወር ለመምረጥ የወር መምረጫውን ተጠቅመው «Go»ን ይጫኑ። ጳጉሜ ከነሐሴ ጋር ሪፖርት ይደረጋል። ቅርንጫፉን ከላይኛው አሞሌ ይምረጡ፤ እያንዳንዱ ቅርንጫፍ የራሱን ሪፖርት ያቀርባል።"
+				},
+				{
+					"heading": "የሚቆጠረው",
+					"body": "ጉብኝቶች የተጠናቀቁ ቀጠሮዎች ናቸው። የታካሚው በዚህ ቅርንጫፍ የመጀመሪያ የተጠናቀቀ ጉብኝት ከሆነ «አዲስ»፣ ካልሆነ «ተመላሽ» ነው።\n\nምርመራዎች በወሩ ለእያንዳንዱ ታካሚ በእያንዳንዱ ምርመራ አንድ ጊዜ ይቆጠራሉ፤ በጥርስ ገበታው ላይ ከተመዘገቡ ግኝቶችና ታካሚው እዚህ በታየበት ቀን የምርመራ ቀን ካላቸው የጥርስ ሕመሞች። የተጠረጠሩ ሕመሞችና ክሊኒኩ የማይመረምራቸው የሕክምና ታሪኮች (ለምሳሌ ስኳር) አይቆጠሩም። ዕድሜ በጉብኝቱ ወይም በምርመራው ቀን ያለው ነው።"
+				},
+				{
+					"heading": "ከማቅረብዎ በፊት",
+					"body": "የማይቆጠር ነገር ካለ ከላይ ቀይ ሳጥን ምን እንደሆነና የት እንደሚስተካከል ይናገራል፦\n\n• የHMIS ኮድ የሌለው ምርመራ — በክሊኒክ ዝግጅት → ሕመሞች ኮዱን ያስገቡ፤\n• አገልግሎቱ ከምርመራ ጋር ያልተያያዘ ግኝት — በክሊኒክ ዝግጅት → አገልግሎቶች «Diagnosis (as a finding)»ን ያስቀምጡ፤\n• የትውልድ ቀን የሌላቸው ታካሚዎች — «ዕድሜ ያልታወቀ» ስር ይቆጠራሉ።\n\nሲስተሙ ኮድ አይገምትም። የዕድሜ ክፍሎቹን ከጤና ጽሕፈት ቤትዎ ወቅታዊ ቅጽ ጋር ያረጋግጡ።"
+				},
+				{
+					"heading": "ማተምና ማውረድ",
+					"body": "«Print» ሪፖርቱን በቅርንጫፉ ደብዳቤ ራስ ላይ ያዘጋጀውና ያጸደቀው የሚፈርሙበት መስመር ይዞ ይከፍታል። «Download» ተመሳሳዩን አሃዝ በተመን ሉህ ይሰጣል፤ ወደ DHIS2 ለማስገባት። ከዚህ ምንም ወደ ጤና ጽሕፈት ቤት አይላክም።\n\nየreports.clinic ፈቃድ ይፈልጋል።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ሪፖርቶች",
+					"href": "/dashboard/help#section-reports"
+				}
+			]
+		}
+	}
+}

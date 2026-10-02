@@ -21,6 +21,7 @@ import { addClinicDays, clinicDayRange, clinicToday, isIsoDate } from '$lib/clin
 import { canMove, isAppointmentStatus } from '$lib/appointmentStatus';
 import { visitWork } from '$lib/server/procedures';
 import { labStatusFor } from '$lib/server/labCases';
+import { providerAvailability } from '$lib/server/providerHours';
 import { workToBook } from '$lib/server/treatmentPlans';
 import type { PageServerLoad } from './$types';
 
@@ -59,6 +60,14 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		: [];
 
 	const [providers, types] = await Promise.all([bookableProviders(), appointmentTypes()]);
+	// Each dentist's week and leave, so the dialogs warn as a slot is chosen (`$lib/providerHours.ts`).
+	const availability = Object.fromEntries(
+		await providerAvailability(
+			db,
+			providers.map((p) => p.value),
+			clinicToday()
+		)
+	);
 	// A type from the link only if it is one on offer; its usual length comes with it.
 	const bookType = types.find((t) => t.value === Number(url.searchParams.get('type')));
 	// From a treatment plan: its agreed work not yet booked. Only when there is some — a plan whose
@@ -83,6 +92,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		today: clinicToday(),
 		forms,
 		providers,
+		availability,
 		types,
 		bookPatient: bookPatient ?? null,
 		bookPlan,

@@ -1,6 +1,7 @@
 // services.ts - What the clinic does for patients, and what it charges for it.
 import { mysqlTable, mysqlEnum, varchar, int, decimal, boolean } from 'drizzle-orm/mysql-core';
 import { lesserFields } from './secureFields';
+import { condition } from './conditions';
 // Relative, not `$lib/…`: drizzle-kit loads the schema without SvelteKit's aliases.
 import { SERVICE_AREAS } from '../../../serviceAreas';
 
@@ -43,5 +44,17 @@ export const services = mysqlTable('services', {
 	 * under a name nobody predicted.
 	 */
 	removesTooth: boolean('removes_tooth').notNull().default(false),
+	/**
+	 * The diagnosis this service records when it is charted as a finding (`procedures.status =
+	 * 'condition'`): "Caries" on a tooth is a case of the coded condition "Dental caries".
+	 *
+	 * Without it the odontogram — where dentists actually record what they find — could not be
+	 * counted in the Ministry's monthly return, which reports coded conditions, not services
+	 * (`server/hmisReport.ts`). A link rather than a name match, for the reason `removesTooth` is a
+	 * flag. Null for a treatment, and for a finding nobody has mapped yet, which the return lists as
+	 * uncounted rather than guessing. `set null`: retiring a condition unmaps the finding instead of
+	 * blocking the delete.
+	 */
+	conditionId: int('condition_id').references(() => condition.id, { onDelete: 'set null' }),
 	...lesserFields
 });

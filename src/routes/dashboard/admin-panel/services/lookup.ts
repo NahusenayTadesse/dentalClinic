@@ -8,7 +8,8 @@ import { SERVICE_AREAS, SERVICE_AREA_LABELS } from '$lib/serviceAreas';
  * cannot move a quote or a bill already given. `Charted on` decides what the chart asks for when
  * the service is recorded against a patient: a filling asks for surfaces, an extraction for a
  * tooth, an examination for neither. `Removes the tooth` is what draws a gap on the chart once an
- * extraction is done.
+ * extraction is done. `Diagnosis` is for findings: what charting "Caries" on a tooth counts as in
+ * the Ministry's monthly return.
  */
 export const config: LookupConfig = {
 	entity: 'Service',
@@ -35,6 +36,15 @@ export const config: LookupConfig = {
 			type: 'checkbox',
 			trueLabel: 'Extraction',
 			falseLabel: '—'
+		},
+		{
+			name: 'conditionId',
+			label: 'Diagnosis (as a finding)',
+			type: 'reference',
+			options: 'conditionList',
+			display: 'condition',
+			picker: 'select',
+			required: false
 		},
 		{ name: 'description', label: 'Description', type: 'textarea', required: false },
 		{ name: 'status', label: 'Status', type: 'boolean' }

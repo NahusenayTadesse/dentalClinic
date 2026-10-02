@@ -16,9 +16,10 @@
  *
  * Live means not cancelled and not a no-show (`isLive`): a cancelled slot is free again.
  *
- * Non-goals: working hours and leave. `staff_schedule` and `leave` could say a dentist is off, but
- * both are sparsely filled today and a hard refusal built on missing data blocks real bookings. They
- * become warnings when those screens exist.
+ * Non-goals: working hours and leave. `staff_schedule` and `leave` say when a dentist is off, but
+ * both are often blank, and a hard refusal built on missing data blocks real bookings. They are a
+ * warning the booker can override instead — `server/providerHours.ts`, checked by the actions after
+ * this.
  */
 import {
 	and,
@@ -341,6 +342,7 @@ export const appointmentColumns = {
 	seatedAt: appointment.seatedAt,
 	dismissedAt: appointment.dismissedAt,
 	confirmedAt: appointment.confirmedAt,
+	reminderSentAt: appointment.reminderSentAt,
 	branchId: appointment.branchId,
 	patientId: patient.id,
 	patient: patientFullName,

@@ -35,6 +35,7 @@ import { branchFilter } from '$lib/server/branchScope';
 import { notDeleted } from '$lib/server/softDelete';
 import { livePatient } from '$lib/server/patients';
 import { bookingProblems, sanePeriod } from '$lib/server/appointments';
+import { outsideHours } from '$lib/server/providerHours';
 import {
 	STATUS_LABEL,
 	canMove,
@@ -56,6 +57,9 @@ export const BOOK_PERMISSION = 'appointments.book';
 
 const invalid = { type: 'error' as const, text: 'Please check the form for errors' };
 const failed = { type: 'error' as const, text: 'Could not save. Please try again.' };
+
+/** What a refusal over the dentist's hours tells the person booking to do about it. */
+const OVERRIDE_HINT = 'Tick “Book anyway” to keep this time.';
 
 /** The appointment `id` names, if it is at the working branch and not deleted. */
 async function findHere(
@@ -160,6 +164,14 @@ export const appointmentActions = {
 					providerId: data.providerId ?? null
 				});
 				if (problems.length) return { problems };
+				const hours = await outsideHours(tx, {
+					providerId: data.providerId ?? null,
+					startsAt,
+					durationMinutes
+				});
+				if (hours.length && !data.hoursAcknowledged) {
+					return { problems: [...hours, OVERRIDE_HINT] };
+				}
 
 				const now = new Date();
 				const id = await insertReturningId(tx, appointment, {
@@ -181,7 +193,13 @@ export const appointmentActions = {
 					table: 'appointment',
 					recordId: id,
 					action: 'create',
-					detail: data.walkIn ? { walkIn: true } : undefined
+					detail:
+						data.walkIn || hours.length
+							? {
+									...(data.walkIn ? { walkIn: true } : {}),
+									...(hours.length ? { outsideHours: hours } : {})
+								}
+							: undefined
 				});
 				// A due recall for this kind of visit is answered by this booking (`server/recalls.ts`).
 				await recallOnBooking(tx, event.locals.user?.id, {
@@ -457,6 +475,14 @@ export const appointmentActions = {
 					excludeId: row.id
 				});
 				if (problems.length) return { status: 409 as const, problems };
+				const hours = await outsideHours(tx, {
+					providerId: data.providerId ?? null,
+					startsAt,
+					durationMinutes
+				});
+				if (hours.length && !data.hoursAcknowledged) {
+					return { status: 409 as const, problems: [...hours, OVERRIDE_HINT] };
+				}
 
 				const values = {
 					startsAt,
@@ -471,7 +497,8 @@ export const appointmentActions = {
 					recordId: row.id,
 					action: 'update',
 					before: row,
-					after: values
+					after: values,
+					detail: hours.length ? { outsideHours: hours } : undefined
 				});
 				// `status` is only read when there are problems.
 				return { status: 409 as const, problems: [] };

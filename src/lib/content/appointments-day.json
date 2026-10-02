@@ -10,6 +10,10 @@
 					"body": "Click an empty time in a chair's column, or press Book. Search for the patient by name, file number or phone, pick what the visit is for and the dentist, and book. The chair and the dentist are checked for clashes, and a day the clinic is closed is refused.\n\nWalk-in adds a patient who is already here: the appointment starts now and is marked arrived."
 				},
 				{
+					"heading": "The dentist's hours",
+					"body": "If the dentist has working hours on their staff record (Employees → the employee → Schedule), booking or moving outside them — on a day off, past their hours, or on approved leave — shows a warning. Tick Book anyway to keep the time; the warning you overrode is kept in the audit trail. A dentist with no hours entered is never warned about."
+				},
+				{
 					"heading": "Moving the day along",
 					"body": "Click an appointment to open it.\n• Mark confirmed — after the reminder call\n• Mark arrived — they appear under Waiting, with minutes waited\n• Seat in chair — they move to In the chair\n• Complete visit — when they leave\n• Mark no-show or Cancel (a reason is required)\n\nOnly an appointment that has not started can be moved. A finished or cancelled appointment is not reopened — book a new one."
 				},
@@ -36,6 +40,10 @@
 				{
 					"heading": "ቀጠሮ መያዝ",
 					"body": "በወንበሩ ዓምድ ውስጥ ባዶ ሰዓት ላይ ይጫኑ ወይም \"Book\" ን ይጫኑ። ታካሚውን በስም፣ በፋይል ቁጥር ወይም በስልክ ይፈልጉ፣ የጉብኝቱን ዓይነትና ሐኪሙን ይምረጡ። ወንበሩና ሐኪሙ ቀድሞ የተያዙ እንደሆነ ይረጋገጣል፤ ክሊኒኩ የተዘጋበት ቀን አይፈቀድም።\n\n\"Walk-in\" አሁን የመጣ ታካሚን ይጨምራል፤ ቀጠሮው አሁን ይጀምራል፣ እንደደረሰም ይመዘገባል።"
+				},
+				{
+					"heading": "የሐኪሙ የሥራ ሰዓት",
+					"body": "ሐኪሙ በሠራተኛ መዝገቡ ላይ (ሠራተኞች → ሠራተኛው → Schedule) የሥራ ሰዓት ካለው፣ ከሰዓቱ ውጭ — በዕረፍት ቀን፣ ከሰዓቱ በኋላ፣ ወይም በፀደቀ ፈቃድ ላይ — ቀጠሮ ሲያዝ ወይም ሲዘዋወር ማስጠንቀቂያ ይታያል። ጊዜውን ለማቆየት «Book anyway»ን ምልክት ያድርጉ፤ ማስጠንቀቂያው በኦዲት መዝገቡ ይቀመጣል። የሥራ ሰዓት ያልተመዘገበለት ሐኪም ማስጠንቀቂያ አያስነሳም።"
 				},
 				{
 					"heading": "ቀኑን ማስኬድ",

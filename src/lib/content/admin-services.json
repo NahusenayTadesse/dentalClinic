@@ -22,6 +22,10 @@
 					"body": "Tick it for extractions. Once one is done, or recorded as already present, the chart draws the tooth as missing."
 				},
 				{
+					"heading": "Diagnosis (as a finding)",
+					"body": "For a service that records something found rather than something done — Caries, Fractured tooth, Periapical lesion. Choose the condition it diagnoses. Findings charted with this service are then counted under that condition in the Monthly Health Report (HMIS); a finding service left without one is listed there as not counted. Leave it empty for treatments."
+				},
+				{
 					"heading": "Retiring an entry",
 					"body": "Set it Inactive. It leaves the pickers, and every record that already uses it keeps showing it. Delete is for mistakes only, and only a super admin can do it."
 				}
@@ -52,6 +56,10 @@
 				{
 					"heading": "ጥርሱን ያስወግዳል",
 					"body": "ለጥርስ መንቀል ምልክት ያድርጉ። አንዴ ከተሠራ ወይም ቀድሞ እንደነበረ ከተመዘገበ ቻርቱ ጥርሱን እንደሌለ ይስለዋል።"
+				},
+				{
+					"heading": "ምርመራ (እንደ ግኝት)",
+					"body": "የተሠራን ሳይሆን የተገኘን ነገር ለሚመዘግብ አገልግሎት — ለምሳሌ የጥርስ መበስበስ፣ የተሰበረ ጥርስ። የሚያመለክተውን ሕመም ይምረጡ። በዚህ አገልግሎት የተመዘገቡ ግኝቶች በወርሃዊ የጤና ሪፖርት (HMIS) በዚያ ሕመም ስር ይቆጠራሉ፤ ያልተያያዘ ግኝት እዚያ «ያልተቆጠረ» ተብሎ ይዘረዘራል። ለሕክምናዎች ባዶ ይተዉት።"
 				},
 				{
 					"heading": "መዝገብን ከአገልግሎት ማስወጣት",

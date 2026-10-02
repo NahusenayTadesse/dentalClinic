@@ -1,0 +1,61 @@
+{
+	"path": "/dashboard/appointments/reminders",
+	"languages": {
+		"en": {
+			"title": "Reminders",
+			"summary": "Appointments still to come on one day at this branch, and who has been rung about theirs.",
+			"sections": [
+				{
+					"heading": "Working the list",
+					"body": "It opens on tomorrow, because that is the call the desk makes each afternoon; the buttons over the table move to another day. Ring each patient, then press Reminded. Tick Confirmed if they said they will come, and the appointment is marked confirmed in the same step.\n\nThe Reminded column filters to Not reminded, so the desk can see who is left."
+				},
+				{
+					"heading": "Ringing twice",
+					"body": "Remind again records the latest call and moves the time shown. A patient rung twice in an afternoon trusts the next call less, so the column says when the last one was."
+				},
+				{
+					"heading": "Does it work?",
+					"body": "No-shows when reminded compares the visits of the last 90 days at this branch: the share missed among patients who were reminded, against the share among those who were not. Cancellations are left out — a patient who rang to cancel did what a reminder asks. Until both sides have visits it says there is not enough to compare."
+				},
+				{
+					"heading": "Who can do what",
+					"body": "Anyone who can open the diary can read the list (appointments.view). Recording a reminder needs appointments.book. Nothing is sent from here: the clinic rings or texts from its own phone, and records that it did."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Appointments",
+					"href": "/dashboard/help#section-appointments"
+				}
+			]
+		},
+		"am": {
+			"title": "ማስታወሻ ጥሪዎች",
+			"summary": "በአንድ ቀን በዚህ ቅርንጫፍ ገና የሚመጡ ቀጠሮዎች፣ እና ስለ ቀጠሯቸው የተደወለላቸው።",
+			"sections": [
+				{
+					"heading": "ዝርዝሩን መሥራት",
+					"body": "በነገው ቀን ይከፈታል፤ ከሰንጠረዡ በላይ ያሉት ቁልፎች ወደ ሌላ ቀን ያንቀሳቅሳሉ። ለእያንዳንዱ ታካሚ ይደውሉ፣ ከዚያ «Reminded»ን ይጫኑ። እንደሚመጡ ከተናገሩ «Confirmed»ን ምልክት ያድርጉ፤ ቀጠሮው በዚያው ደረጃ እንደተረጋገጠ ይመዘገባል።\n\nየ«Reminded» ዓምድ ገና ያልተደወለላቸውን ለይቶ ያሳያል።"
+				},
+				{
+					"heading": "ሁለት ጊዜ መደወል",
+					"body": "«Remind again» የመጨረሻውን ጥሪ ይመዘግባል፣ የሚታየውንም ሰዓት ይቀይራል። ዓምዱ የመጨረሻው ጥሪ መቼ እንደሆነ ይናገራል።"
+				},
+				{
+					"heading": "ይሠራል ወይ?",
+					"body": "ባለፉት 90 ቀናት በዚህ ቅርንጫፍ የተደወለላቸውና ያልተደወለላቸው ታካሚዎች ያልመጡበትን ድርሻ ያነጻጽራል። የተሰረዙ ቀጠሮዎች አይቆጠሩም።"
+				},
+				{
+					"heading": "ማን ምን ማድረግ ይችላል",
+					"body": "ዝርዝሩን ለማየት appointments.view፣ ጥሪ ለመመዝገብ appointments.book ያስፈልጋል። ከዚህ ምንም መልዕክት አይላክም፤ ክሊኒኩ በራሱ ስልክ ይደውላል ወይም ይጽፋል፣ እዚህ ይመዘግባል።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ቀጠሮዎች",
+					"href": "/dashboard/help#section-appointments"
+				}
+			]
+		}
+	}
+}

@@ -15,6 +15,12 @@ const fields = {
 	),
 	area: z.enum(SERVICE_AREAS, 'Choose where this service is charted'),
 	removesTooth: z.boolean().default(false),
+	/**
+	 * The condition a finding of this service diagnoses, or `''` for none — see
+	 * `services.conditionId`. A string, not a preprocessed number: a select writes `''` back, and a
+	 * schema that turned it into `null` would loop (CLAUDE.md §13).
+	 */
+	conditionId: z.coerce.string().optional(),
 	status: z.boolean('Status is required').default(true)
 };
 

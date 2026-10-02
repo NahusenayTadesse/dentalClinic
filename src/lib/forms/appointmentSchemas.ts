@@ -20,6 +20,13 @@ const duration = z.coerce
 	.min(5, 'At least 5 minutes')
 	.max(720, 'At most 12 hours');
 
+/**
+ * Booked knowing the dentist is not working then — on leave, a day off, or outside their hours
+ * (`$lib/providerHours.ts`). The server re-reads their hours and refuses without it; with it, the
+ * warnings it overrode go into the audit row.
+ */
+const hoursAcknowledged = z.boolean().default(false);
+
 export const bookAppointment = z
 	.object({
 		patientId: z.coerce.number('Choose the patient').int().positive('Choose the patient'),
@@ -41,7 +48,8 @@ export const bookAppointment = z
 		 * Booked from a treatment plan: the plan's agreed, unbooked work is reserved to this visit
 		 * (`reservePlanWork`). The server re-reads which work that is; the id only says which plan.
 		 */
-		planId: optionalId
+		planId: optionalId,
+		hoursAcknowledged
 	})
 	.superRefine((data, ctx) => {
 		if (data.walkIn) return;
@@ -56,7 +64,8 @@ export const moveAppointment = z.object({
 	time: clock,
 	durationMinutes: duration,
 	providerId: optionalId,
-	operatoryId: optionalId
+	operatoryId: optionalId,
+	hoursAcknowledged
 });
 export type MoveAppointment = z.infer<typeof moveAppointment>;
 

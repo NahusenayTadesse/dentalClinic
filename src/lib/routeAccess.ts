@@ -245,6 +245,16 @@ export const routeRules: RouteRule[] = [
 		prefix: '/dashboard/reports/clinic',
 		permission: 'reports.clinic'
 	},
+	/*
+	 * The monthly return to the health office (HMIS). The clinic report's audience and the same
+	 * clinical activity, counted the Ministry's way, so the same permission rather than a new one.
+	 * Outside `/dashboard/reports` because it is one Ethiopian month at one facility, not a date
+	 * range across them, and that layout's filters would only mislead.
+	 */
+	{
+		prefix: '/dashboard/hmis',
+		permission: 'reports.clinic'
+	},
 	// Last, so the three specific report prefixes above still win: `find` takes
 	// the first match. The company report reads payroll and revenue
 	// balances, so it sits behind the same permission the sidebar link declares.

@@ -4,6 +4,7 @@ import { db } from '$lib/server/db';
 import { returnToBatch } from './stock';
 import {
 	address,
+	appointmentTypeServices,
 	customers,
 	damagedSupplies,
 	employee,
@@ -600,4 +601,17 @@ export async function softDeleteDraftInvoice(tx: Tx, invoiceId: number, userId?:
 		.update(invoice)
 		.set(stamp)
 		.where(and(eq(invoice.id, invoiceId), eq(invoice.status, 'draft'), notDeleted(invoice)));
+}
+
+/**
+ * Takes services off what a visit type brings with it (Admin Panel → Appointment Types → Usual
+ * work). Past visits are untouched: what was recorded at them is a procedure of its own, not a
+ * read through this link.
+ */
+export async function softDeleteVisitTypeServices(tx: Tx, linkIds: number[], userId?: string) {
+	if (linkIds.length === 0) return;
+	await tx
+		.update(appointmentTypeServices)
+		.set(deletionStamp(userId))
+		.where(and(inArray(appointmentTypeServices.id, linkIds), notDeleted(appointmentTypeServices)));
 }

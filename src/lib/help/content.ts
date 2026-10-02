@@ -399,6 +399,7 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'**Walk-in** is for a patient already standing at the desk: the appointment starts now and is marked arrived.',
 					'Times are shown on the international clock with the Ethiopian time beside them — 9:00 is ጠዋት 3:00.',
 					'A patient chart has a **Book appointment** button that opens the booking form with the patient already chosen.',
+					'A dentist with working hours on their staff record (**Employees → Schedule**) is checked against them: booking on their day off, outside their hours or during approved leave shows a warning, and **Book anyway** keeps the time. What you overrode is kept in the audit trail. A dentist with no hours entered is never warned about.',
 					'Cancelled and no-show appointments free their slot, and stay on the day faded so the history is visible.'
 				],
 				keywords: ['book', 'schedule', 'diary', 'calendar', 'walk-in', 'chair', 'slot']
@@ -411,9 +412,9 @@ export const HELP_SECTIONS: HelpSection[] = [
 				where: '`/dashboard/appointments`',
 				permission: 'appointments.book',
 				steps: [
-					'**Mark confirmed** after the reminder call.',
+					'**Mark confirmed** after the reminder call — or record the call on **Appointments → Reminders**, which confirms the visit in the same step.',
 					'**Mark arrived** when the patient reaches the desk. They appear under **Waiting**, with how long they have waited — red past half an hour.',
-					'**Seat in chair** when treatment starts, and **Complete visit** when they leave. It lists the work planned for the patient and the usual services for the visit; tick what was done.',
+					'**Seat in chair** when treatment starts, and **Complete visit** when they leave. It lists the work planned for the patient and the usual services for the visit — chosen per type under **Clinic Setup → Appointment Types → Usual work** — ready ticked; untick what was not done.',
 					'**Mark no-show** for a patient who never came; **Cancel** asks for a reason.'
 				],
 				notes: [
@@ -457,6 +458,26 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'Chairs are managed under **Admin Panel → Chairs**. A branch with no chairs has an empty day view.'
 				],
 				keywords: ['no-show report', 'history', 'search appointments']
+			},
+			{
+				id: 'reminders',
+				title: 'Reminding patients of their appointment',
+				summary:
+					'The day before, the desk rings everyone booked and records it — so nobody is rung twice, and the clinic can see whether reminding cuts no-shows.',
+				where: 'Menu → **Appointments → Reminders** → `/dashboard/appointments/reminders`',
+				permission: 'appointments.book',
+				steps: [
+					'Open **Reminders**. It shows tomorrow; the buttons over the table move to another day.',
+					'Filter **Reminded** to *Not reminded* to see who is left.',
+					'Ring the patient, then press **Reminded**. Tick **Confirmed** if they said they will come — the appointment is marked confirmed too.'
+				],
+				notes: [
+					'**Remind again** records a later call. The column shows when the last one was, so a patient is not rung three times in an afternoon.',
+					'**No-shows when reminded** compares the last 90 days at this branch: the share of reminded patients who missed their visit, against those who were not reminded. Cancellations are not counted as missed.',
+					'Nothing is sent from the system. The clinic rings or texts from its own phone, and records it here.',
+					'A reminder is for someone who has booked. Someone due back who has not booked is a **recall**.'
+				],
+				keywords: ['reminder', 'remind', 'confirm', 'call list', 'tomorrow', 'no-show', 'sms']
 			},
 			{
 				id: 'recalls',
@@ -1364,6 +1385,7 @@ export const HELP_SECTIONS: HelpSection[] = [
 				steps: [
 					'**Overview** (`/dashboard/reports`) — the company at a glance: payroll and revenue together.',
 					'**Clinic** — production per dentist, procedures by service, case acceptance, recalls, what is owed and for how long, cash drawer counts and lab turnaround.',
+					'**Health Report (HMIS)** (`/dashboard/hmis`) — the monthly return to the health office; see its own topic below.',
 					'**People** — headcount, hires, terminations, the workforce as it stands.',
 					'**Payroll** — runs, payslips, adjustments, receipts and salary changes.',
 					'**Compensation** — bonuses, overtime, commissions and deductions.',
@@ -1386,6 +1408,39 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'money',
 					'audit',
 					'system'
+				]
+			},
+			{
+				id: 'hmis-return',
+				title: 'The monthly health report (HMIS)',
+				summary:
+					'Visits and diagnoses for one Ethiopian month at one branch, by age group and sex, ready to print or to enter into DHIS2.',
+				where: 'Menu → **Reports → Health Report (HMIS)** → `/dashboard/hmis`',
+				permission: 'reports.clinic',
+				steps: [
+					'Once, before the first return: give each dental condition its code from the national classification under **Clinic Setup → Conditions**, and link each finding service (Caries, Fractured tooth…) to the condition it diagnoses under **Clinic Setup → Services → Diagnosis (as a finding)**.',
+					'Choose the branch in the top bar. Each branch is a facility and files its own return.',
+					'Open **Health Report (HMIS)**. It shows the last month that has ended; pick another with the month picker.',
+					'Fix anything in the red box at the top — uncoded diagnoses, unlinked findings, patients with no birth date.',
+					'**Print** it for signature, or **Download** the figures to enter into DHIS2.'
+				],
+				notes: [
+					'**Visits** are completed appointments: **new** for the patient’s first completed visit at the branch, **repeat** after that.',
+					'**Diagnoses** count each patient once per diagnosis in the month — from findings on the dental chart, and from dental conditions dated on a day the patient was seen at the branch. Suspected conditions and medical history the clinic does not diagnose are left out.',
+					'Age groups are under 1, 1–4, 5–14, 15–29, 30–64 and 65+, by age on the day. Check them against the current form from your health office.',
+					'Pagume is reported with Nehase.',
+					'Nothing is sent from the system, and it never guesses a code: a diagnosis without one is listed as not counted until it has one.'
+				],
+				keywords: [
+					'hmis',
+					'dhis2',
+					'moh',
+					'ministry of health',
+					'health office',
+					'monthly report',
+					'morbidity',
+					'opd',
+					'statutory'
 				]
 			},
 			{
@@ -1824,6 +1879,14 @@ export const ROUTE_MAP: RouteEntry[] = [
 		title: 'Recalls',
 		purpose: 'Patients due back who have not booked: ring them, log the call, book the visit.',
 		permission: 'appointments.book',
+		group: 'Appointments'
+	},
+	{
+		path: '/dashboard/appointments/reminders',
+		title: 'Reminders',
+		purpose:
+			'One day’s appointments still to come: ring each patient, record it, confirm the visit — and whether reminding cuts no-shows.',
+		permission: 'appointments.view',
 		group: 'Appointments'
 	},
 	{
@@ -2364,6 +2427,14 @@ export const ROUTE_MAP: RouteEntry[] = [
 		title: 'Clinic report',
 		purpose:
 			'Production per dentist, procedures by service, case acceptance, recalls, receivables aging, cash counts and lab turnaround.',
+		permission: 'reports.clinic',
+		group: 'Reports'
+	},
+	{
+		path: '/dashboard/hmis',
+		title: 'Monthly Health Report (HMIS)',
+		purpose:
+			'Visits and diagnoses for one Ethiopian month at one branch, by age group and sex — the return to the health office, printed or downloaded.',
 		permission: 'reports.clinic',
 		group: 'Reports'
 	},

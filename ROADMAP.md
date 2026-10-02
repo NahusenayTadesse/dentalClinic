@@ -20,42 +20,43 @@ half-wired, with a named gap. **⬜ not started** means only the schema and the 
 
 ### Patients
 
-| Table                                                       | Status | Where / gap                                                                                                                  |
-| ----------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------- |
-| `patient`                                                   | ✅     | list, registration, chart (`/dashboard/patients/**`)                                                                         |
-| `patient_allergies`, `_conditions`, `_medications`          | ✅     | chart sections via `childCrud`, audited, `patients.clinical`                                                                 |
-| `patient_contacts`, `_emergency_contacts`                   | ✅     | chart sections, `patients.edit`                                                                                              |
-| `referral_source`, `allergen`, `condition`, `contact_types` | ✅     | admin-panel lookups                                                                                                          |
-| `patient.mergedInto`                                        | 🟡     | the chart follows a merged record, but **nothing can merge two**. `possibleDuplicates` warns at registration and stops there |
-| `patient_access_log`                                        | ✅     | the chart's **Access log** tab, and Reports → System → Patient Record Access (per user)                                      |
-| `medicine`                                                  | ✅     | `admin-panel/medicines`; also the medication picker on the chart                                                             |
+| Table                                                       | Status | Where / gap                                                                             |
+| ----------------------------------------------------------- | ------ | --------------------------------------------------------------------------------------- |
+| `patient`                                                   | ✅     | list, registration, chart (`/dashboard/patients/**`)                                    |
+| `patient_allergies`, `_conditions`, `_medications`          | ✅     | chart sections via `childCrud`, audited, `patients.clinical`                            |
+| `patient_contacts`, `_emergency_contacts`                   | ✅     | chart sections, `patients.edit`                                                         |
+| `referral_source`, `allergen`, `condition`, `contact_types` | ✅     | admin-panel lookups                                                                     |
+| `patient.mergedInto`                                        | ✅     | a super admin merges a duplicate from the overview (`server/patientMerge.ts`, Stage 4)  |
+| `patient_access_log`                                        | ✅     | the chart's **Access log** tab, and Reports → System → Patient Record Access (per user) |
+| `medicine`                                                  | ✅     | `admin-panel/medicines`; also the medication picker on the chart                        |
 
 ### Scheduling
 
-| Table                            | Status | Where / gap                                                                                  |
-| -------------------------------- | ------ | -------------------------------------------------------------------------------------------- |
-| `appointment`                    | ✅     | day view, list, booking, status flow (`$lib/appointmentStatus.ts`)                           |
-| `operatory`                      | ✅     | admin-panel `chairs`                                                                         |
-| `appointment_type`               | ✅     | admin-panel lookup                                                                           |
-| `clinic_closure`                 | ✅     | admin-panel `closures`                                                                       |
-| `provider`, `provider_specialty` | ✅     | `/dashboard/providers`, admin-panel `specialties`                                            |
-| `appointment_type_services`      | ⬜     | seeded only. Meant to say what a visit type normally involves, so it can pre-fill procedures |
+| Table                            | Status | Where / gap                                                                                 |
+| -------------------------------- | ------ | ------------------------------------------------------------------------------------------- |
+| `appointment`                    | ✅     | day view, list, booking, status flow (`$lib/appointmentStatus.ts`); reminders (Stage 8)     |
+| `operatory`                      | ✅     | admin-panel `chairs`                                                                        |
+| `appointment_type`               | ✅     | admin-panel lookup                                                                          |
+| `clinic_closure`                 | ✅     | admin-panel `closures`                                                                      |
+| `provider`, `provider_specialty` | ✅     | `/dashboard/providers`, admin-panel `specialties`                                           |
+| `appointment_type_services`      | ✅     | Appointment Types → **Usual work**; pre-ticked when a visit is completed (Stage 8)          |
+| `staff_schedule`, `leave`        | ✅     | read by booking: a dentist off, out of hours or on leave is a warning to override (Stage 8) |
 
 ### The clinical record (the largest gap)
 
-| Table                 | Status | Gap                                                                                                                 |
-| --------------------- | ------ | ------------------------------------------------------------------------------------------------------------------- |
-| `tooth`               | ✅     | the odontogram and the procedure form; names shared with `$lib/teeth.ts`                                            |
-| `procedures`          | ✅     | the Dental chart tab: odontogram, procedure list, add/edit/delete, audited                                          |
-| `treatment_plan`      | ✅     | the patient's Treatment plans tab, a plan page, a printable quote, and Plan Follow-up                               |
-| `treatment_plan_item` | ✅     | snapshotted lines, answered one by one                                                                              |
-| `clinical_note`       | 🟡     | counted on the chart; no screen                                                                                     |
-| `prescription`        | 🟡     | counted on the chart; no screen                                                                                     |
-| `prescription_item`   | ⬜     | seed only                                                                                                           |
-| `patient_file`        | 🟡     | counted on the chart. `server/files.ts` and `/dashboard/files/[name]` are ready, with no upload screen for patients |
-| `patient_consent`     | 🟡     | counted on the chart; no screen                                                                                     |
-| `recall`              | ✅     | **Recalls** list, kept by the diary's own writes; next recall on the chart overview                                 |
-| `lab_case`            | ✅     | **Lab Work** board, the chart's Lab work tab, badges on the day view                                                |
+| Table                 | Status | Gap                                                                                             |
+| --------------------- | ------ | ----------------------------------------------------------------------------------------------- |
+| `tooth`               | ✅     | the odontogram and the procedure form; names shared with `$lib/teeth.ts`                        |
+| `procedures`          | ✅     | the Dental chart tab: odontogram, procedure list, add/edit/delete, audited                      |
+| `treatment_plan`      | ✅     | the patient's Treatment plans tab, a plan page, a printable quote, and Plan Follow-up           |
+| `treatment_plan_item` | ✅     | snapshotted lines, answered one by one                                                          |
+| `clinical_note`       | ✅     | the chart's **Notes** tab: signed or draft, amended by a new note (Stage 4)                     |
+| `prescription`        | ✅     | the chart's **Prescriptions** tab, checked against allergies, printable (Stage 4)               |
+| `prescription_item`   | ✅     | the lines of a prescription, against the formulary (Stage 4)                                    |
+| `patient_file`        | ✅     | the chart's **Files** tab; the file route checks `patients.view` and logs the opening (Stage 4) |
+| `patient_consent`     | ✅     | the chart's **Consents** tab, withdrawn with a reason (Stage 4)                                 |
+| `recall`              | ✅     | **Recalls** list, kept by the diary's own writes; next recall on the chart overview             |
+| `lab_case`            | ✅     | **Lab Work** board, the chart's Lab work tab, badges on the day view                            |
 
 ### Money
 
@@ -65,12 +66,12 @@ half-wired, with a named gap. **⬜ not started** means only the schema and the 
 | `invoice_line`                                 | ✅     | snapshotted from procedures, or typed as a charge on a draft                                                                                        |
 | `invoice_payment`                              | ✅     | one payment across several bills, several payments on one bill                                                                                      |
 | `cash_session`                                 | ✅     | Billing → Cash Drawer: open with a float, count and close; cash payments are recorded against it                                                    |
-| `transactions`                                 | 🟡     | `/salary/transactions` lists them. There is no patient payment path; the only writers are expenses and payroll                                      |
+| `transactions`                                 | ✅     | `/salary/transactions` lists them; written by patient and payer payments, refunds, expenses and payroll                                             |
 | `payment_methods`, `vat_and_withhold`          | ✅     | admin panel                                                                                                                                         |
 | `expenses`, `expenses_type`                    | ✅     | `/salary/transactions/expenses/**`, approvals                                                                                                       |
 | `payroll_*`                                    | ✅     | `/salary/**`, approvals                                                                                                                             |
-| `transaction_services`, `transaction_supplies` | 🗑     | from the ERP. `invoice_line` replaces them (see its schema comment). Four report consumers remain                                                   |
-| `customers`, `customer_contacts`               | 🗑/✅  | screens work. In a clinic they are the **payer** (employer or insurer) that `invoice.customerId` points at, and they should be re-labelled that way |
+| `transaction_services`, `transaction_supplies` | 🗑      | from the ERP. `invoice_line` replaces them (see its schema comment). Four report consumers remain                                                   |
+| `customers`, `customer_contacts`               | 🗑/✅   | screens work. In a clinic they are the **payer** (employer or insurer) that `invoice.customerId` points at, and they should be re-labelled that way |
 
 ### Stock
 
@@ -466,6 +467,71 @@ accepted into paid months. The three adjustment tables are now audited. Still on
 pages: attendance (`employees/attendance/[range]`) and the transactions and expenses `ranges/[range]`
 copies of their server-driven lists.
 
+### Stage 8: The diary's loose ends
+
+Found by reading the schema against the code after Stages 0–7, not from the original plan: three
+columns and tables the diary was built to use and never did.
+
+**Done.**
+
+- **Usual work for a visit type** (`appointment_type_services`). It was seeded and read — the
+  completion panel pre-ticks it — but nothing could change it. Appointment Types has a **Usual work**
+  column opening one shared dialog, which offers the same whole-mouth services the completion panel
+  does. A save replaces only those links, so the seed's tooth-service links (which the panel never
+  offers) are not quietly deleted by someone who could not see them. The service checklist is now
+  `$lib/components/ServiceChecklist.svelte`, shared with the completion panel.
+- **The dentist's hours at booking** (`staff_schedule`, approved `leave`). `bookingProblems` listed
+  them as a non-goal "until those screens exist"; the employee Schedule section exists. The rule is
+  `$lib/providerHours.ts`, shared by the booking and move dialogs and the server
+  (`server/providerHours.ts`), the same way `allergyClash.ts` is. A day off, a slot outside the
+  hours, or approved leave is a **warning** with a **Book anyway** tick, not a refusal; the overridden
+  warning goes into the audit row. A dentist with no hours entered is never warned about, so a clinic
+  that has not typed in timetables can still book.
+- **Reminders** (`appointment.reminderSentAt`, never written before). **Appointments → Reminders**
+  (`/dashboard/appointments/reminders`) is one day's appointments still to come, tomorrow by default;
+  **Reminded** stamps the column and, if the patient said yes, confirms the visit in the same audited
+  update (`server/reminders.ts`). A tile compares the no-show rate of reminded and unreminded visits
+  over 90 days — the question the column's schema comment says it was kept to answer. Nothing is
+  sent from the system; there is no SMS gateway, and the clinic rings from its own phone. The seed
+  now reminds most visits the day before.
+
+Verified in the browser (2026-10-02, as the dev admin): a usual-work edit saved and shown; a booking
+past a dentist's 17:00 warned, kept Book disabled until ticked, and wrote the warning to the audit
+row; the same booking posted without the tick was refused; recording a reminder confirmed the visit.
+
+### Stage 9: Ethiopia — the monthly health report (HMIS)
+
+The first of the Ethiopia-specific gaps: a clinic files a monthly return with its health office, and
+the data for it was here with no way to produce it.
+
+**Done.** **Reports → Health Report (HMIS)** (`/dashboard/hmis`, `reports.clinic`) is one Ethiopian
+month at the branch in the top bar — each branch is a facility — with Pagume reported in Nehase.
+It opens on the last month that has ended.
+
+- **Visits**: completed appointments, **new** for a patient's first completed visit at the branch,
+  **repeat** after, by sex and the HMIS age groups (under 1, 1–4, 5–14, 15–29, 30–64, 65+), age on
+  the day.
+- **Diagnoses**: one case per patient per condition in the month, from odontogram findings and from
+  dental conditions dated on a day the patient was seen at the branch. Suspected conditions and
+  medical history the clinic does not diagnose are left out.
+- **Nothing is guessed.** Findings were charted as services with no link to a coded condition, so
+  `services.condition_id` (migration 0047) says what a finding diagnoses, set on the Services screen;
+  the seed links the two unambiguous ones. A finding with no link, a condition with no HMIS code and a
+  patient with no birth date are listed at the top of the page, with where to fix each, rather than
+  dropped. No HMIS code is seeded: the Ministry's list has to be entered by the clinic.
+- Printed on the branch letterhead (A4 landscape) with signature lines, or downloaded as a CSV for
+  DHIS2. Modules: `$lib/hmisReport.ts` (period, age groups, tallies), `server/hmisReport.ts`.
+
+Verified in the browser (2026-10-02) against Meskerem 2019 at Main Branch: 38 visits (14 M, 24 F),
+8 new, and 59 caries cases once Caries was linked, each figure matched by an independent SQL count.
+
+**Found on the way, not yet fixed: `ethiopian-calendar-new` is a day early for the whole year after
+an Ethiopian leap year** — all of 2016 E.C., and next all of 2020 E.C. (12 September 2027 to
+10 September 2028). It puts Meskerem 1, 2016 on 11 September 2023 instead of the 12th. The return
+uses `$lib/ethiopianCalendar.ts`, built on `Intl`'s Ethiopic calendar, instead. **`ethiopianRange`,
+and through it every payroll period (`payrollPeriod`), still uses the library**, so payroll runs for
+2020 E.C. would start and end a day early. Move them onto `ethiopianToIso` before September 2027.
+
 ---
 
 ## 4. At a glance
@@ -480,6 +546,8 @@ copies of their server-driven lists.
 | 5     | Recalls and lab cases             | 2                 | 1, 3             | medium  |
 | 6     | Oversight and reports             | 2 + reports       | 1–5              | medium  |
 | 7     | Residue                           | none              | ongoing          | ongoing |
+| 8     | The diary's loose ends            | 3 + 1 column      | 1, 5             | small   |
+| 9     | Monthly health report (HMIS)      | 1 column          | 1, 4             | medium  |
 
 Stages 2 and 3 can run in parallel once Stage 1 has landed. Stage 4 only needs the tab split from
 Stage 1, step 1.

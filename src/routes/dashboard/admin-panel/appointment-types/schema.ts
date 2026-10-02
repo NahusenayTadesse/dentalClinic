@@ -19,3 +19,13 @@ const fields = {
 export const add = z.object(fields);
 
 export const edit = z.object({ id: z.coerce.string(), ...fields });
+
+/**
+ * The whole-mouth services a visit of this type usually involves: pre-ticked when the visit is
+ * completed (`visitWork`). The whole list is posted, and replaces what was there.
+ */
+export const usualWork = z.object({
+	id: z.coerce.number().int().positive(),
+	serviceIds: z.array(z.coerce.number().int().positive()).default([])
+});
+export type UsualWork = z.infer<typeof usualWork>;

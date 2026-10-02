@@ -58,6 +58,10 @@ thing, give it a new optional prop — do not fork it and leave the old one behi
 | A document on paper                 | `components/PrintSheet.svelte` — letterhead, print button, page margin            | 2             |
 | Choosing charted work in a form     | `components/ProcedurePicker.svelte` — checklist bound to `procedureIds`           | 3             |
 | Choosing a patient in a form        | `components/PatientPicker.svelte` — searches, never loads the roster              | 1             |
+| Choosing services in a form         | `components/ServiceChecklist.svelte` — checklist bound to `serviceIds`            | 2             |
+| A dentist's hours against a slot    | `$lib/providerHours.ts` — the warning rule shared by the dialogs and the server   | 3             |
+| Ethiopian date → Gregorian day      | `ethiopianToIso` — `$lib/ethiopianCalendar.ts`, never `ethiopian-calendar-new`    | 1             |
+| HMIS age groups, month, tallies     | `$lib/hmisReport.ts` — shared by the return's screen, print and server            | 3             |
 | Taking a payment against bills      | `components/PaymentForm.svelte` + `$lib/forms/payment.ts` (patient or payer)      | 3             |
 | The logo                            | `components/Logo.svelte` — `static/newLogo.png`, never an `<img>` of it           | 5             |
 
@@ -100,6 +104,9 @@ any button, dialog, popover, or menu.
 | Getting an id back from an insert        | `insertReturningId` — `server/db/insert.ts` (§10)                                                                                                      |
 | Finding patients, and their alerts       | `server/patients.ts` — search, age bands, alerts, duplicates                                                                                           |
 | Booking rules and the day's diary        | `server/appointments.ts` (`bookingProblems`) · `server/appointmentActions.ts` (the writes)                                                             |
+| A dentist's working hours and leave      | `server/providerHours.ts` — `providerAvailability` (for a page), `outsideHours` (in the booking's transaction)                                         |
+| The monthly health return (HMIS)         | `monthlyReturn` — `server/hmisReport.ts`: visits, coded cases, and what could not be counted                                                           |
+| Appointment reminders                    | `server/reminders.ts` — `remindersFor`, `recordReminder` (stamps and confirms), `reminderEffect`                                                       |
 | Clock time at the clinic                 | `$lib/clinicTime.ts` — never `getHours()` or `new Date(y, m, d, h)` on a `datetime` (§9)                                                               |
 | An appointment's next status             | `$lib/appointmentStatus.ts` — the server checks and the buttons are drawn from one table                                                               |
 | List filtering + pagination              | `parseTableQuery` / `buildWhere` / `pagination` / `currentQuery` — `server/queryFilters.ts`                                                            |

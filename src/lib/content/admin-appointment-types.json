@@ -20,6 +20,10 @@
 				{
 					"heading": "Recall after",
 					"body": "How many months after a visit of this type the patient should come back — 6 for a check-up, 1 for an orthodontic adjustment, 0 for none. Completing such a visit puts the patient on the Recalls list, due that many months later."
+				},
+				{
+					"heading": "Usual work",
+					"body": "The whole-mouth services a visit of this type usually involves — an examination and a scale and polish for a check-up, say. Click the Usual work cell to choose them. When a visit of the type is completed, they are offered ready ticked, so the dentist only unticks what was not done. Work on a tooth is charted on the dental chart, so only whole-mouth services are offered here."
 				}
 			],
 			"links": [
@@ -48,6 +52,10 @@
 				{
 					"heading": "ከዚህ በኋላ መመለስ",
 					"body": "የዚህ ዓይነት ጉብኝት ከተደረገ ከስንት ወር በኋላ ታካሚው መመለስ እንዳለበት — ለምርመራ 6፣ ለኦርቶዶንቲክ ማስተካከያ 1፣ ለምንም 0። እንዲህ ያለ ጉብኝት ሲጠናቀቅ ታካሚው በተመላሽ ጥሪዎች ዝርዝር ላይ ይገባል።"
+				},
+				{
+					"heading": "የተለመደ ሥራ",
+					"body": "የዚህ ዓይነት ጉብኝት ብዙውን ጊዜ የሚያካትታቸው የአፍ ሙሉ አገልግሎቶች — ለምርመራ ለምሳሌ ምርመራና የጥርስ ማጽዳት። ለመምረጥ የ«Usual work» ሕዋሱን ይጫኑ። የዚህ ዓይነት ጉብኝት ሲጠናቀቅ ቀድመው ምልክት ተደርጎባቸው ይቀርባሉ። በአንድ ጥርስ ላይ የሚሠራ ሥራ በጥርስ ገበታው ላይ ስለሚመዘገብ፣ እዚህ የሚቀርቡት የአፍ ሙሉ አገልግሎቶች ብቻ ናቸው።"
 				}
 			],
 			"links": [

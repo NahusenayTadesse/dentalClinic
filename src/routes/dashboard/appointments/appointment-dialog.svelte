@@ -10,6 +10,7 @@
 	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
+	import RiskAcknowledgement from '@nahu/admin-kit/formComponents/RiskAcknowledgement.svelte';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 	import CompleteVisit from './complete-visit.svelte';
 	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
@@ -31,6 +32,7 @@
 	} from '$lib/appointmentStatus';
 	import { clinicClock, clinicDate, ethiopianClock } from '$lib/clinicTime';
 	import { formatEthiopianDate } from '$lib/global.svelte';
+	import { availabilityWarnings, type ProviderAvailability } from '$lib/providerHours';
 	import type { DayAppointment } from './types';
 
 	/**
@@ -47,6 +49,7 @@
 		appointment,
 		forms,
 		providers,
+		availability = {},
 		chairs,
 		canBook,
 		canChart = false
@@ -60,6 +63,8 @@
 			complete: SuperValidated<CompleteVisitForm>;
 		};
 		providers: { value: number; name: string }[];
+		/** Each dentist's week and leave, keyed by provider id, for the hours warning. */
+		availability?: Record<number, ProviderAvailability>;
 		chairs: { id: number; name: string }[];
 		canBook: boolean;
 		/** Whether the viewer may record clinical work, which completing a visit offers. */
@@ -112,6 +117,19 @@
 	let showCancel = $state(false);
 	let showMove = $state(false);
 	let showComplete = $state(false);
+
+	/* The dentist's hours against the new slot, by the rule the server refuses with. */
+	const hoursWarnings = $derived.by(() => {
+		const who = availability[Number($mForm.providerId)];
+		const time = String($mForm.time ?? '');
+		if (!who || !$mForm.date || !/^\d\d:\d\d$/.test(time)) return [];
+		return availabilityWarnings(
+			who,
+			String($mForm.date),
+			time,
+			Number($mForm.durationMinutes) || 30
+		);
+	});
 
 	const chairOptions = $derived(chairs.map((c) => ({ value: c.id, name: c.name })));
 
@@ -315,7 +333,20 @@
 							items={chairOptions}
 						/>
 					</div>
-					<Button type="submit" size="sm" form="move-{appointment.id}">
+					<RiskAcknowledgement
+						show={hoursWarnings.length > 0}
+						name="hoursAcknowledged"
+						title="The dentist is not working then"
+						message={hoursWarnings.join(' ')}
+						confirmLabel="Book anyway"
+						bind:checked={$mForm.hoursAcknowledged}
+					/>
+					<Button
+						type="submit"
+						size="sm"
+						form="move-{appointment.id}"
+						disabled={$mDelayed || (hoursWarnings.length > 0 && !$mForm.hoursAcknowledged)}
+					>
 						{#if $mDelayed}<LoadingBtn name="Moving" />{:else}Move appointment{/if}
 					</Button>
 				</form>
