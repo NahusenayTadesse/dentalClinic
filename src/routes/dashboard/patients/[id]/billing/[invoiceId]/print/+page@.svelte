@@ -25,6 +25,14 @@
 		...(taxed && bill.vatRate !== null && bill.vatAmount !== null
 			? [{ label: w.vat(bill.vatRate), value: formatETB(bill.vatAmount) }]
 			: []),
+		...(bill.coPayment
+			? [
+					{
+						label: `${t.m.billing.cover.coPayment}${data.cover.coPayBill ? ` (${data.cover.coPayBill.number})` : ''}`,
+						value: `−${formatETB(bill.coPayment)}`
+					}
+				]
+			: []),
 		{ label: w.total, value: formatETB(bill.total), strong: true }
 	]);
 	const day = (value: string | null) => (value ? formatEthiopianDate(new Date(value)) : '—');
@@ -53,6 +61,13 @@
 					<dt class="text-muted-foreground">{w.payerTin}</dt>
 					<dd>{data.payerTin}</dd>
 				{/if}
+			{/if}
+			{#if data.cover.authorisation}
+				<dt class="text-muted-foreground">{t.m.billing.cover.authorisation('')}</dt>
+				<dd>{data.cover.authorisation}</dd>
+			{/if}
+			{#if data.cover.payerBill}
+				<dt class="col-span-2">{t.m.billing.cover.coPayOf(data.cover.payerBill.number ?? '')}</dt>
 			{/if}
 			<dt class="text-muted-foreground">{w.issued}</dt>
 			<dd>{day(bill.issuedOn)}</dd>

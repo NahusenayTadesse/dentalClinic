@@ -18,6 +18,20 @@ export const editDetail = z.object({
 });
 export type EditDetail = z.infer<typeof editDetail>;
 
+/**
+ * What the payer covers (`server/payerCover.ts`). The limit is a string so an empty box means no
+ * limit rather than a limit of nothing (CLAUDE.md §13); the action reads it.
+ */
+export const editTerms = z.object({
+	coveragePercent: z.coerce
+		.number('Give the share they pay')
+		.min(0, 'Between 0 and 100.')
+		.max(100, 'Between 0 and 100.'),
+	annualLimit: z.coerce.string().optional(),
+	requiresPreauth: z.boolean().default(false)
+});
+export type EditTerms = z.infer<typeof editTerms>;
+
 /** The payer's address. Which address is decided on the server, from the payer — never posted. */
 export const editAddress = z.object({
 	subcity: z.coerce.number('Subcity is required').int().positive('Subcity is required'),

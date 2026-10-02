@@ -140,6 +140,21 @@
 			</div>
 		{/snippet}
 
+		{#if data.cover.payerBill}
+			<p class="mb-3 text-sm">
+				<a
+					class="underline"
+					href="/dashboard/patients/{data.patient.id}/billing/{data.cover.payerBill.id}"
+					>{t.m.billing.cover.coPayOf(data.cover.payerBill.number ?? '')}</a
+				>
+			</p>
+		{/if}
+		{#if data.cover.authorisation}
+			<p class="mb-3 text-sm text-muted-foreground">
+				{t.m.billing.cover.authorisation(data.cover.authorisation)}
+			</p>
+		{/if}
+
 		<dl class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm md:grid-cols-5">
 			<div>
 				<dt class="text-muted-foreground">{w.billTo}</dt>
@@ -278,6 +293,22 @@
 							{draft ? w.vatAtIssue(bill.vatRate) : w.vat(bill.vatRate)}
 						</Table.Cell>
 						<Table.Cell class="text-right tabular-nums">{formatETB(bill.vatAmount)}</Table.Cell>
+						{#if draft}<Table.Cell></Table.Cell>{/if}
+					</Table.Row>
+				{/if}
+				{#if bill.coPayment}
+					<Table.Row>
+						<Table.Cell colspan={3}>
+							{t.m.billing.cover.coPayment}
+							{#if data.cover.coPayBill}
+								· <a
+									class="underline"
+									href="/dashboard/patients/{data.patient.id}/billing/{data.cover.coPayBill.id}"
+									>{data.cover.coPayBill.number}</a
+								>
+							{/if}
+						</Table.Cell>
+						<Table.Cell class="text-right tabular-nums">−{formatETB(bill.coPayment)}</Table.Cell>
 						{#if draft}<Table.Cell></Table.Cell>{/if}
 					</Table.Row>
 				{/if}

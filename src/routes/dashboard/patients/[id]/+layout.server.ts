@@ -67,6 +67,7 @@ export const load: LayoutServerLoad = async ({ params, locals, url }) => {
 			phone: patient.phone,
 			altPhone: patient.altPhone,
 			smsOptOut: patient.smsOptOut,
+			payerMemberNo: patient.payerMemberNo,
 			bloodType: patient.bloodType,
 			medicalNotes: patient.medicalNotes,
 			historyTakenAt: patient.historyTakenAt,

@@ -190,6 +190,8 @@ export const patients = {
 			bloodType: 'Blood type',
 			phone: 'Phone',
 			altPhone: 'Second phone',
+			memberNo: 'Member number',
+			memberNoPlaceholder: 'Their policy or member number with the payer',
 			textMessages: 'Text messages',
 			textsYes: 'Reminders and recalls may be texted',
 			textsNo: 'Asked not to be texted',

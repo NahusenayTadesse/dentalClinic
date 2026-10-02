@@ -11,13 +11,14 @@ import {
 	text,
 	unique,
 	index,
-	boolean
+	boolean,
+	type AnyMySqlColumn
 } from 'drizzle-orm/mysql-core';
 import { relations } from 'drizzle-orm';
 import { approvalFields, secureFields } from './secureFields';
 import { branchRef } from './branches';
 import { patient } from './patients';
-import { customers } from './customers';
+import { customers, payerAuthorisation } from './customers';
 import { provider } from './providers';
 import { tooth } from './teeth';
 import { procedures } from './procedures';
@@ -111,6 +112,21 @@ export const invoice = mysqlTable(
 		 * bill at a rate it was never charged at.
 		 */
 		vatRate: decimal('vat_rate', { precision: 5, scale: 2, mode: 'number' }),
+
+		/**
+		 * On a payer's bill: the part of it the patient pays — the co-payment, or what ran past the
+		 * member's yearly limit — carved off at issue onto a bill of its own. `total` is then the
+		 * payer's part. Null on a bill nothing was carved from (`server/payerCover.ts`).
+		 */
+		coPayment: decimal('co_payment', { precision: 10, scale: 2, mode: 'number' }),
+		/** On a co-payment bill: the payer's bill it was carved from. */
+		coPayOfInvoiceId: int('co_pay_of_invoice_id').references((): AnyMySqlColumn => invoice.id, {
+			onDelete: 'set null'
+		}),
+		/** The payer's pre-authorisation this bill was issued against. */
+		authorisationId: int('authorisation_id').references(() => payerAuthorisation.id, {
+			onDelete: 'set null'
+		}),
 		withholdingAmount: decimal('withholding_amount', { precision: 10, scale: 2, mode: 'number' }),
 		total: decimal('total', { precision: 10, scale: 2, mode: 'number' }).notNull(),
 

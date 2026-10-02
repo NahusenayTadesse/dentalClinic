@@ -129,7 +129,7 @@ can check.
   `fiscalQr` are waiting for them. Turnover tax is the clinic's own return, not a bill line, so it
   is left to the accounting export (under Running the business).
 
-### 6. Insurance and employer credit, done properly
+### 6. ✅ Insurance and employer credit, done properly — done
 
 Payers exist (an invoice can be billed to an employer or insurer, and a payer pays many bills at
 once), but there is no:
@@ -140,6 +140,18 @@ once), but there is no:
 - monthly claim batch to send to the insurer or employer
 
 Credit income keeps many clinics running, so this matters more than it looks.
+
+- **Done:** a payer's page sets **what they cover** — their share of each bill, a yearly limit per
+  member, and whether they pre-authorise. A bill to them is divided at issue (or when a pending
+  discount is decided): their part stays on their bill, the rest goes to the patient on a numbered,
+  linked **co-payment** bill, so every bill still has one debtor. Pre-authorisations are recorded on
+  the patient's Billing tab, audited; a payer that requires one cannot be billed without an approved
+  one in date with enough left, and the bill records which it used. Patients carry a **member
+  number**. **Claims** prints or downloads a payer's month of bills with member numbers and
+  references (migration 0051, `server/payerCover.ts`, `$lib/payerCover.ts`).
+- **Not done:** per-service cover rules, deductibles and waiting periods — the payer's claims office
+  decides those on the claim — and undoing a co-payment bill when the payer's bill is voided (the
+  manager voids both).
 
 ### 7. Coping with power and internet cuts
 

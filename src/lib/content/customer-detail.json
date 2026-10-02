@@ -16,6 +16,14 @@
 				{
 					"heading": "Details",
 					"body": "Edit the details, the address and the contact people. Take care with the TIN: it identifies the organisation on paperwork."
+				},
+				{
+					"heading": "What they cover",
+					"body": "The share of each bill the payer pays (100% for an employer paying in full), a yearly limit per member, and whether they must approve treatment first. A bill billed to them is divided when it is issued: the payer's bill keeps their part, and the rest goes to the patient on a co-payment bill of its own, numbered and linked. A bill that runs past the member's yearly limit, or past their pre-authorisation, is divided the same way. Changing the terms needs billing.invoice and applies to bills issued from then on."
+				},
+				{
+					"heading": "Claims",
+					"body": "Choose a month and Open the claim: every bill billed to this payer in it, with each patient's member number and pre-authorisation reference, what it came to and what is still owed. Print it to send, or download it as a spreadsheet."
 				}
 			],
 			"links": [
@@ -40,6 +48,14 @@
 				{
 					"heading": "ዝርዝሮች",
 					"body": "ዝርዝሮቹን፣ አድራሻውንና ተጠሪዎቹን ማስተካከል። በTIN ይጠንቀቁ፦ ድርጅቱን በሰነዶች ላይ የሚለየው እሱ ነው።"
+				},
+				{
+					"heading": "የሚሸፍኑት",
+					"body": "ከፋዩ የሚከፍለው የእያንዳንዱ ሂሳብ ድርሻ (ሙሉ ለሚከፍል አሠሪ 100%)፣ ለአንድ አባል ዓመታዊ ገደብ፣ እና ሕክምናን አስቀድመው ማጽደቅ እንዳለባቸው። ለእነሱ የሚወጣ ሂሳብ ሲወጣ ይከፈላል፤ የከፋዩ ሂሳብ የእነሱን ድርሻ ይይዛል፣ ቀሪው በተለየ የታካሚ ድርሻ ሂሳብ ለታካሚው ይወጣል። ከዓመታዊ ገደቡ ወይም ከቅድመ ፈቃዱ በላይ የሆነ ሂሳብም በተመሳሳይ ይከፈላል።"
+				},
+				{
+					"heading": "የይገባኛል ጥያቄዎች",
+					"body": "ወር መርጠው «Open the claim»ን ይጫኑ፤ በዚያ ወር ለዚህ ከፋይ የወጡ ሂሳቦች ሁሉ ከታካሚዎቹ የአባልነት ቁጥርና የቅድመ ፈቃድ መለያ ጋር ይታያሉ። ለመላክ ያትሙት፣ ወይም በተመን ሉህ ያውርዱት።"
 				}
 			],
 			"links": [

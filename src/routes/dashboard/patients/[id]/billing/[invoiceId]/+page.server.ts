@@ -38,6 +38,7 @@ import {
 	removeLine,
 	voidRequest
 } from '../schema';
+import { coverLinks } from '$lib/server/payerCover';
 import type { Actions, PageServerLoad } from './$types';
 
 /** The bill id from the path, or a 404 — never a query for `NaN`. */
@@ -62,6 +63,7 @@ export const load: PageServerLoad = async (event) => {
 	await logPatientView(patient.id, 'invoice', event, { recordId: invoiceId });
 
 	const draft = bill.status === 'draft';
+	const cover = await coverLinks(bill);
 	const [unbilled, methods, drawer, settings, payers, forms] = await Promise.all([
 		draft ? unbilledWork(patient.id) : Promise.resolve([]),
 		paymentMethodOptions(),
@@ -109,6 +111,7 @@ export const load: PageServerLoad = async (event) => {
 		drawerOpen: drawer !== null,
 		discountThreshold: settings.discountApprovalPercent,
 		vatRegistered: settings.vatRegistered,
+		cover,
 		forms: {
 			add,
 			charge,

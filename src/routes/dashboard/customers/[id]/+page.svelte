@@ -12,7 +12,12 @@
 	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import LookupSection from '@nahu/admin-kit/components/lookup/LookupSection.svelte';
 	import { childActionPaths } from '@nahu/admin-kit/components/lookup/actions.js';
-	import { editDetail, editAddress, addContact, editContact } from './schema';
+	import { editDetail, editAddress, addContact, editContact, editTerms } from './schema';
+	import ShieldCheck from '@lucide/svelte/icons/shield-check';
+	import FileSpreadsheet from '@lucide/svelte/icons/file-spreadsheet';
+	import MonthYear from '@nahu/admin-kit/formComponents/MonthYear.svelte';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
+	import { formatETB, currentEthiopianMonthParam } from '$lib/global.svelte';
 	import { contactConfig } from './configs';
 	import PayerAccount from './PayerAccount.svelte';
 	import DeleteEntity from '@nahu/admin-kit/components/DeleteEntity.svelte';
@@ -38,6 +43,22 @@
 			updatedBy: data?.customer?.updatedBy
 		})
 	);
+
+	/** What the payer covers, as the desk reads it. */
+	const coverRows = $derived([
+		{ name: 'Pays', value: `${data.customer.coveragePercent}% of each bill` },
+		{
+			name: 'Yearly limit per member',
+			value: data.customer.annualLimit === null ? 'None' : formatETB(data.customer.annualLimit)
+		},
+		{
+			name: 'Pre-authorisation',
+			value: data.customer.requiresPreauth ? 'Required before billing' : 'Not required'
+		}
+	]);
+
+	/** The month a claim is printed for: this month by default. */
+	let claimMonth = $state(decodeURIComponent(currentEthiopianMonthParam()));
 
 	// A subcity with no name still has to be choosable, so it reads as blank rather than failing.
 	const subcities = $derived(data.subcityList.map((s) => ({ value: s.value, name: s.name ?? '' })));
@@ -140,7 +161,71 @@
 			/>
 		</Section>
 
+		<Section title="What they cover" IconComp={ShieldCheck} style="identityIcon">
+			{#snippet editDialog()}
+				{#if data.account}
+					<FormDialog
+						title="What this payer covers"
+						description="Applies to bills issued from now on. A share under 100%, or a bill past the yearly limit, leaves the rest to the patient on a co-payment bill of its own."
+						action="?/editTerms"
+						data={data.termsForm}
+						schema={editTerms}
+					>
+						{#snippet fields({ form, errors })}
+							<InputComp
+								label="Share of each bill they pay (%)"
+								name="coveragePercent"
+								type="number"
+								step="1"
+								min="0"
+								max="100"
+								{form}
+								{errors}
+							/>
+							<InputComp
+								label="Yearly limit per member (birr)"
+								name="annualLimit"
+								type="number"
+								step="0.01"
+								min="0"
+								{form}
+								{errors}
+								required={false}
+								placeholder="Empty for no limit"
+							/>
+							<InputComp
+								label="Pre-authorisation"
+								name="requiresPreauth"
+								type="checkboxSingle"
+								placeholder="They must approve treatment before it is billed to them"
+								{form}
+								{errors}
+							/>
+						{/snippet}
+					</FormDialog>
+				{/if}
+			{/snippet}
+			<SingleTable singleTable={coverRows} />
+		</Section>
+
 		{#if data.account}
+			<Section title="Claims" IconComp={FileSpreadsheet} style="identityIcon">
+				<p class="mb-3 text-sm text-muted-foreground">
+					A month's bills to this payer, with member numbers and pre-authorisation references, to
+					send to them.
+				</p>
+				<div class="flex flex-wrap items-center gap-2">
+					<MonthYear bind:value={claimMonth} />
+					<Button
+						href="/dashboard/customers/{data.customer.id}/claim?month={encodeURIComponent(
+							claimMonth
+						)}"
+						target="_blank"
+					>
+						Open the claim
+					</Button>
+				</div>
+			</Section>
 			<PayerAccount account={data.account} form={data.account.form} />
 		{/if}
 

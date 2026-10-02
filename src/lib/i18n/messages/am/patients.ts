@@ -172,6 +172,8 @@ export const patients: typeof en = {
 			bloodType: 'የደም ዓይነት',
 			phone: 'ስልክ',
 			altPhone: 'ሁለተኛ ስልክ',
+			memberNo: 'የአባልነት ቁጥር',
+			memberNoPlaceholder: 'ከከፋዩ ጋር ያላቸው የፖሊሲ ወይም የአባልነት ቁጥር',
 			textMessages: 'አጭር መልዕክቶች',
 			textsYes: 'የቀጠሮ ማስታወሻና የተመላሽ ጥሪ መልዕክት ይላክላቸዋል',
 			textsNo: 'መልዕክት እንዳይላክላቸው ጠይቀዋል',

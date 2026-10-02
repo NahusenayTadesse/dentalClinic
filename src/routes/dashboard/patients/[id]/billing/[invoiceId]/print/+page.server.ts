@@ -8,6 +8,7 @@ import { livePatient, livePatientId, logPatientView, patientFullName } from '$li
 import { invoiceDetail } from '$lib/server/billing';
 import { clinicToday } from '$lib/clinicTime';
 import { readSettings } from '$lib/server/settings';
+import { coverLinks } from '$lib/server/payerCover';
 import { messagesFor } from '$lib/i18n/messages';
 import { BILLING_PERMISSION } from '../../billingAction';
 import type { PageServerLoad } from './$types';
@@ -65,6 +66,7 @@ export const load: PageServerLoad = async (event) => {
 		bill: { ...bill, payments: bill.payments.filter((p) => p.approvalStatus === 'approved') },
 		payer: payer?.name ?? null,
 		payerTin: payer?.tin ?? null,
+		cover: await coverLinks(bill),
 		clinicTin: settings.tin,
 		patient: person,
 		branch: place ?? { name: null, address: null, phone: null },

@@ -1018,6 +1018,40 @@ export const HELP_SECTIONS: HelpSection[] = [
 				keywords: ['payment', 'pay', 'cash', 'bank', 'telebirr', 'installment', 'balance', 'owes']
 			},
 			{
+				id: 'payers-cover',
+				title: 'Insurers and employers',
+				summary:
+					'A payer can cover part of each bill, up to a yearly limit per member, and may need to approve treatment first. The patient pays the rest on a bill of their own.',
+				where:
+					'The payer’s page → **What they cover** and **Claims**; the patient’s **Billing** tab → **Pre-authorisations**',
+				permission: 'billing.invoice',
+				steps: [
+					'On the payer’s page, set **What they cover**: their share of each bill, a yearly limit per member if there is one, and whether they must approve treatment first.',
+					'On the patient’s chart, under **Reaching them, and billing**, choose the payer and enter the patient’s **member number**.',
+					'If the payer requires it, record their approval under **Pre-authorisations** on the patient’s Billing tab — their reference, the amount, and until when.',
+					'Bill the work to the payer and issue it. If they cover less than all of it, the patient’s share is issued to the patient as a separate, linked **co-payment** bill.',
+					'At the end of the month, open the payer’s **Claims**, choose the month, and print or download the claim.'
+				],
+				notes: [
+					'A bill to a payer that requires pre-authorisation cannot be issued without an approved one, in date, with enough left.',
+					'What runs past the member’s yearly limit, or past the pre-authorisation, goes on the patient’s co-payment bill too.',
+					'A bill whose discount waits for a manager is divided once the manager decides, since its total is not final before.',
+					'Changing what a payer covers applies to bills issued from then on.'
+				],
+				keywords: [
+					'insurance',
+					'insurer',
+					'employer',
+					'co-payment',
+					'copay',
+					'limit',
+					'pre-authorisation',
+					'preauth',
+					'claim',
+					'member'
+				]
+			},
+			{
 				id: 'discounts-and-voids',
 				title: 'Discounts and voids',
 				summary:

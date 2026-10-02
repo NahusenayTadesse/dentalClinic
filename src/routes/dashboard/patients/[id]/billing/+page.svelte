@@ -14,6 +14,11 @@
 	import { useI18n } from '$lib/i18n/i18n.svelte';
 	import { billColumns } from './columns';
 	import { newInvoice } from './schema';
+	import ShieldCheck from '@lucide/svelte/icons/shield-check';
+	import LookupSection from '@nahu/admin-kit/components/lookup/LookupSection.svelte';
+	import { childActionPaths } from '@nahu/admin-kit/components/lookup/actions.js';
+	import { authorisationConfig } from './authorisationConfig';
+	import { addAuthorisation, editAuthorisation } from './authorisationSchema';
 
 	/**
 	 * The billing tab: what the patient owes, the work not yet on a bill, their bills, and taking a
@@ -26,6 +31,7 @@
 	const t = useI18n();
 	const w = $derived(t.m.billing.tab);
 	const columns = $derived(billColumns(data.patient.id, t.m));
+	const authorisations = $derived(authorisationConfig(t.m));
 
 	const TILES = $derived<Stat[]>([
 		{
@@ -80,6 +86,20 @@
 		{:else}
 			<p class="text-sm text-muted-foreground">{w.noBills}</p>
 		{/if}
+	</Section>
+
+	<Section title={t.m.billing.authorisations.title} IconComp={ShieldCheck} style="identityIcon">
+		<p class="mb-3 text-sm text-muted-foreground">{t.m.billing.authorisations.hint}</p>
+		<LookupSection
+			config={authorisations}
+			rows={data.authorisations.rows}
+			addForm={data.authorisations.addForm}
+			editForm={data.authorisations.editForm}
+			options={{ customerId: data.payers }}
+			actions={childActionPaths('Authorisation')}
+			schemas={{ add: addAuthorisation, edit: editAuthorisation }}
+			canDelete
+		/>
 	</Section>
 </div>
 

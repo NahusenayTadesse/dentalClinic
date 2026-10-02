@@ -15,6 +15,7 @@ import {
 	patientEmergencyContacts,
 	patientFile,
 	patientMedications,
+	payerAuthorisation,
 	prescription,
 	procedures,
 	recall,
@@ -83,6 +84,12 @@ export const OWNED: Owned[] = [
 		name: 'patient_medications',
 		table: patientMedications,
 		patientId: patientMedications.patientId
+	},
+	// What a payer agreed to pay for this person's treatment follows them.
+	{
+		name: 'payer_authorisation',
+		table: payerAuthorisation,
+		patientId: payerAuthorisation.patientId
 	},
 	{ name: 'prescription', table: prescription, patientId: prescription.patientId },
 	{ name: 'procedures', table: procedures, patientId: procedures.patientId },

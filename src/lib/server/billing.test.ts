@@ -6,6 +6,7 @@ import {
 	branch,
 	cashSession,
 	clinicSettings,
+	payerAuthorisation,
 	customers,
 	invoice,
 	patient,
@@ -23,6 +24,7 @@ import {
 	addCharge,
 	createInvoice,
 	issueInvoice,
+	setPayer,
 	requestVoid,
 	setDiscount,
 	settleInvoiceRequests
@@ -343,6 +345,102 @@ describe('billing', async () => {
 		});
 		expect(message).toMatch(/open the cash drawer/);
 	});
+
+	it.skipIf(!ready)(
+		'divides a payer’s bill: co-payment, yearly limit, pre-authorisation, and a discount awaiting a manager',
+		async () => {
+			const result = await inRollback(async (tx) => {
+				await tx
+					.update(clinicSettings)
+					.set({ vatRegistered: false, discountApprovalPercent: 10 })
+					.where(eq(clinicSettings.id, 1));
+				const payer = (terms: Partial<typeof customers.$inferInsert>, tin: string) =>
+					insertReturningId(tx, customers, {
+						name: `Cover test ${tin}`,
+						phone: '0911000000',
+						tinNo: tin,
+						approvalStatus: 'approved',
+						...terms
+					});
+				/** One bill of `fee` to `customerId`, issued, with an optional discount. */
+				const billTo = async (customerId: number, fee: number, discount = 0) => {
+					const [work] = await doneWork(tx, [fee]);
+					const id = await createInvoice(tx, request, {
+						patientId: someone.id,
+						procedureIds: [work],
+						branchId: place.id
+					});
+					await setPayer(tx, request, someone.id, id, customerId);
+					if (discount) await setDiscount(tx, request, someone.id, id, discount);
+					await issueInvoice(tx, request, someone.id, id, { dueOn: null });
+					return id;
+				};
+				const read = async (id: number) =>
+					(await tx.select().from(invoice).where(eq(invoice.id, id)))[0];
+				const coPayOf = async (id: number) =>
+					(await tx.select().from(invoice).where(eq(invoice.coPayOfInvoiceId, id)))[0] ?? null;
+
+				// An insurer paying 80%.
+				const insurer = await payer({ coveragePercent: 80 }, 'COVER-80');
+				const shared = await billTo(insurer, 1000);
+
+				// A yearly limit of 1,000: the second 800 bill gets only the 200 left.
+				const capped = await payer({ annualLimit: 1000 }, 'COVER-LIMIT');
+				await billTo(capped, 800);
+				const overLimit = await billTo(capped, 800);
+
+				// Pre-authorisation required: refused without one, capped by one.
+				const strict = await payer({ requiresPreauth: true }, 'COVER-AUTH');
+				const refusedWithout = await refused(billTo(strict, 1000));
+				await tx.insert(payerAuthorisation).values({
+					patientId: someone.id,
+					customerId: strict,
+					reference: 'PA-1',
+					approvedAmount: 600,
+					status: 'approved'
+				});
+				const authorised = await billTo(strict, 1000);
+
+				// A discount over the limit waits for a manager, and the bill is divided only then.
+				const waiting = await billTo(insurer, 1000, 300);
+				const beforeDecision = await read(waiting);
+				// As the approvals queue does: the row is approved first, then the hook runs.
+				await tx.update(invoice).set({ approvalStatus: 'approved' }).where(eq(invoice.id, waiting));
+				await settleInvoiceRequests([waiting], 'approved', tx);
+
+				return {
+					shared: await read(shared),
+					sharedCoPay: await coPayOf(shared),
+					overLimit: await read(overLimit),
+					overLimitCoPay: await coPayOf(overLimit),
+					refusedWithout,
+					authorised: await read(authorised),
+					authorisedCoPay: await coPayOf(authorised),
+					beforeDecision,
+					afterDecision: await read(waiting),
+					waitingCoPay: await coPayOf(waiting)
+				};
+			});
+
+			expect(result.shared.total).toBe(800);
+			expect(result.shared.coPayment).toBe(200);
+			expect(result.sharedCoPay).toMatchObject({ total: 200, status: 'issued', customerId: null });
+			expect(result.sharedCoPay?.invoiceNumber).toBeTruthy();
+
+			expect(result.overLimit.total).toBe(200);
+			expect(result.overLimitCoPay?.total).toBe(600);
+
+			expect(result.refusedWithout).toMatch(/pre-authorisation/);
+			expect(result.authorised.total).toBe(600);
+			expect(result.authorised.authorisationId).not.toBeNull();
+			expect(result.authorisedCoPay?.total).toBe(400);
+
+			expect(result.beforeDecision.coPayment).toBeNull();
+			// 1,000 less 300 is 700; the insurer pays 80% of it.
+			expect(result.afterDecision.total).toBe(560);
+			expect(result.waitingCoPay?.total).toBe(140);
+		}
+	);
 
 	it.skipIf(!ready)(
 		'charges VAT on goods only, after the discount, and keeps it when a discount is refused',

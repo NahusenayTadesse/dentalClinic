@@ -128,6 +128,9 @@ export const patient = mysqlTable(
 		 */
 		smsOptOut: boolean('sms_opt_out').notNull().default(false),
 
+		/** The patient's membership number with their payer — an insurer's policy or member number. */
+		payerMemberNo: varchar('payer_member_no', { length: 50 }),
+
 		bloodType: mysqlEnum('blood_type', ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
 
 		/**

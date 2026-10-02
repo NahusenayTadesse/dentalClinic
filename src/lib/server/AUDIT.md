@@ -87,6 +87,7 @@ compile error rather than a silent omission.
 - the clinical record: `clinical_note`, `procedures`, `prescription`, `prescription_item`,
   `treatment_plan`, `treatment_plan_item`, `lab_case`, `appointment`
 - money: `invoice`, `invoice_line`, `invoice_payment`, `transactions`, `expenses`, `cash_session`,
+  `payer_authorisation` (a payer's promise to pay for treatment),
   the pay adjustments `over_time`, `bonuses`, `deductions` and `attendance` — each changes what
   someone is paid
 - controlled stock: `supplies_adjustments`, `supply_batch`, `damaged_supplies`

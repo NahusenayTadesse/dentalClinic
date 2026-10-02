@@ -4,7 +4,7 @@ import { customers, user, address, subcity } from '$lib/server/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/mysql-core';
 import { notDeleted, softDeleteCustomer } from '$lib/server/softDelete';
-import { hasPermission, requireSuperAdmin } from '$lib/server/permissions';
+import { hasPermission, requirePermission, requireSuperAdmin } from '$lib/server/permissions';
 import { payerInvoices } from '$lib/server/billing';
 import { openSessionFor } from '$lib/server/cashDrawer';
 import { ownedAction } from '$lib/server/patientAction';
@@ -20,7 +20,7 @@ import { setFlash, redirect } from 'sveltekit-flash-message/server';
 
 import { subcities } from '$lib/server/fastData';
 
-import { editDetail, editAddress } from './schema';
+import { editDetail, editAddress, editTerms } from './schema';
 import { SECTIONS } from './sections';
 import { childActions } from '$lib/server/childCrud';
 import { daysBetween, isoDate, today } from '$lib/server/db/dialect';
@@ -88,6 +88,9 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			name: customers.name,
 			phone: customers.phone,
 			email: customers.email,
+			coveragePercent: customers.coveragePercent,
+			annualLimit: customers.annualLimit,
+			requiresPreauth: customers.requiresPreauth,
 			tinNo: customers.tinNo,
 			status: customers.isActive,
 			joinedOn: isoDate(customers.createdAt),
@@ -173,9 +176,18 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	);
 
 	const contacts = await SECTIONS.Contact.load(customer.id);
+	const termsForm = await superValidate(
+		{
+			coveragePercent: customer.coveragePercent,
+			annualLimit: customer.annualLimit === null ? '' : String(customer.annualLimit),
+			requiresPreauth: customer.requiresPreauth
+		},
+		zod4(editTerms)
+	);
 
 	return {
 		customer,
+		termsForm,
 		customerAddress,
 		detailForm,
 		addressForm,
@@ -205,6 +217,32 @@ export const actions: Actions = {
 				return `Payment of ${formatETB(total)} recorded.`;
 			}
 		),
+	/**
+	 * What the payer covers. It decides how much of a bill a patient pays, so it needs
+	 * `billing.invoice` as well as the page's own gate. Applies to bills issued from now on.
+	 */
+	editTerms: async ({ request, locals, params }) => {
+		requirePermission(locals, BILLING_PERMISSION);
+		const form = await superValidate(request, zod4(editTerms));
+		if (!form.valid)
+			return message(form, { type: 'error', text: 'Check the form.' }, { status: 400 });
+		const limit = Number(form.data.annualLimit);
+		const annualLimit =
+			form.data.annualLimit === '' || !Number.isFinite(limit) || limit <= 0 ? null : limit;
+		await db
+			.update(customers)
+			.set({
+				coveragePercent: form.data.coveragePercent,
+				annualLimit,
+				requiresPreauth: form.data.requiresPreauth,
+				updatedBy: locals.user?.id
+			})
+			.where(eq(customers.id, Number(params.id)));
+		return message(form, {
+			type: 'success',
+			text: 'Cover saved. It applies to bills issued from now on.'
+		});
+	},
 	editDetail: async ({ request, locals, params }) => {
 		const { id } = params;
 		const form = await superValidate(request, zod4(editDetail));

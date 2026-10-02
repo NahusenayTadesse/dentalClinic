@@ -283,6 +283,35 @@ export const billing: typeof en = {
 		notHere: 'ያ ዝውውር በዚህ ቅርንጫፍ ዝርዝር ላይ የለም።',
 		noReference: 'መለያ የለም'
 	},
+	cover: {
+		needsPreauth: (payer) =>
+			`${payer} ሂሳብ ከመውጣቱ በፊት ቅድመ ፈቃድ ይፈልጋሉ። መጀመሪያ ፈቃዳቸውን በታካሚው የክፍያ ገጽ ላይ ይመዝግቡ።`,
+		coPayLine: (bill, payer, percent) => `የታካሚው ድርሻ (${percent}%) ለ${payer} ከወጣው ሂሳብ ${bill}`,
+		overLimitLine: (bill, payer) => `ከ${payer} ዓመታዊ ገደብ በላይ የሆነው የሂሳብ ${bill} ክፍል`,
+		overAuthorisationLine: (bill, payer) => `ከ${payer} ቅድመ ፈቃድ በላይ የሆነው የሂሳብ ${bill} ክፍል`,
+		coPayment: 'የታካሚው ድርሻ፣ በተለየ ሂሳብ',
+		coPayOf: (bill) => `የሂሳብ ${bill} የታካሚው ድርሻ`,
+		payerPart: 'የከፋዩ ድርሻ',
+		authorisation: (reference) => `ቅድመ ፈቃድ ${reference}`
+	},
+	authorisations: {
+		title: 'ቅድመ ፈቃዶች',
+		hint: 'ከፋዩ ለዚህ ታካሚ ሕክምና ለመክፈል የተስማማው መጠንና የሚያገለግልበት ጊዜ። ቅድመ ፈቃድ የሚፈልግ ከፋይ ሂሳብ የሚወጣለት በቂ ቀሪ ባለው የጸደቀ ፈቃድ ላይ ብቻ ነው።',
+		entity: 'ቅድመ ፈቃድ',
+		plural: 'ቅድመ ፈቃዶች',
+		payer: 'ከፋይ',
+		reference: 'የእነሱ መለያ',
+		requested: 'የተጠየቀ',
+		approved: 'የጸደቀ',
+		status: 'ሁኔታ',
+		requestedStatus: 'ተጠይቋል',
+		approvedStatus: 'ጸድቋል',
+		declinedStatus: 'ውድቅ ሆኗል',
+		validUntil: 'የሚያገለግለው እስከ',
+		note: 'ማስታወሻ',
+		choosePayer: 'ከፋዩን ይምረጡ።',
+		needsAmount: 'የጸደቀ ቅድመ ፈቃድ ከፋዩ የተስማማበትን መጠን ይፈልጋል።'
+	},
 	refused: {
 		chooseBranch: 'መሳቢያ ከመክፈትዎ በፊት የሚሠሩበትን ቅርንጫፍ ይምረጡ።',
 		negativeFloat: 'መነሻ ገንዘብ ከዜሮ በታች ሊሆን አይችልም።',

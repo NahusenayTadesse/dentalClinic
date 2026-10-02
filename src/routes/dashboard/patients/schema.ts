@@ -136,7 +136,9 @@ export const editReach = z.object({
 	...contactFields,
 	...referralFields,
 	/** The patient asked not to be texted: reminders and recalls skip them (`patient.smsOptOut`). */
-	smsOptOut: z.boolean().default(false)
+	smsOptOut: z.boolean().default(false),
+	/** Their member or policy number with the payer, for the payer's claim. */
+	payerMemberNo: z.string().trim().max(50).optional()
 });
 export type EditReach = z.infer<typeof editReach>;
 

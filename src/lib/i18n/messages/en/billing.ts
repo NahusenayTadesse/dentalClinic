@@ -307,6 +307,40 @@ export const billing = {
 		notHere: 'That transfer is not on this branch’s list.',
 		noReference: 'No reference'
 	},
+	/** What a payer covers, and the co-payment carved off for the patient (`server/payerCover.ts`). */
+	cover: {
+		needsPreauth: (payer: string) =>
+			`${payer} needs a pre-authorisation before a bill is issued to them. Record their approval on the patient’s Billing tab first.`,
+		coPayLine: (bill: string, payer: string, percent: number) =>
+			`Co-payment (${percent}%) of bill ${bill} to ${payer}`,
+		overLimitLine: (bill: string, payer: string) =>
+			`Part of bill ${bill} over the yearly limit with ${payer}`,
+		overAuthorisationLine: (bill: string, payer: string) =>
+			`Part of bill ${bill} beyond ${payer}’s pre-authorisation`,
+		coPayment: 'Patient’s share, billed separately',
+		coPayOf: (bill: string) => `The patient’s share of bill ${bill}`,
+		payerPart: 'Payer’s part',
+		authorisation: (reference: string) => `Pre-authorisation ${reference}`
+	},
+	/** The patient's pre-authorisations from their payers (`patients/[id]/billing/authorisations.ts`). */
+	authorisations: {
+		title: 'Pre-authorisations',
+		hint: 'What a payer agreed to pay for this patient’s treatment, and until when. A payer that requires one is billed only against an approved one with enough left.',
+		entity: 'Pre-authorisation',
+		plural: 'Pre-authorisations',
+		payer: 'Payer',
+		reference: 'Their reference',
+		requested: 'Asked for',
+		approved: 'Approved',
+		status: 'Status',
+		requestedStatus: 'Asked',
+		approvedStatus: 'Approved',
+		declinedStatus: 'Declined',
+		validUntil: 'Valid until',
+		note: 'Note',
+		choosePayer: 'Choose the payer.',
+		needsAmount: 'An approved pre-authorisation needs the amount the payer agreed to.'
+	},
 	refused: {
 		chooseBranch: 'Choose the branch you are working at before opening a drawer.',
 		negativeFloat: 'A float cannot be negative.',

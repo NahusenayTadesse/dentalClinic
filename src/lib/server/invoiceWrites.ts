@@ -24,6 +24,7 @@ import { billingRefusals } from '$lib/server/cashDrawer';
 import { clinicToday } from '$lib/clinicTime';
 import { canEditInvoice, canRequestVoid, cents, discountNeedsApproval } from '$lib/invoiceStatus';
 import { billTotals, type BillTotals, type VatStanding } from '$lib/billTax';
+import { applyCover, checkPreauth } from '$lib/server/payerCover';
 
 /** A transaction on the database, as `db.transaction` hands it over. */
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -298,6 +299,10 @@ export async function issueInvoice(
 	const bill = await billFor(tx, patientId, invoiceId);
 	refuseUnless(bill.status === 'draft', billingRefusals(event).alreadyIssued);
 
+	// A payer that requires a pre-authorisation must have given one, before anything is numbered.
+	if (bill.customerId !== null) {
+		await checkPreauth(tx, event, patientId, bill.customerId, clinicToday());
+	}
 	const settings = await readSettings(tx);
 	const discount = bill.discount ?? 0;
 	const totals = await totalsFromLines(tx, invoiceId, discount, {
@@ -334,6 +339,8 @@ export async function issueInvoice(
 		before: bill,
 		after: written
 	});
+	// A payer's bill is divided now; one waiting for a manager, once the manager decides.
+	if (!needsManager) await applyCover(tx, event, invoiceId);
 	return { needsManager };
 }
 
@@ -400,14 +407,16 @@ export async function requestVoid(
 export async function settleInvoiceRequests(
 	ids: number[],
 	decision: 'approved' | 'rejected',
-	database: Reader
+	database: Reader,
+	userId?: string
 ) {
 	if (!ids.length) return;
 	const bills = await database
 		.select({
 			id: invoice.id,
 			voidReason: invoice.voidReason,
-			vatRate: invoice.vatRate
+			vatRate: invoice.vatRate,
+			customerId: invoice.customerId
 		})
 		.from(invoice)
 		.where(and(inArray(invoice.id, ids), ne(invoice.status, 'void')));
@@ -438,5 +447,15 @@ export async function settleInvoiceRequests(
 				})
 				.where(eq(invoice.id, bill.id));
 		}
+		// A payer's bill is divided once its total is final: its discount decided, and not voided.
+		const stands = !bill.voidReason || decision === 'rejected';
+		if (bill.customerId !== null && stands) {
+			await applyCover(database, approvalActor(userId), bill.id);
+		}
 	}
+}
+
+/** Who to record a change made by the approvals queue against: the manager who decided. */
+function approvalActor(userId: string | undefined): AuditRequest {
+	return { locals: { user: userId ? { id: userId } : null }, getClientAddress: () => 'approvals' };
 }

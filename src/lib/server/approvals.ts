@@ -73,7 +73,8 @@ export type ApprovalEntity = {
 	 * approval has to change something else. Never runs on rejection — a rejected record is meant
 	 * to leave the world exactly as it found it.
 	 */
-	onApprove?: (ids: number[], database: Db) => Promise<void>;
+	/** `userId` is the manager deciding, for anything the hook records. */
+	onApprove?: (ids: number[], database: Db, userId?: string) => Promise<void>;
 	/**
 	 * Runs inside the settling transaction once these ids have been rejected — only for records
 	 * where the thing waiting was a *change to* a record that already stood, not the record itself.
@@ -81,7 +82,7 @@ export type ApprovalEntity = {
 	 * and in the balance, rather than leave a live bill marked rejected. A new record rejected
 	 * outright has no such hook, and should not get one.
 	 */
-	onReject?: (ids: number[], database: Db) => Promise<void>;
+	onReject?: (ids: number[], database: Db, userId?: string) => Promise<void>;
 };
 
 /** Where each kind of record can be opened. Spelled once so a path change lands everywhere. */
@@ -255,8 +256,8 @@ export const APPROVAL_ENTITIES: ApprovalEntity[] = [
 		},
 		// A bill waits here for one of two reasons — its discount, or a void — and the decision
 		// does different things to each (`settleInvoiceRequests`).
-		onApprove: (ids, database) => settleInvoiceRequests(ids, 'approved', database),
-		onReject: (ids, database) => settleInvoiceRequests(ids, 'rejected', database)
+		onApprove: (ids, database, userId) => settleInvoiceRequests(ids, 'approved', database, userId),
+		onReject: (ids, database, userId) => settleInvoiceRequests(ids, 'rejected', database, userId)
 	},
 	{
 		key: 'refunds',
@@ -572,10 +573,10 @@ export async function settleApprovals(input: {
 
 	// After the rows are approved, not before: the hook reads them back in their settled state.
 	if (decision === 'approved' && entity.onApprove) {
-		await entity.onApprove(allowed, database);
+		await entity.onApprove(allowed, database, userId);
 	}
 	if (decision === 'rejected' && entity.onReject) {
-		await entity.onReject(allowed, database);
+		await entity.onReject(allowed, database, userId);
 	}
 
 	return {

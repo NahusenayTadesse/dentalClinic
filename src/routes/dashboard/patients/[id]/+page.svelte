@@ -102,6 +102,7 @@
 		{ name: r.heardThrough, value: p.referral ?? o.notAsked },
 		{ name: r.referredBy, value: p.referredBy ?? '—' },
 		{ name: r.billedTo, value: p.customer ?? pm.payAtDesk },
+		...(p.customer ? [{ name: r.memberNo, value: p.payerMemberNo ?? '—' }] : []),
 		{ name: r.registeredAt, value: p.branch ?? '—' }
 	]);
 
@@ -236,6 +237,14 @@
 						label={pm.register.billedTo}
 						type="combo"
 						items={data.options.customers}
+					/>
+					<InputComp
+						{form}
+						{errors}
+						name="payerMemberNo"
+						label={r.memberNo}
+						required={false}
+						placeholder={r.memberNoPlaceholder}
 					/>
 				{/snippet}
 			</FormDialog>
