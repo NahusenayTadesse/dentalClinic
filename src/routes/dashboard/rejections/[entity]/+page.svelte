@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { makeColumns } from '$lib/components/approvals/columns';
-	import DataTable from '$lib/components/Table/data-table.svelte';
+	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
 	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';

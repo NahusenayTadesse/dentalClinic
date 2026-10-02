@@ -4,7 +4,7 @@
 	import Landmark from '@lucide/svelte/icons/landmark';
 	import ListChecks from '@lucide/svelte/icons/list-checks';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import DataTable from '$lib/components/Table/data-table.svelte';
+	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';

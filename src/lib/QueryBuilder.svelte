@@ -33,7 +33,7 @@
 	import { slide } from 'svelte/transition';
 
 	import type { Snippet } from 'svelte';
-	import type { QueryFilterPayload } from '$lib/queryFilters';
+	import type { QueryFilterPayload } from '@nahu/admin-kit/queryFilters.js';
 
 	interface Props {
 		title?: string;

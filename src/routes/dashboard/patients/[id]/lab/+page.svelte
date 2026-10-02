@@ -3,7 +3,7 @@
 	import Plus from '@lucide/svelte/icons/plus';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Section from '@nahu/admin-kit/components/Section.svelte';
-	import DataTable from '$lib/components/Table/data-table.svelte';
+	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import { labCaseColumns } from '$lib/components/labCases/columns';

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { applyQueryToUrl, navigateWithQuery } from '$lib/queryFilters';
-	import DataTable from '$lib/components/Table/data-table.svelte';
+	import { applyQueryToUrl, navigateWithQuery } from '@nahu/admin-kit/queryFilters.js';
+	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import QueryBuilder from '$lib/QueryBuilder.svelte';
 	import {
 		Select,

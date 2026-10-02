@@ -18,7 +18,7 @@
 	import DeleteEntity from '@nahu/admin-kit/components/DeleteEntity.svelte';
 	import SingleView from '@nahu/admin-kit/components/SingleView.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
-	import DataTable from '$lib/components/Table/data-table.svelte';
+	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import { columns } from './columns.js';
 
 	let singleTable = $derived([

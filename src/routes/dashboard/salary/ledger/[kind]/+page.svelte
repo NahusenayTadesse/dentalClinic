@@ -2,7 +2,7 @@
 	import Plus from '@lucide/svelte/icons/plus';
 	import { page } from '$app/state';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import DataTable from '$lib/components/Table/data-table.svelte';
+	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
 	import CheckboxComp from '$lib/formComponents/CheckboxComp.svelte';
 	import { formatETB } from '$lib/global.svelte';

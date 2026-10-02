@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page as pageState } from '$app/state';
 
-	import { applyQueryToUrl } from '$lib/queryFilters';
+	import { applyQueryToUrl } from '@nahu/admin-kit/queryFilters.js';
 
 	import QueryBuilder from '$lib/QueryBuilder.svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';

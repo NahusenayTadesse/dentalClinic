@@ -2,7 +2,7 @@
 	import UserPlus from '@lucide/svelte/icons/user-plus';
 	import Search from '@lucide/svelte/icons/search';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import DataTable from '$lib/components/Table/data-table.svelte';
+	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import { columns, owesColumn } from './columns';
 
 	let { data } = $props();

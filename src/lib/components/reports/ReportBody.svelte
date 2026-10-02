@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { page as pageState } from '$app/state';
 
-	import DataTable from '$lib/components/Table/data-table.svelte';
+	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
 	import StatCard from '@nahu/admin-kit/components/reports/StatCard.svelte';
 	import ReportChart from '@nahu/admin-kit/components/reports/ReportChart.svelte';

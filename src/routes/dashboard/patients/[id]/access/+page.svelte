@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Eye from '@lucide/svelte/icons/eye';
 	import Section from '@nahu/admin-kit/components/Section.svelte';
-	import DataTable from '$lib/components/Table/data-table.svelte';
+	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import { accessColumns } from './columns';
 
 	/** The chart's Access log tab: every opening and printing of this patient's record. */

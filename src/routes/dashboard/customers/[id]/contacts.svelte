@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 	import DeleteEntity from '@nahu/admin-kit/components/DeleteEntity.svelte';
-	import DataTable from '$lib/components/Table/data-table.svelte';
+	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import Copy from '@nahu/admin-kit/Copy.svelte';
 	import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 	import Statuses from '@nahu/admin-kit/components/Table/statuses.svelte';

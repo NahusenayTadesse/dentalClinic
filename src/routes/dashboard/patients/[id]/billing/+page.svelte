@@ -4,7 +4,7 @@
 	import Plus from '@lucide/svelte/icons/plus';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Section from '@nahu/admin-kit/components/Section.svelte';
-	import DataTable from '$lib/components/Table/data-table.svelte';
+	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
 	import ProcedurePicker from '$lib/components/ProcedurePicker.svelte';

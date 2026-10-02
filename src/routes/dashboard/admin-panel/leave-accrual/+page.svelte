@@ -1,7 +1,7 @@
 <script>
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
-	import DataTable from '$lib/components/Table/data-table.svelte';
+	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 	import { formatDays } from '$lib/leaveDays';

@@ -3,7 +3,7 @@
 
 	let { data } = $props();
 
-	import DataTable from '$lib/components/Table/data-table.svelte';
+	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 
 	import Loading from '@nahu/admin-kit/components/Loading.svelte';
 	import { Frown, ArrowRight } from '@lucide/svelte';

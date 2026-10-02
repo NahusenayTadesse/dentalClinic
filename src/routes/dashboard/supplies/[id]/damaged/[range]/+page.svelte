@@ -5,7 +5,7 @@
 
 	let columns = $derived(makeColumns(data?.isSuperAdmin));
 
-	import DataTable from '$lib/components/Table/data-table.svelte';
+	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 
 	import Loading from '@nahu/admin-kit/components/Loading.svelte';

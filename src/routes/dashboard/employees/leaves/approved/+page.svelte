@@ -5,7 +5,7 @@
 
 	let columns = $derived(makeColumns('approved', data?.isSuperAdmin));
 
-	import DataTable from '$lib/components/Table/data-table.svelte';
+	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 
 	import Loading from '@nahu/admin-kit/components/Loading.svelte';
 	import { Frown, ArrowRight, ArrowBigLeft } from '@lucide/svelte';
@@ -26,7 +26,7 @@
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import QueryBuilder from '$lib/QueryBuilder.svelte';
 	import LeaveFilters from '../LeaveFilters.svelte';
-	import { applyQueryToUrl, navigateWithQuery } from '$lib/queryFilters';
+	import { applyQueryToUrl, navigateWithQuery } from '@nahu/admin-kit/queryFilters.js';
 
 	let selected = $state([]);
 

@@ -68,7 +68,7 @@
 	//   let date = $derived(dateProxy(editForm, 'appointmentDate', { format: 'date'}));
 	import Adjustment from '$lib/forms/Adjustment.svelte';
 	import { getCurrentMonthRange } from '$lib/global.svelte.js';
-	import DataTable from '$lib/components/Table/data-table.svelte';
+	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import Damaged from '$lib/forms/Damaged.svelte';
 	import { USER_PAGE } from '$lib/tableCells';
 
