@@ -172,8 +172,12 @@ Credit income keeps many clinics running, so this matters more than it looks.
 
 ## Clinical depth dentists will expect
 
-- **Periodontal chart:** pocket depths, bleeding and mobility per tooth, compared across visits.
-  `$lib/teeth.ts` already knows every tooth and surface.
+- ✅ **Periodontal chart — done.** A Gums tab on the chart: six sites on every adult tooth (pocket,
+  recession, bleeding, plaque), mobility and furcation, typed fast (Enter or one digit moves on;
+  `b`/`p` mark the site just typed). Each exam is compared with the last finished one — the old
+  depth under each reading, and sites with 2 mm or more of attachment lost outlined. A finished exam
+  is fixed; it prints on the branch letterhead for a referral. Teeth the chart shows as extracted
+  start missing. Not done: staging and grading (needs radiographs and judgement), implants.
 - **Radiographs:** import from intraoral sensors and panoramic machines, and a viewer that compares
   images over time. Files already upload uncompressed for radiographs (`server/patientFiles.ts`).
 - **Medical-history questionnaire and consent templates** in Amharic, printed for signature.

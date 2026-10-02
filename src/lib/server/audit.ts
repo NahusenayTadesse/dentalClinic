@@ -49,6 +49,8 @@ export type AuditedTable =
 	| 'treatment_plan'
 	| 'treatment_plan_item'
 	| 'lab_case'
+	// a periodontal chart; its readings are logged as the exam's change, not row by row (§11)
+	| 'perio_exam'
 	| 'appointment'
 	// money
 	| 'invoice'

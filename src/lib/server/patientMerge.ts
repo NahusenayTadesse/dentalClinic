@@ -7,6 +7,7 @@ import {
 	clinicalNote,
 	invoice,
 	labCase,
+	perioExam,
 	patient,
 	patientAllergies,
 	patientConditions,
@@ -91,6 +92,8 @@ export const OWNED: Owned[] = [
 		table: payerAuthorisation,
 		patientId: payerAuthorisation.patientId
 	},
+	// A periodontal chart is the baseline the next is compared with: it follows the patient.
+	{ name: 'perio_exam', table: perioExam, patientId: perioExam.patientId },
 	{ name: 'prescription', table: prescription, patientId: prescription.patientId },
 	{ name: 'procedures', table: procedures, patientId: procedures.patientId },
 	{ name: 'recall', table: recall, patientId: recall.patientId },

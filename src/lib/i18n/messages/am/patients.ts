@@ -143,6 +143,7 @@ export const patients: typeof en = {
 		tabs: {
 			overview: 'አጠቃላይ እይታ',
 			chart: 'የጥርስ ገበታ',
+			perio: 'ድድ',
 			plans: 'የሕክምና ዕቅዶች',
 			notes: 'ማስታወሻዎች',
 			prescriptions: 'የመድኃኒት ማዘዣዎች',

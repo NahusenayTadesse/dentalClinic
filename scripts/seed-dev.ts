@@ -42,6 +42,7 @@ import { seedLeave, seedSalaries, seedStaffDetails } from './seed/staff';
 import { seedSupplies } from './seed/supplies';
 import { seedClinicalRecord } from './seed/clinical';
 import { seedTreatmentPlans } from './seed/plans';
+import { seedPerio } from './seed/perio';
 import {
 	seedDamagedStock,
 	seedExpenses,
@@ -240,6 +241,7 @@ async function rest() {
 	await seedSupplies(db);
 	await seedClinicalRecord(db);
 	await seedTreatmentPlans(db);
+	await seedPerio(db);
 
 	await seedPayrollInputs(db);
 	await seedExpenses(db);

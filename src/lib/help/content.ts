@@ -2147,6 +2147,22 @@ export const ROUTE_MAP: RouteEntry[] = [
 		group: 'Patients'
 	},
 	{
+		path: '/dashboard/patients/[id]/perio',
+		title: 'Periodontal chart',
+		purpose:
+			'Every gum exam on the record, its figures, and how each compares with the one before.',
+		permission: 'patients.view (patients.clinical to chart)',
+		group: 'Patients'
+	},
+	{
+		path: '/dashboard/patients/[id]/perio/[examId]',
+		title: 'Periodontal exam',
+		purpose:
+			'Pocket depths, recession, bleeding, plaque, mobility and furcation at every site of one exam.',
+		permission: 'patients.view (patients.clinical to chart)',
+		group: 'Patients'
+	},
+	{
 		path: '/dashboard/patients/[id]/plans',
 		title: 'Treatment plans',
 		purpose:

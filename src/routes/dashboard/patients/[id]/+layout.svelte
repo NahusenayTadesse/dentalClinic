@@ -33,6 +33,7 @@
 	const tabs = $derived([
 		{ label: c.tabs.overview, href: base },
 		{ label: c.tabs.chart, href: `${base}/chart` },
+		{ label: c.tabs.perio, href: `${base}/perio` },
 		{ label: c.tabs.plans, href: `${base}/plans` },
 		{ label: c.tabs.notes, href: `${base}/notes` },
 		{ label: c.tabs.prescriptions, href: `${base}/prescriptions` },

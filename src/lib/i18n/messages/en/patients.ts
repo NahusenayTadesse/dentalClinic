@@ -161,6 +161,7 @@ export const patients = {
 		tabs: {
 			overview: 'Overview',
 			chart: 'Dental chart',
+			perio: 'Gums',
 			plans: 'Treatment plans',
 			notes: 'Notes',
 			prescriptions: 'Prescriptions',

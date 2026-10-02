@@ -32,3 +32,4 @@ export * from './invoices';
 export * from './settings';
 export * from './attendance';
 export * from './sms';
+export * from './perio';
