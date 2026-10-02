@@ -48,9 +48,14 @@
 
 {#if branch?.showSelector}
 	<Select.Root type="single" value={current} onValueChange={choose}>
-		<Select.Trigger class="h-9 w-auto min-w-40 gap-2 text-sm" aria-label="Branch" disabled={saving}>
-			<Building2 class="size-4" />
-			{label}
+		<!-- Shrinks on a phone, where the top bar has room for its icons and little else. -->
+		<Select.Trigger
+			class="h-9 w-auto max-w-32 min-w-0 gap-2 text-sm sm:max-w-none sm:min-w-40"
+			aria-label="Branch"
+			disabled={saving}
+		>
+			<Building2 class="size-4 shrink-0" />
+			<span class="truncate">{label}</span>
 		</Select.Trigger>
 		<Select.Content>
 			{#each branch.options as option (option.id)}

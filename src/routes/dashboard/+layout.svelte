@@ -32,7 +32,7 @@
 		 shadow-lg backdrop-blur-md lg:sticky lg:w-full lg:pr-2"
 		>
 			<Sidebar.Trigger class="rounded-lg bg-white p-4 dark:bg-black" />
-			<div class="flex flex-row items-center gap-4">
+			<div class="flex min-w-0 flex-row items-center gap-1.5 sm:gap-4">
 				<BranchSelector branch={data?.branch} />
 				<Search permList={data?.permList} />
 				<HelpButton />
