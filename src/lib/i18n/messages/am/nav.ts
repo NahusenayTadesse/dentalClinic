@@ -10,6 +10,7 @@ export const nav: Record<string, string> = {
 	'Appointment List': 'የቀጠሮ ዝርዝር',
 	Reminders: 'ማስታወሻ ጥሪዎች',
 	Recalls: 'ተመላሽ ጥሪዎች',
+	'Radiograph Inbox': 'የራጅ ምስሎች መቀበያ',
 	'Lab Work': 'የላብራቶሪ ሥራ',
 	Dentists: 'የጥርስ ሐኪሞች',
 	Billing: 'ክፍያ',

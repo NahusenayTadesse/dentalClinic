@@ -5,6 +5,8 @@
 	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
 	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
+	import ScanLine from '@lucide/svelte/icons/scan-line';
+	import { PROJECTIONS, PROJECTION_LABEL } from '$lib/radiographs';
 	import FileCard from './FileCard.svelte';
 	import { attach } from './schema';
 
@@ -32,6 +34,12 @@
 	const visits = $derived([{ value: '', name: 'Not from one visit' }, ...data.visits]);
 
 	let attachOpen = $state(false);
+	const projections = [
+		{ value: '', name: 'Not recorded' },
+		...PROJECTIONS.map((p) => ({ value: p, name: PROJECTION_LABEL[p] }))
+	];
+	const viewer = $derived(`/dashboard/patients/${data.patient.id}/files/radiographs`);
+	const radiographs = $derived(data.files.filter((f) => f.kind === 'radiograph').length);
 </script>
 
 <svelte:head>
@@ -40,8 +48,13 @@
 
 <Section title="Files" IconComp={Paperclip} style="identityIcon">
 	{#snippet editDialog()}
+		{#if radiographs}
+			<Button size="sm" variant="outline" class="ml-auto" href={viewer}>
+				<ScanLine class="size-4" /> View radiographs ({radiographs})
+			</Button>
+		{/if}
 		{#if data.canAttach}
-			<Button size="sm" class="ml-auto" onclick={() => (attachOpen = true)}>
+			<Button size="sm" class={radiographs ? '' : 'ml-auto'} onclick={() => (attachOpen = true)}>
 				<Plus class="size-4" /> Attach a file
 			</Button>
 		{/if}
@@ -66,7 +79,7 @@
 		{/if}
 		<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
 			{#each shown as file (file.id)}
-				<FileCard {file} remove={data.canRemove ? data.forms.remove : null} />
+				<FileCard {file} {viewer} remove={data.canRemove ? data.forms.remove : null} />
 			{/each}
 		</div>
 	{:else}
@@ -91,6 +104,18 @@
 >
 	{#snippet fields({ form, errors, values })}
 		<InputComp label="What it is" name="kind" type="select" {form} {errors} items={KINDS} />
+		{#if values.kind === 'radiograph'}
+			<InputComp
+				label="Projection"
+				name="projection"
+				type="select"
+				items={projections}
+				required={false}
+				{form}
+				{errors}
+				description="So the viewer can set it beside the last film of the same kind."
+			/>
+		{/if}
 		<InputComp
 			label="File"
 			name="file"

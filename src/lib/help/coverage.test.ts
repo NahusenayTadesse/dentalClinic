@@ -73,9 +73,12 @@ const HELP_FAMILY = new Set([
 	// The lab work and access log tabs: the same chart, each covered by its own section.
 	'/dashboard/patients/[id]/lab',
 	'/dashboard/patients/[id]/access',
-	// The periodontal chart and one exam: the same chart, covered by its "Periodontal chart" section.
+	// The radiograph viewer: the Files tab's, covered by the chart's "Radiographs" section.
+	'/dashboard/patients/[id]/files/radiographs',
+	// A periodontal exam printed, and the periodontal chart and one exam: the same chart, covered by its "Periodontal chart" section.
 	'/dashboard/patients/[id]/perio',
 	'/dashboard/patients/[id]/perio/[examId]',
+	'/dashboard/patients/[id]/perio/[examId]/print',
 	'/dashboard/employees/single/[id]/add-leave',
 	'/dashboard/employees/single/[id]/id-maker',
 	'/dashboard/employees/single/[id]/leave-history',

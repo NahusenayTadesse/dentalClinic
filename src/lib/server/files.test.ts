@@ -2,7 +2,14 @@ import { afterAll, describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { FILES_DIR, MAX_UPLOAD_BYTES, mimeFor, resolveStoredFile, saveUploadedFile } from './files';
+import {
+	FILES_DIR,
+	MAX_UPLOAD_BYTES,
+	mimeFor,
+	resolveStoredFile,
+	saveUploadedFile,
+	sniffFormat
+} from './files';
 
 /**
  * The store holds identity documents and clinical attachments, so these are security tests
@@ -110,5 +117,21 @@ describe('saveUploadedFile', () => {
 		// it is why the serving route may mark a file `immutable` — a replacement never lands
 		// on an existing URL.
 		expect(a.split('.')[0]).toHaveLength(36);
+	});
+});
+
+describe('sniffFormat', () => {
+	const bytes = (at: number, ...values: number[]) => {
+		const head = new Uint8Array(132);
+		head.set(values, at);
+		return head;
+	};
+
+	it('reads the format from the signature, not the name', () => {
+		expect(sniffFormat(bytes(0, 0xff, 0xd8, 0xff, 0xe0))).toBe('jpeg');
+		expect(sniffFormat(bytes(0, 0x89, 0x50, 0x4e, 0x47))).toBe('png');
+		expect(sniffFormat(bytes(128, 0x44, 0x49, 0x43, 0x4d))).toBe('dicom');
+		expect(sniffFormat(bytes(0, 0x49, 0x49, 0x2a, 0x00))).toBe('tiff');
+		expect(sniffFormat(bytes(0, 0x25, 0x50, 0x44, 0x46))).toBe('other');
 	});
 });

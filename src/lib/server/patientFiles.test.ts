@@ -24,6 +24,7 @@ describe('patient files', async () => {
 		mimeType: 'image/png',
 		sizeBytes: 2048,
 		kind: 'radiograph',
+		projection: 'periapical',
 		takenOn: '2026-09-20',
 		toothId: 36,
 		description: 'Periapical, 36',
@@ -57,16 +58,24 @@ describe('patient files', async () => {
 		}
 	);
 
-	it.skipIf(!ready)('refuses a tooth that is not an FDI number', async () => {
-		const message = await inRollback(async (tx) => {
+	/** The refusal an attach meets, or null. */
+	const refusal = (change: Partial<AttachInput>) =>
+		inRollback(async (tx) => {
 			try {
-				await attachFile(tx, request, people[0].id, film({ toothId: 19 }));
+				await attachFile(tx, request, people[0].id, film(change));
 			} catch (err) {
 				if (err instanceof WriteRefused) return err.message;
 				throw err;
 			}
 			return null;
 		});
-		expect(message).toMatch(/FDI number/);
+
+	it.skipIf(!ready)('refuses a tooth that is not an FDI number', async () => {
+		expect(await refusal({ toothId: 19 })).toMatch(/FDI number/);
+	});
+
+	it.skipIf(!ready)('gives a projection to a radiograph only', async () => {
+		expect(await refusal({ kind: 'photo' })).toMatch(/Only a radiograph/);
+		expect(await refusal({ kind: 'photo', projection: null })).toBeNull();
 	});
 });

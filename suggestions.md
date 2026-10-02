@@ -178,8 +178,13 @@ Credit income keeps many clinics running, so this matters more than it looks.
   depth under each reading, and sites with 2 mm or more of attachment lost outlined. A finished exam
   is fixed; it prints on the branch letterhead for a referral. Teeth the chart shows as extracted
   start missing. Not done: staging and grading (needs radiographs and judgement), implants.
-- **Radiographs:** import from intraoral sensors and panoramic machines, and a viewer that compares
-  images over time. Files already upload uncompressed for radiographs (`server/patientFiles.ts`).
+- ✅ **Radiographs — done.** Every sensor's and panoramic machine's software can export each
+  image to a folder; set `RADIOGRAPH_INBOX` to it and **Patients → Radiograph Inbox** lists what
+  arrived, to be filed to a patient (the original moves to `filed/`, kept). Radiographs record their
+  projection, and **View radiographs** shows a film beside the last one of the same projection and
+  tooth, with zoom, pan, brightness, contrast, invert and turn, the two moving together. Not done:
+  DICOM and TIFF (browsers cannot draw them; the inbox lists them and says to export JPEG/PNG), and
+  measuring on the image (needs the sensor's calibration).
 - **Medical-history questionnaire and consent templates** in Amharic, printed for signature.
   Consents are recorded (`patient_consent`) but there are no templates to print.
 - **Sterilisation and infection-control log:** autoclave cycles, and which instrument packs were used

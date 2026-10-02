@@ -150,6 +150,12 @@ export const routeRules: RouteRule[] = [
 		prefix: '/dashboard/patients/add',
 		permission: 'patients.register'
 	},
+	// Images waiting to be filed are patients' radiographs whose patient is not yet named: for the
+	// clinicians who file them, not for everyone who can open a chart.
+	{
+		prefix: '/dashboard/patients/radiographs',
+		permission: 'patients.clinical'
+	},
 	{
 		prefix: '/dashboard/patients',
 		permission: 'patients.view'

@@ -17,6 +17,8 @@ export const attach = z.object({
 			'A photograph or scan (JPG, PNG, WebP, HEIC) or a PDF.'
 		),
 	kind: z.enum(['radiograph', 'photo', 'consent', 'referral', 'labResult', 'paperRecord', 'other']),
+	/** For a radiograph: which projection. `''` is none, and anything else is refused by the server. */
+	projection: z.string(),
 	takenOn: z
 		.string()
 		.regex(/^(\d{4}-\d{2}-\d{2})?$/, 'Choose a date')

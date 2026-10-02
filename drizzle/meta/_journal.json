@@ -372,6 +372,13 @@
       "when": 1790979204233,
       "tag": "0052_perio_chart",
       "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "5",
+      "when": 1790980274073,
+      "tag": "0053_radiograph_projection",
+      "breakpoints": true
     }
   ]
 }

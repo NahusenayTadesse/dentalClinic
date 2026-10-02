@@ -1,0 +1,1 @@
+ALTER TABLE `patient_file` ADD `projection` enum('periapical','bitewing','panoramic','occlusal','cephalometric','cbct');

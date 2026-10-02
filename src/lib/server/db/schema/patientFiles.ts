@@ -5,6 +5,8 @@ import { secureFields } from './secureFields';
 import { patient } from './patients';
 import { tooth } from './teeth';
 import { appointment } from './scheduling';
+// Relative, not `$lib/…`: drizzle-kit loads the schema without SvelteKit's aliases.
+import { PROJECTIONS } from '../../../radiographs';
 
 /**
  * A stored file, attached to the patient it belongs to.
@@ -66,6 +68,13 @@ export const patientFile = mysqlTable(
 		 * uncompressed phone photographs before the backup starts failing.
 		 */
 		sizeBytes: int('size_bytes'),
+
+		/**
+		 * What kind of film, for a radiograph — periapical, bitewing, panoramic… Null for anything
+		 * else, and for radiographs attached before it was asked. The viewer compares a film with
+		 * the last one of the same projection (`$lib/radiographs.ts`).
+		 */
+		projection: mysqlEnum('projection', PROJECTIONS),
 
 		/**
 		 * Which tooth, for a periapical or bitewing of one. Null for a panoramic, a face

@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { copyFile, open, readdir, rename, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
@@ -126,4 +127,174 @@ export async function saveUploadedFile(file: File | undefined): Promise<string> 
 	await pipeline(source, fs.createWriteStream(target));
 
 	return fileName;
+}
+
+/**
+ * A stored file as an HTTP response: streamed, never read whole into memory, with a validator so a
+ * repeat fetch is a 304. Shared by the file route and the radiograph inbox's previews, which used
+ * to be one route's private code.
+ *
+ * `immutable` is for the store, where a name never changes what it holds. The inbox is a folder a
+ * machine writes into, where it can — so its files are not cached at all.
+ */
+export function fileResponse(
+	filePath: string,
+	request: Request,
+	caching: 'immutable' | 'none' = 'immutable'
+): Response {
+	const stats = fs.statSync(filePath);
+	const etag = `W/"${stats.size}-${stats.mtime.getTime()}"`;
+
+	if (request.headers.get('if-none-match') === etag) {
+		return new Response(null, { status: 304 });
+	}
+
+	const stream = Readable.toWeb(fs.createReadStream(filePath), {
+		/*
+		 * Bounded queuing, because the server this runs on has 2GB of RAM and shares it.
+		 *
+		 * Without a strategy the web-stream wrapper will happily read ahead of a slow consumer,
+		 * and a handful of concurrent downloads on a slow connection is exactly the shape that
+		 * turns into resident memory. Node's own issue on this is nodejs/node#46347.
+		 */
+		strategy: new CountQueuingStrategy({ highWaterMark: 100 })
+	});
+
+	return new Response(stream as unknown as ReadableStream, {
+		headers: {
+			ETag: etag,
+			'Content-Type': mimeFor(filePath),
+			'Content-Length': String(stats.size),
+			/*
+			 * `private` is the load-bearing word. These are identity documents and clinical
+			 * attachments; without it a shared proxy is entitled to keep a copy and hand it to
+			 * the next person who asks.
+			 *
+			 * `immutable`, and a year, because a stored file genuinely cannot change: the name is
+			 * 122 bits of randomness, and replacing an attachment writes a *new* name and points
+			 * the row at that. There is nothing at this URL to revalidate, so a conditional
+			 * request would spend a round trip being told what it already knows — which on the
+			 * connections this is used over is most of the cost of the request.
+			 */
+			'Cache-Control':
+				caching === 'immutable' ? 'private, max-age=31536000, immutable' : 'private, no-store',
+			'Last-Modified': stats.mtime.toUTCString(),
+			// Nothing here is meant to be interpreted as markup by the browser.
+			'X-Content-Type-Options': 'nosniff'
+		}
+	});
+}
+
+/* ── The radiograph inbox ──────────────────────────────────────────────────────────────────── */
+
+/**
+ * The folder an X-ray sensor's or panoramic machine's own software exports into, set by
+ * `RADIOGRAPH_INBOX`. Every one of them can write each new image to a folder — that is the
+ * integration they all share, where their programming interfaces are each their own and mostly
+ * closed. Null when the clinic has not set one up.
+ *
+ * Filed images are moved into `filed/` inside it rather than deleted: the export is the machine's
+ * original, and a second copy of a radiograph costs disk, not a patient.
+ */
+export const INBOX_DIR = env.RADIOGRAPH_INBOX || null;
+
+/** A panoramic exported at full resolution runs past the upload limit; this is a local copy. */
+export const INBOX_MAX_BYTES = 50 * 1024 * 1024;
+
+/** What an image file is, from its first bytes — the name is whatever the machine chose. */
+export type ImageFormat = 'jpeg' | 'png' | 'dicom' | 'tiff' | 'other';
+
+/** Reads a file's format from its signature. */
+export function sniffFormat(head: Uint8Array): ImageFormat {
+	const at = (offset: number, ...bytes: number[]) => bytes.every((b, i) => head[offset + i] === b);
+	if (at(0, 0xff, 0xd8, 0xff)) return 'jpeg';
+	if (at(0, 0x89, 0x50, 0x4e, 0x47)) return 'png';
+	// "DICM" after a 128-byte preamble.
+	if (at(128, 0x44, 0x49, 0x43, 0x4d)) return 'dicom';
+	if (at(0, 0x49, 0x49, 0x2a, 0x00) || at(0, 0x4d, 0x4d, 0x00, 0x2a)) return 'tiff';
+	return 'other';
+}
+
+/** One file waiting in the inbox. Only JPEG and PNG can be filed; the rest say why not. */
+export type InboxFile = {
+	name: string;
+	size: number;
+	modified: Date;
+	format: ImageFormat;
+};
+
+/** The path of a file in the inbox, or null — the same containment check as the store's. */
+export function resolveInboxFile(name: string): string | null {
+	if (!INBOX_DIR) return null;
+	const root = path.resolve(INBOX_DIR);
+	const target = path.resolve(root, name);
+	// Direct children only: `filed/` and anything deeper are not waiting.
+	if (path.dirname(target) !== root) return null;
+	if (!fs.existsSync(target) || !fs.statSync(target).isFile()) return null;
+	return target;
+}
+
+async function formatOf(filePath: string): Promise<ImageFormat> {
+	const handle = await open(filePath, 'r');
+	try {
+		const head = new Uint8Array(132);
+		await handle.read(head, 0, 132, 0);
+		return sniffFormat(head);
+	} finally {
+		await handle.close();
+	}
+}
+
+/** The files waiting in the inbox, oldest first, or null when no inbox is set up. */
+export async function inboxFiles(): Promise<InboxFile[] | null> {
+	if (!INBOX_DIR) return null;
+	const names = await readdir(INBOX_DIR).catch(() => [] as string[]);
+	const files: InboxFile[] = [];
+	for (const name of names) {
+		if (name.startsWith('.')) continue;
+		const target = resolveInboxFile(name);
+		if (!target) continue;
+		const info = await stat(target);
+		files.push({ name, size: info.size, modified: info.mtime, format: await formatOf(target) });
+	}
+	return files.sort((a, b) => a.modified.getTime() - b.modified.getTime());
+}
+
+/**
+ * Copies an inbox image into the store under a new random name, as an upload would be. Returns
+ * what `attachFile` needs. The inbox file is left where it is: `markFiled` moves it once the row
+ * that points at the copy is written.
+ */
+export async function adoptInboxFile(name: string) {
+	const source = resolveInboxFile(name);
+	if (!source) throw new Error('That image is no longer in the inbox.');
+	const info = await stat(source);
+	if (info.size > INBOX_MAX_BYTES) throw new Error('That image is larger than 50MB.');
+	const format = await formatOf(source);
+	if (format !== 'jpeg' && format !== 'png') {
+		throw new Error(
+			format === 'dicom' || format === 'tiff'
+				? `A ${format.toUpperCase()} file cannot be shown in a browser. Set the sensor software to export JPEG or PNG.`
+				: 'That file is not an image.'
+		);
+	}
+	const ext = format === 'jpeg' ? 'jpg' : 'png';
+	const storedName = `${generateFileName()}.${ext}`;
+	await copyFile(source, path.join(FILES_DIR, storedName));
+	return {
+		storedName,
+		originalName: name,
+		mimeType: MIME_BY_EXTENSION[ext],
+		sizeBytes: info.size,
+		modified: info.mtime
+	};
+}
+
+/** Moves a filed image out of the waiting list, into `filed/` beside it. */
+export async function markFiled(name: string): Promise<void> {
+	const source = resolveInboxFile(name);
+	if (!source || !INBOX_DIR) return;
+	const filed = path.join(INBOX_DIR, 'filed');
+	await fs.promises.mkdir(filed, { recursive: true });
+	await rename(source, path.join(filed, name));
 }

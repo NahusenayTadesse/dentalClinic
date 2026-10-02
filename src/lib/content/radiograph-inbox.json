@@ -1,0 +1,41 @@
+{
+	"path": "/dashboard/patients/radiographs",
+	"languages": {
+		"en": {
+			"title": "Radiograph inbox",
+			"summary": "Images the X-ray sensor or panoramic machine exported, waiting to be filed to a patient's chart.",
+			"sections": [
+				{
+					"heading": "Setting it up",
+					"body": "In the X-ray software, turn on automatic export to a folder, as JPEG or PNG — every sensor and panoramic program can. Then set RADIOGRAPH_INBOX in the server's .env to that folder (a shared folder if the X-ray computer is a different machine). New images appear here, oldest first. DICOM and TIFF files are listed but cannot be filed: browsers cannot show them."
+				},
+				{
+					"heading": "Filing an image",
+					"body": "Press File to a patient, search for the patient, and say what the film is: the projection (periapical, bitewing, panoramic…), the tooth for a film of one tooth, and the day it was taken — it starts on the day the machine wrote the file. The image is copied onto the patient's Files tab as a radiograph, and the export moves to the inbox's filed folder, so the machine's original is kept."
+				},
+				{
+					"heading": "Who can",
+					"body": "The inbox and filing need \"Change a patient's allergies, conditions, medicines and medical history\" (patients.clinical): an image here is a patient's record whose patient has not been named yet."
+				}
+			]
+		},
+		"am": {
+			"title": "የራጅ ምስሎች መቀበያ",
+			"summary": "የራጅ ሴንሰሩ ወይም ፓኖራሚክ ማሽኑ ያወጣቸው፣ ወደ ታካሚ ቻርት ለመመዝገብ የሚጠብቁ ምስሎች።",
+			"sections": [
+				{
+					"heading": "ማዘጋጀት",
+					"body": "በራጅ ሶፍትዌሩ ውስጥ ምስሎችን በራስ-ሰር ወደ አንድ ፎልደር እንደ JPEG ወይም PNG እንዲያወጣ ያድርጉ። ከዚያ በሰርቨሩ .env ውስጥ RADIOGRAPH_INBOX ን ወደዚያ ፎልደር ያቀናብሩ። አዲስ ምስሎች እዚህ ይታያሉ። DICOM እና TIFF ፋይሎች ይዘረዘራሉ ግን መመዝገብ አይችሉም፦ ብሮውዘሮች ሊያሳዩአቸው አይችሉም።"
+				},
+				{
+					"heading": "ምስል መመዝገብ",
+					"body": "File to a patient ይጫኑ፣ ታካሚውን ይፈልጉ፣ የፊልሙን ዓይነት (periapical፣ bitewing፣ panoramic…)፣ ለአንድ ጥርስ ፊልም ጥርሱን፣ እና የተነሳበትን ቀን ይምረጡ። ምስሉ ወደ ታካሚው Files ትር እንደ ራጅ ይገለበጣል፤ የማሽኑ ኦሪጅናል በመቀበያው filed ፎልደር ውስጥ ይቀመጣል።"
+				},
+				{
+					"heading": "ማን ይችላል",
+					"body": "መቀበያውን ለማየትና ለመመዝገብ የታካሚውን የሕክምና ታሪክ የመቀየር ፈቃድ (patients.clinical) ያስፈልጋል።"
+				}
+			]
+		}
+	}
+}

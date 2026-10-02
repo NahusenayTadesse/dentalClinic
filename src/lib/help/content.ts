@@ -618,6 +618,68 @@ export const HELP_SECTIONS: HelpSection[] = [
 				]
 			},
 			{
+				id: 'perio-chart',
+				title: 'Charting the gums',
+				summary:
+					'The Gums tab: pocket depths, recession, bleeding, plaque, mobility and furcation at six sites a tooth, compared with the last exam.',
+				where: '`/dashboard/patients/[id]/perio`',
+				permission: 'patients.view to read; patients.clinical to chart',
+				steps: [
+					'Open the patient, choose **Gums**, then **Chart the gums**. Say who is probing. Teeth the dental chart shows as extracted start crossed out; click a tooth number to change that.',
+					'Type each pocket in millimetres along the row. **Enter** moves on; with **Move on after each number** ticked a single digit does. Untick it to type 10 or more.',
+					'In a pocket box, **b** marks bleeding and **p** plaque at the site just typed. Or click the dots.',
+					'**Save readings** as often as you like, then **Finish exam**. A finished exam cannot be changed.'
+				],
+				notes: [
+					'Under each pocket, small, is the depth at the last finished exam. A site outlined in red has lost 2 mm or more of attachment — pocket plus recession — since then, which is past what a probe’s own error explains.',
+					'Recession is the gum margin below the enamel junction. Leave it empty where there is none; type a negative number where the gum is swollen above it.',
+					'Pockets of 4 mm and more are amber, 6 mm and more red. The figures above the chart are worked out as you type.',
+					'**Print** gives the chart on the branch letterhead, for a periodontist. Printing is recorded in the access log.'
+				],
+				keywords: [
+					'periodontal',
+					'perio',
+					'pocket',
+					'probing',
+					'bleeding',
+					'gum',
+					'mobility',
+					'furcation'
+				]
+			},
+			{
+				id: 'radiographs',
+				title: 'Radiographs: from the machine to the chart',
+				summary:
+					'Images from the X-ray sensor or panoramic machine filed to the patient, and read two at a time against the last film of the same kind.',
+				where:
+					'Menu → **Patients → Radiograph Inbox** → `/dashboard/patients/radiographs`; a patient’s **Files → View radiographs**',
+				permission: 'patients.clinical to file; patients.view to read',
+				steps: [
+					'In the X-ray software, turn on automatic export to a folder, as **JPEG or PNG**. Set **RADIOGRAPH_INBOX** in the server’s `.env` to that folder — a shared folder if the X-ray computer is another machine.',
+					'Open **Radiograph Inbox**. Each new image waits there with a preview; press **File to a patient**, find the patient, and say the projection, the tooth (for one tooth) and the day.',
+					'On the patient’s **Files** tab, press **View radiographs** — or click any radiograph. It opens beside the last film of the same projection and tooth.',
+					'Zoom with the scroll wheel, drag to move, and use brightness, contrast and invert to read it. **Move together** keeps both films lined up.'
+				],
+				notes: [
+					'The machine’s export is moved to a **filed** folder inside the inbox, not deleted: it stays as a second copy.',
+					'DICOM and TIFF files cannot be shown in a browser. They are listed in the inbox so they are not lost, but must be exported again as JPEG or PNG.',
+					'A radiograph attached by hand on the Files tab asks for its projection too; one without a projection is compared on its tooth alone.',
+					'Nothing in the viewer changes the file. Measuring on the image is not offered: without the sensor’s calibration a length in pixels is not a length in millimetres.'
+				],
+				keywords: [
+					'x-ray',
+					'xray',
+					'radiograph',
+					'opg',
+					'panoramic',
+					'periapical',
+					'bitewing',
+					'sensor',
+					'dicom'
+				]
+			},
+			{
 				id: 'treatment-plans',
 				title: 'Treatment plans and case acceptance',
 				summary:
@@ -2143,6 +2205,28 @@ export const ROUTE_MAP: RouteEntry[] = [
 		title: 'Dental chart',
 		purpose:
 			'The odontogram and every procedure on record: findings, planned work, work done and work the patient arrived with.',
+		permission: 'patients.view',
+		group: 'Patients'
+	},
+	{
+		path: '/dashboard/patients/[id]/files/radiographs',
+		title: 'Radiograph viewer',
+		purpose:
+			'The patient’s radiographs two at a time — a film and the last of its kind — with zoom and contrast.',
+		permission: 'patients.view',
+		group: 'Patients'
+	},
+	{
+		path: '/dashboard/patients/radiographs',
+		title: 'Radiograph inbox',
+		purpose: 'Images the X-ray machines exported, waiting to be filed to a patient.',
+		permission: 'patients.clinical',
+		group: 'Patients'
+	},
+	{
+		path: '/dashboard/patients/[id]/perio/[examId]/print',
+		title: 'Periodontal chart (printed)',
+		purpose: 'One periodontal exam on paper, under the branch letterhead, for a referral.',
 		permission: 'patients.view',
 		group: 'Patients'
 	},

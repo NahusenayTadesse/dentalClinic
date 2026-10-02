@@ -42,6 +42,10 @@
 					"body": "The Files tab holds radiographs, photographs, referral letters, lab results and photographed paper charts. Attach a file, say what it is, and for an old paper chart give the date on the paper, not today. Radiographs are uploaded at full size; photographs are made smaller to save bandwidth. Opening a file needs permission to view patients, and is recorded in who opened this chart."
 				},
 				{
+					"heading": "Radiographs",
+					"body": "View radiographs on the Files tab opens the viewer: the film you choose and, beside it, the last film of the same kind — the same projection and tooth, or the last panoramic. Choose another to compare with, or nothing. Scroll or use the buttons to zoom, drag to move, and use brightness, contrast, invert and turn to read a dark or faint film; double-click puts it back as taken. With Move together ticked, both films zoom and move as one, so the same root lines up on both. Nothing changes the file itself.\n\nWhen attaching a radiograph, say its projection so the viewer can find its pair. Images exported by the X-ray machine are filed from Patients → Radiograph Inbox."
+				},
+				{
 					"heading": "Consents",
 					"body": "The Consents tab records what the patient agreed to — treatment, surgery, anaesthetic, radiographs, photographs, sharing records — how, and when. For a child, say who gave it and their relationship. A verbal consent must name the clinician who witnessed it. Attach a signed form on the Files tab first, then choose it here. A consent is never deleted: to withdraw it, give the reason, and it is dated."
 				},
@@ -112,6 +116,10 @@
 				{
 					"heading": "ፋይሎች",
 					"body": "የፋይሎች ክፍል ራጅ፣ ፎቶዎች፣ የሪፈራል ደብዳቤዎች፣ የላብ ውጤቶችና ፎቶ የተነሱ የወረቀት መዝገቦችን ይይዛል። ፋይል ያያይዙ፣ ምን እንደሆነ ይናገሩ፤ ለአሮጌ የወረቀት መዝገብ በወረቀቱ ላይ ያለውን ቀን ይስጡ እንጂ የዛሬውን አይደለም። ራጅ በሙሉ መጠኑ ይጫናል፤ ፎቶዎች ኢንተርኔት ለመቆጠብ ይቀነሳሉ። ፋይል መክፈት ታካሚዎችን የማየት ፈቃድ ይፈልጋል፤ መከፈቱም ይመዘገባል።"
+				},
+				{
+					"heading": "ራጅ ምስሎች",
+					"body": "በFiles ትር ላይ View radiographs ተመልካቹን ይከፍታል፦ የመረጡትን ፊልም እና ከጎኑ ተመሳሳይ ዓይነት የመጨረሻውን ፊልም ያሳያል። ለማጉላት ያሸብልሉ ወይም አዝራሮቹን ይጠቀሙ፣ ለማንቀሳቀስ ይጎትቱ፤ ጨለማ ወይም ደብዛዛ ፊልም ለማንበብ ብሩህነት፣ ንፅፅር፣ መገልበጥና ማዞርን ይጠቀሙ። Move together ምልክት ከተደረገበት ሁለቱም ፊልሞች አብረው ይንቀሳቀሳሉ። ፋይሉ ራሱ አይቀየርም።\n\nራጅ ሲያያይዙ የፊልሙን ዓይነት ይምረጡ። ማሽኑ ያወጣቸው ምስሎች ከPatients → Radiograph Inbox ይመዘገባሉ።"
 				},
 				{
 					"heading": "ስምምነቶች",

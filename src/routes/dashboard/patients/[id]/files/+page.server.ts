@@ -9,6 +9,7 @@ import { WriteRefused } from '$lib/server/childCrud';
 import { attachFile, patientFiles, removeFile as remove } from '$lib/server/patientFiles';
 import { clinicDate, ethiopianClock } from '$lib/clinicTime';
 import { formatEthiopianDate } from '$lib/global.svelte';
+import { isProjection } from '$lib/radiographs';
 import { CLINICAL_PERMISSION, clinicalAction } from '../clinicalAction';
 import { attach, removeFile } from './schema';
 import type { Actions, PageServerLoad } from './$types';
@@ -62,6 +63,8 @@ export const actions: Actions = {
 				mimeType: data.file.type || null,
 				sizeBytes: data.file.size,
 				kind: data.kind,
+				projection:
+					data.kind === 'radiograph' && isProjection(data.projection) ? data.projection : null,
 				takenOn: data.takenOn || null,
 				toothId: Number(data.toothId) || null,
 				description: data.description ?? null,
