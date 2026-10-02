@@ -23,7 +23,8 @@
 		"test": "npm run test:unit -- --run && npm run test:e2e",
 		"auth:schema": "auth generate --config src/lib/server/auth.ts --output src/lib/server/db/auth.schema.ts --yes",
 		"test:e2e": "playwright install && playwright test",
-		"db:seed": "tsx scripts/seed-dev.ts"
+		"db:seed": "tsx scripts/seed-dev.ts",
+		"admin:create": "tsx scripts/create-admin.ts"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^2.1.1",
