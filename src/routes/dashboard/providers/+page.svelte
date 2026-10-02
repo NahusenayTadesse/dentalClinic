@@ -1,6 +1,6 @@
 <script lang="ts">
 	import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
-	import LookupPage from '$lib/components/lookup/LookupPage.svelte';
+	import LookupPage from '@nahu/admin-kit/components/lookup/LookupPage.svelte';
 	import { config } from './lookup';
 	import { add, edit } from './schema';
 	import { LICENCE_WARNING_DAYS, licenceState } from './licence';

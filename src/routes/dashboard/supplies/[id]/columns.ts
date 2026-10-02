@@ -9,9 +9,9 @@ import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svel
 import Statuses from '@nahu/admin-kit/components/Table/statuses.svelte';
 import Copy from '@nahu/admin-kit/Copy.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
-import ExpiryCell from '$lib/components/Table/expiry-cell.svelte';
+import ExpiryCell from '@nahu/admin-kit/components/Table/expiry-cell.svelte';
 import { ethiopianDate } from '$lib/tableCells';
-import { LOT_WARNING_DAYS } from '$lib/expiry';
+import { LOT_WARNING_DAYS } from '$lib/lots';
 export const columns: ColumnDef<RowData>[] = [
 	{
 		accessorKey: 'index',

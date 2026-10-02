@@ -1,5 +1,5 @@
 import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
-import DeleteEntity from '$lib/components/DeleteEntity.svelte';
+import DeleteEntity from '@nahu/admin-kit/components/DeleteEntity.svelte';
 // Assuming a new actions component
 import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';

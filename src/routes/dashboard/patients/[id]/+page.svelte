@@ -18,7 +18,7 @@
 	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import SingleTable from '$lib/components/SingleTable.svelte';
-	import LookupSection from '$lib/components/lookup/LookupSection.svelte';
+	import LookupSection from '@nahu/admin-kit/components/lookup/LookupSection.svelte';
 	import { childActionPaths } from '@nahu/admin-kit/components/lookup/actions.js';
 	import FormDialog from '$lib/formComponents/FormDialog.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';

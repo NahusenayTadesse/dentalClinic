@@ -41,7 +41,7 @@ import { WriteRefused } from '$lib/server/childCrud';
 import { providerEmployee, providerName } from '$lib/server/appointments';
 import { clinicDate, clinicToday } from '$lib/clinicTime';
 import { recordAudit, type AuditRequest } from '$lib/server/audit';
-import { insertReturningId } from '$lib/server/db/insert';
+import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { UNBILLED_STATUSES, isProcedureStatus } from '$lib/procedureStatus';
 import type { ServiceArea } from '$lib/serviceAreas';
 import { isFdiTooth, normaliseSurfaces, parseToothRange } from '$lib/teeth';

@@ -28,7 +28,7 @@ import {
 	workToBook
 } from './treatmentPlans';
 import { releaseBookedWork } from './procedures';
-import { insertReturningId } from './db/insert';
+import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 
 /**
  * A plan is a record of what a patient was told and what they said, so the rules that matter are

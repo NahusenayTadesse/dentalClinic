@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page as pageState } from '$app/state';
 
-	import StatCard from '$lib/components/reports/StatCard.svelte';
+	import StatCard from '@nahu/admin-kit/components/reports/StatCard.svelte';
 	import {
 		Card,
 		CardContent,

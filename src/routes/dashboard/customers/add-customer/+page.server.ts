@@ -6,7 +6,7 @@ import { redirect } from 'sveltekit-flash-message/server';
 import { notDeleted } from '$lib/server/softDelete';
 import { db } from '$lib/server/db';
 import { customers, address } from '$lib/server/db/schema/';
-import { insertReturningId } from '$lib/server/db/insert';
+import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { asRequested } from '$lib/server/approvals';
 import { isDuplicateKey } from '@nahu/admin-kit/server/dbErrors.js';
 import { subcities } from '$lib/server/fastData';

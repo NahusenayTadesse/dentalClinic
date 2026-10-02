@@ -14,7 +14,7 @@
 	import EditAddress from './editAddress.svelte';
 	import Contacts from './contacts.svelte';
 	import PayerAccount from './PayerAccount.svelte';
-	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
+	import DeleteEntity from '@nahu/admin-kit/components/DeleteEntity.svelte';
 	import { systemInfoRows } from '$lib/systemInfo';
 	import { Settings } from '@lucide/svelte';
 

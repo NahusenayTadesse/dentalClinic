@@ -6,7 +6,7 @@ import { db } from './db';
 import { addClinicDays, clinicToday } from '$lib/clinicTime';
 import { expiringLots, lotRecipients, moveStock } from './stock';
 import { softDeleteDamagedSupply } from './softDelete';
-import { insertReturningId } from './db/insert';
+import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { damagedSupplies, patient, supplies, suppliesAdjustments, supplyTypes } from './db/schema';
 import { supplyBatch } from './db/schema/batches';
 

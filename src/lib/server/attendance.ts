@@ -15,7 +15,7 @@ import {
 import { notDeleted, softDeleteLookup } from '$lib/server/softDelete';
 import { isApproved } from '$lib/server/approvals';
 import { recordAudit, type AuditRequest } from '$lib/server/audit';
-import { insertReturningId } from '$lib/server/db/insert';
+import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { isoDate } from '$lib/server/db/dialect';
 import { branchFilter, type BranchContext } from '$lib/server/branchScope';
 import { WriteRefused, refuseUnless } from '$lib/server/childCrud';

@@ -6,7 +6,7 @@ import { db } from '$lib/server/db';
 import { ownedAction } from '$lib/server/patientAction';
 import { moveLabCase as moveLabCaseForm } from '$lib/forms/labCase';
 import { dentalLab, labCase, patient, procedures, provider, services } from '$lib/server/db/schema';
-import { insertReturningId } from '$lib/server/db/insert';
+import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { isoDate } from '$lib/server/db/dialect';
 import { notDeleted } from '$lib/server/softDelete';
 import { recordAudit, type AuditRequest } from '$lib/server/audit';

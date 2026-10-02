@@ -10,7 +10,7 @@ import { isDuplicateKey } from '@nahu/admin-kit/server/dbErrors.js';
 import { saveUploadedFile } from '$lib/server/upload';
 import { notDeleted, softDeleteOwnedRecord } from '$lib/server/softDelete';
 import { recordAudit, type AuditedTable } from '$lib/server/audit';
-import { insertReturningId } from '$lib/server/db/insert';
+import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { requirePermission, requireSuperAdmin } from '$lib/server/permissions';
 
 /**

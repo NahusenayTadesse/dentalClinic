@@ -10,7 +10,7 @@ import { edit as schema } from './schema';
 import { db } from '$lib/server/db';
 import { moveStock } from '$lib/server/stock';
 import { WriteRefused } from '$lib/server/childCrud';
-import { insertReturningId } from '$lib/server/db/insert';
+import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { clinicToday } from '$lib/clinicTime';
 import {
 	supplies,

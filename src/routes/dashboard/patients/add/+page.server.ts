@@ -4,7 +4,7 @@ import { redirect } from 'sveltekit-flash-message/server';
 
 import { db } from '$lib/server/db';
 import { patient, patientAllergies } from '$lib/server/db/schema';
-import { insertReturningId } from '$lib/server/db/insert';
+import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { recordAudit } from '$lib/server/audit';
 import { isDuplicateKey } from '@nahu/admin-kit/server/dbErrors.js';
 import { allergens, customerList, referralSources } from '$lib/server/fastData';

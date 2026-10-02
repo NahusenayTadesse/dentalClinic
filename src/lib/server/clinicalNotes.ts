@@ -3,7 +3,7 @@ import { alias } from 'drizzle-orm/mysql-core';
 
 import { db } from '$lib/server/db';
 import { appointment, clinicalNote, provider, user } from '$lib/server/db/schema';
-import { insertReturningId } from '$lib/server/db/insert';
+import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { notDeleted, softDeleteOwnedRecord } from '$lib/server/softDelete';
 import { recordAudit, type AuditRequest } from '$lib/server/audit';
 import { refuseUnless } from '$lib/server/childCrud';

@@ -2,7 +2,7 @@ import { and, asc, eq, gte, inArray, isNull, lte, or } from 'drizzle-orm';
 
 import { db } from '$lib/server/db';
 import { appointmentType, patient, recall } from '$lib/server/db/schema';
-import { insertReturningId } from '$lib/server/db/insert';
+import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { notDeleted } from '$lib/server/softDelete';
 import { refuseUnless } from '$lib/server/childCrud';
 import { branchFilter, type BranchContext } from '$lib/server/branchScope';

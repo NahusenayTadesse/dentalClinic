@@ -14,7 +14,7 @@ import {
 import { inRollback, type TestTx } from '$lib/testing/rollback';
 import { WriteRefused } from './childCrud';
 import { HOURS_PER_MONTH, recordAdjustments, removeAdjustment } from './payrollLedgerWrites';
-import { insertReturningId } from './db/insert';
+import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 
 /**
  * The adjustment rules the old month pages broke: overtime priced from the salary in force (one

@@ -32,8 +32,8 @@
 	import FileUpload from './FileUpload.svelte';
 	import DatePicker from './DatePicker.svelte';
 	import DateRangePicker from './DateRangePicker.svelte';
-	import SelectComp from './SelectComp.svelte';
-	import ComboboxComp from './ComboboxComp.svelte';
+	import SelectComp from '@nahu/admin-kit/formComponents/SelectComp.svelte';
+	import ComboboxComp from '@nahu/admin-kit/formComponents/ComboboxComp.svelte';
 	import CheckboxComp from './CheckboxComp.svelte';
 
 	/**

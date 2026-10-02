@@ -14,7 +14,7 @@ import { customers, invoice, invoiceLine, patient } from '$lib/server/db/schema'
 import { notDeleted, softDeleteDraftInvoice, softDeleteInvoiceLine } from '$lib/server/softDelete';
 import { WriteRefused, refuseUnless } from '$lib/server/childCrud';
 import { recordAudit, type AuditRequest } from '$lib/server/audit';
-import { insertReturningId } from '$lib/server/db/insert';
+import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { asRequested } from '$lib/server/approvals';
 import { readSettings } from '$lib/server/settings';
 import { nextNumber } from '$lib/server/documentNumbers';

@@ -12,7 +12,7 @@
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import RiskAcknowledgement from '$lib/formComponents/RiskAcknowledgement.svelte';
-	import SelectComp from '$lib/formComponents/SelectComp.svelte';
+	import SelectComp from '@nahu/admin-kit/formComponents/SelectComp.svelte';
 	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import { allergyClashes, type ChartAllergy } from '$lib/allergyClash';
 	import { newPrescription, type NewPrescription, type PrescriptionItem } from './schema';

@@ -5,7 +5,7 @@ import { employee, overTimeType, payrollEntries, salaries } from '$lib/server/db
 import { notDeleted, softDeleteLookup } from '$lib/server/softDelete';
 import { isApproved, unapprovedEmployeeIds } from '$lib/server/approvals';
 import { recordAudit, type AuditRequest } from '$lib/server/audit';
-import { insertReturningId } from '$lib/server/db/insert';
+import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { isoDate } from '$lib/server/db/dialect';
 import { WriteRefused, refuseUnless } from '$lib/server/childCrud';
 import { employeeLegalName } from '$lib/server/employeeName';

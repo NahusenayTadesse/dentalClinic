@@ -4,8 +4,8 @@
 
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
-	import StatCard from './StatCard.svelte';
-	import ReportChart from './ReportChart.svelte';
+	import StatCard from '@nahu/admin-kit/components/reports/StatCard.svelte';
+	import ReportChart from '@nahu/admin-kit/components/reports/ReportChart.svelte';
 
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Label from '@nahu/admin-kit/components/ui/label/label.svelte';

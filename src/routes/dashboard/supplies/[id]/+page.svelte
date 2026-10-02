@@ -14,7 +14,7 @@
 	import type { Snapshot } from '@sveltejs/kit';
 
 	import SingleView from '@nahu/admin-kit/components/SingleView.svelte';
-	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
+	import DeleteEntity from '@nahu/admin-kit/components/DeleteEntity.svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte.js';
 
 	/**

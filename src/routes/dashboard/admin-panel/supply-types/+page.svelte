@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 	import DataTable from '$lib/components/Table/data-table.svelte';
-	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
+	import DeleteEntity from '@nahu/admin-kit/components/DeleteEntity.svelte';
 	import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';

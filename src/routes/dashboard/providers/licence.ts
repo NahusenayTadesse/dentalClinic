@@ -5,7 +5,7 @@
  * clinic discovers when an inspector asks. The arithmetic is `$lib/expiry.ts`, shared with stock
  * lots; what belongs to licences is the warning window.
  */
-import { expiryState, type ExpiryState } from '$lib/expiry';
+import { expiryState, type ExpiryState } from '@nahu/admin-kit/expiry.js';
 
 /** How far ahead a licence counts as expiring. Two months is time to start a renewal here. */
 export const LICENCE_WARNING_DAYS = 60;

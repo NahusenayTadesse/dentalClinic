@@ -13,7 +13,7 @@
 	import { addLeavePayrollSchema as schema } from './schema';
 	import { fileProxy, superForm } from 'sveltekit-superforms/client';
 	import DatePicker from '$lib/formComponents/DatePicker.svelte';
-	import ComboboxComp from '$lib/formComponents/ComboboxComp.svelte';
+	import ComboboxComp from '@nahu/admin-kit/formComponents/ComboboxComp.svelte';
 	import MonthYear from '$lib/formComponents/MonthYear.svelte';
 	import FileUpload from '$lib/formComponents/FileUpload.svelte';
 	import { type DateValue } from '@internationalized/date';

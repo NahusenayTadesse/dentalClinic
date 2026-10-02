@@ -4,7 +4,7 @@ import { and, eq, isNull, sql } from 'drizzle-orm';
 import { db } from './db';
 import { allergen, clinicalNote, patient, patientAllergies } from './db/schema';
 import { inRollback, type TestTx } from '$lib/testing/rollback';
-import { insertReturningId } from './db/insert';
+import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { WriteRefused } from './childCrud';
 import { NOT_MOVED, OWNED, mergePatients } from './patientMerge';
 

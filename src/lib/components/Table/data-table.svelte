@@ -26,10 +26,10 @@
 	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 
-	import Pdf from './pdf.svelte';
-	import TableFacet from './table-facet.svelte';
+	import Pdf from '@nahu/admin-kit/components/Table/pdf.svelte';
+	import TableFacet from '@nahu/admin-kit/components/Table/table-facet.svelte';
 	import TableCharts from './table-charts.svelte';
-	import TablePagination from './table-pagination.svelte';
+	import TablePagination from '@nahu/admin-kit/components/Table/table-pagination.svelte';
 	import TableDateRange from './table-date-range.svelte';
 	import {
 		applyFacets,

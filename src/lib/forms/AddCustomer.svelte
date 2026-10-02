@@ -9,7 +9,7 @@
 	// import { createRoleSchema } from "$lib/ZodSchema";
 	import type { SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
-	import SelectComp from '$lib/formComponents/SelectComp.svelte';
+	import SelectComp from '@nahu/admin-kit/formComponents/SelectComp.svelte';
 	import { gender } from '$lib/global.svelte';
 
 	let {

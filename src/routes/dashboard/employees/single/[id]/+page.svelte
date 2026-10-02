@@ -138,7 +138,7 @@
 	import Schedules from './schedules.svelte';
 	import Contacts from './contacts.svelte';
 	import Accounts from './accounts.svelte';
-	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
+	import DeleteEntity from '@nahu/admin-kit/components/DeleteEntity.svelte';
 	import ApprovalBanner from './approval-banner.svelte';
 	import { fileUrl } from '$lib/global.svelte';
 </script>

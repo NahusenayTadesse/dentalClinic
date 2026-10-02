@@ -12,7 +12,7 @@
 	import { ArrowLeft, Pencil, Save, Trash } from '@lucide/svelte';
 	import type { Snapshot } from '@sveltejs/kit';
 
-	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
+	import DeleteEntity from '@nahu/admin-kit/components/DeleteEntity.svelte';
 	import SingleView from '@nahu/admin-kit/components/SingleView.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import { columns, userColumns } from './columns.js';

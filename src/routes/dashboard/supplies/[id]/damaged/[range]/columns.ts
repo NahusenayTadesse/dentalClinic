@@ -3,7 +3,7 @@ import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 import { formatEthiopianDate, fileUrl } from '$lib/global.svelte';
-import DeleteEntity from '$lib/components/DeleteEntity.svelte';
+import DeleteEntity from '@nahu/admin-kit/components/DeleteEntity.svelte';
 
 /**
  * Built per request rather than exported as a constant: the delete column

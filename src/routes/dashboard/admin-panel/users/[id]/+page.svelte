@@ -12,10 +12,10 @@
 
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { ArrowLeft, Eye, Pencil, Save } from '@lucide/svelte';
-	import SelectComp from '$lib/formComponents/SelectComp.svelte';
+	import SelectComp from '@nahu/admin-kit/formComponents/SelectComp.svelte';
 	import type { Snapshot } from '@sveltejs/kit';
 
-	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
+	import DeleteEntity from '@nahu/admin-kit/components/DeleteEntity.svelte';
 	import SingleView from '@nahu/admin-kit/components/SingleView.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';

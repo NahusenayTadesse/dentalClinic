@@ -1,7 +1,7 @@
 import type { ColumnDef } from '@tanstack/table-core';
 import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
-import DeleteEntity from '$lib/components/DeleteEntity.svelte';
+import DeleteEntity from '@nahu/admin-kit/components/DeleteEntity.svelte';
 import RowButton from '@nahu/admin-kit/components/RowButton.svelte';
 import { PAYMENT_KINDS } from './schema';
 import type { PageData } from './$types';

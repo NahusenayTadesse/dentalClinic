@@ -23,7 +23,7 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 
 import { db } from '$lib/server/db';
 import { appointment, patient } from '$lib/server/db/schema';
-import { insertReturningId } from '$lib/server/db/insert';
+import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { recordAudit } from '$lib/server/audit';
 import { hasPermission, requirePermission } from '$lib/server/permissions';
 import { WriteRefused } from '$lib/server/childCrud';

@@ -8,7 +8,7 @@ import { appointment, procedures, supplies, transactions } from '$lib/server/db/
 import { lte, sql, and } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
 import { expiringLots, onHand } from '$lib/server/stock';
-import { LOT_WARNING_DAYS } from '$lib/expiry';
+import { LOT_WARNING_DAYS } from '$lib/lots';
 import { storedInstant, today } from '$lib/server/db/dialect';
 import { clinicDayRange, clinicToday } from '$lib/clinicTime';
 export const load: PageServerLoad = async ({ locals }) => {

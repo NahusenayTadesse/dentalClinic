@@ -26,7 +26,7 @@ import { invoice, invoicePayment, paymentMethods, transactions } from '$lib/serv
 import { notDeleted } from '$lib/server/softDelete';
 import { WriteRefused, refuseUnless } from '$lib/server/childCrud';
 import { recordAudit, type AuditRequest } from '$lib/server/audit';
-import { insertReturningId } from '$lib/server/db/insert';
+import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { nextNumber } from '$lib/server/documentNumbers';
 import { asRequested } from '$lib/server/approvals';
 import { billFor } from '$lib/server/billing';

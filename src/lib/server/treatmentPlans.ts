@@ -65,7 +65,7 @@ import {
 import { WriteRefused, refuseUnless } from '$lib/server/childCrud';
 import { NOT_LIVE, checkedProvider } from '$lib/server/appointments';
 import { auditChanges, recordAudit, type AuditRequest } from '$lib/server/audit';
-import { insertReturningId } from '$lib/server/db/insert';
+import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { providerEmployee, providerName } from '$lib/server/appointments';
 import { patientFullName } from '$lib/server/patients';
 import { branchFilter, type BranchContext } from '$lib/server/branchScope';
