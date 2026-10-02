@@ -119,6 +119,16 @@ export const routeRules: RouteRule[] = [
 	},
 
 	/*
+	 * Sterilisation: the autoclave log, its instrument packs, and which pack was opened for which
+	 * patient. Its own permission, because it is the sterilisation nurse's and the assistants' job,
+	 * and an inspector's question — not something everyone who books appointments should change.
+	 */
+	{
+		prefix: '/dashboard/sterilisation',
+		permission: 'sterilisation.record'
+	},
+
+	/*
 	 * Treatment plans: the follow-up list of quotes awaiting an answer, and — checked in each action
 	 * on the patient's plans tab, which sits under `/dashboard/patients` — drawing up a plan,
 	 * presenting it and recording the answer. Reading a patient's plans is the chart's own

@@ -79,6 +79,9 @@ const HELP_FAMILY = new Set([
 	'/dashboard/patients/[id]/perio',
 	'/dashboard/patients/[id]/perio/[examId]',
 	'/dashboard/patients/[id]/perio/[examId]/print',
+	// A cycle of the sterilisation log and its labels: covered by `sterilisation.json`'s match.
+	'/dashboard/sterilisation/[cycleId]',
+	'/dashboard/sterilisation/[cycleId]/labels',
 	// Paper to sign: covered by the chart's "Consents" and "Medical alerts" sections.
 	'/dashboard/patients/[id]/consents/print',
 	'/dashboard/patients/[id]/history-form',

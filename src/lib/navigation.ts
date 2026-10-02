@@ -52,6 +52,7 @@ import MapPin from '@lucide/svelte/icons/map-pin';
 import Megaphone from '@lucide/svelte/icons/megaphone';
 import OctagonMinus from '@lucide/svelte/icons/octagon-minus';
 import Phone from '@lucide/svelte/icons/phone';
+import ShieldCheck from '@lucide/svelte/icons/shield-check';
 import FileSignature from '@lucide/svelte/icons/file-signature';
 import FolderInput from '@lucide/svelte/icons/folder-input';
 import DatabaseBackup from '@lucide/svelte/icons/database-backup';
@@ -139,6 +140,7 @@ export const NAVIGATION: NavItem[] = [
 			{ title: 'Reminders', url: '/dashboard/appointments/reminders', icon: Phone },
 			{ title: 'Recalls', url: '/dashboard/recalls', icon: BellRing },
 			{ title: 'Lab Work', url: '/dashboard/lab-cases', icon: FlaskConical },
+			{ title: 'Sterilisation', url: '/dashboard/sterilisation', icon: ShieldCheck },
 			{ title: 'Dentists', url: '/dashboard/providers', icon: Stethoscope }
 		]
 	},
@@ -282,6 +284,7 @@ export const NAVIGATION: NavItem[] = [
 			{ title: 'Conditions', url: '/dashboard/admin-panel/conditions', icon: Activity },
 			{ title: 'Medicines', url: '/dashboard/admin-panel/medicines', icon: Pill },
 			{ title: 'Consent Forms', url: '/dashboard/admin-panel/consent-forms', icon: FileSignature },
+			{ title: 'Sterilisers', url: '/dashboard/admin-panel/sterilisers', icon: ShieldCheck },
 			{
 				title: 'Referral Sources',
 				url: '/dashboard/admin-panel/referral-sources',

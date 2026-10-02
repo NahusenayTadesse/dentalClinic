@@ -710,6 +710,38 @@ export const HELP_SECTIONS: HelpSection[] = [
 				]
 			},
 			{
+				id: 'sterilisation',
+				title: 'Sterilisation and infection control',
+				summary:
+					'The autoclave log an inspector asks for — and, after a failed spore test, the list of patients whose instruments came from that load.',
+				where: 'Menu → **Appointments → Sterilisation** → `/dashboard/sterilisation`',
+				permission: 'sterilisation.record',
+				steps: [
+					'Add each autoclave under **Clinic Setup → Sterilisers**, at its branch.',
+					'Run the machine’s morning test and record it as a **Bowie–Dick test** or **Vacuum leak test** cycle.',
+					'After each load, **Record a cycle**: the time, the program, the indicator strip, whether a spore test went in, and what the load held — “6 exam kit”. Print the labels and stick one on each pouch.',
+					'When a pouch is opened for a patient, **Packs used on a patient**: find the patient and type the code from the label.',
+					'A day or two later, open the cycle with the spore test and record whether the spores grew.'
+				],
+				notes: [
+					'A load whose strip failed is not labelled: resterilise it. A machine test makes no packs.',
+					'Packs from a cycle waiting for its spore test can be used. If the spores grow, the cycle fails: its unused packs are refused from then on, and its page lists every patient its packs were used on, with their phone, to be called.',
+					'A pack is used once, and not after its use-by date — 30 days unless the cycle says otherwise.',
+					'Each branch keeps its own log. Readings are never changed once recorded; a mistake is written in the cycle’s note.'
+				],
+				keywords: [
+					'autoclave',
+					'steriliser',
+					'sterilization',
+					'infection control',
+					'spore test',
+					'bowie dick',
+					'instrument',
+					'pack',
+					'inspection'
+				]
+			},
+			{
 				id: 'treatment-plans',
 				title: 'Treatment plans and case acceptance',
 				summary:
@@ -2115,6 +2147,13 @@ export const ROUTE_MAP: RouteEntry[] = [
 		group: 'Clinic setup'
 	},
 	{
+		path: '/dashboard/admin-panel/sterilisers',
+		title: 'Sterilisers',
+		purpose: 'The autoclaves and dry-heat ovens at each branch.',
+		permission: 'settings.manage',
+		group: 'Clinic setup'
+	},
+	{
 		path: '/dashboard/admin-panel/consent-forms',
 		title: 'Consent forms',
 		purpose: 'The wording of the consent forms patients sign, in English and Amharic.',
@@ -2266,6 +2305,28 @@ export const ROUTE_MAP: RouteEntry[] = [
 		purpose: 'One periodontal exam on paper, under the branch letterhead, for a referral.',
 		permission: 'patients.view',
 		group: 'Patients'
+	},
+	{
+		path: '/dashboard/sterilisation',
+		title: 'Sterilisation log',
+		purpose:
+			'Autoclave cycles, their instrument packs, and which pack was opened for which patient.',
+		permission: 'sterilisation.record',
+		group: 'Appointments'
+	},
+	{
+		path: '/dashboard/sterilisation/[cycleId]',
+		title: 'Sterilisation cycle',
+		purpose: 'One cycle’s readings and packs; reading its spore test; who to call if it failed.',
+		permission: 'sterilisation.record',
+		group: 'Appointments'
+	},
+	{
+		path: '/dashboard/sterilisation/[cycleId]/labels',
+		title: 'Pack labels',
+		purpose: 'A cycle’s pack labels, three across an A4 sheet.',
+		permission: 'sterilisation.record',
+		group: 'Appointments'
 	},
 	{
 		path: '/dashboard/patients/[id]/consents/print',

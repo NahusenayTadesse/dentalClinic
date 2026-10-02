@@ -33,3 +33,4 @@ export * from './settings';
 export * from './attendance';
 export * from './sms';
 export * from './perio';
+export * from './sterilisation';

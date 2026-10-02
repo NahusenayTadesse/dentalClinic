@@ -51,6 +51,9 @@ export type AuditedTable =
 	| 'lab_case'
 	// a periodontal chart; its readings are logged as the exam's change, not row by row (§11)
 	| 'perio_exam'
+	// infection control: a cycle's result, and which pack was opened for which patient
+	| 'sterilisation_cycle'
+	| 'pack_use'
 	| 'appointment'
 	// money
 	| 'invoice'

@@ -80,6 +80,8 @@ const DESCRIPTIONS: Record<string, string> = {
 	'employees.create_followup': 'Open and follow up employee records',
 	'lab_cases.manage':
 		'Send work to dental laboratories, receive it, record it fitted, and see the lab board',
+	'sterilisation.record':
+		'Record autoclave cycles and spore tests, label instrument packs, and record which pack was used on which patient',
 	'leaves.view_approved': 'See approved leave',
 	'patients.clinical': 'Change a patient’s allergies, conditions, medicines and medical history',
 	'patients.edit': 'Change a patient’s details, contacts and billing',

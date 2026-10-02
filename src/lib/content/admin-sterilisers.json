@@ -1,0 +1,33 @@
+{
+	"path": "/dashboard/admin-panel/sterilisers",
+	"languages": {
+		"en": {
+			"title": "Sterilisers",
+			"summary": "The autoclaves and dry-heat ovens at each branch, which sterilisation cycles are recorded against.",
+			"sections": [
+				{
+					"heading": "One row a machine",
+					"body": "Give each steriliser a name staff recognise — the one on its sticker — its kind, its serial number for the service engineer, and the branch it stands in. Cycles are numbered per machine, on from its last."
+				},
+				{
+					"heading": "Retiring one",
+					"body": "Set it Inactive when it is replaced. Its cycles stay in the log."
+				}
+			]
+		},
+		"am": {
+			"title": "ማምከኛ ማሽኖች",
+			"summary": "በእያንዳንዱ ቅርንጫፍ ያሉ አውቶክሌቮችና ደረቅ ሙቀት ምድጃዎች።",
+			"sections": [
+				{
+					"heading": "ለአንድ ማሽን አንድ መስመር",
+					"body": "ለእያንዳንዱ ማሽን ሠራተኞች የሚያውቁትን ስም፣ ዓይነቱን፣ የሴሪያል ቁጥሩንና ያለበትን ቅርንጫፍ ይስጡ። ዙሮች በማሽን ይቆጠራሉ።"
+				},
+				{
+					"heading": "ማቆም",
+					"body": "ሲተካ Inactive ያድርጉት። ዙሮቹ በመዝገቡ ውስጥ ይቀራሉ።"
+				}
+			]
+		}
+	}
+}

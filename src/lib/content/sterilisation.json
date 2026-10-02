@@ -1,0 +1,49 @@
+{
+	"match": "/dashboard/sterilisation",
+	"languages": {
+		"en": {
+			"title": "Sterilisation log",
+			"summary": "Every autoclave cycle at this branch, the instrument packs each made, and which pack was opened for which patient.",
+			"sections": [
+				{
+					"heading": "Recording a cycle",
+					"body": "When a load comes out, press Record a cycle. Choose the steriliser and what it was — a load of instruments, or the machine's Bowie–Dick or vacuum test. Give the time, the program and, if the display shows them, the temperature and minutes held. Read the indicator strip: pass if it changed colour. If a spore test went in, say so; it is read later. Write what the load held, one kind a line with the number first — \"6 exam kit\" — and each pack gets a code. Print the labels and stick one on each pouch."
+				},
+				{
+					"heading": "At the chair",
+					"body": "When a pack is opened for a patient, press Packs used on a patient, find the patient, and type the code on the label (several at once is fine). A pack is used once. One from a failed cycle or past its use-by date is refused, by name."
+				},
+				{
+					"heading": "Reading a spore test",
+					"body": "Open the cycle and press Spore test: no growth, or Spore test: growth. Growth fails the cycle: its unused packs are withdrawn, and the patients its packs were used on are listed at the top of the cycle with their phones, to be called. A reading cannot be changed."
+				},
+				{
+					"heading": "Who can",
+					"body": "The log and every action need \"sterilisation.record\". Each branch sees its own log; a manager with every branch chosen sees all of them."
+				}
+			]
+		},
+		"am": {
+			"title": "የመሣሪያ ማምከኛ መዝገብ",
+			"summary": "በዚህ ቅርንጫፍ ያለ እያንዳንዱ የአውቶክሌቭ ዙር፣ የተሠሩት የመሣሪያ ፓኮች፣ እና የትኛው ፓክ ለየትኛው ታካሚ እንደተከፈተ።",
+			"sections": [
+				{
+					"heading": "ዙር መመዝገብ",
+					"body": "ጭነቱ ሲወጣ Record a cycle ይጫኑ። ማሽኑንና ዓይነቱን ይምረጡ፣ ሰዓቱን፣ ፕሮግራሙን፣ ሙቀቱንና ደቂቃዎቹን ይጻፉ። የአመልካች ወረቀቱን ያንብቡ፦ ቀለሙ ከተቀየረ pass። የስፖር ምርመራ ከገባ ይግለጹ፤ በኋላ ይነበባል። ጭነቱ የያዘውን በመስመር አንድ ዓይነት፣ ቁጥሩን አስቀድመው ይጻፉ — \"6 exam kit\"። እያንዳንዱ ፓክ ኮድ ያገኛል፤ መለያዎቹን አትመው በእያንዳንዱ ፓኬት ላይ ይለጥፉ።"
+				},
+				{
+					"heading": "በሕክምና ወንበሩ",
+					"body": "ፓክ ለታካሚ ሲከፈት Packs used on a patient ይጫኑ፣ ታካሚውን ይፈልጉ፣ በመለያው ላይ ያለውን ኮድ ይጻፉ። አንድ ፓክ አንድ ጊዜ ብቻ ይጠቀማል፤ ከወደቀ ዙር ወይም ጊዜው ያለፈበት ፓክ አይቀበልም።"
+				},
+				{
+					"heading": "የስፖር ምርመራ ማንበብ",
+					"body": "ዙሩን ይክፈቱና Spore test: no growth ወይም Spore test: growth ይጫኑ። ማደግ ዙሩን ያወድቃል፦ ያልተጠቀሙ ፓኮች ይወጣሉ፣ ፓኮቹ የተጠቀሙባቸው ታካሚዎች ከስልካቸው ጋር ለመደወል ይዘረዘራሉ።"
+				},
+				{
+					"heading": "ማን ይችላል",
+					"body": "መዝገቡና እያንዳንዱ ተግባር \"sterilisation.record\" ፈቃድ ያስፈልጋቸዋል። እያንዳንዱ ቅርንጫፍ የራሱን መዝገብ ያያል።"
+				}
+			]
+		}
+	}
+}

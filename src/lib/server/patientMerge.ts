@@ -8,6 +8,7 @@ import {
 	invoice,
 	labCase,
 	perioExam,
+	packUse,
 	patient,
 	patientAllergies,
 	patientConditions,
@@ -92,6 +93,8 @@ export const OWNED: Owned[] = [
 		table: payerAuthorisation,
 		patientId: payerAuthorisation.patientId
 	},
+	// A pack opened for the duplicate was opened for this person: a failed cycle must still find them.
+	{ name: 'pack_use', table: packUse, patientId: packUse.patientId },
 	// A periodontal chart is the baseline the next is compared with: it follows the patient.
 	{ name: 'perio_exam', table: perioExam, patientId: perioExam.patientId },
 	{ name: 'prescription', table: prescription, patientId: prescription.patientId },

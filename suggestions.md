@@ -192,8 +192,12 @@ Credit income keeps many clinics running, so this matters more than it looks.
   six forms come ready in English and Amharic, editable under Clinic Setup → Consent Forms. The
   Amharic wording wants a native speaker's and the clinic's lawyer's reading. Not done: signing on
   a screen.
-- **Sterilisation and infection-control log:** autoclave cycles, and which instrument packs were used
-  on which patient. Inspectors ask for this.
+- ✅ **Sterilisation and infection-control log — done.** Appointments → Sterilisation: each
+  autoclave cycle (machine tests too) with its strip and spore test, packs labelled from each load
+  with a code and a use-by date, and the code recorded against the patient when a pack is opened. A
+  pack is used once, never past its date or from a failed cycle. A spore test that grows fails the
+  cycle after the fact and lists the patients to call. Sterilisers are set up per branch; the log is
+  branch-scoped. Not done: reading the autoclave's own data port, single-instrument tracking.
 - **Controlled-medicine register** for the Ethiopian Food and Drug Authority, built on the stock lots
   already tracked (`supply_batch`, `moveStock`, and the trace from a lot to its patients).
 - **Orthodontic cases:** progress over months, with instalment payment plans — orthodontics is
