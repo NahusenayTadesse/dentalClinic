@@ -3,19 +3,19 @@
 	"languages": {
 		"en": {
 			"title": "Attendance",
-			"summary": "Who was at work, over a period. This is what overtime and absence rest on.",
+			"summary": "Who came in and left today, kept by tapping — and every day a scheduled person did not come.",
 			"sections": [
 				{
-					"heading": "Entering it",
-					"body": "1. Pick the period. The date range is part of the address, so a screen you have open can be bookmarked or sent to a colleague and it opens on the same period.\n2. Mark the days for each person on the roster.\n3. Save.\n\nEveryone is on one roster for the period. Filter it by department or branch to take one team's attendance at a time."
+					"heading": "Keeping the register",
+					"body": "The register opens on today, grouped by department, with whoever has not come first.\n\n• **In** when someone arrives, **Out** when they leave. No typing: the clinic's clock is stamped (on an earlier day, their scheduled times).\n• **Everyone scheduled is in** marks everybody due today, with nothing recorded yet, in at their scheduled start — for a morning when everyone came. Correct anyone who was late afterwards.\n• **Times** corrects a time; **Undo** clears the day.\n• **Excused** records an absence with its reason — a sick note, a clinic errand. It is not deducted.\n\nUse the arrows or Today to keep an earlier day."
 				},
 				{
-					"heading": "Do it before payroll",
-					"body": "Payroll takes the figures as they stand at the moment it runs. Attendance entered afterwards is not in that month's payroll — it would have to go through a payroll adjustment instead.\n\nThe order that works: attendance, then overtime and deductions, then the payroll run."
+					"heading": "What counts as absent",
+					"body": "A day the person is scheduled to work (their schedule on the employee profile) with nothing recorded is an **absence**, and payroll deducts it — a thirtieth of the month's basic pay. Approved leave, a clinic closure and an excused day are not absences; neither is a day off.\n\nToday is 'Not in yet' until it is over. Days before the branch started keeping this register, and before someone was hired, are not counted.\n\nArriving late and leaving early are shown in minutes against the schedule, and never deducted."
 				},
 				{
-					"heading": "Where it shows up",
-					"body": "The Time & Leave report carries the attendance ledger for any range and any branch, filtered and exportable — that is the copy to print for a file."
+					"heading": "The month",
+					"body": "**Month** shows everyone down the side and every day of an Ethiopian month across: P present, A absent, E excused, L leave, C clinic closed. Red is what payroll will deduct. Click a day to open its register and correct it.\n\nThe unpaid salaries page lists anyone with unrecorded working days before you pay, so a forgotten tick is caught there. A day in a month already paid can no longer be changed."
 				}
 			],
 			"links": [
@@ -26,20 +26,20 @@
 			]
 		},
 		"am": {
-			"title": "የመገኘት መዝገብ",
-			"summary": "በተወሰነ ጊዜ ውስጥ ማን ሥራ ላይ እንደነበረ። ትርፍ ሰዓትና መቅረት የሚመሠረቱበት ይኸው ነው።",
+			"title": "መገኘት",
+			"summary": "ዛሬ ማን እንደገባና እንደወጣ፣ በመጫን ብቻ — እና ፕሮግራም ያለው ሰው ያልመጣባቸው ቀናት ሁሉ።",
 			"sections": [
 				{
-					"heading": "እንዴት እንደሚገባ",
-					"body": "1. ጊዜውን ይምረጡ። የቀን ክልሉ የአድራሻው አካል ነው፤ ስለዚህ የከፈቱትን ገጽ ማስቀመጥ ወይም ለባልደረባ መላክ ይችላሉ፤ በተመሳሳይ ጊዜ ላይ ይከፈታል።\n2. ለእያንዳንዱ ሠራተኛ ቀኖቹን ምልክት ያድርጉ።\n3. ያስቀምጡ።\n\nሁሉም ሠራተኞች ለጊዜው በአንድ ዝርዝር ላይ ናቸው። የአንድን ቡድን መገኘት በአንድ ጊዜ ለመያዝ በክፍል ወይም በቅርንጫፍ ያጣሩ።"
+					"heading": "መዝገቡን መያዝ",
+					"body": "መዝገቡ በዛሬው ቀን በክፍል ተከፋፍሎ ይከፈታል፤ ገና ያልመጡት በመጀመሪያ።\n\n• አንድ ሰው ሲደርስ **ገባ**፣ ሲወጣ **ወጣ** ይጫኑ። መጻፍ አያስፈልግም፤ የክሊኒኩ ሰዓት ይመዘገባል።\n• **ፕሮግራም ያላቸው ሁሉ ገብተዋል** ሁሉንም በፕሮግራማቸው መጀመሪያ ሰዓት ያስገባል።\n• **ሰዓት** ሰዓትን ያርማል፤ **መልስ** ቀኑን ያጠፋል።\n• **ፈቃድ ያለው** ቀሪነትን ከምክንያቱ ጋር ይመዘግባል፤ አይቀነስም።"
 				},
 				{
-					"heading": "ከደመወዝ በፊት ይሙሉት",
-					"body": "ደመወዝ የሚወስደው በሚሠራበት ወቅት ያሉትን አኃዞች ነው። ከዚያ በኋላ የገባ የመገኘት መዝገብ በዚያ ወር ደመወዝ ውስጥ አይካተትም — በደመወዝ ማስተካከያ በኩል መሄድ ይኖርበታል።\n\nየሚሠራው ቅደም ተከተል፦ መገኘት፣ ከዚያ ትርፍ ሰዓትና ተቀናሾች፣ ከዚያ ደመወዝ።"
+					"heading": "ቀሪ የሚባለው",
+					"body": "ሰውየው እንዲሠራ ፕሮግራም የተያዘለትና ምንም ያልተመዘገበበት ቀን **ቀሪ** ነው፤ ደመወዝ ይቀንሰዋል — የወሩ መሠረታዊ ደመወዝ አንድ ሠላሳኛ። የጸደቀ ፈቃድ፣ የክሊኒክ መዘጋትና በምክንያት የተፈቀደ ቀን ቀሪ አይደሉም።\n\nማርፈድና ቀድሞ መውጣት በደቂቃ ይታያሉ፤ አይቀነሱም።"
 				},
 				{
-					"heading": "የት እንደሚታይ",
-					"body": "የጊዜና ፈቃድ ሪፖርት የመገኘትን መዝገብ ለማንኛውም የጊዜ ክልልና ቅርንጫፍ ተጣርቶና ወደ ውጭ ሊወጣ በሚችል መልኩ ይይዛል — ለመዝገብ የሚታተመው ያ ነው።"
+					"heading": "ወሩ",
+					"body": "**ወር** ሁሉንም ሰው በአንድ የኢትዮጵያ ወር ቀናት ያሳያል፦ P ተገኝቷል፣ A ቀሪ፣ E ተፈቅዷል፣ L ፈቃድ፣ C ክሊኒኩ ተዘግቷል። ቀይ ደመወዝ የሚቀንሰው ነው። ቀኑን ለማረም ይጫኑት።"
 				}
 			],
 			"links": [

@@ -44,7 +44,8 @@ const HELP_FAMILY = new Set([
 	'/dashboard/admin-panel/users/add-users',
 	'/dashboard/approvals/[entity]',
 	'/dashboard/customers/[id]',
-	'/dashboard/employees/attendance/[range]',
+	// The register's month grid, covered by the register's own `attendance.json`.
+	'/dashboard/employees/attendance/month',
 	'/dashboard/employees/leaves/approved',
 	'/dashboard/employees/leaves/cancelled',
 	'/dashboard/employees/leaves/pending',

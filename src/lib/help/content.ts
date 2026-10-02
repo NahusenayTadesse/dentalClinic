@@ -856,20 +856,35 @@ export const HELP_SECTIONS: HelpSection[] = [
 				id: 'attendance',
 				title: 'Attendance',
 				summary:
-					'Attendance is taken per period, for everyone on one roster, and is what overtime and absence deductions rest on.',
+					'A register of who came in and left each day. A scheduled working day with nothing recorded is an absence, and payroll deducts it.',
 				where:
-					'The **Attendance** tab at the top of the Employees screens, or `/dashboard/employees/attendance`',
+					'The **Attendance** tab at the top of the Employees screens → `/dashboard/employees/attendance`, and **Month** for the grid',
 				permission: 'attendance.manage',
 				steps: [
-					'Open the attendance screen and pick the period. Filter by department or branch to take one team at a time.',
-					'Mark the days for each person on the roster.',
-					'Save. The figures feed the compensation and time reports, and the overtime you enter for the same period.'
+					'Open the register. It shows today, grouped by department, with whoever has not come first.',
+					'Press **In** as each person arrives and **Out** as they leave. The clinic’s clock is stamped; nothing is typed.',
+					'On a morning when everyone came, **Everyone scheduled is in** marks them all in at their scheduled start. Correct anyone who was late with **Times**.',
+					'For someone away with a reason, press **Excused** and say why. That day is not deducted.',
+					'Open **Month** to see every day of the month for everyone, absences in red.'
 				],
 				notes: [
-					'Attendance is entered against a **date range**, and the URL carries the range — so an attendance screen you have open can be bookmarked or sent to a colleague and it opens on the same period.',
-					'Enter attendance before you run payroll for the month, not after. Payroll takes the figures as they stand at the moment it runs.'
+					'**Absent means scheduled and not recorded.** The schedule is on each employee’s profile. Approved leave, clinic closures, excused days and days off are not absences.',
+					'An absence is deducted as a thirtieth of the month’s basic pay. Lateness and leaving early are shown in minutes, and not deducted.',
+					'Today reads “Not in yet” until it is over. Days before the branch started keeping the register, and before someone was hired, are not counted — so starting to use it does not turn the past into absences.',
+					'Before paying a month, the unpaid salaries page lists anyone with working days still unrecorded. A day in a month already paid cannot be changed.',
+					'Every change is on the audit trail.'
 				],
-				keywords: ['attendance', 'present', 'absent', 'timesheet', 'roster', 'days', 'range']
+				keywords: [
+					'attendance',
+					'present',
+					'absent',
+					'clock in',
+					'clock out',
+					'late',
+					'register',
+					'timesheet',
+					'excused'
+				]
 			},
 			{
 				id: 'leave-basics',
@@ -2162,9 +2177,16 @@ export const ROUTE_MAP: RouteEntry[] = [
 		group: 'Employees'
 	},
 	{
-		path: '/dashboard/employees/attendance/[range]',
-		title: 'Attendance',
-		purpose: 'Attendance across the workforce for a period.',
+		path: '/dashboard/employees/attendance',
+		title: 'Attendance register',
+		purpose: 'The day’s register: who came in and left, kept by tapping; absences excused.',
+		permission: 'attendance.manage',
+		group: 'Employees'
+	},
+	{
+		path: '/dashboard/employees/attendance/month',
+		title: 'Attendance month',
+		purpose: 'Everyone’s days across an Ethiopian month, with the absences payroll will deduct.',
 		permission: 'attendance.manage',
 		group: 'Employees'
 	},
