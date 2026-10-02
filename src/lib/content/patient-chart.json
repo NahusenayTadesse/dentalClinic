@@ -22,6 +22,10 @@
 					"body": "The Gums tab charts pocket depths, recession, bleeding, plaque, mobility and furcation at six sites on every adult tooth, and compares each exam with the one before.\n\nChart the gums starts an exam; teeth the dental chart shows as extracted or missing start crossed out — click a tooth number to change that. Type each pocket in millimetres: Enter moves along the row, and with \"Move on after each number\" ticked one digit does (untick it to type 10 or more). In a pocket box, b marks bleeding and p plaque at that site; or click the dots. Recession is the gum margin below the enamel junction, negative when the gum is swollen above it.\n\nSave as often as you like. Finish exam when it is complete: a finished exam cannot be changed, and becomes the one the next exam is compared with. Under each pocket the last exam's depth is shown small, and a site that has lost 2 mm or more of attachment (pocket plus recession) since then is outlined in red. Pockets of 4 mm and over are amber, 6 mm and over red.\n\nOnly one exam can be open at a time. Charting needs \"Change a patient's allergies, conditions, medicines and medical history\"; anyone who can open the chart can read it."
 				},
 				{
+					"heading": "Orthodontics",
+					"body": "The Ortho tab holds each course of braces, aligners or a removable appliance. Start a case with the appliance, the orthodontist, the start day, how many months it should take, the whole fee, the deposit and how many monthly instalments pay the rest — the plan is shown as you type, and fixed once saved.\n\nOn the case, Record a visit after each adjustment: what was done (\"upper 0.016 NiTi\") and in how many weeks the patient is due back. Bill what is due turns every instalment that has fallen due into an issued bill — take the payment on the Billing tab as for any bill. Braces off moves the case to retention; Finish or Discontinue closes it. Discontinuing cancels the instalments not yet billed; billed ones are still owed.\n\nRecording visits needs patients.clinical; billing needs billing.invoice."
+				},
+				{
 					"heading": "Treatment plans",
 					"body": "The Treatment plans tab quotes the work charted as planned. New plan starts a draft from the work you tick; change wording or prices while it is a draft, then Present to patient. A presented quote can still be corrected — a discount, a re-priced or removed line — but each change asks why and is kept for good under Changes since it was presented, beside what the quote first came to.\n\nWhen the patient answers, mark Yes or No on every line and say why for any No — the plan becomes Accepted, Partly accepted or Declined from the lines. Past its stands-until date an unanswered quote is Expired and its work can go on a new plan. Print quote gives the patient a copy; printing is recorded in the access log.\n\nDrawing up, presenting and answering plans needs treatment_plans.manage."
 				},
@@ -96,6 +100,10 @@
 				{
 					"heading": "የድድ ቻርት",
 					"body": "\"ድድ\" ትሩ በእያንዳንዱ የአዋቂ ጥርስ ስድስት ቦታዎች ላይ የኪሱን ጥልቀት፣ የድድ መሸሽን፣ ደም መፍሰስን፣ ፕላክን፣ መነቃነቅንና ፉርኬሽንን ይመዘግባል፤ እያንዳንዱን ምርመራ ከቀደመው ጋር ያነጻጽራል።\n\nChart the gums አዲስ ምርመራ ይጀምራል፤ በጥርስ ቻርቱ ላይ የተነቀሉ ወይም የሌሉ ጥርሶች ተሰርዘው ይጀምራሉ — ለመቀየር የጥርሱን ቁጥር ይጫኑ። እያንዳንዱን ኪስ በሚሊሜትር ይጻፉ፦ Enter በረድፉ ወደ ቀጣዩ ያልፋል፤ \"Move on after each number\" ምልክት ከተደረገበት አንድ አሃዝ ብቻ ያሳልፋል (10 እና ከዚያ በላይ ለመጻፍ ምልክቱን ያንሱ)። በኪስ ሳጥን ውስጥ b ደም መፍሰስን፣ p ፕላክን ያመለክታል።\n\nየፈለጉትን ያህል ጊዜ ያስቀምጡ። ሲጨርሱ Finish exam ይጫኑ፦ የተጠናቀቀ ምርመራ አይቀየርም፣ ቀጣዩም ከእሱ ጋር ይነጻጸራል። ከእያንዳንዱ ኪስ በታች ያለፈው ምርመራ ጥልቀት በትንሹ ይታያል፤ ከዚያ ወዲህ 2 ሚሜ ወይም ከዚያ በላይ የተባባሰ ቦታ በቀይ ይከበባል። 4 ሚሜና ከዚያ በላይ ኪሶች ብርቱካናማ፣ 6 ሚሜና ከዚያ በላይ ቀይ ናቸው።\n\nበአንድ ጊዜ አንድ ምርመራ ብቻ ክፍት ሊሆን ይችላል። ለመመዝገብ የታካሚውን የሕክምና ታሪክ የመቀየር ፈቃድ ያስፈልጋል።"
+				},
+				{
+					"heading": "ኦርቶዶንቲክስ",
+					"body": "\"ኦርቶ\" ትሩ እያንዳንዱን የብሬስ፣ የአላይነር ወይም ተነቃይ መሣሪያ ሕክምና ይይዛል። ኬዝ ሲጀምሩ መሣሪያውን፣ ሐኪሙን፣ የመጀመሪያ ቀኑን፣ ስንት ወር እንደሚፈጅ፣ ሙሉ ክፍያውን፣ ቅድመ ክፍያውን እና ቀሪው በስንት ወርሃዊ ክፍያ እንደሚከፈል ይጻፉ — ዕቅዱ ሲጽፉ ይታያል፣ ሲቀመጥም ይጸናል።\n\nበኬዙ ላይ ከእያንዳንዱ ማስተካከያ በኋላ Record a visit ይጫኑ። Bill what is due ጊዜው የደረሰውን እያንዳንዱን ክፍያ ወደ ደረሰኝ ይቀይራል — ክፍያውን በBilling ትር ይቀበሉ። Braces off ወደ ማቆያ ያሸጋግራል፤ Finish ወይም Discontinue ይዘጋዋል። ማቋረጥ ገና ያልተቆረጡ ክፍያዎችን ይሰርዛል።"
 				},
 				{
 					"heading": "የሕክምና ዕቅዶች",

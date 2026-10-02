@@ -162,6 +162,7 @@ export const patients = {
 			overview: 'Overview',
 			chart: 'Dental chart',
 			perio: 'Gums',
+			ortho: 'Ortho',
 			plans: 'Treatment plans',
 			notes: 'Notes',
 			prescriptions: 'Prescriptions',

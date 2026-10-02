@@ -129,6 +129,16 @@ export const routeRules: RouteRule[] = [
 	},
 
 	/*
+	 * The orthodontic board: cases being seen, who is due back, whose instalments are due. It names
+	 * patients, so it is the chart's own `patients.view`; billing and charting are checked on each
+	 * case's actions.
+	 */
+	{
+		prefix: '/dashboard/orthodontics',
+		permission: 'patients.view'
+	},
+
+	/*
 	 * Treatment plans: the follow-up list of quotes awaiting an answer, and — checked in each action
 	 * on the patient's plans tab, which sits under `/dashboard/patients` — drawing up a plan,
 	 * presenting it and recording the answer. Reading a patient's plans is the chart's own

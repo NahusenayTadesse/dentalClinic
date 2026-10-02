@@ -20,7 +20,8 @@ export const VIEWED_RECORD_LABEL: Record<string, string> = {
 	invoice: 'Billing',
 	consent: 'Consents',
 	labCase: 'Lab work',
-	perio: 'Periodontal chart'
+	perio: 'Periodontal chart',
+	ortho: 'Orthodontics'
 };
 
 /** What was done: opened on screen, or printed — paper that has left the building. */
@@ -40,7 +41,8 @@ const VIEWED_RECORD_LABEL_AM: Record<string, string> = {
 	invoice: 'ክፍያ',
 	consent: 'ስምምነቶች',
 	labCase: 'የላብራቶሪ ሥራ',
-	perio: 'የድድ ገበታ'
+	perio: 'የድድ ገበታ',
+	ortho: 'ኦርቶዶንቲክስ'
 };
 
 /** "Opened Dental chart", "Printed Billing" — or, in Amharic, "የጥርስ ገበታ ተከፍቷል". */

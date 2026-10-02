@@ -144,6 +144,7 @@ export const patients: typeof en = {
 			overview: 'አጠቃላይ እይታ',
 			chart: 'የጥርስ ገበታ',
 			perio: 'ድድ',
+			ortho: 'ኦርቶ',
 			plans: 'የሕክምና ዕቅዶች',
 			notes: 'ማስታወሻዎች',
 			prescriptions: 'የመድኃኒት ማዘዣዎች',

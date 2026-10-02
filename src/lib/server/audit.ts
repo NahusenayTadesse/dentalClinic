@@ -54,6 +54,10 @@ export type AuditedTable =
 	// infection control: a cycle's result, and which pack was opened for which patient
 	| 'sterilisation_cycle'
 	| 'pack_use'
+	// an orthodontic case: its plan, its visits, and each instalment billed
+	| 'ortho_case'
+	| 'ortho_visit'
+	| 'ortho_instalment'
 	| 'appointment'
 	// money
 	| 'invoice'

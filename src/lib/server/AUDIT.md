@@ -86,7 +86,8 @@ compile error rather than a silent omission.
   `patient_file`
 - the clinical record: `clinical_note`, `procedures`, `prescription`, `prescription_item`,
   `treatment_plan`, `treatment_plan_item`, `lab_case`, `perio_exam`, `appointment`,
-  `sterilisation_cycle` and `pack_use` (which instruments touched which patient)
+  `sterilisation_cycle` and `pack_use` (which instruments touched which patient), `ortho_case`,
+  `ortho_visit` and `ortho_instalment` (an orthodontic plan and its billing)
 - money: `invoice`, `invoice_line`, `invoice_payment`, `transactions`, `expenses`, `cash_session`,
   `payer_authorisation` (a payer's promise to pay for treatment),
   the pay adjustments `over_time`, `bonuses`, `deductions` and `attendance` — each changes what

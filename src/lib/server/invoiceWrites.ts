@@ -88,13 +88,27 @@ async function writeWorkLines(
 /**
  * Starts a draft bill from completed work — typically one visit's. The visit and dentist are
  * taken from the work when it all shares one, so "has this visit been billed" has an answer.
+ *
+ * `charges` are lines that are not charted work, for a bill raised by something other than the
+ * billing tab — an orthodontic instalment falling due. A bill needs work or a charge.
  */
 export async function createInvoice(
 	tx: Tx,
 	event: AuditRequest,
-	input: { patientId: number; procedureIds: number[]; branchId: number | null }
+	input: {
+		patientId: number;
+		procedureIds: number[];
+		branchId: number | null;
+		charges?: { description: string; quantity: number; unitPrice: number }[];
+		providerId?: number | null;
+	}
 ): Promise<number> {
-	refuseUnless(input.procedureIds.length > 0, billingRefusals(event).chooseWork, 'procedureIds');
+	const charges = input.charges ?? [];
+	refuseUnless(
+		input.procedureIds.length > 0 || charges.length > 0,
+		billingRefusals(event).chooseWork,
+		'procedureIds'
+	);
 	// Billed to whoever pays for this patient — their employer or insurer — unless changed on the draft.
 	const [person] = await tx
 		.select({ payer: patient.customerId })
@@ -115,6 +129,17 @@ export async function createInvoice(
 		createdBy: event.locals.user?.id
 	});
 	await recordAudit(tx, event, { table: 'invoice', recordId: invoiceId, action: 'create' });
+
+	for (const charge of charges) await addCharge(tx, event, input.patientId, invoiceId, charge);
+	if (!input.procedureIds.length) {
+		if (input.providerId) {
+			await tx
+				.update(invoice)
+				.set({ providerId: input.providerId })
+				.where(eq(invoice.id, invoiceId));
+		}
+		return invoiceId;
+	}
 
 	const work = await writeWorkLines(tx, event, input.patientId, invoiceId, input.procedureIds);
 	const visits = [...new Set(work.map((w) => w.appointmentId))];

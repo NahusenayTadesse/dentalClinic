@@ -1,0 +1,33 @@
+{
+	"path": "/dashboard/orthodontics",
+	"languages": {
+		"en": {
+			"title": "Orthodontic cases",
+			"summary": "Every orthodontic case still being seen at this branch: who is due back, and whose payments are due to bill or overdue.",
+			"sections": [
+				{
+					"heading": "The day's list",
+					"body": "Filter Payments on Due to bill to see whose monthly instalments have fallen due; open each and press Bill what is due. Filter on Overdue for patients to call about a bill. Due back is the last visit plus the weeks it said."
+				},
+				{
+					"heading": "Starting a case",
+					"body": "Cases are started on the patient's Ortho tab, which holds the appliance, the visits and the payment plan."
+				}
+			]
+		},
+		"am": {
+			"title": "የኦርቶዶንቲክ ኬዞች",
+			"summary": "በዚህ ቅርንጫፍ አሁንም የሚታዩ የኦርቶዶንቲክ ኬዞች፦ ማን መመለስ እንዳለበት፣ የማን ክፍያ መቆረጥ ወይም ያለፈበት እንደሆነ።",
+			"sections": [
+				{
+					"heading": "የዕለቱ ዝርዝር",
+					"body": "Payments ን Due to bill ብለው ያጣሩ፤ እያንዳንዱን ከፍተው Bill what is due ይጫኑ። Overdue ለመደወል የሚገባቸውን ታካሚዎች ያሳያል።"
+				},
+				{
+					"heading": "ኬዝ መጀመር",
+					"body": "ኬዞች በታካሚው ኦርቶ ትር ላይ ይጀመራሉ።"
+				}
+			]
+		}
+	}
+}

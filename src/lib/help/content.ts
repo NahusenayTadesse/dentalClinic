@@ -648,6 +648,36 @@ export const HELP_SECTIONS: HelpSection[] = [
 				]
 			},
 			{
+				id: 'orthodontics',
+				title: 'Orthodontics: braces paid by the month',
+				summary:
+					'A course of braces or aligners as one case: the appliance, the adjustment visits, and a payment plan of a deposit and monthly instalments billed as they fall due.',
+				where: 'A patient’s **Ortho** tab; Menu → **Appointments → Orthodontics** for every case',
+				permission: 'patients.clinical to start a case and record visits; billing.invoice to bill',
+				steps: [
+					'On the patient’s **Ortho** tab, **Start a case**: the appliance, the orthodontist, the start day, the planned months, the whole fee, the deposit and the number of monthly instalments. The plan is shown before you save.',
+					'After each adjustment, open the case and **Record a visit**: what was done, and in how many weeks the patient is due back.',
+					'Each month, filter **Orthodontics** on **Due to bill**, open each case and press **Bill what is due**. Every instalment due becomes an issued bill; take the payment on the patient’s **Billing** tab.',
+					'When the braces come off, **Braces off — retention**; when retention ends, **Finish the case**.'
+				],
+				notes: [
+					'The deposit is due on the start day; the instalments monthly from a month later. Cents left over go on the last.',
+					'The plan is fixed once saved. A changed fee is written in the notes, or the case is discontinued and a new one started, so what was agreed stays on record.',
+					'Discontinuing cancels the instalments not yet billed. Bills already raised are still owed, and only a manager can void one.',
+					'A patient paid for by an employer or insurer has their instalments billed to the payer, like any other bill.'
+				],
+				keywords: [
+					'orthodontics',
+					'braces',
+					'aligners',
+					'instalment',
+					'installment',
+					'monthly',
+					'deposit',
+					'payment plan'
+				]
+			},
+			{
 				id: 'radiographs',
 				title: 'Radiographs: from the machine to the chart',
 				summary:
@@ -2389,6 +2419,27 @@ export const ROUTE_MAP: RouteEntry[] = [
 			'The health questions on paper for the patient to answer and sign, with what is on record.',
 		permission: 'patients.view',
 		group: 'Patients'
+	},
+	{
+		path: '/dashboard/patients/[id]/ortho',
+		title: 'Orthodontics',
+		purpose: 'The patient’s orthodontic cases: appliance, progress and payment plan.',
+		permission: 'patients.view (patients.clinical to start one)',
+		group: 'Patients'
+	},
+	{
+		path: '/dashboard/patients/[id]/ortho/[caseId]',
+		title: 'Orthodontic case',
+		purpose: 'One case’s adjustment visits and instalments, and billing what has fallen due.',
+		permission: 'patients.view (patients.clinical for visits; billing.invoice to bill)',
+		group: 'Patients'
+	},
+	{
+		path: '/dashboard/orthodontics',
+		title: 'Orthodontic cases',
+		purpose: 'Every case being seen at the branch: who is due back, and whose payments are due.',
+		permission: 'patients.view',
+		group: 'Appointments'
 	},
 	{
 		path: '/dashboard/patients/[id]/perio',

@@ -63,6 +63,7 @@ import Pill from '@lucide/svelte/icons/pill';
 import Plus from '@lucide/svelte/icons/plus';
 import ScanLine from '@lucide/svelte/icons/scan-line';
 import ScrollText from '@lucide/svelte/icons/scroll-text';
+import Smile from '@lucide/svelte/icons/smile';
 import ShieldAlert from '@lucide/svelte/icons/shield-alert';
 import Sheet from '@lucide/svelte/icons/sheet';
 import SquareChartGantt from '@lucide/svelte/icons/square-chart-gantt';
@@ -140,6 +141,7 @@ export const NAVIGATION: NavItem[] = [
 			{ title: 'Reminders', url: '/dashboard/appointments/reminders', icon: Phone },
 			{ title: 'Recalls', url: '/dashboard/recalls', icon: BellRing },
 			{ title: 'Lab Work', url: '/dashboard/lab-cases', icon: FlaskConical },
+			{ title: 'Orthodontics', url: '/dashboard/orthodontics', icon: Smile },
 			{ title: 'Sterilisation', url: '/dashboard/sterilisation', icon: ShieldCheck },
 			{ title: 'Dentists', url: '/dashboard/providers', icon: Stethoscope }
 		]

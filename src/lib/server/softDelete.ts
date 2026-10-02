@@ -5,6 +5,7 @@ import { returnToBatch } from './stock';
 import {
 	address,
 	appointmentTypeServices,
+	orthoInstalment,
 	smsProvider,
 	customers,
 	damagedSupplies,
@@ -615,6 +616,24 @@ export async function softDeleteVisitTypeServices(tx: Tx, linkIds: number[], use
 		.update(appointmentTypeServices)
 		.set(deletionStamp(userId))
 		.where(and(inArray(appointmentTypeServices.id, linkIds), notDeleted(appointmentTypeServices)));
+}
+
+/**
+ * Cancels orthodontic instalments not yet billed, when a case is discontinued. A billed one is never
+ * cancelled here: its bill is what is owed, and only a void through a manager takes that away.
+ */
+export async function softDeleteOrthoInstalments(tx: Tx, ids: number[], userId?: string) {
+	if (ids.length === 0) return;
+	await tx
+		.update(orthoInstalment)
+		.set(deletionStamp(userId))
+		.where(
+			and(
+				inArray(orthoInstalment.id, ids),
+				isNull(orthoInstalment.invoiceId),
+				notDeleted(orthoInstalment)
+			)
+		);
 }
 
 /**

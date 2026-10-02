@@ -45,6 +45,7 @@ import { seedTreatmentPlans } from './seed/plans';
 import { seedPerio } from './seed/perio';
 import { seedSterilisation } from './seed/sterilisation';
 import { seedControlled } from './seed/controlled';
+import { seedOrtho } from './seed/ortho';
 import {
 	seedDamagedStock,
 	seedExpenses,
@@ -246,6 +247,7 @@ async function rest() {
 	await seedTreatmentPlans(db);
 	await seedPerio(db);
 	await seedSterilisation(db);
+	await seedOrtho(db);
 
 	await seedPayrollInputs(db);
 	await seedExpenses(db);

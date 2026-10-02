@@ -205,8 +205,13 @@ Credit income keeps many clinics running, so this matters more than it looks.
   every line with its lot, supplier or patient, who recorded it, and the running balance — checks
   the balance against the shelf, and prints the monthly return for signature. Not done: the
   authority's electronic submission (none is published for clinics).
-- **Orthodontic cases:** progress over months, with instalment payment plans — orthodontics is
-  usually paid monthly.
+- ✅ **Orthodontic cases — done.** An Ortho tab on the chart: the appliance, the planned months
+  and a progress bar, adjustment visits with when the patient is due back, and a payment plan of a
+  deposit and monthly instalments fixed when the case opens. **Bill what is due** turns each
+  instalment that has fallen due into an ordinary issued bill, paid on the Billing tab.
+  Retention, finish and discontinue (which cancels unbilled instalments). **Appointments →
+  Orthodontics** is the front desk's board: who is due back, whose payments are due to bill or
+  overdue. Not done: billing on a timer (deliberately a person's step), changing a plan midway.
 
 ---
 
