@@ -211,8 +211,8 @@ export const SECTIONS: SectionMeta[] = [
 		key: 'attendance',
 		label: 'Attendance',
 		group: 'Time & Leave',
-		description: 'Every absence logged inside the range.',
-		filterKeys: ['employee', 'department', 'branch', 'deductable', 'approval']
+		description: 'Absences, excused days and late arrivals inside the range, from the register.',
+		filterKeys: ['employee', 'department', 'branch', 'status']
 	},
 	{
 		key: 'leaves',

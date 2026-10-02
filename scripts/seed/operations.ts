@@ -10,15 +10,16 @@
  * would put figures on screen that nothing produced — run payroll in the app instead.
  */
 import { and, eq, inArray, isNull } from 'drizzle-orm';
+import { attendance } from '../../src/lib/server/db/schema/attendance';
 
 import {
 	bonuses,
 	deductions,
 	employee,
 	employeeTermination,
-	missingDays,
 	overTime,
-	overTimeType
+	overTimeType,
+	staffSchedule
 } from '../../src/lib/server/db/schema/staff';
 import { expenses, expensesType, transactions } from '../../src/lib/server/db/schema/finance';
 import { customers, customerContacts } from '../../src/lib/server/db/schema/customers';
@@ -80,20 +81,9 @@ export async function seedPayrollInputs(db: SeedDb) {
 				date: localDate(-between(1, 60)) as never
 			});
 		}
-
-		if (chance(0.2)) {
-			await db.insert(missingDays).values({
-				staffId: person.id,
-				day: localDate(-between(1, 60)) as never,
-				reason: pick(['Unreported absence', 'Left early', 'Late without notice']),
-				deductable: chance(0.6),
-				deductableAmount: money(between(50, 300)),
-				approval: pick(['pending', 'approved'])
-			});
-		}
 	}
 
-	console.log('Seeded bonuses, deductions, overtime, absences and penalty types.');
+	console.log('Seeded bonuses, deductions, overtime and penalty types.');
 }
 
 /** What the clinic spends, each expense paired with the transaction that paid it. */
@@ -234,6 +224,72 @@ export async function seedLabCases(db: SeedDb) {
 	}
 
 	console.log(`Seeded ${prosthetic.length} lab cases.`);
+}
+
+/**
+ * Three weeks of the attendance register, so the register, the month grid and payroll's absence
+ * deduction all have something real to show: everyone in at about their scheduled start and out at
+ * about its end, some late, a few excused — and a few working days with nothing recorded, which is
+ * what an absence is (`$lib/attendance.ts`). Today is left for the desk to tick.
+ */
+export async function seedAttendance(db: SeedDb) {
+	if (!(await isEmpty(db, attendance, 'attendance'))) return;
+
+	const staff = await db
+		.select({ id: employee.id, branchId: employee.branchId })
+		.from(employee)
+		.where(and(eq(employee.isActive, true), isNull(employee.deletedAt)));
+	const schedules = await db
+		.select({
+			staffId: staffSchedule.staffId,
+			weekDay: staffSchedule.weekDay,
+			start: staffSchedule.startTime,
+			end: staffSchedule.endTime
+		})
+		.from(staffSchedule)
+		.where(isNull(staffSchedule.deletedAt));
+	if (!staff.length || !schedules.length) return;
+
+	const { chance, between } = randomness(20261003);
+	const shift = (clock: string, minutes: number) => {
+		const [h, m] = clock.split(':').map(Number);
+		const total = Math.max(0, Math.min(23 * 60 + 59, h * 60 + m + minutes));
+		return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+	};
+
+	let rows = 0;
+	for (let back = 21; back >= 1; back--) {
+		const day = localDate(-back);
+		// Monday-first, as `staff_schedule.week_day` is.
+		const weekDay = (new Date(`${day}T00:00:00Z`).getUTCDay() + 6) % 7;
+		for (const person of staff) {
+			const shiftOf = schedules.find((s) => s.staffId === person.id && s.weekDay === weekDay);
+			if (!shiftOf) continue;
+			if (chance(0.03)) continue; // nothing recorded: an absence
+			if (chance(0.02)) {
+				await db.insert(attendance).values({
+					staffId: person.id,
+					branchId: person.branchId,
+					day,
+					status: 'excused',
+					note: chance(0.5) ? 'Sick note' : 'Clinic errand'
+				});
+				rows++;
+				continue;
+			}
+			const late = chance(0.15) ? between(5, 45) : -between(0, 10);
+			await db.insert(attendance).values({
+				staffId: person.id,
+				branchId: person.branchId,
+				day,
+				status: 'present',
+				clockIn: shift(String(shiftOf.start), late),
+				clockOut: shift(String(shiftOf.end), chance(0.08) ? -between(15, 60) : between(0, 20))
+			});
+			rows++;
+		}
+	}
+	console.log(`Seeded ${rows} days of attendance.`);
 }
 
 /** Stock written off, which is what the damaged-supplies screen lists. */

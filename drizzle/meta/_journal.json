@@ -316,6 +316,20 @@
       "when": 1790929597098,
       "tag": "0044_access_log_lab_case",
       "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "5",
+      "when": 1790938130387,
+      "tag": "0045_attendance_register",
+      "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "5",
+      "when": 1790938798637,
+      "tag": "0046_drop_missing_days",
+      "breakpoints": true
     }
   ]
 }

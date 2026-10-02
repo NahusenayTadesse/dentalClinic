@@ -1,13 +1,8 @@
-import { count, countDistinct, desc, eq, sql } from 'drizzle-orm';
+import { count, countDistinct, eq, sql } from 'drizzle-orm';
 import { db } from '$lib/server/db';
-import {
-	department,
-	employee,
-	employeeLeaveGrant,
-	leave,
-	leaveType,
-	missingDays
-} from '$lib/server/db/schema';
+import { employee, employeeLeaveGrant, leave, leaveType } from '$lib/server/db/schema';
+import { register } from '$lib/server/attendance';
+import { hoursAndMinutes } from '$lib/attendance';
 import { notDeleted } from '$lib/server/softDelete';
 import type { ReportFilters } from '../filters';
 import type { ReportChartData, Stat } from '../types';
@@ -19,7 +14,6 @@ import {
 	monthKeys,
 	monthOf,
 	n,
-	staffName,
 	staffScope,
 	topN,
 	total
@@ -28,20 +22,16 @@ import {
 /**
  * The time employees did not work: absence, leave requested, and the annual
  * leave they have banked, spent or let expire.
+ *
+ * Absence is the attendance register's (`server/attendance.ts`): a scheduled working day with
+ * nothing recorded, decided by the same rule payroll deducts by. It was a count of `missing_days`
+ * rows, typed in one by one, with an approval and a "deductable" flag payroll never read.
  */
 export async function timeStats(
 	filters: ReportFilters
 ): Promise<{ stats: Stat[]; charts: ReportChartData[] }> {
 	const scope = staffScope(filters);
 	const keys = monthKeys(filters);
-
-	const attendanceWhere = all([
-		notDeleted(missingDays),
-		notDeleted(employee),
-		inRange(missingDays.day, filters),
-		filters.approvalStatus ? sql`${missingDays.approval} = ${filters.approvalStatus}` : undefined,
-		...scope
-	]);
 
 	const leaveWhere = all([
 		notDeleted(leave),
@@ -56,145 +46,124 @@ export async function timeStats(
 	// calendar span between the dates would round every half back up to a whole.
 	const leaveDays = sql<string>`COALESCE(SUM(${leave.days}), 0)`;
 
-	const [
-		[attendanceTotals],
-		[leaveTotals],
-		[grantTotals],
-		attendanceByMonth,
-		leaveByMonth,
-		leaveByType,
-		leaveByStatus,
-		attendanceByDepartment,
-		absenceLeaders
-	] = await Promise.all([
-		db
-			.select({
-				total: count(),
-				staff: countDistinct(missingDays.staffId),
-				deductable: countWhen(sql`${missingDays.deductable} = true`),
-				amount: total(missingDays.deductableAmount),
-				approved: countWhen(sql`${missingDays.approval} = 'approved'`),
-				pending: countWhen(sql`${missingDays.approval} = 'pending'`),
-				rejected: countWhen(sql`${missingDays.approval} = 'rejected'`)
-			})
-			.from(missingDays)
-			.innerJoin(employee, eq(missingDays.staffId, employee.id))
-			.where(attendanceWhere),
+	/*
+	 * The register for everyone the report's scope covers. Decided in memory: a year of a clinic's
+	 * staff is tens of thousands of days, each a few comparisons.
+	 */
+	const people = await db
+		.select({ id: employee.id })
+		.from(employee)
+		.where(all([notDeleted(employee), ...scope]));
+	const days = await register(filters.dateStart, filters.dateEnd, {
+		staffIds: people.map((p) => p.id)
+	});
+	const flat = days.flatMap((row) => Object.entries(row.days).map(([day, d]) => ({ row, day, d })));
+	const absences = flat.filter((x) => x.d.kind === 'absent');
+	const excused = flat.filter((x) => x.d.kind === 'excused').length;
+	const lateDays = flat.filter((x) => x.d.late > 0);
+	const lateMinutes = lateDays.reduce((sum, x) => sum + x.d.late, 0);
+	const tally = (items: typeof flat, label: (x: (typeof flat)[number]) => string) => {
+		const counts = new Map<string, number>();
+		for (const x of items) counts.set(label(x), (counts.get(label(x)) ?? 0) + 1);
+		return [...counts].map(([key, value]) => ({ label: key, value }));
+	};
+	const attendanceByMonth = tally(absences, (x) => x.day.slice(0, 7)).map((r) => ({
+		bucket: r.label,
+		value: r.value,
+		late: lateDays.filter((x) => x.day.startsWith(r.label)).length
+	}));
+	for (const month of new Set(lateDays.map((x) => x.day.slice(0, 7)))) {
+		if (!attendanceByMonth.some((r) => r.bucket === month)) {
+			attendanceByMonth.push({
+				bucket: month,
+				value: 0,
+				late: lateDays.filter((x) => x.day.startsWith(month)).length
+			});
+		}
+	}
+	const attendanceByDepartment = tally(absences, (x) => x.row.department ?? 'No department');
+	const absenceLeaders = tally(absences, (x) => x.row.name)
+		.sort((a, b) => b.value - a.value)
+		.slice(0, 12);
 
-		db
-			.select({
-				total: count(),
-				days: leaveDays,
-				staff: countDistinct(leave.staffId),
-				approved: countWhen(sql`${leave.status} = 'approved'`),
-				pending: countWhen(sql`${leave.status} = 'pending'`),
-				rejected: countWhen(sql`${leave.status} = 'rejected'`)
-			})
-			.from(leave)
-			.innerJoin(employee, eq(leave.staffId, employee.id))
-			.where(leaveWhere),
+	const [[leaveTotals], [grantTotals], leaveByMonth, leaveByType, leaveByStatus] =
+		await Promise.all([
+			db
+				.select({
+					total: count(),
+					days: leaveDays,
+					staff: countDistinct(leave.staffId),
+					approved: countWhen(sql`${leave.status} = 'approved'`),
+					pending: countWhen(sql`${leave.status} = 'pending'`),
+					rejected: countWhen(sql`${leave.status} = 'rejected'`)
+				})
+				.from(leave)
+				.innerJoin(employee, eq(leave.staffId, employee.id))
+				.where(leaveWhere),
 
-		db
-			.select({
-				grants: count(),
-				granted: total(employeeLeaveGrant.daysGranted),
-				used: total(employeeLeaveGrant.daysUsed),
-				expired: countWhen(sql`${employeeLeaveGrant.status} = 'expired'`),
-				expiredDays: sql<string>`COALESCE(SUM(CASE WHEN ${employeeLeaveGrant.status} = 'expired'
+			db
+				.select({
+					grants: count(),
+					granted: total(employeeLeaveGrant.daysGranted),
+					used: total(employeeLeaveGrant.daysUsed),
+					expired: countWhen(sql`${employeeLeaveGrant.status} = 'expired'`),
+					expiredDays: sql<string>`COALESCE(SUM(CASE WHEN ${employeeLeaveGrant.status} = 'expired'
 					THEN ${employeeLeaveGrant.daysGranted} - ${employeeLeaveGrant.daysUsed} ELSE 0 END), 0)`
-			})
-			.from(employeeLeaveGrant)
-			.innerJoin(employee, eq(employeeLeaveGrant.staffId, employee.id))
-			.where(
-				all([
-					notDeleted(employeeLeaveGrant),
-					notDeleted(employee),
-					inRange(employeeLeaveGrant.grantDate, filters),
-					...scope
-				])
-			),
+				})
+				.from(employeeLeaveGrant)
+				.innerJoin(employee, eq(employeeLeaveGrant.staffId, employee.id))
+				.where(
+					all([
+						notDeleted(employeeLeaveGrant),
+						notDeleted(employee),
+						inRange(employeeLeaveGrant.grantDate, filters),
+						...scope
+					])
+				),
 
-		db
-			.select({
-				bucket: monthOf(missingDays.day),
-				value: count(),
-				deductable: countWhen(sql`${missingDays.deductable} = true`)
-			})
-			.from(missingDays)
-			.innerJoin(employee, eq(missingDays.staffId, employee.id))
-			.where(attendanceWhere)
-			.groupBy(sql`1`),
+			db
+				.select({ bucket: monthOf(leave.startDate), value: leaveDays, requests: count() })
+				.from(leave)
+				.innerJoin(employee, eq(leave.staffId, employee.id))
+				.where(leaveWhere)
+				.groupBy(sql`1`),
 
-		db
-			.select({ bucket: monthOf(leave.startDate), value: leaveDays, requests: count() })
-			.from(leave)
-			.innerJoin(employee, eq(leave.staffId, employee.id))
-			.where(leaveWhere)
-			.groupBy(sql`1`),
+			db
+				.select({ label: leaveType.name, value: leaveDays })
+				.from(leave)
+				.innerJoin(employee, eq(leave.staffId, employee.id))
+				.leftJoin(leaveType, eq(leave.leaveTypeId, leaveType.id))
+				.where(leaveWhere)
+				.groupBy(leaveType.name),
 
-		db
-			.select({ label: leaveType.name, value: leaveDays })
-			.from(leave)
-			.innerJoin(employee, eq(leave.staffId, employee.id))
-			.leftJoin(leaveType, eq(leave.leaveTypeId, leaveType.id))
-			.where(leaveWhere)
-			.groupBy(leaveType.name),
-
-		db
-			.select({ label: sql<string>`${leave.status}`, value: count() })
-			.from(leave)
-			.innerJoin(employee, eq(leave.staffId, employee.id))
-			.where(leaveWhere)
-			.groupBy(leave.status),
-
-		db
-			.select({ label: department.name, value: count() })
-			.from(missingDays)
-			.innerJoin(employee, eq(missingDays.staffId, employee.id))
-			.leftJoin(department, eq(employee.departmentId, department.id))
-			.where(attendanceWhere)
-			.groupBy(department.name),
-
-		db
-			.select({ label: staffName, value: count() })
-			.from(missingDays)
-			.innerJoin(employee, eq(missingDays.staffId, employee.id))
-			.where(attendanceWhere)
-			.groupBy(employee.id)
-			.orderBy(desc(count()))
-			.limit(12)
-	]);
+			db
+				.select({ label: sql<string>`${leave.status}`, value: count() })
+				.from(leave)
+				.innerJoin(employee, eq(leave.staffId, employee.id))
+				.where(leaveWhere)
+				.groupBy(leave.status)
+		]);
 
 	const stats: Stat[] = [
 		{
 			key: 'absences',
 			label: 'Days Absent',
-			value: n(attendanceTotals?.total),
+			value: absences.length,
 			format: 'days',
 			group: 'Time & Leave',
-			hint: `${n(attendanceTotals?.staff)} employees · ${n(attendanceTotals?.deductable)} deductable`,
+			hint: `${new Set(absences.map((x) => x.row.id)).size} employees · ${excused} more excused`,
 			section: 'attendance',
 			tone: 'warning'
 		},
 		{
-			key: 'absence-cost',
-			label: 'Absence Docked',
-			value: n(attendanceTotals?.amount),
-			format: 'money',
-			group: 'Time & Leave',
-			hint: 'Deductable absence, as recorded',
-			section: 'attendance',
-			tone: 'warning'
-		},
-		{
-			key: 'absence-pending',
-			label: 'Absences Unreviewed',
-			value: n(attendanceTotals?.pending),
+			key: 'attendance-late',
+			label: 'Late Arrivals',
+			value: lateDays.length,
 			format: 'count',
 			group: 'Time & Leave',
-			hint: `${n(attendanceTotals?.approved)} approved · ${n(attendanceTotals?.rejected)} rejected`,
+			hint: `${hoursAndMinutes(lateMinutes)} late in all — shown, not deducted`,
 			section: 'attendance',
-			tone: n(attendanceTotals?.pending) > 0 ? 'warning' : 'neutral'
+			tone: lateDays.length ? 'warning' : 'neutral'
 		},
 		{
 			key: 'leave-requests',
@@ -242,7 +211,7 @@ export async function timeStats(
 		{
 			key: 'absence-over-time',
 			title: 'Absence per Month',
-			description: 'Total days missed, and how many were deductable.',
+			description: 'Working days with nothing on the register, and late arrivals.',
 			group: 'Time & Leave',
 			kind: 'bar',
 			labels: keys,
@@ -250,8 +219,8 @@ export async function timeStats(
 			series: [
 				{ label: 'Days absent', data: alignMonths(keys, attendanceByMonth, (row) => n(row.value)) },
 				{
-					label: 'Deductable',
-					data: alignMonths(keys, attendanceByMonth, (row) => n(row.deductable))
+					label: 'Late arrivals',
+					data: alignMonths(keys, attendanceByMonth, (row) => n(row.late))
 				}
 			]
 		},

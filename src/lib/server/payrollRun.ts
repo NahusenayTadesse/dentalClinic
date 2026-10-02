@@ -1,4 +1,4 @@
-import { and, count, eq, gte, inArray, isNull, lte, or, sql } from 'drizzle-orm';
+import { and, eq, gte, inArray, isNull, lte, or, sql } from 'drizzle-orm';
 
 import { db } from '$lib/server/db';
 import {
@@ -8,7 +8,6 @@ import {
 	branch,
 	department,
 	staffAccounts,
-	missingDays,
 	overTime,
 	deductions,
 	bonuses,
@@ -20,7 +19,8 @@ import {
 } from '$lib/server/db/schema';
 import { isApproved } from '$lib/server/approvals';
 import { notDeleted } from '$lib/server/softDelete';
-import { incomeTaxSql, pensionRates } from '$lib/server/payrollMath';
+import { incomeTax, netPay, pensionRates, toCents } from '$lib/server/payrollMath';
+import { absencesBetween } from '$lib/server/attendance';
 import { commissionByStaff } from '$lib/server/commission';
 import { currentMonthFilter, ethiopianRange, getMonthNumber } from '$lib/global.svelte';
 
@@ -36,8 +36,8 @@ import { currentMonthFilter, ethiopianRange, getMonthNumber } from '$lib/global.
  * transaction, from this same query.
  *
  * Pay is pro-rated by day across salary changes, plus overtime, bonuses and commission in the
- * period; less absence, deductions, the employee's pension and income tax (`payrollMath.ts`,
- * whose SQL rule is tested against its JavaScript one). An employee already paid for the month,
+ * period; less unexcused absence (the attendance register), deductions, the employee's pension and
+ * income tax (`payrollMath.ts`). An employee already paid for the month,
  * inactive, or not approved is not in it.
  *
  * Portability: the pro-rating is MySQL date arithmetic (`DATEDIFF`, `LEAST`, `GREATEST`), recorded
@@ -131,16 +131,6 @@ export async function payslips(
 		.groupBy(deductions.staffId)
 		.as('deduct_sub');
 
-	const missingSub = reader
-		.select({
-			staffId: missingDays.staffId,
-			missedCount: count(missingDays.id).as('missed_count')
-		})
-		.from(missingDays)
-		.where(and(currentMonthFilter(missingDays.day, start, end), notDeleted(missingDays)))
-		.groupBy(missingDays.staffId)
-		.as('missing_sub');
-
 	const commissionSub = commissionByStaff(start, end, reader);
 
 	const taxBands = await reader
@@ -199,23 +189,6 @@ export async function payslips(
     COALESCE(${salarySub.proRatedPosition}, 0)
 `;
 
-	const taxableIncomeExpression = sql<number>`
-    (${grossExpression})
-    - (COALESCE(${salarySub.proRatedNonTax}, 0)
-    + (COALESCE(${missingSub.missedCount}, 0) * (COALESCE(${salarySub.proRatedAmount}, 0) / 30)))
-`;
-	// The one rule for income tax, shared with the payslip adjustment and tested against it.
-	const taxSql = incomeTaxSql(taxableIncomeExpression, taxBands);
-
-	const netPayExpression = sql<number>`
-  (${grossExpression}) - (
-      ${taxSql} +
-      (COALESCE(${missingSub.missedCount}, 0) * (COALESCE(${salarySub.proRatedAmount}, 0) / 30)) +
-      COALESCE(${deductionSub.total}, 0) +
-      (${penEmExpression})
-  )
-`;
-
 	const rows = await reader
 		.select({
 			id: employee.id,
@@ -227,7 +200,6 @@ export async function payslips(
 			housingAllowance: salarySub.proRatedHousing,
 			transportAllowance: salarySub.proRatedTransport,
 			nonTaxable: salarySub.proRatedNonTax,
-			attendancePenality: sql<number>`COALESCE(${missingSub.missedCount}, 0) * (COALESCE(${salarySub.proRatedAmount}, 0) / 30)`,
 			account: staffAccounts.accountDetail,
 			bank: paymentMethods.name,
 			paymentMethodId: paymentMethods.id,
@@ -235,15 +207,11 @@ export async function payslips(
 			overtime: otSub.total,
 			bonus: bonusSub.total,
 			commission: sql<number>`COALESCE(${commissionSub.commission}, 0)`,
-			absent: missingSub.missedCount,
 			deductions: deductionSub.total,
 			branch: branch.name,
 			gross: grossExpression,
-			taxable: taxableIncomeExpression,
-			taxAmount: taxSql,
 			penEm: penEmExpression,
-			penOrg: penOrgExpression,
-			netPay: netPayExpression
+			penOrg: penOrgExpression
 		})
 		.from(employee)
 		.leftJoin(department, and(eq(department.id, employee.departmentId), notDeleted(department)))
@@ -263,7 +231,6 @@ export async function payslips(
 		.leftJoin(bonusSub, eq(bonusSub.staffId, employee.id))
 		.leftJoin(commissionSub, eq(commissionSub.staffId, employee.id))
 		.leftJoin(deductionSub, eq(deductionSub.staffId, employee.id))
-		.leftJoin(missingSub, eq(missingSub.staffId, employee.id))
 		.leftJoin(
 			employmentStatuses,
 			and(eq(employmentStatuses.id, employee.employmentStatus), notDeleted(employmentStatuses))
@@ -304,11 +271,49 @@ export async function payslips(
 			otSub.total,
 			bonusSub.total,
 			commissionSub.commission,
-			deductionSub.total,
-			missingSub.missedCount
+			deductionSub.total
 		);
 
-	return rows;
+	/*
+	 * Absence, and what follows from it, per payslip: the register's unexcused absences
+	 * (`server/attendance.ts`) — the same rule its screens show — each a thirtieth of the month's
+	 * basic pay. It was a count of `missing_days` rows, deducting even the ones marked not to be.
+	 * Taxable pay, tax and net are worked out here from it with `payrollMath`, whose `incomeTax` is
+	 * tested to agree with the SQL rule this used to run.
+	 */
+	const absences = await absencesBetween(
+		start,
+		end,
+		rows.map((r) => r.id),
+		reader
+	);
+	const bands = taxBands.map((b) => ({
+		threshold: b.threshold === null ? null : Number(b.threshold),
+		rate: Number(b.rate),
+		deduction: Number(b.deduction)
+	}));
+	return rows.map((row) => {
+		const basic = Number(row.basicSalary ?? 0);
+		const gross = Number(row.gross ?? 0);
+		const absent = absences.get(row.id) ?? 0;
+		const attendancePenality = toCents((absent * basic) / 30);
+		const taxable = toCents(gross - Number(row.nonTaxable ?? 0) - attendancePenality);
+		const taxAmount = incomeTax(taxable, bands);
+		return {
+			...row,
+			absent,
+			attendancePenality,
+			taxable,
+			taxAmount,
+			netPay: netPay({
+				gross,
+				tax: taxAmount,
+				absenceDeduction: attendancePenality,
+				deductions: Number(row.deductions ?? 0),
+				employeePension: Number(row.penEm ?? 0)
+			})
+		};
+	});
 }
 
 /** One payslip as `payslips` computes it. */

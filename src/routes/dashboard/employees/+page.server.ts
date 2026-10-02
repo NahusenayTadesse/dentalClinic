@@ -5,7 +5,6 @@ import {
 	employmentStatuses,
 	educationalLevel,
 	employeeTermination,
-	missingDays,
 	branch,
 	employeeGuarantor,
 	staffAccounts,
@@ -28,10 +27,7 @@ import {
 	orderBy
 } from '$lib/server/queryFilters';
 
-import { edit } from './schema';
-import type { PageServerLoad, Actions } from '../$types';
-import { superValidate, message } from 'sveltekit-superforms';
-import { zod4 } from 'sveltekit-superforms/adapters';
+import type { PageServerLoad } from './$types';
 import { employeeFullName } from '$lib/server/employeeName';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
@@ -221,65 +217,4 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		pagination: pagination(query, total),
 		currentQuery: currentQuery(query)
 	};
-};
-
-export const actions: Actions = {
-	/**
-	 * Records days an employee was absent.
-	 *
-	 * Deliberately not gated beyond the page's own rule: adding a missing day is the ordinary work
-	 * of whoever keeps attendance, and the route already requires `employees.create_followup` to
-	 * reach this path at all (§9). It becomes a `requirePermission` call the day it can deduct pay
-	 * without an approval step — which is what `approval` on the row is there to prevent.
-	 */
-	addDays: async ({ request, locals }) => {
-		const form = await superValidate(request, zod4(edit));
-
-		if (!form.valid) {
-			return message(form, { type: 'error', text: 'Please check the form and try again.' });
-		}
-
-		const { id, day, reason, deductable, deductableAmount } = form.data;
-
-		try {
-			// Comma-separated because the picker allows several dates in one go; trimmed because
-			// "2026-01-01, 2026-01-02" is what it produces.
-			const days = day
-				.split(',')
-				.map((d) => d.trim())
-				.filter(Boolean);
-
-			if (!days.length) {
-				return message(form, { type: 'error', text: 'Pick at least one day.' });
-			}
-
-			await db.insert(missingDays).values(
-				days.map((singleDay) => ({
-					staffId: Number(id),
-					day: singleDay,
-					reason,
-					deductable: Boolean(deductable),
-					deductableAmount: deductableAmount ? parseFloat(deductableAmount) : null,
-					createdBy: locals?.user?.id
-				}))
-			);
-
-			return message(form, {
-				type: 'success',
-				text: days.length === 1 ? 'Missing day added.' : `${days.length} missing days added.`
-			});
-		} catch (err: unknown) {
-			/*
-			 * Loud in the log, quiet to the client (§9). This used to put `err.message` straight
-			 * into the toast, which hands a database error — table names, constraint names — to
-			 * whoever provoked it.
-			 */
-			console.error('[employees] addDays failed:', err);
-
-			return message(form, {
-				type: 'error',
-				text: 'Could not add those days. Please try again.'
-			});
-		}
-	}
 };

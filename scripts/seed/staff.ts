@@ -152,14 +152,17 @@ export async function seedStaffDetails(db: SeedDb) {
 		}
 
 		// Monday to Friday, with Saturday mornings for most.
-		const week = [1, 2, 3, 4, 5].map((weekDay) => ({
+		// Monday to Friday, and a Saturday morning for most. `week_day` 0 is Monday — the schedule
+		// form's convention (`getWeekdayName`), which attendance reads; this wrote 1–6 as if 0 were
+		// Sunday, so every seeded employee was scheduled Tuesday to a Sunday half-day.
+		const week = [0, 1, 2, 3, 4].map((weekDay) => ({
 			staffId: person.id,
 			weekDay,
 			startTime: '08:30:00',
 			endTime: '17:00:00'
 		}));
 		if (chance(0.7)) {
-			week.push({ staffId: person.id, weekDay: 6, startTime: '08:30:00', endTime: '12:30:00' });
+			week.push({ staffId: person.id, weekDay: 5, startTime: '08:30:00', endTime: '12:30:00' });
 		}
 		await db.insert(staffSchedule).values(week);
 

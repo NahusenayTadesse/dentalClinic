@@ -61,6 +61,7 @@ export type AuditedTable =
 	| 'over_time'
 	| 'bonuses'
 	| 'deductions'
+	| 'attendance'
 	// controlled stock
 	| 'supplies_adjustments'
 	| 'supply_batch'

@@ -560,25 +560,4 @@ export const staffQualificationRelations = relations(qualification, ({ one }) =>
 		references: [employee.id]
 	})
 }));
-export const missingDays = mysqlTable(
-	'missing_days',
-	{
-		id: int('id').autoincrement().primaryKey(),
-		staffId: int('staff_id')
-			.notNull()
-			.references(() => employee.id, { onDelete: 'cascade' }),
-		day: date('day').notNull(),
-		reason: varchar('reason', { length: 255 }).notNull(),
-		deductable: boolean('deductable').notNull().default(false),
-		deductableAmount: decimal('deductable_amount', { precision: 10, scale: 2 }),
-		approval: mysqlEnum('approval', ['pending', 'approved', 'rejected'])
-			.default('pending')
-			.notNull(),
-		...secureFields
-	},
-	(table) => [
-		index('staff_id_idx').on(table.staffId),
-		index('day_idx').on(table.day),
-		index('deductable_idx').on(table.deductable)
-	]
-);
+

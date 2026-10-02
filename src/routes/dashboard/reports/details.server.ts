@@ -16,7 +16,6 @@ import {
 	expensesType,
 	leave,
 	leaveType,
-	missingDays,
 	overTime,
 	overTimeType,
 	paymentMethods,
@@ -41,6 +40,7 @@ import type { ReportFilters } from './filters';
 import { all, amountScope, inRange, n, searchScope, staffName, staffScope } from './scope.server';
 import { onHand } from '$lib/server/stock';
 import { billedLines } from './billedLines.server';
+import { register } from '$lib/server/attendance';
 import { accessLogCount, accessLogPage, accessLogWhere } from '$lib/server/accessLog';
 import { VIEWED_RECORD_LABEL, VIEW_ACTION_LABEL } from '$lib/accessLog';
 import { clinicDayRange } from '$lib/clinicTime';
@@ -94,7 +94,7 @@ const NUMERIC_KEYS: Record<string, string[]> = {
 	bonuses: ['amount'],
 	overtime: ['hours', 'rate', 'amount'],
 	deductions: ['amount'],
-	attendance: ['amount'],
+	attendance: [],
 	leaves: ['days'],
 	'leave-grants': ['granted', 'used', 'remaining'],
 	'supply-adjustments': ['adjustment', 'costPerItem', 'total'],
@@ -563,46 +563,42 @@ export async function loadSection(filters: ReportFilters): Promise<DetailResult>
 		}
 
 		case 'attendance': {
-			const where = all([
-				notDeleted(missingDays),
-				notDeleted(employee),
-				inRange(missingDays.day, filters),
-				filters.approvalStatus
-					? sql`${missingDays.approval} = ${filters.approvalStatus}`
-					: undefined,
-				...scope,
-				searchScope(search, [staffName, missingDays.reason])
-			]);
-
-			return run(
-				() =>
-					page(
-						db
-							.select({
-								id: missingDays.id,
-								date: day(missingDays.day),
-								employee: staffName,
-								department: department.name,
-								branch: branch.name,
-								deductable: sql<string>`IF(${missingDays.deductable}, 'yes', 'no')`,
-								amount: missingDays.deductableAmount,
-								approval: missingDays.approval,
-								reason: missingDays.reason
-							})
-							.from(missingDays)
-							.innerJoin(employee, eq(missingDays.staffId, employee.id))
-							.leftJoin(department, eq(employee.departmentId, department.id))
-							.leftJoin(branch, eq(employee.branchId, branch.id))
-							.where(where)
-							.orderBy(desc(missingDays.day))
-					),
-				() =>
-					db
-						.select({ total: count() })
-						.from(missingDays)
-						.innerJoin(employee, eq(missingDays.staffId, employee.id))
-						.where(where)
-			);
+			/*
+			 * The register's exceptions over the range — absences, excused days and late arrivals —
+			 * decided by `$lib/attendance.ts`, the rule payroll deducts by. In memory and paged here:
+			 * an absence is a day with no row, so there is nothing for SQL to select.
+			 */
+			const people = await db
+				.select({ id: employee.id })
+				.from(employee)
+				.where(all([notDeleted(employee), ...scope]));
+			const rows = (
+				await register(filters.dateStart, filters.dateEnd, { staffIds: people.map((p) => p.id) })
+			)
+				.flatMap((person) =>
+					Object.entries(person.days)
+						.filter(([, d]) => d.kind === 'absent' || d.kind === 'excused' || d.late > 0)
+						.map(([date, d]) => ({
+							id: `${person.id}-${date}`,
+							date,
+							employee: person.name,
+							department: person.department,
+							branch: person.branch,
+							status: d.kind === 'present' ? 'late' : d.kind,
+							late: d.late || null,
+							clockIn: d.record?.clockIn ?? null,
+							clockOut: d.record?.clockOut ?? null,
+							note: d.record?.note ?? null
+						}))
+				)
+				.filter(
+					(row) =>
+						!search ||
+						row.employee.toLowerCase().includes(search.toLowerCase()) ||
+						(row.note ?? '').toLowerCase().includes(search.toLowerCase())
+				)
+				.sort((a, b) => b.date.localeCompare(a.date) || a.employee.localeCompare(b.employee));
+			return { rows: rows.slice(offset, offset + filters.pageSize), total: rows.length };
 		}
 
 		case 'leaves': {

@@ -56,7 +56,7 @@ const HEADLINES = new Set([
 	'absences',
 	'leave-days',
 	'leave-granted',
-	'absence-pending',
+	'attendance-late',
 
 	'stock-added',
 	'stock-taken',

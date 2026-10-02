@@ -5,6 +5,8 @@ import { and, eq, sql } from 'drizzle-orm';
 import { paymentMethods as paymentMethodList } from '$lib/server/fastData';
 import { payrollPeriod, payslips, type Payslip } from '$lib/server/payrollRun';
 import { saveUploadedFile } from '$lib/server/upload';
+import { unrecordedAbsences } from '$lib/server/attendance';
+import { clinicToday } from '$lib/clinicTime';
 
 import { payrollSchema } from './schema';
 import type { PageServerLoad, Actions } from './$types';
@@ -16,13 +18,19 @@ import { zod4 } from 'sveltekit-superforms/adapters';
  * ticked. Both read `payslips` (`server/payrollRun.ts`) — the page to show the figures, the action
  * to recompute them in its own transaction rather than write what the browser posts back.
  */
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, locals }) => {
 	const range = params.range;
 	const period = payrollPeriod(range);
-	const [form, payrollData, methods] = await Promise.all([
+	const today = clinicToday();
+	const [form, payrollData, methods, unrecorded] = await Promise.all([
 		superValidate({ month: range }, zod4(payrollSchema), { errors: false }),
 		payslips(period),
-		paymentMethodList()
+		paymentMethodList(),
+		// Working days with nothing on the register are deducted as absences; say so before paying,
+		// so a forgotten tick is caught here rather than on someone's payslip.
+		period.start <= today
+			? unrecordedAbsences(period.start, period.end < today ? period.end : today, locals.branch)
+			: Promise.resolve([])
 	]);
 	return {
 		month: range,
@@ -48,7 +56,8 @@ export const load: PageServerLoad = async ({ params }) => {
 			netPay: Number(row.netPay ?? 0)
 		})),
 		form,
-		paymentMethods: methods
+		paymentMethods: methods,
+		unrecorded
 	};
 };
 

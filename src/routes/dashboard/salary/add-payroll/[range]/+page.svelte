@@ -91,6 +91,37 @@
 			<a class="underline" href="/dashboard/salary/paid-salaries">Paid Salaries</a> for what was paid.
 		</p>
 	{:else}
+		{#if data.unrecorded.length}
+			<!-- Deducted as absences unless someone is ticked or excused first (`$lib/attendance.ts`). -->
+			<section
+				class="rounded-lg border border-destructive/50 bg-destructive/5 p-4 text-sm"
+				aria-label="Absences to check"
+			>
+				<p class="font-semibold text-destructive">
+					{data.unrecorded.length}
+					{data.unrecorded.length === 1 ? 'person has' : 'people have'} working days with nothing on the
+					register. They will be paid as absences.
+				</p>
+				<ul class="mt-2 flex flex-col gap-1">
+					{#each data.unrecorded.slice(0, 8) as person (person.id)}
+						<li>
+							{person.name} — {person.days.length}
+							{person.days.length === 1 ? 'day' : 'days'}
+						</li>
+					{/each}
+					{#if data.unrecorded.length > 8}
+						<li class="text-muted-foreground">and {data.unrecorded.length - 8} more</li>
+					{/if}
+				</ul>
+				<a
+					class="mt-2 inline-block underline"
+					href="/dashboard/employees/attendance/month?month={encodeURIComponent(
+						decodeURIComponent(data.month)
+					)}">Check the month’s attendance</a
+				>
+			</section>
+		{/if}
+
 		<section class="grid grid-cols-2 gap-4 sm:grid-cols-5" aria-label="Payroll at a glance">
 			{#each TILES as tile (tile.label)}
 				<div class="rounded-lg border bg-card p-4">

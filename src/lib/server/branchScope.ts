@@ -67,6 +67,7 @@ export const BRANCH_SCOPED = [
 	'treatment_plan',
 	'supplies_adjustments',
 	'supply_batch',
+	'attendance',
 	'employee'
 ] as const;
 

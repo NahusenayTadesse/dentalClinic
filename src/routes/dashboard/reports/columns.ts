@@ -371,10 +371,11 @@ const DEFINITIONS: Record<SectionKey, Column[]> = {
 		['employee', 'Employee'],
 		['department', 'Department'],
 		['branch', 'Branch'],
-		['deductable', 'Deductable', 'status'],
-		['amount', 'Docked', 'money'],
-		['approval', 'Approval', 'status'],
-		['reason', 'Reason', 'long']
+		['status', 'Day', 'status'],
+		['late', 'Minutes late', 'number'],
+		['clockIn', 'In'],
+		['clockOut', 'Out'],
+		['note', 'Why', 'long']
 	],
 
 	leaves: [
