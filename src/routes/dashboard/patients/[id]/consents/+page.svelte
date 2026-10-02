@@ -1,6 +1,6 @@
 <script lang="ts">
 	import FileSignature from '@lucide/svelte/icons/file-signature';
-	import Section from '$lib/components/Section.svelte';
+	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import LookupSection from '$lib/components/lookup/LookupSection.svelte';
 	import { childActionPaths } from '@nahu/admin-kit/components/lookup/actions.js';
 	import { consentConfig } from './config';

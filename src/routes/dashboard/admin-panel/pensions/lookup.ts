@@ -1,4 +1,4 @@
-import type { LookupConfig } from '$lib/components/lookup/types';
+import type { LookupConfig } from '@nahu/admin-kit/components/lookup/types.js';
 
 /**
  * The two pension contribution rates: the employee's share, taken from their pay, and the

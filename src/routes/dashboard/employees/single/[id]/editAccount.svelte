@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { createForm } from '$lib/forms/createForm';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { SquarePen, Save } from '@lucide/svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 
 	import type { SuperValidated } from 'sveltekit-superforms';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import type { Item } from '$lib/global.svelte';
 	import { editAccount, type EditAccount } from './schema';
 

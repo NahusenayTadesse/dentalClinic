@@ -5,9 +5,9 @@
 
 	import { MapPin, Phone, Sheet } from '@lucide/svelte';
 
-	import SingleView from '$lib/components/SingleView.svelte';
+	import SingleView from '@nahu/admin-kit/components/SingleView.svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte';
-	import Section from '$lib/components/Section.svelte';
+	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import FormDialog from '$lib/formComponents/FormDialog.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import { editDetail } from './schema';

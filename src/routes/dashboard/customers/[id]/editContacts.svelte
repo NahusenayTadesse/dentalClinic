@@ -2,11 +2,11 @@
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { SquarePen, Plus, Save } from '@lucide/svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 
 	import type { SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	const isActives = [
 		{ value: true, name: 'Active' },

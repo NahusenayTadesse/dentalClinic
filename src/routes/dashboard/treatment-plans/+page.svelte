@@ -1,6 +1,6 @@
 <script lang="ts">
 	import PhoneCall from '@lucide/svelte/icons/phone-call';
-	import Section from '$lib/components/Section.svelte';
+	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import { formatETB } from '$lib/global.svelte';
 	import { columns } from './columns';

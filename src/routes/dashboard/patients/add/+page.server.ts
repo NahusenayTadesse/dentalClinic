@@ -6,10 +6,10 @@ import { db } from '$lib/server/db';
 import { patient, patientAllergies } from '$lib/server/db/schema';
 import { insertReturningId } from '$lib/server/db/insert';
 import { recordAudit } from '$lib/server/audit';
-import { isDuplicateKey } from '$lib/server/dbErrors';
+import { isDuplicateKey } from '@nahu/admin-kit/server/dbErrors.js';
 import { allergens, customerList, referralSources } from '$lib/server/fastData';
 import { birthDateFrom, possibleDuplicates, type PossibleDuplicate } from '$lib/server/patients';
-import type { FormMessage } from '$lib/forms/createForm';
+import type { FormMessage } from '@nahu/admin-kit/forms/createForm.js';
 import { registerPatient } from '../schema';
 import type { Actions, PageServerLoad } from './$types';
 

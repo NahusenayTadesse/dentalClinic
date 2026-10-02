@@ -3,10 +3,10 @@
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
-	import { createForm } from '$lib/forms/createForm';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 	import { payment } from '$lib/forms/payment';
 

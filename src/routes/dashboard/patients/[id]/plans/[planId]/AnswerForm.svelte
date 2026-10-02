@@ -4,10 +4,10 @@
 	import Save from '@lucide/svelte/icons/save';
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
-	import { createForm } from '$lib/forms/createForm';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import { formatETB } from '$lib/global.svelte';
 	import { outcomeOf, PLAN_STATUS_LABEL } from '$lib/treatmentPlanStatus';
 	import { answer } from '../schema';

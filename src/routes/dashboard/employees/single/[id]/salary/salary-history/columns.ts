@@ -11,7 +11,7 @@ import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svel
 import { formatETB } from '$lib/global.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import { User } from '@lucide/svelte';
-import Statuses from '$lib/components/Table/statuses.svelte';
+import Statuses from '@nahu/admin-kit/components/Table/statuses.svelte';
 
 /** A decimal column's value for `formatETB`: the driver hands decimals back as strings. */
 const amount = (value: unknown) => (value === null || value === undefined ? null : Number(value));

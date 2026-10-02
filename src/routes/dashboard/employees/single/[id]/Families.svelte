@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { createForm } from '$lib/forms/createForm';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
-	import Copy from '$lib/Copy.svelte';
+	import Copy from '@nahu/admin-kit/Copy.svelte';
 	import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
-	import Statuses from '$lib/components/Table/statuses.svelte';
+	import Statuses from '@nahu/admin-kit/components/Table/statuses.svelte';
 	import Edit from './editFamily.svelte';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 

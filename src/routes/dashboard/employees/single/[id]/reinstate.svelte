@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { createForm } from '$lib/forms/createForm';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import { reinstate, type Reinstate } from './schema';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import { RotateCcw } from '@lucide/svelte';
 	import type { SuperValidated } from 'sveltekit-superforms';
 	import { type Item } from '$lib/global.svelte';

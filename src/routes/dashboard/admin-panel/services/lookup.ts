@@ -1,4 +1,4 @@
-import type { LookupConfig } from '$lib/components/lookup/types';
+import type { LookupConfig } from '@nahu/admin-kit/components/lookup/types.js';
 import { SERVICE_AREAS, SERVICE_AREA_LABELS } from '$lib/serviceAreas';
 
 /**

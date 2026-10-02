@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { type Item } from '$lib/global.svelte';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { type EditAddress } from './schema';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import { SquarePen, Save } from '@lucide/svelte';
 	import type { SuperValidated } from 'sveltekit-superforms';
 

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { edit as schema } from './schema';
-	import { createForm } from '$lib/forms/createForm';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import SupplyFields from '../SupplyFields.svelte';
 	import { columns, lotColumns, recipientColumns } from './columns';
-	import Section from '$lib/components/Section.svelte';
+	import Section from '@nahu/admin-kit/components/Section.svelte';
 	let { data } = $props();
 
 	import SingleTable from '$lib/components/SingleTable.svelte';
@@ -13,7 +13,7 @@
 	import { ArrowLeft, Pencil, Save, History, Boxes, Users } from '@lucide/svelte';
 	import type { Snapshot } from '@sveltejs/kit';
 
-	import SingleView from '$lib/components/SingleView.svelte';
+	import SingleView from '@nahu/admin-kit/components/SingleView.svelte';
 	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte.js';
 

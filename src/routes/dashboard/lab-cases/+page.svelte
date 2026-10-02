@@ -1,7 +1,7 @@
 <script lang="ts">
 	import FlaskConical from '@lucide/svelte/icons/flask-conical';
 	import Gauge from '@lucide/svelte/icons/gauge';
-	import Section from '$lib/components/Section.svelte';
+	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import { labCaseColumns } from '$lib/components/labCases/columns';
 

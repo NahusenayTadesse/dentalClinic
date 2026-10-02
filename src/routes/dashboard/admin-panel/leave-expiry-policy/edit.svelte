@@ -3,11 +3,11 @@
 	import { SquarePen, Save } from '@lucide/svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import type { Edit } from './schema';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 
 	import type { SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 
 	let {
 		data,

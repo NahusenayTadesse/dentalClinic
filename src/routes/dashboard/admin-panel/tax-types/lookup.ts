@@ -1,4 +1,4 @@
-import type { LookupConfig } from '$lib/components/lookup/types';
+import type { LookupConfig } from '@nahu/admin-kit/components/lookup/types.js';
 
 /**
  * The monthly income-tax bands, in the "quick deduction" form the Ministry of Revenues publishes:

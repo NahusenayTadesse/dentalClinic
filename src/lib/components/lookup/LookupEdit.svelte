@@ -1,14 +1,18 @@
 <script lang="ts">
 	import { SquarePen, Save } from '@lucide/svelte';
-	import { createForm } from '$lib/forms/createForm';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import Messages from '@nahu/admin-kit/formComponents/Messages.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import LookupFields from './LookupFields.svelte';
-	import type { LookupField, LookupOptions, LookupRow } from './types';
+	import type {
+		LookupField,
+		LookupOptions,
+		LookupRow
+	} from '@nahu/admin-kit/components/lookup/types.js';
 	import type { LookupForm, LookupSchema } from './columns';
 
 	/**

@@ -5,7 +5,7 @@
 	import RotateCcw from '@lucide/svelte/icons/rotate-ccw';
 	import Send from '@lucide/svelte/icons/send';
 	import Smile from '@lucide/svelte/icons/smile';
-	import StepButton from '$lib/formComponents/StepButton.svelte';
+	import StepButton from '@nahu/admin-kit/formComponents/StepButton.svelte';
 	import {
 		LAB_STATUS_LABEL,
 		NEXT_LAB_STATUS,

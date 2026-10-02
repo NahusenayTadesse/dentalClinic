@@ -1,5 +1,5 @@
 <script>
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 
 	let { data } = $props();

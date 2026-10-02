@@ -20,7 +20,7 @@
 		EyeOffIcon,
 		ShieldCheckIcon
 	} from '@lucide/svelte';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import { onMount } from 'svelte';
 
 	let { password = $bindable() } = $props();

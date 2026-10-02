@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { lookupColumns } from './columns';
-import type { LookupConfig } from './types';
+import type { LookupConfig } from '@nahu/admin-kit/components/lookup/types.js';
 import type { LookupForm } from './columns';
 
 /**

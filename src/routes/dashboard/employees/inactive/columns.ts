@@ -9,7 +9,7 @@ import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 import { formatEthiopianDate, minutesToHoursString } from '$lib/global.svelte';
-import Copy from '$lib/Copy.svelte';
+import Copy from '@nahu/admin-kit/Copy.svelte';
 
 export const columns: ColumnDef<RowData>[] = [
 	{

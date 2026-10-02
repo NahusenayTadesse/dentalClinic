@@ -4,7 +4,7 @@
 	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
-	import { createForm } from '$lib/forms/createForm';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import { billingSettings } from './schema';
 
 	/** The clinic's billing settings: how big a discount needs a manager. */

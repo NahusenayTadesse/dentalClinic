@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createForm, confirmLeave } from '$lib/forms/createForm';
+	import { createForm, confirmLeave } from '@nahu/admin-kit/forms/createForm.js';
 	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
 	import { Label } from '@nahu/admin-kit/components/ui/label/index.js';
 	import type { Snapshot } from '@sveltejs/kit';
@@ -11,7 +11,7 @@
 	import { Plus } from '@lucide/svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { overtimeSchema as schema } from './schema';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	let { data } = $props();
 
 	import InputComp from '$lib/formComponents/InputComp.svelte';

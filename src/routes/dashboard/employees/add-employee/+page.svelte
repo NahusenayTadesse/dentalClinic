@@ -4,11 +4,11 @@
 	import { ExternalLink, Plus } from '@lucide/svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { add } from './schema';
-	import { createForm, confirmLeave } from '$lib/forms/createForm';
+	import { createForm, confirmLeave } from '@nahu/admin-kit/forms/createForm.js';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
 	import Input from '$lib/formComponents/InputComp.svelte';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 
 	let { data } = $props();
 

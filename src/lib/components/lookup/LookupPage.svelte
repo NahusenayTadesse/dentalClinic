@@ -3,13 +3,17 @@
 
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import DataTable from '$lib/components/Table/data-table.svelte';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import LookupFields from './LookupFields.svelte';
 	import { lookupColumns } from './columns';
-	import { createForm } from '$lib/forms/createForm';
-	import type { LookupConfig, LookupOptions, LookupRow } from './types';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
+	import type {
+		LookupConfig,
+		LookupOptions,
+		LookupRow
+	} from '@nahu/admin-kit/components/lookup/types.js';
 	import type { LookupForm, LookupSchema } from './columns';
 
 	/**

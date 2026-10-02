@@ -8,9 +8,9 @@
 	import type { SuperValidated, Infer } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
 	import type { LoginSchema } from '$lib/ZodSchema';
-	import DarkMode from '$lib/components/DarkMode.svelte';
+	import DarkMode from '@nahu/admin-kit/components/shell/DarkMode.svelte';
 	import { Eye, EyeOff } from '@lucide/svelte';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 
 	let { data, action = '?/login' }: { data: SuperValidated<Infer<LoginSchema>>; action: string } =
 		$props();

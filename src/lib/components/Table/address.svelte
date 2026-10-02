@@ -1,5 +1,5 @@
 <script lang="ts">
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import { MapPinIcon, MapIcon, LandmarkIcon, House, Building, Building2 } from '@lucide/svelte';
 
 	interface Props {

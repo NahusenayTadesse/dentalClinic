@@ -2,7 +2,7 @@ import type { ColumnDef } from '@tanstack/table-core';
 import type { PageData } from './$types';
 import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
-import Copy from '$lib/Copy.svelte';
+import Copy from '@nahu/admin-kit/Copy.svelte';
 import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 import NameCell from './name-cell.svelte';
 import AlertsCell from './alerts-cell.svelte';

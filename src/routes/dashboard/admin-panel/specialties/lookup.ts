@@ -1,4 +1,4 @@
-import type { LookupConfig } from '$lib/components/lookup/types';
+import type { LookupConfig } from '@nahu/admin-kit/components/lookup/types.js';
 
 /**
  * What a clinician is licensed as.

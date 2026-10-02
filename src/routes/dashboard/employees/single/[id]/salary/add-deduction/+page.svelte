@@ -13,7 +13,7 @@
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { deductionSchema as schema } from './deductions';
 	import { superForm, fileProxy } from 'sveltekit-superforms/client';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	let { data } = $props();
 
 	const { form, errors, enhance, delayed, allErrors, capture, restore, message } = superForm(

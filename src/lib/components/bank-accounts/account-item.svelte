@@ -3,7 +3,7 @@
 	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import { BuildingIcon, CreditCardIcon, WalletIcon } from '@lucide/svelte';
 	import { formatETB } from '$lib/global.svelte';
-	import Copy from '$lib/Copy.svelte';
+	import Copy from '@nahu/admin-kit/Copy.svelte';
 	interface BankAccount {
 		id: number;
 		paymentMethod: string;

@@ -6,7 +6,7 @@
 	import ShieldCheck from '@lucide/svelte/icons/shield-check';
 	import Undo from '@lucide/svelte/icons/undo-2';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import StepButton from '$lib/formComponents/StepButton.svelte';
+	import StepButton from '@nahu/admin-kit/formComponents/StepButton.svelte';
 	import { DAY_LABEL, hoursAndMinutes, type DayStatus } from '$lib/attendance';
 	import DayBadge from './DayBadge.svelte';
 

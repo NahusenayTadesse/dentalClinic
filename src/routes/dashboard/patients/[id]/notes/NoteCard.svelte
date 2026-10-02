@@ -6,7 +6,7 @@
 	import type { SuperValidated } from 'sveltekit-superforms';
 	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import StepButton from '$lib/formComponents/StepButton.svelte';
+	import StepButton from '@nahu/admin-kit/formComponents/StepButton.svelte';
 	import { clinicDate, ethiopianClock } from '$lib/clinicTime';
 	import { formatEthiopianDate } from '$lib/global.svelte';
 	import type { NoteEntry } from '$lib/server/clinicalNotes';

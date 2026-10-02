@@ -28,7 +28,7 @@
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte.js';
 	import { systemInfoRows } from '$lib/systemInfo';
 
-	import SingleView from '$lib/components/SingleView.svelte';
+	import SingleView from '@nahu/admin-kit/components/SingleView.svelte';
 
 	let identity = $derived([
 		{
@@ -129,7 +129,7 @@
 	import EditEmployment from './editEmployment.svelte';
 	import EditPersonal from './editPersonal.svelte';
 	import EditAddress from './editAddress.svelte';
-	import Section from '$lib/components/Section.svelte';
+	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import Families from './Families.svelte';
 	import Qualifications from './qualifications.svelte';
 	import Experience from './experience.svelte';

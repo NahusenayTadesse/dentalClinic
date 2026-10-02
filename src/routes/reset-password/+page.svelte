@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Logo from '$lib/components/Logo.svelte';
-	import { createForm } from '$lib/forms/createForm';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import {
 		Card,
 		CardHeader,
@@ -15,7 +15,7 @@
 	import { ArrowLeftIcon, ArrowRight, TriangleAlert } from '@lucide/svelte';
 	import { resetPasswordSchema as schema } from './schema';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 
 	let { data } = $props();
 

@@ -2,7 +2,7 @@
 	import * as Command from '@nahu/admin-kit/components/ui/command/index.js';
 	import Disc from '@lucide/svelte/icons/disc';
 	import SearchIcon from '@lucide/svelte/icons/search';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { searchEntries } from '$lib/navigation';
 	import { canVisit } from '$lib/routeAccess';

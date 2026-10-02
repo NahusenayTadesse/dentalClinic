@@ -82,7 +82,7 @@
 
 	import { getLocalTimeZone, today } from '@internationalized/date';
 	import { RangeCalendar } from '@nahu/admin-kit/components/ui/range-calendar/index.js';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 
 	const start = today(getLocalTimeZone());
 	const end = start.add({ days: 30 });

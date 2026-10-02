@@ -8,12 +8,12 @@
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
 	import { Label } from '@nahu/admin-kit/components/ui/label/index.js';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import RiskAcknowledgement from '$lib/formComponents/RiskAcknowledgement.svelte';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
-	import { createForm } from '$lib/forms/createForm';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import { allergyClashes, type ChartAllergy } from '$lib/allergyClash';
 	import { newPrescription, type NewPrescription, type PrescriptionItem } from './schema';
 

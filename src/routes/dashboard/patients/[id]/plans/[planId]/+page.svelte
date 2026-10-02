@@ -7,7 +7,7 @@
 	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import * as Table from '@nahu/admin-kit/components/ui/table/index.js';
-	import Section from '$lib/components/Section.svelte';
+	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import PlanStatusBadge from '$lib/components/PlanStatusBadge.svelte';
 	import FormDialog from '$lib/formComponents/FormDialog.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
@@ -22,7 +22,7 @@
 	} from '$lib/treatmentPlanStatus';
 	import { PROCEDURE_STATUS_LABEL, isProcedureStatus } from '$lib/procedureStatus';
 	import ProcedurePicker from '$lib/components/ProcedurePicker.svelte';
-	import StepButton from '$lib/formComponents/StepButton.svelte';
+	import StepButton from '@nahu/admin-kit/formComponents/StepButton.svelte';
 	import AnswerForm from './AnswerForm.svelte';
 	import PlanActions from './PlanActions.svelte';
 	import {

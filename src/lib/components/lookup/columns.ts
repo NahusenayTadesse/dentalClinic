@@ -3,12 +3,17 @@ import type { SuperValidated } from 'sveltekit-superforms';
 import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 
 import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
-import Statuses from '$lib/components/Table/statuses.svelte';
+import Statuses from '@nahu/admin-kit/components/Table/statuses.svelte';
 import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 import LookupEdit from './LookupEdit.svelte';
 import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
-import type { createForm } from '$lib/forms/createForm';
-import type { LookupConfig, LookupField, LookupOptions, LookupRow } from './types';
+import type { createForm } from '@nahu/admin-kit/forms/createForm.js';
+import type {
+	LookupConfig,
+	LookupField,
+	LookupOptions,
+	LookupRow
+} from '@nahu/admin-kit/components/lookup/types.js';
 
 /** The validated form a lookup route hands to its dialogs. */
 export type LookupForm = SuperValidated<Record<string, unknown>>;

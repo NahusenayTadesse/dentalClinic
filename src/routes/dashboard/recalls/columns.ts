@@ -1,7 +1,7 @@
 import type { ColumnDef } from '@tanstack/table-core';
 import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
-import Copy from '$lib/Copy.svelte';
+import Copy from '@nahu/admin-kit/Copy.svelte';
 import { ethiopianDate } from '$lib/tableCells';
 import RecallActions from './RecallActions.svelte';
 import type { PageData } from './$types';

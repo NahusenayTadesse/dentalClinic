@@ -17,7 +17,7 @@ import {
 	type StaffOwnedKind
 } from '$lib/server/softDelete';
 import { requireSuperAdmin } from '$lib/server/permissions';
-import { hideFailure } from '$lib/server/dbErrors';
+import { hideFailure } from '@nahu/admin-kit/server/dbErrors.js';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
 import { SECTIONS } from './sections';
 import { fail } from 'sveltekit-superforms';

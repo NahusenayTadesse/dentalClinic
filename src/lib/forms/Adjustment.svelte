@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Pen } from '@lucide/svelte';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 	// `Infer<>` needs the zod schema itself; importing the already inferred type
 	// and wrapping it again leaves every `$form.x` untyped.
 	import { inventoryAdjustmentFormSchema } from '$lib/ZodSchema';
-	import { createForm } from '$lib/forms/createForm';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import type { Item } from '$lib/global.svelte';
 	import PatientPicker from '$lib/components/PatientPicker.svelte';
 

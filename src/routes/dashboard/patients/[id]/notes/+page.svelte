@@ -2,7 +2,7 @@
 	import NotebookPen from '@lucide/svelte/icons/notebook-pen';
 	import Plus from '@lucide/svelte/icons/plus';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import Section from '$lib/components/Section.svelte';
+	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import FormDialog from '$lib/formComponents/FormDialog.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import NoteCard from './NoteCard.svelte';

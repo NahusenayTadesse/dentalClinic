@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createForm, confirmLeave } from '$lib/forms/createForm';
+	import { createForm, confirmLeave } from '@nahu/admin-kit/forms/createForm.js';
 	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
 	import { Label } from '@nahu/admin-kit/components/ui/label/index.js';
 	import type { Snapshot } from '@sveltejs/kit';

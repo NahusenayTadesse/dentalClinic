@@ -6,7 +6,7 @@
 	import { createRoleSchema } from './schema';
 	import { superForm } from 'sveltekit-superforms/client';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 
 	let { data } = $props();
 

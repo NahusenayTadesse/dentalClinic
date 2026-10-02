@@ -10,14 +10,14 @@
 	import Trash from '@lucide/svelte/icons/trash-2';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import * as Table from '@nahu/admin-kit/components/ui/table/index.js';
-	import Section from '$lib/components/Section.svelte';
+	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import InvoiceStatusBadge from '$lib/components/InvoiceStatusBadge.svelte';
 	import ProcedurePicker from '$lib/components/ProcedurePicker.svelte';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import FormDialog from '$lib/formComponents/FormDialog.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import Link from '$lib/components/Table/data-table-links.svelte';
-	import StepButton from '$lib/formComponents/StepButton.svelte';
+	import StepButton from '@nahu/admin-kit/formComponents/StepButton.svelte';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 	import { canEditInvoice, canPay, canRequestVoid } from '$lib/invoiceStatus';
 	import PaymentForm from '$lib/components/PaymentForm.svelte';

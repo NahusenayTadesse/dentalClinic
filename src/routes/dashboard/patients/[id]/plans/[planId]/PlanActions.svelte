@@ -7,7 +7,7 @@
 	import Printer from '@lucide/svelte/icons/printer';
 	import Trash from '@lucide/svelte/icons/trash-2';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import StepButton from '$lib/formComponents/StepButton.svelte';
+	import StepButton from '@nahu/admin-kit/formComponents/StepButton.svelte';
 
 	/**
 	 * The plan page's bar of next steps: print, book the agreed work, add work, discard a draft, close

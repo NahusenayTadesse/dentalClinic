@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Copy from '$lib/Copy.svelte';
+	import Copy from '@nahu/admin-kit/Copy.svelte';
 	import { LoaderCircle } from '@lucide/svelte';
-	import Statuses from './Table/statuses.svelte';
+	import Statuses from '@nahu/admin-kit/components/Table/statuses.svelte';
 	// import JSPDF from "$lib/JSPDF.svelte"
 
 	type SingleTableRow = {

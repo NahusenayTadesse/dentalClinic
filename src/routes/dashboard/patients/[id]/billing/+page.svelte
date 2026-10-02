@@ -3,9 +3,9 @@
 	import Banknote from '@lucide/svelte/icons/banknote';
 	import Plus from '@lucide/svelte/icons/plus';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import Section from '$lib/components/Section.svelte';
+	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import FormDialog from '$lib/formComponents/FormDialog.svelte';
 	import ProcedurePicker from '$lib/components/ProcedurePicker.svelte';
 	import { formatETB } from '$lib/global.svelte';

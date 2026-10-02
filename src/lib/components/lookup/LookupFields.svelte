@@ -1,7 +1,7 @@
 <script lang="ts">
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import type { SuperForm } from 'sveltekit-superforms';
-	import type { LookupField, LookupOptions } from './types';
+	import type { LookupField, LookupOptions } from '@nahu/admin-kit/components/lookup/types.js';
 
 	/**
 	 * The field list of a lookup form, rendered from its descriptor.

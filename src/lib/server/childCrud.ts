@@ -6,7 +6,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { MySqlTable } from 'drizzle-orm/mysql-core';
 
 import { db } from '$lib/server/db';
-import { isDuplicateKey } from '$lib/server/dbErrors';
+import { isDuplicateKey } from '@nahu/admin-kit/server/dbErrors.js';
 import { saveUploadedFile } from '$lib/server/upload';
 import { notDeleted, softDeleteOwnedRecord } from '$lib/server/softDelete';
 import { recordAudit, type AuditedTable } from '$lib/server/audit';

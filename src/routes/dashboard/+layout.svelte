@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Sidebar from '@nahu/admin-kit/components/ui/sidebar/index.js';
 	import AppSidebar from '$lib/components/app-sidebar.svelte';
-	import DarkMode from '$lib/components/DarkMode.svelte';
+	import DarkMode from '@nahu/admin-kit/components/shell/DarkMode.svelte';
 	import Search from '$lib/components/Search.svelte';
 	import AvatarSettings from '$lib/components/AvatarSettings.svelte';
 	import Button from '@nahu/admin-kit/components/ui/button/button.svelte';

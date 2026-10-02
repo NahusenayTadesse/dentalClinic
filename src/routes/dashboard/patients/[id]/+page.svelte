@@ -16,7 +16,7 @@
 	import { STATUS_LABEL, isAppointmentStatus } from '$lib/appointmentStatus';
 
 	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
-	import Section from '$lib/components/Section.svelte';
+	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import SingleTable from '$lib/components/SingleTable.svelte';
 	import LookupSection from '$lib/components/lookup/LookupSection.svelte';
 	import { childActionPaths } from '@nahu/admin-kit/components/lookup/actions.js';

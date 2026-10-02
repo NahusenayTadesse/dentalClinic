@@ -1,7 +1,7 @@
 import type { ColumnDef } from '@tanstack/table-core';
 import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
-import Statuses from '$lib/components/Table/statuses.svelte';
+import Statuses from '@nahu/admin-kit/components/Table/statuses.svelte';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 import type { PageData } from './$types';

@@ -13,7 +13,7 @@
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import { salaryChangeSchema as schema } from './schema';
 	import { superForm } from 'sveltekit-superforms/client';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	let { data } = $props();
 
 	const { form, errors, enhance, delayed, allErrors, capture, restore, message } = superForm(

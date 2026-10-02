@@ -6,10 +6,10 @@
 	import * as Dialog from '@nahu/admin-kit/components/ui/dialog/index.js';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import PatientPicker from '$lib/components/PatientPicker.svelte';
-	import { createForm } from '$lib/forms/createForm';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import { bookAppointment, type BookAppointment } from '$lib/forms/appointmentSchemas';
 	import { ethiopianClock, fromClinic } from '$lib/clinicTime';
 

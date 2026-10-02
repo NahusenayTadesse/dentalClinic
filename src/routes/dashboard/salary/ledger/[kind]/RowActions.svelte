@@ -3,7 +3,7 @@
 	import Trash from '@lucide/svelte/icons/trash-2';
 	import type { SuperValidated } from 'sveltekit-superforms';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import StepButton from '$lib/formComponents/StepButton.svelte';
+	import StepButton from '@nahu/admin-kit/formComponents/StepButton.svelte';
 
 	/**
 	 * One adjustment's actions: change it, or — for a super admin — remove it. Neither is offered

@@ -1,15 +1,19 @@
 <script lang="ts">
 	import { Plus } from '@lucide/svelte';
-	import { createForm } from '$lib/forms/createForm';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import DataTable from '$lib/components/Table/data-table.svelte';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import LookupFields from './LookupFields.svelte';
 	import { lookupColumns, type LookupForm, type LookupSchema } from './columns';
-	import type { LookupConfig, LookupOptions, LookupRow } from './types';
+	import type {
+		LookupConfig,
+		LookupOptions,
+		LookupRow
+	} from '@nahu/admin-kit/components/lookup/types.js';
 
 	/**
 	 * One child table on a detail page — the rows a single parent owns.

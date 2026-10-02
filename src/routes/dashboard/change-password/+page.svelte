@@ -12,7 +12,7 @@
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { changePasswordSchema } from './schema';
 	import { superForm } from 'sveltekit-superforms/client';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	let { data } = $props();
 	import { updateFlash } from 'sveltekit-flash-message';
 	import { page } from '$app/state';

@@ -13,11 +13,11 @@
 	import type { Snapshot } from '@sveltejs/kit';
 
 	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
-	import SingleView from '$lib/components/SingleView.svelte';
+	import SingleView from '@nahu/admin-kit/components/SingleView.svelte';
 	// import DataTable from '$lib/components/Table/data-table.svelte';
 	// import { columns, userColumns } from './columns.js';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 
 	let singleTable = $derived([
 		{ name: 'Name', value: data.single?.name },

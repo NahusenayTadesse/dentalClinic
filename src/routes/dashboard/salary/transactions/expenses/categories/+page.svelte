@@ -2,8 +2,8 @@
 	import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
-	import Statuses from '$lib/components/Table/statuses.svelte';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import Statuses from '@nahu/admin-kit/components/Table/statuses.svelte';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Edit from './edit.svelte';
 	const columns = [

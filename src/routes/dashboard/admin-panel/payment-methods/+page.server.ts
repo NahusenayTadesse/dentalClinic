@@ -6,7 +6,7 @@ import { notDeleted } from '$lib/server/softDelete';
 import { db } from '$lib/server/db';
 import { paymentMethods, user } from '$lib/server/db/schema/';
 import { lookupDeleteAction } from '$lib/server/lookupDelete';
-import { isDuplicateKey } from '$lib/server/dbErrors';
+import { isDuplicateKey } from '@nahu/admin-kit/server/dbErrors.js';
 import { paymentMethod as schema, editPaymentMethod as editSchema } from './schema';
 import type { Actions, PageServerLoad } from './$types';
 

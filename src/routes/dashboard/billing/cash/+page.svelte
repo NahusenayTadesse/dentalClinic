@@ -2,7 +2,7 @@
 	import History from '@lucide/svelte/icons/history';
 	import Vault from '@lucide/svelte/icons/vault';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import Section from '$lib/components/Section.svelte';
+	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import FormDialog from '$lib/formComponents/FormDialog.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';

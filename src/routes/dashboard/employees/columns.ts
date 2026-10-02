@@ -6,7 +6,7 @@ type RowData = NonNullable<PageData['staffList']>[number];
 
 import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
-import Stasuses from '$lib/components/Table/statuses.svelte';
+import Stasuses from '@nahu/admin-kit/components/Table/statuses.svelte';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 

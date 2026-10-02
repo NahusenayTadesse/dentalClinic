@@ -17,7 +17,7 @@
 	import { ForgotPasswordSchema as schema } from './schema';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 
 	let { data } = $props();
 

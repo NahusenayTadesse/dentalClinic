@@ -5,7 +5,7 @@
 
 	import DataTable from '$lib/components/Table/data-table.svelte';
 
-	import Loading from '$lib/components/Loading.svelte';
+	import Loading from '@nahu/admin-kit/components/Loading.svelte';
 	import { Frown, ArrowRight } from '@lucide/svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import MonthYear from '$lib/formComponents/MonthYear.svelte';

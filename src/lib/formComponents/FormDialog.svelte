@@ -5,9 +5,9 @@
 	import Save from '@lucide/svelte/icons/save';
 
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import { createForm } from '$lib/forms/createForm';
-	import DialogComp from './DialogComp.svelte';
-	import Errors from './Errors.svelte';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 
 	/**

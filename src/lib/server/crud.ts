@@ -5,7 +5,7 @@ import { z } from 'zod/v4';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { MySqlColumn, MySqlTable } from 'drizzle-orm/mysql-core';
 import { db } from '$lib/server/db';
-import { isDuplicateKey } from '$lib/server/dbErrors';
+import { isDuplicateKey } from '@nahu/admin-kit/server/dbErrors.js';
 import { saveUploadedFile } from '$lib/server/upload';
 import { requireSuperAdmin } from '$lib/server/permissions';
 import { notDeleted } from '$lib/server/softDelete';

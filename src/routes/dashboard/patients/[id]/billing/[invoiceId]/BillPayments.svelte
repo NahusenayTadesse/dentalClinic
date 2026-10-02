@@ -4,7 +4,7 @@
 	import type { SuperValidated } from 'sveltekit-superforms';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import * as Table from '@nahu/admin-kit/components/ui/table/index.js';
-	import Section from '$lib/components/Section.svelte';
+	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import FormDialog from '$lib/formComponents/FormDialog.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte';

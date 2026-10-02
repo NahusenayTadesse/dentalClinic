@@ -3,7 +3,7 @@
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
 	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
@@ -11,7 +11,7 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { settleSchema } from '../schema';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import { toast } from 'svelte-sonner';
 	import { fly } from 'svelte/transition';
 

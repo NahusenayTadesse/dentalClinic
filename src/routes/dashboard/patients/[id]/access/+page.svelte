@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Eye from '@lucide/svelte/icons/eye';
-	import Section from '$lib/components/Section.svelte';
+	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import { accessColumns } from './columns';
 

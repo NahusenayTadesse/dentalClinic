@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Ban from '@lucide/svelte/icons/ban';
 	import type { SuperValidated } from 'sveltekit-superforms';
-	import StepButton from '$lib/formComponents/StepButton.svelte';
+	import StepButton from '@nahu/admin-kit/formComponents/StepButton.svelte';
 
 	/** Cancelling one prescription from its row — a super admin's, for one written in error. */
 	let { id, data }: { id: number; data: SuperValidated<Record<string, unknown>> } = $props();

@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { PackageX as Minus } from '@lucide/svelte';
-	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 	import { damagedFormSchema } from '$lib/ZodSchema';
-	import { createForm } from '$lib/forms/createForm';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import Errors from '$lib/formComponents/Errors.svelte';
+	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import type { Item } from '$lib/global.svelte';
 
 	let isOpen = $state(false);

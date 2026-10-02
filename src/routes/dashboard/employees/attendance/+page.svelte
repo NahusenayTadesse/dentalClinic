@@ -7,7 +7,7 @@
 	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
 	import FormDialog from '$lib/formComponents/FormDialog.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import StepButton from '$lib/formComponents/StepButton.svelte';
+	import StepButton from '@nahu/admin-kit/formComponents/StepButton.svelte';
 	import { addClinicDays } from '$lib/clinicTime';
 	import { formatEthiopianDate } from '$lib/global.svelte';
 	import { registerAct, type RegisterActForm } from '$lib/forms/attendance';

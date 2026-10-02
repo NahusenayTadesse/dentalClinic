@@ -17,7 +17,7 @@ import {
 import { notDeleted } from '$lib/server/softDelete';
 import { requirePermission } from '$lib/server/permissions';
 import { recordAudit } from '$lib/server/audit';
-import { isDuplicateKey } from '$lib/server/dbErrors';
+import { isDuplicateKey } from '@nahu/admin-kit/server/dbErrors.js';
 import { childActions } from '$lib/server/childCrud';
 import { nowExpr } from '$lib/server/db/dialect';
 import {

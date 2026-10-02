@@ -8,7 +8,7 @@ import { db } from '$lib/server/db';
 import { customers, address } from '$lib/server/db/schema/';
 import { insertReturningId } from '$lib/server/db/insert';
 import { asRequested } from '$lib/server/approvals';
-import { isDuplicateKey } from '$lib/server/dbErrors';
+import { isDuplicateKey } from '@nahu/admin-kit/server/dbErrors.js';
 import { subcities } from '$lib/server/fastData';
 import { customerSchema as schema } from './schema';
 import type { Actions, PageServerLoad } from './$types';
