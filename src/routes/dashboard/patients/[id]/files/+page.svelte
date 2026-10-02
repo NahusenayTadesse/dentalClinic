@@ -3,7 +3,7 @@
 	import Plus from '@lucide/svelte/icons/plus';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Section from '@nahu/admin-kit/components/Section.svelte';
-	import FormDialog from '$lib/formComponents/FormDialog.svelte';
+	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import FileCard from './FileCard.svelte';
 	import { attach } from './schema';
@@ -85,7 +85,7 @@
 	bind:open={attachOpen}
 	hideTrigger
 	resetOnSuccess
-	files
+	multipart
 	submitLabel="Attach"
 	disabled={!data.canAttach}
 >

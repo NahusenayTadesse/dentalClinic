@@ -29,7 +29,7 @@
 	import EyeOff from '@lucide/svelte/icons/eye-off';
 	import Button from '@nahu/admin-kit/components/ui/button/button.svelte';
 
-	import FileUpload from './FileUpload.svelte';
+	import FileUpload from '@nahu/admin-kit/formComponents/FileUpload.svelte';
 	import DatePicker from './DatePicker.svelte';
 	import DateRangePicker from './DateRangePicker.svelte';
 	import SelectComp from '@nahu/admin-kit/formComponents/SelectComp.svelte';

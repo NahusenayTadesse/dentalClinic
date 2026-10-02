@@ -3,7 +3,7 @@
 	import ClipboardCheck from '@lucide/svelte/icons/clipboard-check';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import DataTable from '$lib/components/Table/data-table.svelte';
-	import MonthYear from '$lib/formComponents/MonthYear.svelte';
+	import MonthYear from '@nahu/admin-kit/formComponents/MonthYear.svelte';
 	import { DAY_LABEL } from '$lib/attendance';
 	import DayBadge from '../DayBadge.svelte';
 	import { monthColumns } from './columns';

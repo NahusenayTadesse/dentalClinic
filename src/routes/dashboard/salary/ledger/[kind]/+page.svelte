@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import DataTable from '$lib/components/Table/data-table.svelte';
-	import FormDialog from '$lib/formComponents/FormDialog.svelte';
+	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
 	import CheckboxComp from '$lib/formComponents/CheckboxComp.svelte';
 	import { formatETB } from '$lib/global.svelte';
 	import { clinicToday } from '$lib/clinicTime';

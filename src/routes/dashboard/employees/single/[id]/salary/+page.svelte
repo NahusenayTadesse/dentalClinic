@@ -14,8 +14,8 @@
 	import { fileProxy, superForm } from 'sveltekit-superforms/client';
 	import DatePicker from '$lib/formComponents/DatePicker.svelte';
 	import ComboboxComp from '@nahu/admin-kit/formComponents/ComboboxComp.svelte';
-	import MonthYear from '$lib/formComponents/MonthYear.svelte';
-	import FileUpload from '$lib/formComponents/FileUpload.svelte';
+	import MonthYear from '@nahu/admin-kit/formComponents/MonthYear.svelte';
+	import FileUpload from '@nahu/admin-kit/formComponents/FileUpload.svelte';
 	import { type DateValue } from '@internationalized/date';
 	import { CalendarIcon } from '@lucide/svelte';
 	import * as Popover from '@nahu/admin-kit/components/ui/popover/index.js';

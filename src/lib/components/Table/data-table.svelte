@@ -28,7 +28,7 @@
 
 	import Pdf from '@nahu/admin-kit/components/Table/pdf.svelte';
 	import TableFacet from '@nahu/admin-kit/components/Table/table-facet.svelte';
-	import TableCharts from './table-charts.svelte';
+	import TableCharts from '@nahu/admin-kit/components/Table/table-charts.svelte';
 	import TablePagination from '@nahu/admin-kit/components/Table/table-pagination.svelte';
 	import TableDateRange from './table-date-range.svelte';
 	import {

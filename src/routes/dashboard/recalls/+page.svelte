@@ -3,7 +3,7 @@
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
-	import FormDialog from '$lib/formComponents/FormDialog.svelte';
+	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import { recallColumns } from './columns';
 	import { logCall, type LogCall } from './schema';

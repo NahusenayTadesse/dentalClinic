@@ -7,7 +7,7 @@ type RowData = NonNullable<PageData['allData']>[number];
 import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 import Statuses from '@nahu/admin-kit/components/Table/statuses.svelte';
-import Address from '$lib/components/Table/address.svelte';
+import Address from '@nahu/admin-kit/components/Table/address.svelte';
 import Copy from '@nahu/admin-kit/Copy.svelte';
 
 import Edit from './edit.svelte';

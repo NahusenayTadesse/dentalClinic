@@ -2,7 +2,7 @@
 	import Plus from '@lucide/svelte/icons/plus';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import DataTable from '$lib/components/Table/data-table.svelte';
-	import FormDialog from '$lib/formComponents/FormDialog.svelte';
+	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import { paymentMethodColumns } from './columns';
 	import {

@@ -23,7 +23,7 @@
 	import { toast } from 'svelte-sonner';
 	import type { EditLeave } from './schema';
 	import type { Item } from '$lib/global.svelte';
-	import MonthYear from '$lib/formComponents/MonthYear.svelte';
+	import MonthYear from '@nahu/admin-kit/formComponents/MonthYear.svelte';
 	import { computeLeaveDays, formatDays } from '$lib/leaveDays';
 
 	$effect(() => {

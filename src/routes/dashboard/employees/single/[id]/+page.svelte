@@ -1,7 +1,7 @@
 <script lang="ts">
 	let { data } = $props();
 
-	import SingleTable from '$lib/components/SingleTable.svelte';
+	import SingleTable from '@nahu/admin-kit/components/SingleTable.svelte';
 	import { formatDays } from '$lib/leaveDays';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { page } from '$app/state';

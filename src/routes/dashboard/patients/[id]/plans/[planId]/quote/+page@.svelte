@@ -1,5 +1,5 @@
 <script lang="ts">
-	import PrintSheet from '$lib/components/PrintSheet.svelte';
+	import PrintSheet from '@nahu/admin-kit/components/PrintSheet.svelte';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 	import { planTotals } from '$lib/treatmentPlanStatus';
 
@@ -25,7 +25,10 @@
 	<title>Treatment quote — {data.patient.fullName}</title>
 </svelte:head>
 
-<PrintSheet branch={{ name: plan.branch, address: plan.branchAddress, phone: plan.branchPhone }}>
+<PrintSheet
+	branch={{ name: plan.branch, address: plan.branchAddress, phone: plan.branchPhone }}
+	fallbackName="Dental clinic"
+>
 	<section class="flex flex-col gap-1">
 		<p class="text-xl font-semibold">
 			{plan.status === 'draft' ? 'Treatment plan — draft, not yet a quote' : 'Treatment quote'}

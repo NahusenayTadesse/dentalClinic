@@ -4,7 +4,7 @@
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import PatientPicker from '$lib/components/PatientPicker.svelte';
 	import Section from '@nahu/admin-kit/components/Section.svelte';
-	import FormDialog from '$lib/formComponents/FormDialog.svelte';
+	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
 	import StepButton from '@nahu/admin-kit/formComponents/StepButton.svelte';
 	import type { PossibleDuplicate } from '$lib/server/patients';
 	import { mergeForm } from './mergeSchema';

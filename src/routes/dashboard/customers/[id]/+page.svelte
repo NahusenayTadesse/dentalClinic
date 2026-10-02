@@ -1,14 +1,14 @@
 <script lang="ts">
 	let { data } = $props();
 
-	import SingleTable from '$lib/components/SingleTable.svelte';
+	import SingleTable from '@nahu/admin-kit/components/SingleTable.svelte';
 
 	import { MapPin, Phone, Sheet } from '@lucide/svelte';
 
 	import SingleView from '@nahu/admin-kit/components/SingleView.svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte';
 	import Section from '@nahu/admin-kit/components/Section.svelte';
-	import FormDialog from '$lib/formComponents/FormDialog.svelte';
+	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import { editDetail } from './schema';
 	import EditAddress from './editAddress.svelte';

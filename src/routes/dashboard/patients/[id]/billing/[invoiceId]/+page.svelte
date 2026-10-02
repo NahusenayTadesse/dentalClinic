@@ -14,7 +14,7 @@
 	import InvoiceStatusBadge from '$lib/components/InvoiceStatusBadge.svelte';
 	import ProcedurePicker from '$lib/components/ProcedurePicker.svelte';
 	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
-	import FormDialog from '$lib/formComponents/FormDialog.svelte';
+	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import Link from '$lib/components/Table/data-table-links.svelte';
 	import StepButton from '@nahu/admin-kit/formComponents/StepButton.svelte';

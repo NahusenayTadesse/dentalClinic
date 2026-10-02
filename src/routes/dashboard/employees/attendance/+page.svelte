@@ -5,7 +5,7 @@
 	import UsersRound from '@lucide/svelte/icons/users-round';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
-	import FormDialog from '$lib/formComponents/FormDialog.svelte';
+	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import StepButton from '@nahu/admin-kit/formComponents/StepButton.svelte';
 	import { addClinicDays } from '$lib/clinicTime';

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import PrintSheet from '$lib/components/PrintSheet.svelte';
+	import PrintSheet from '@nahu/admin-kit/components/PrintSheet.svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte';
 
 	/**
@@ -28,7 +28,7 @@
 	<title>Prescription — {p.fullName}</title>
 </svelte:head>
 
-<PrintSheet branch={data.branch}>
+<PrintSheet branch={data.branch} fallbackName="Dental clinic">
 	<section class="flex flex-col gap-1">
 		<p class="text-xl font-semibold">Prescription</p>
 		<dl class="grid grid-cols-2 gap-x-6 gap-y-1 text-sm sm:grid-cols-4">

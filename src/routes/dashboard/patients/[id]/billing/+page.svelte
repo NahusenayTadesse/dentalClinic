@@ -6,7 +6,7 @@
 	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
-	import FormDialog from '$lib/formComponents/FormDialog.svelte';
+	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
 	import ProcedurePicker from '$lib/components/ProcedurePicker.svelte';
 	import { formatETB } from '$lib/global.svelte';
 	import PaymentForm from '$lib/components/PaymentForm.svelte';

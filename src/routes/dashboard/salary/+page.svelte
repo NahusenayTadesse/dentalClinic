@@ -1,5 +1,5 @@
 <script lang="ts">
-	import MonthYear from '$lib/formComponents/MonthYear.svelte';
+	import MonthYear from '@nahu/admin-kit/formComponents/MonthYear.svelte';
 	import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date';
 
 	let selectedMonth: CalendarDate = $state(today(getLocalTimeZone()));

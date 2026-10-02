@@ -4,7 +4,7 @@
 
 	let { data } = $props();
 
-	import SingleTable from '$lib/components/SingleTable.svelte';
+	import SingleTable from '@nahu/admin-kit/components/SingleTable.svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { superForm } from 'sveltekit-superforms/client';
 
