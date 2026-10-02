@@ -18,9 +18,9 @@ export const editDetail = z.object({
 });
 export type EditDetail = z.infer<typeof editDetail>;
 
+/** The payer's address. Which address is decided on the server, from the payer — never posted. */
 export const editAddress = z.object({
-	id: z.number('Address Id not found'),
-	subcity: z.number('Subsity is required'),
+	subcity: z.coerce.number('Subcity is required').int().positive('Subcity is required'),
 	street: z.string('Street is required'),
 	kebele: z.string('Kebele is required'),
 	buildingNumber: z.string().optional(),
@@ -30,43 +30,19 @@ export const editAddress = z.object({
 });
 export type EditAddress = z.infer<typeof editAddress>;
 
-export const addContact = z.object({
-	contactType: z.string('Contact Type is Required'),
-	contactDetail: z.string('Contact Detail is required'),
-	status: z.boolean('Status is Required').default(true)
-});
-export type AddContact = z.infer<typeof addContact>;
+/** How the payer is reached. `isActive` is the column's own name, which `childCrud` writes as is. */
+const contact = {
+	contactType: z.enum(
+		['phone', 'email', 'telegram', 'whatsapp', 'instagram'],
+		'Choose a contact type'
+	),
+	contactDetail: z
+		.string('Contact detail is required')
+		.trim()
+		.min(1, 'Contact detail is required')
+		.max(255),
+	isActive: z.boolean('Status is required').default(true)
+};
 
-export const editContact = z.object({
-	id: z.number('Schedule not found'),
-	contactType: z.string('Contact Type is Required'),
-	contactDetail: z.string('Contact Detail is required'),
-
-	status: z.boolean('Status is Required').default(true)
-});
-
-export type EditContact = z.infer<typeof editContact>;
-
-export const addContract = z.object({
-	contractType: z.string('Contact Type is Required'),
-	service: z.number('Service is Required').array(),
-	contractAmount: z.number('Contract Amount is Required'),
-	contractYear: z.number('Contract Year is Required'),
-	contractDate: z.string('Contract Date is Required'),
-	contactDetail: z.string('Contact Detail is required'),
-	status: z.boolean('Status is Required').default(true)
-});
-export type AddContract = z.infer<typeof addContract>;
-
-export const editContract = z.object({
-	id: z.number('Schedule not found'),
-	contractType: z.string('Contact Type is Required'),
-	service: z.number('Service is Required'),
-	contractAmount: z.number('Contract Amount is Required'),
-	contractYear: z.number('Contract Year is Required'),
-	contractDate: z.string('Contract Date is Required'),
-	contactDetail: z.string('Contact Detail is required'),
-	status: z.boolean('Status is Required').default(true)
-});
-
-export type EditContract = z.infer<typeof editContract>;
+export const addContact = z.object(contact);
+export const editContact = z.object({ id: z.coerce.number('Contact not found'), ...contact });

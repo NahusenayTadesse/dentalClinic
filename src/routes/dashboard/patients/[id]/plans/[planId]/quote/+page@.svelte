@@ -2,6 +2,8 @@
 	import PrintSheet from '@nahu/admin-kit/components/PrintSheet.svelte';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 	import { planTotals } from '$lib/treatmentPlanStatus';
+	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
+	import { quoteColumns } from './columns';
 
 	/**
 	 * A treatment quote on paper, for the patient to take home.
@@ -18,6 +20,10 @@
 	const plan = $derived(data.plan);
 	const totals = $derived(planTotals(plan.lines));
 	const decided = $derived(plan.decidedOn !== null);
+	const summary = $derived([
+		{ label: 'Total', value: formatETB(totals.quoted), strong: true },
+		...(decided ? [{ label: 'Agreed', value: formatETB(totals.accepted) }] : [])
+	]);
 	const day = (value: string | null) => (value ? formatEthiopianDate(new Date(value)) : '—');
 </script>
 
@@ -54,44 +60,7 @@
 		</dl>
 	</section>
 
-	<table class="w-full border-collapse text-sm">
-		<thead>
-			<tr class="border-b text-left">
-				<th class="py-2">Treatment</th>
-				<th class="py-2 text-right">Qty</th>
-				<th class="py-2 text-right">Price</th>
-				<th class="py-2 text-right">Total</th>
-				{#if decided}<th class="py-2 pl-4">Agreed</th>{/if}
-			</tr>
-		</thead>
-		<tbody>
-			{#each plan.lines as line (line.id)}
-				<tr class="break-inside-avoid border-b">
-					<td class="py-2">{line.description}</td>
-					<td class="py-2 text-right tabular-nums">{line.quantity}</td>
-					<td class="py-2 text-right tabular-nums">{formatETB(line.unitPrice)}</td>
-					<td class="py-2 text-right tabular-nums">{formatETB(line.lineTotal)}</td>
-					{#if decided}
-						<td class="py-2 pl-4">{line.decision === 'accepted' ? 'Yes' : 'No'}</td>
-					{/if}
-				</tr>
-			{/each}
-		</tbody>
-		<tfoot>
-			<tr class="font-semibold">
-				<td class="py-2" colspan="3">Total</td>
-				<td class="py-2 text-right tabular-nums">{formatETB(totals.quoted)}</td>
-				{#if decided}<td></td>{/if}
-			</tr>
-			{#if decided}
-				<tr>
-					<td class="py-1" colspan="3">Agreed</td>
-					<td class="py-1 text-right tabular-nums">{formatETB(totals.accepted)}</td>
-					<td></td>
-				</tr>
-			{/if}
-		</tfoot>
-	</table>
+	<DataTable variant="print" data={plan.lines} columns={quoteColumns(decided)} {summary} />
 
 	<footer class="mt-8 flex flex-col gap-6 text-sm text-muted-foreground">
 		<p>

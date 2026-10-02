@@ -3,9 +3,9 @@ import DeleteEntity from '@nahu/admin-kit/components/DeleteEntity.svelte';
 // Assuming a new actions component
 import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
-import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
+import { formatEthiopianDate } from '$lib/global.svelte';
 import { Checkbox } from '@nahu/admin-kit/components/ui/checkbox/index.js';
-import Edit from '$lib/components/leaves/edit.svelte';
+import RowButton from '@nahu/admin-kit/components/RowButton.svelte';
 import { Eye, X } from '@lucide/svelte';
 import { formatDays } from '$lib/leaveDays';
 import type { ColumnDef } from '@tanstack/table-core';
@@ -27,7 +27,11 @@ export type LeaveRow = {
 	requestDate: string | Date;
 	startDate: string | Date;
 	endDate: string | Date;
+	leaveTypeId: number | null;
 	leaveTypeName: string | null;
+	status: LeaveStatus | null;
+	halfDayStart: boolean | null;
+	halfDayEnd: boolean | null;
 	reason: string | null;
 	rejectionReason: string | null;
 	leaveLetter: string | null;
@@ -53,7 +57,12 @@ export type LeaveRow = {
  *
  * These were three near-identical files; the difference between them was 20 lines out of 224.
  */
-export const makeColumns = (status: LeaveStatus, canDelete = false): ColumnDef<LeaveRow>[] => [
+export const makeColumns = (
+	status: LeaveStatus,
+	canDelete: boolean,
+	/** Opens the page's one edit dialog on this row. */
+	onedit: (row: LeaveRow) => void
+): ColumnDef<LeaveRow>[] => [
 	// 1. Row Index
 
 	{
@@ -84,13 +93,11 @@ export const makeColumns = (status: LeaveStatus, canDelete = false): ColumnDef<L
 		}
 	},
 	{
-		accessorKey: 'editContract',
+		id: 'edit',
 		header: 'Edit',
-		cell: ({ row }) => {
-			return renderComponent(Edit, {
-				data: row.original
-			});
-		}
+		enableSorting: false,
+		cell: ({ row }) =>
+			renderComponent(RowButton, { label: 'Edit', onclick: () => onedit(row.original) })
 	},
 
 	{

@@ -1,11 +1,12 @@
 <script lang="ts">
+	import StatCard from '@nahu/admin-kit/components/reports/StatCard.svelte';
+	import type { Stat } from '@nahu/admin-kit/components/reports/types.js';
 	import Plus from '@lucide/svelte/icons/plus';
 	import { page } from '$app/state';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
 	import CheckboxComp from '@nahu/admin-kit/formComponents/CheckboxComp.svelte';
-	import { formatETB } from '$lib/global.svelte';
 	import { clinicToday } from '$lib/clinicTime';
 	import { LEDGER, LEDGER_KINDS, ledgerHref } from '$lib/payrollLedger';
 	import { ledgerEdit, ledgerEntry, type LedgerEdit } from '$lib/forms/payrollLedger';
@@ -22,7 +23,12 @@
 	const meta = $derived(data.meta);
 	const q = $derived(data.currentQuery);
 
-	let addOpen = $state(false);
+	// Arriving from an employee's page (`?staffId=`) opens the record dialog on that employee.
+	let addOpen = $state(Boolean(page.url.searchParams.get('staffId')));
+	const recordSeed = $derived({
+		date: clinicToday(),
+		...(q.staffId ? { staffIds: [Number(q.staffId)] } : {})
+	});
 	let editOpen = $state(false);
 	let editSeed = $state<Partial<LedgerEdit>>({});
 
@@ -56,17 +62,34 @@
 	}
 
 	const unpaid = $derived(data.facets.paid.find((f) => f.value === 'no')?.count ?? 0);
-	const TILES = $derived([
-		{ label: 'Entries', value: data.totals.entries.toLocaleString() },
-		{ label: 'Employees', value: data.totals.employees.toLocaleString() },
+	const TILES = $derived<Stat[]>([
+		{ key: 'entries', label: 'Entries', value: data.totals.entries, format: 'count', group: 'pay' },
+		{
+			key: 'employees',
+			label: 'Employees',
+			value: data.totals.employees,
+			format: 'count',
+			group: 'pay'
+		},
 		...(meta.priced === 'hours'
-			? [{ label: 'Hours', value: data.totals.hours.toLocaleString() }]
+			? [
+					{
+						key: 'hours',
+						label: 'Hours',
+						value: data.totals.hours,
+						format: 'hours',
+						group: 'pay'
+					} satisfies Stat
+				]
 			: []),
 		{
+			key: 'amount',
 			label: meta.effect === 'takes' ? 'Total taken' : 'Total paid',
-			value: formatETB(data.totals.amount)
+			value: data.totals.amount,
+			format: 'money',
+			group: 'pay'
 		},
-		{ label: 'Not paid yet', value: unpaid.toLocaleString() }
+		{ key: 'unpaid', label: 'Not paid yet', value: unpaid, format: 'count', group: 'pay' }
 	]);
 </script>
 
@@ -100,11 +123,8 @@
 	</nav>
 
 	<section class="grid grid-cols-2 gap-4 sm:grid-cols-5" aria-label="{meta.title} at a glance">
-		{#each TILES as tile (tile.label)}
-			<div class="rounded-lg border bg-card p-4">
-				<p class="text-sm text-muted-foreground">{tile.label}</p>
-				<p class="text-xl font-bold tabular-nums">{tile.value}</p>
-			</div>
+		{#each TILES as stat (stat.key)}
+			<StatCard {stat} amharicMoney={false} />
 		{/each}
 	</section>
 
@@ -150,7 +170,7 @@
 	data={data.forms.add}
 	schema={ledgerEntry}
 	bind:open={addOpen}
-	seed={{ date: clinicToday() }}
+	seed={recordSeed}
 	hideTrigger
 	resetOnSuccess
 	submitLabel="Record"

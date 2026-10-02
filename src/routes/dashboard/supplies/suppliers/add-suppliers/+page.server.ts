@@ -1,72 +1,40 @@
-import { setError, superValidate, message, fail } from 'sveltekit-superforms';
+import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { eq } from 'drizzle-orm';
-
-import { add, edit } from '../schema';
-import { db } from '$lib/server/db';
-import { supplySuppliers, supplies, subcity, address } from '$lib/server/db/schema/';
-import type { Actions } from './$types';
-import type { PageServerLoad } from './$types.js';
+import { redirect } from 'sveltekit-flash-message/server';
+import { supplier } from '$lib/forms/supplier';
+import { addSupplier } from '$lib/server/suppliers';
 import { subcities } from '$lib/server/fastData';
-export const load: PageServerLoad = async () => {
-	const form = await superValidate(zod4(add));
+import type { Actions, PageServerLoad } from './$types';
 
-	const subcitiesList = await subcities();
-
-	return {
-		form,
-		subcitiesList
-	};
-};
+/** Adding a supplier. The write is `addSupplier`, shared with nothing else that adds one. */
+export const load: PageServerLoad = async () => ({
+	form: await superValidate(zod4(supplier)),
+	subcitiesList: await subcities()
+});
 
 export const actions: Actions = {
-	add: async ({ request }) => {
-		const form = await superValidate(request, zod4(add));
-
+	add: async ({ request, cookies }) => {
+		const form = await superValidate(request, zod4(supplier));
 		if (!form.valid) {
-			return message(form, { type: 'error', text: 'Please check the form for Errors' });
+			return message(form, { type: 'error', text: 'Please check the form for errors' });
 		}
 
-		const {
-			name,
-			subcity,
-			street,
-			kebele,
-			buildingNumber,
-			floor,
-			houseNumber,
-			phone,
-			description,
-			status
-		} = form.data;
-
+		let id: number;
 		try {
-			const [addressId] = await db
-				.insert(address)
-				.values({
-					subcityId: subcity,
-					street,
-					kebele,
-					buildingNumber,
-					floor,
-					houseNumber
-				})
-				.$returningId();
-
-			await db.insert(supplySuppliers).values({
-				name,
-				phone,
-				description,
-				address: addressId.id,
-				status: status
-			});
-
-			return message(form, { type: 'success', text: 'Supplier   Successfully Added' });
-		} catch (err: any) {
-			return message(form, {
-				type: 'error',
-				text: 'Error: ' + err?.message
-			});
+			id = await addSupplier(form.data);
+		} catch (err: unknown) {
+			// Loud in the log, quiet to the client (CLAUDE.md §9).
+			console.error('add supplier failed', err);
+			return message(
+				form,
+				{ type: 'error', text: 'The supplier could not be added' },
+				{ status: 500 }
+			);
 		}
+		redirect(
+			`/dashboard/supplies/suppliers/${id}`,
+			{ type: 'success', message: 'Supplier added.' },
+			cookies
+		);
 	}
 };

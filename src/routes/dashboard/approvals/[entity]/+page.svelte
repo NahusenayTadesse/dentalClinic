@@ -1,24 +1,20 @@
 <script lang="ts">
 	import { makeColumns } from '$lib/components/approvals/columns';
 	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
-	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
 	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { BadgeCheck, X, Frown, ArrowBigLeft, ArrowRight } from '@lucide/svelte';
-	import { superForm } from 'sveltekit-superforms/client';
-	import { zod4Client } from 'sveltekit-superforms/adapters';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import { settleSchema } from '../schema';
 	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
-	import { toast } from 'svelte-sonner';
 	import { fly } from 'svelte/transition';
 
 	let { data } = $props();
 
 	let selected = $state<{ id: number }[]>([]);
-	let filteredList = $derived(data.rows);
 
 	// The registry decides which fields a queue shows and which of them name another
 	// record, so the columns are built from the shape of the first row plus that
@@ -29,9 +25,10 @@
 	// to act on, so it cannot be a single click the way approving is.
 	let rejectOpen = $state(false);
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data.form, {
+	// `createForm` wires the validator and the toast every form shares (CLAUDE.md §13).
+	// svelte-ignore state_referenced_locally
+	const { form, errors, enhance, delayed, allErrors } = createForm(data.form, settleSchema, {
 		dataType: 'json',
-		validators: zod4Client(settleSchema),
 		onResult: ({ result }) => {
 			// A failure means the form came back for correction — keep the selection and the
 			// dialog so the reason can be filled in rather than re-picked from the table.
@@ -44,12 +41,6 @@
 
 	$effect(() => {
 		$form.ids = selected.map((r) => r.id);
-	});
-
-	$effect(() => {
-		if ($message) {
-			$message.type === 'error' ? toast.error($message.text) : toast.success($message.text);
-		}
 	});
 
 	function submitWith(decision: 'approved' | 'rejected') {
@@ -175,13 +166,13 @@
 	{/if}
 
 	{#key data.rows}
-		<FilterMenu data={data.rows} bind:filteredList filterKeys={['requestedByName']} />
 		<DataTable
-			data={filteredList}
+			data={data.rows}
 			{columns}
 			fileName="Unapproved {data.entity.label}"
-			search={true}
 			bind:selected
+			facetKeys={['requestedByName']}
+			facetLabels={{ requestedByName: 'Requested by' }}
 		/>
 	{/key}
 {/if}

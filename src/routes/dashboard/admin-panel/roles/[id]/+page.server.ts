@@ -3,19 +3,18 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import { editRoleSchema as schema } from './schema';
 
 import { db } from '$lib/server/db';
-import { roles, user, permissions, rolePermissions, session } from '$lib/server/db/schema';
+import { roles, user, permissions, rolePermissions } from '$lib/server/db/schema';
 import { eq, countDistinct, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 import { fail } from 'sveltekit-superforms';
 import { setFlash, redirect } from 'sveltekit-flash-message/server';
 import { notDeleted, softDeleteRole, usersOnRole } from '$lib/server/softDelete';
 import { requireSuperAdmin } from '$lib/server/permissions';
+import { isDuplicateKey } from '@nahu/admin-kit/server/dbErrors.js';
 import { error } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ params }) => {
-	const { id } = params;
-
-	const form = await superValidate(zod4(schema));
+	const id = Number(params.id);
 
 	const singleUser = await db
 		.select({
@@ -80,6 +79,17 @@ export const load: PageServerLoad = async ({ params }) => {
 		.from(user)
 		.where(and(eq(user.roleId, id), notDeleted(user)));
 
+	// The edit form opens on what is saved, so it is validated from the role itself.
+	const form = await superValidate(
+		{
+			name: singleUser.name,
+			description: singleUser.description ?? '',
+			permissions: permissionList.map((p) => p.id)
+		},
+		zod4(schema),
+		{ errors: false }
+	);
+
 	return {
 		singleUser,
 		id,
@@ -120,17 +130,12 @@ export const actions: Actions = {
 			);
 
 			return message(form, { type: 'success', text: 'Role updated successfully.' });
-		} catch (err: any) {
-			if (err.code === 'ER_DUP_ENTRY')
-				return setError(form, 'name', 'Role updated already exists.');
-
-			return message(form, {
-				type: 'error',
-				text:
-					err.code === 'ER_DUP_ENTRY'
-						? 'Role Name is already taken. Please choose another one.'
-						: err.message
-			});
+		} catch (err: unknown) {
+			if (isDuplicateKey(err))
+				return setError(form, 'name', 'A role with that name already exists.');
+			// Loud in the log, quiet to the client (CLAUDE.md §9).
+			console.error('role update failed', err);
+			return message(form, { type: 'error', text: 'The role could not be saved.' });
 		}
 	},
 	/**

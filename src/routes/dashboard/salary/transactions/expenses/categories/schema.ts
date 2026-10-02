@@ -1,19 +1,11 @@
 import { z } from 'zod/v4';
 
-export const add = z.object({
-	name: z.string('Name of Category is required').min(2).max(50),
-	description: z.string('Description is required').min(2).max(100)
-});
+const fields = {
+	name: z.string('Name of the category is required').min(2).max(50),
+	description: z.string().max(255).optional(),
+	status: z.boolean('Status is required').default(true)
+};
 
-export const edit = z.object({
-	id: z.coerce.string(),
-	name: z.string('Name of Category is required').min(2).max(50),
-	description: z.string('Description is required').min(2).max(100)
-});
-export type Edit = z.infer<typeof edit>;
+export const add = z.object(fields);
 
-export const deleteService = z.object({
-	id: z.coerce.string()
-});
-
-export type DeleteService = z.infer<typeof deleteService>;
+export const edit = z.object({ id: z.coerce.string(), ...fields });

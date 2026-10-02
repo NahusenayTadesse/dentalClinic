@@ -1,148 +1,77 @@
 <script lang="ts">
-	import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
+	import type { ComponentProps } from 'svelte';
 	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
-	import DeleteEntity from '@nahu/admin-kit/components/DeleteEntity.svelte';
-	import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
-	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
+	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
 	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
-	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
-	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import { superForm } from 'sveltekit-superforms/client';
-	import { toast } from 'svelte-sonner';
-	import { Plus } from '@lucide/svelte';
-	import Edit from './edit.svelte';
+	import { add, edit, type Edit } from './schema';
+	import { makeColumns, type Row } from './columns';
 
+	/**
+	 * The categories on the supplies list. Hand-written rather than a `LookupPage` because it is not
+	 * a plain lookup: it shows what each type holds, and has no status to switch (CLAUDE.md §2).
+	 */
 	let { data } = $props();
 
-	const { form, errors, enhance, delayed } = superForm(data.form, {
-		id: 'add',
-		onUpdated({ form: result }) {
-			if (result.message) {
-				if (result.message.type === 'error') toast.error(result.message.text);
-				else toast.success(result.message.text);
-			}
-		}
-	});
+	type Field = ComponentProps<typeof InputComp>;
 
-	const columns = [
-		{
-			id: 'index',
-			header: '#',
-			cell: (info) => info.row.index + 1,
-			enableSorting: false
-		},
-		{
-			accessorKey: 'name',
-			header: ({ column }) =>
-				renderComponent(DataTableSort, {
-					name: 'Name',
-					onclick: column.getToggleSortingHandler()
-				}),
-			cell: ({ row }) =>
-				renderComponent(Edit, {
-					id: row.original.id,
-					name: row.original.name,
-					description: row.original.description,
-					action: '?/edit',
-					data: data?.editForm,
-					icon: false
-				})
-		},
-		{
-			accessorKey: 'description',
-			header: 'Description',
-			cell: (info) => info.getValue() ?? '—'
-		},
-		{
-			accessorKey: 'supplyCount',
-			header: ({ column }) =>
-				renderComponent(DataTableSort, {
-					name: 'Items',
-					onclick: column.getToggleSortingHandler()
-				}),
-			// A type with no items behind it is the only kind that can be deleted.
-			cell: (info) => (Number(info.getValue()) === 0 ? 'None' : `${info.getValue()} item(s)`)
-		},
-		{
-			accessorKey: 'totalStock',
-			header: ({ column }) =>
-				renderComponent(DataTableSort, {
-					name: 'Units In Store',
-					onclick: column.getToggleSortingHandler()
-				})
-		},
-		{
-			accessorKey: '',
-			header: 'Edit',
-			enableSorting: false,
-			cell: ({ row }) =>
-				renderComponent(Edit, {
-					id: row.original.id,
-					name: row.original.name,
-					description: row.original.description,
-					action: '?/edit',
-					data: data?.editForm,
-					icon: true
-				})
-		},
-		{
-			id: 'delete',
-			header: '',
-			enableSorting: false,
-			// Renders nothing unless the viewer is a super admin; the action
-			// re-checks, and refuses any type that still has supplies under it.
-			cell: ({ row }) =>
-				renderComponent(DeleteEntity, {
-					entity: 'Supply Type',
-					name: row.original?.name,
-					id: row.original?.id,
-					consequence:
-						Number(row.original?.supplyCount) > 0
-							? `${row.original.supplyCount} supply item(s) still use this type — the delete will be refused until they are moved.`
-							: 'Nothing uses this type.',
-					icon: true,
-					canDelete: data?.isSuperAdmin
-				})
-		}
-	];
+	let editOpen = $state(false);
+	let editSeed = $state<Partial<Edit>>({});
+	const columns = $derived(
+		makeColumns((row: Row) => {
+			editSeed = { id: row.id, name: row.name, description: row.description ?? '' };
+			editOpen = true;
+		}, data.isSuperAdmin ?? false)
+	);
 </script>
 
 <svelte:head>
 	<title>Supply Types</title>
 </svelte:head>
 
-{#key data.allData}
-	<DialogComp title="+ Add New Supply Type" variant="default">
-		<form action="?/add" use:enhance id="main" class="flex flex-col gap-4" method="post">
-			<InputComp
-				{form}
-				{errors}
-				label="Name"
-				type="text"
-				name="name"
-				required={true}
-				placeholder="e.g. Machinery"
-			/>
+{#snippet typeFields(form: Field['form'], errors: Field['errors'])}
+	<InputComp {form} {errors} label="Name" name="name" required placeholder="e.g. Machinery" />
+	<InputComp
+		{form}
+		{errors}
+		label="Description"
+		type="textarea"
+		name="description"
+		rows={4}
+		placeholder="What belongs in this category"
+	/>
+{/snippet}
 
-			<InputComp
-				{form}
-				{errors}
-				label="Description"
-				type="textarea"
-				name="description"
-				rows={4}
-				placeholder="What belongs in this category"
-			/>
+<div class="flex flex-col gap-4">
+	<header class="flex flex-wrap items-center justify-between gap-3">
+		<h1 class="text-2xl font-bold">Supply Types</h1>
+		<FormDialog
+			title="Add a supply type"
+			action="?/add"
+			data={data.form}
+			schema={add}
+			triggerLabel="Add supply type"
+			resetOnSuccess
+		>
+			{#snippet fields({ form, errors })}
+				{@render typeFields(form, errors)}
+			{/snippet}
+		</FormDialog>
+	</header>
 
-			<Button type="submit" form="main">
-				{#if $delayed}
-					<LoadingBtn name="Adding Supply Type" />
-				{:else}
-					<Plus /> Add Supply Type
-				{/if}
-			</Button>
-		</form>
-	</DialogComp>
+	<DataTable {columns} data={data.allData} search fileName="Supply Types" />
+</div>
 
-	<DataTable {columns} data={data?.allData} search={true} fileName="Supply Types" />
-{/key}
+<FormDialog
+	title="Change this supply type"
+	action="?/edit"
+	data={data.editForm}
+	schema={edit}
+	bind:open={editOpen}
+	seed={editSeed}
+	hideTrigger
+>
+	{#snippet fields({ form, errors, values })}
+		<input type="hidden" name="id" value={values.id} />
+		{@render typeFields(form, errors)}
+	{/snippet}
+</FormDialog>

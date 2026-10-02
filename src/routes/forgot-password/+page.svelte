@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Logo from '$lib/components/Logo.svelte';
-	import { toast } from 'svelte-sonner';
 	import {
 		Card,
 		CardHeader,
@@ -12,10 +11,9 @@
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
 	import { Label } from '@nahu/admin-kit/components/ui/label/index.js';
-	import { ArrowLeftIcon, LoaderIcon, CheckCircle, ArrowRight } from '@lucide/svelte';
-	import { superForm } from 'sveltekit-superforms';
+	import { ArrowLeftIcon, CheckCircle, ArrowRight } from '@lucide/svelte';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import { ForgotPasswordSchema as schema } from './schema';
-	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 
@@ -23,18 +21,10 @@
 
 	let isSubmitted = $state(false);
 
-	const { form, errors, enhance, allErrors, message, delayed } = superForm(data.form, {
-		validators: zod4Client(schema)
-	});
-
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				isSubmitted = true;
-				toast.success($message.text);
-			}
+	// svelte-ignore state_referenced_locally
+	const { form, errors, enhance, allErrors, delayed } = createForm(data.form, schema, {
+		onUpdated({ form: result }) {
+			if (result.message?.type === 'success') isSubmitted = true;
 		}
 	});
 </script>

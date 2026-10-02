@@ -2,44 +2,24 @@
 	import type { Snapshot } from '@sveltejs/kit';
 	import { Plus } from '@lucide/svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { createRoleSchema } from './schema';
-	import { superForm } from 'sveltekit-superforms/client';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 
 	let { data } = $props();
 
-	const { form, errors, enhance, delayed, capture, restore, message, allErrors } = superForm(
+	// svelte-ignore state_referenced_locally
+	const { form, errors, enhance, delayed, capture, restore, allErrors } = createForm(
 		data.form,
+		createRoleSchema,
 		{
-			dataType: 'json',
-			onUpdated({ form }) {
-				if (form.message) {
-					if (form.message.type === 'success') {
-						toast.success(form.message.text);
-					} else {
-						toast.error(form.message.text);
-					}
-				}
-			},
-
-			validators: zod4Client(createRoleSchema)
+			dataType: 'json'
 		}
 	);
 
-	import { toast } from 'svelte-sonner';
 	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
 	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
-	// $effect(() => {
-	// 	if ($message) {
-	// 		if ($message.type === 'error') {
-	// 			toast.error($message.text);
-	// 		} else {
-	// 			toast.success($message.text);
-	// 		}
-	// 	}
-	// });
 
 	export const snapshot: Snapshot = { capture, restore };
 	// 	 function getItemNameById(items: any, value: any) {

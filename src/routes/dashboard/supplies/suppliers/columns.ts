@@ -10,7 +10,6 @@ import Statuses from '@nahu/admin-kit/components/Table/statuses.svelte';
 import Address from '@nahu/admin-kit/components/Table/address.svelte';
 import Copy from '@nahu/admin-kit/Copy.svelte';
 
-import Edit from './edit.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import { ethiopianDate } from '$lib/tableCells';
 export const columns: ColumnDef<RowData>[] = [
@@ -81,7 +80,9 @@ export const columns: ColumnDef<RowData>[] = [
 	},
 
 	{
-		accessorKey: '',
+		// Filtered by area (subcity), so the column's id is the area.
+		id: 'subcity',
+		accessorFn: (row) => row.subcity ?? '',
 		header: 'Address',
 		cell: ({ row }) => {
 			// You can pass whatever you need from `row.original` to the component

@@ -1,135 +1,74 @@
 import type { ColumnDef } from '@tanstack/table-core';
+import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
+import Statuses from '@nahu/admin-kit/components/Table/statuses.svelte';
+import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
+import { formatETB } from '$lib/global.svelte';
+import { ethiopianDate } from '$lib/tableCells';
 import type { PageData } from './$types';
 
-/** One row of the table this file describes, taken from the load so the two cannot drift. */
-type RowData = NonNullable<PageData['allTransactions']>[number];
+/** One transaction, as the load returns it. */
+type Row = PageData['rows'][number];
 
-import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
-import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
-import DataTableActions from './data-table-actions.svelte';
-import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
-import { formatEthiopianDate } from '$lib/global.svelte';
-
-export const columns: ColumnDef<RowData>[] = [
+/**
+ * The transactions columns. Ids match the facet and sort keys in the load, which is what puts
+ * each filter in its own header and each sort on the server.
+ */
+export const columns: ColumnDef<Row>[] = [
 	{
-		accessorKey: 'index',
-		header: '#',
-		cell: (info) => info.row.index + 1
-	},
-
-	{
-		accessorKey: 'date',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Paid At',
-				onclick: column.getToggleSortingHandler()
-			}),
-		cell: ({ row }) => {
-			return formatEthiopianDate(row.original.date);
-		}
-	},
-
-	{
-		accessorKey: 'amount',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Amount',
-				onclick: column.getToggleSortingHandler()
-			})
-	},
-
-	{
-		accessorKey: 'paymentMethods',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Payment Method',
-				onclick: column.getToggleSortingHandler()
-			})
+		id: 'date',
+		header: 'Date',
+		accessorFn: (row) => row.date,
+		cell: ({ row }) => ethiopianDate(row.original.date)
 	},
 	{
-		accessorKey: 'description',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Description',
-				onclick: column.getToggleSortingHandler()
-			})
+		id: 'direction',
+		header: 'In / out',
+		accessorFn: (row) => (row.direction === 'in' ? 'Money in' : 'Money out')
 	},
-
 	{
-		accessorKey: 'recievedBy',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Recieved By',
-				onclick: column.getToggleSortingHandler()
-			}),
-
-		cell: ({ row }) => {
-			return renderComponent(DataTableLinks, {
+		id: 'amount',
+		header: 'Amount',
+		accessorFn: (row) => row.amount,
+		cell: ({ row }) => formatETB(Math.abs(row.original.amount ?? 0)),
+		meta: { align: 'right' }
+	},
+	{ id: 'paymentMethod', header: 'Payment method', accessorFn: (row) => row.paymentMethod ?? '—' },
+	{
+		id: 'paymentStatus',
+		header: 'Payment',
+		accessorFn: (row) => row.paymentStatus ?? '',
+		cell: ({ row }) => renderComponent(Statuses, { status: row.original.paymentStatus ?? '' })
+	},
+	{
+		id: 'approvalStatus',
+		header: 'Approval',
+		accessorFn: (row) => row.approvalStatus ?? '',
+		cell: ({ row }) => renderComponent(Statuses, { status: row.original.approvalStatus ?? '' })
+	},
+	{ id: 'receiptNumber', header: 'Receipt no.', accessorFn: (row) => row.receiptNumber ?? '—' },
+	{ id: 'description', header: 'Description', accessorFn: (row) => row.description ?? '' },
+	{
+		id: 'recievedBy',
+		header: 'Recorded by',
+		accessorFn: (row) => row.recievedBy ?? '',
+		cell: ({ row }) =>
+			renderComponent(DataTableLinks, {
 				id: row.original.recievedById,
 				name: row.original.recievedBy,
 				entity: 'user'
-			});
-		}
+			})
 	},
-
-	// {
-	// 	accessorKey: 'noOfProducts',
-	// 	header: ({ column }) =>
-	// 		renderComponent(DataTableSort, {
-	// 			name: 'No. of Products',
-	// 			onclick: column.getToggleSortingHandler()
-	// 		}),
-
-	// 	sortable: true
-	// },
-
-	// {
-	// 	accessorKey: 'noOfServices',
-	// 	header: ({ column }) =>
-	// 		renderComponent(DataTableSort, {
-	// 			name: 'No. of Services',
-	// 			onclick: column.getToggleSortingHandler()
-	// 		}),
-
-	// 	sortable: true
-	// },
-
-	// {
-	// 	accessorKey: 'noOfSupplies',
-	// 	header: ({ column }) =>
-	// 		renderComponent(DataTableSort, {
-	// 			name: 'No. of Supplies',
-	// 			onclick: column.getToggleSortingHandler()
-	// 		}),
-
-	// 	sortable: true
-	// },
-
 	{
-		accessorKey: 'recieptLink',
-		header: 'Reciept',
-		cell: ({ row }) => {
-			// You can pass whatever you need from `row.original` to the component
-			return renderComponent(DataTableLinks, {
-				id: row.original.recieptLink,
-				name: 'View Reciept',
-				link: '/dashboard/files',
-				target: '_blank'
-			});
-		}
+		id: 'recieptLink',
+		header: 'Receipt',
+		cell: ({ row }) =>
+			row.original.recieptLink
+				? renderComponent(DataTableLinks, {
+						id: row.original.recieptLink,
+						name: 'View',
+						link: '/dashboard/files',
+						target: '_blank'
+					})
+				: '—'
 	}
-
-	// {
-	// 	accessorKey: 'action',
-	// 	header: 'Actions',
-	// 	cell: ({ row }) => {
-	// 		// You can pass whatever you need from `row.original` to the component
-	// 		return renderComponent(DataTableActions, {
-	// 			id: row.original.id,
-	// 			booker: row.original.recievedById,
-	// 			recieptLink: row.original.recieptLink,
-	// 			date: row.original.date
-	// 		});
-	// 	}
-	// }
 ];

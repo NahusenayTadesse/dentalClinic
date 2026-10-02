@@ -31,7 +31,7 @@ import type { PageServerLoad } from './$types';
 import { employeeFullName } from '$lib/server/employeeName';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
-	// --- Parse query params from QueryBuilder ---
+	// --- The table's query params: search, paging, sort, and each column's filter ---
 	/*
 	 * What the table may sort by, and what each key actually sorts on — often not the column it
 	 * displays. "Years of service" is computed from `hire_date`, so it sorts by the date; sorting

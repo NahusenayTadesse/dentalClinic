@@ -1,26 +1,26 @@
 <script lang="ts">
 	import { makeColumns } from '$lib/components/approvals/columns';
 	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
-	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
 	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Undo2, X, PartyPopper, ArrowBigLeft, ArrowRight } from '@lucide/svelte';
-	import { superForm } from 'sveltekit-superforms/client';
-	import { toast } from 'svelte-sonner';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
+	import { reopenSchema } from '../schema';
 	import { fly } from 'svelte/transition';
 
 	let { data } = $props();
 
 	let selected = $state<{ id: number }[]>([]);
-	let filteredList = $derived(data.rows);
 
 	// Same registry-built columns as the approval queues, plus the three the rejection
 	// itself carries: why, by whom, and when.
 	let columns = $derived(makeColumns(data.rows[0], data.entity.links, true));
 
-	const { form, enhance, delayed, message, allErrors } = superForm(data.form, {
+	// `createForm` wires the validator and the toast every form shares (CLAUDE.md §13).
+	// svelte-ignore state_referenced_locally
+	const { form, enhance, delayed, allErrors } = createForm(data.form, reopenSchema, {
 		dataType: 'json',
 		onResult: ({ result }) => {
 			if (result.type === 'failure') return;
@@ -30,12 +30,6 @@
 
 	$effect(() => {
 		$form.ids = selected.map((r) => r.id);
-	});
-
-	$effect(() => {
-		if ($message) {
-			$message.type === 'error' ? toast.error($message.text) : toast.success($message.text);
-		}
 	});
 </script>
 
@@ -108,17 +102,13 @@
 	{/if}
 
 	{#key data.rows}
-		<FilterMenu
-			data={data.rows}
-			bind:filteredList
-			filterKeys={['requestedByName', 'rejectedByName']}
-		/>
 		<DataTable
-			data={filteredList}
+			data={data.rows}
 			{columns}
 			fileName="Rejected {data.entity.label}"
-			search={true}
 			bind:selected
+			facetKeys={['requestedByName', 'rejectedByName']}
+			facetLabels={{ requestedByName: 'Requested by', rejectedByName: 'Rejected by' }}
 		/>
 	{/key}
 {/if}

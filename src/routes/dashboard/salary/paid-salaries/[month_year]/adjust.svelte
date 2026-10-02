@@ -1,6 +1,6 @@
 <script lang="ts">
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
-	import { SquarePen, Plus, Save } from '@lucide/svelte';
+	import { SquarePen, Save } from '@lucide/svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { adjustableFields, type Adjust } from './schema';
 
@@ -18,7 +18,8 @@
 	};
 
 	import type { SuperValidated } from 'sveltekit-superforms';
-	import { superForm } from 'sveltekit-superforms';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
+	import { adjust } from './schema';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 
 	let {
@@ -31,29 +32,25 @@
 		banks: Item[];
 	} = $props();
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
+	// svelte-ignore state_referenced_locally
+	const { form, errors, enhance, delayed, allErrors } = createForm(data, adjust, {
+		onUpdated({ form: result }) {
+			if (result.message?.type === 'success') open = false;
+		},
 		resetForm: false,
 		dataType: 'json'
 	});
 
 	let open = $state(false);
 
-	$form.id = id;
+	// Follows the ticked payslips: ticking more after the dialog appeared used to leave them out.
+	$effect(() => {
+		$form.id = id;
+	});
 
-	import { toast } from 'svelte-sonner';
 	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import type { Item } from '$lib/global.svelte';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-				open = false;
-			}
-		}
-	});
 </script>
 
 <DialogComp

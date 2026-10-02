@@ -1,11 +1,12 @@
 <script lang="ts">
+	import StatCard from '@nahu/admin-kit/components/reports/StatCard.svelte';
+	import type { Stat } from '@nahu/admin-kit/components/reports/types.js';
 	import Building from '@lucide/svelte/icons/building-2';
 	import HandCoins from '@lucide/svelte/icons/hand-coins';
 	import Vault from '@lucide/svelte/icons/vault';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
-	import { formatETB } from '$lib/global.svelte';
 	import { columns, payerColumns } from './columns';
 
 	/**
@@ -13,6 +14,31 @@
 	 * paid on the patient's own Billing tab; this is where the desk sees who to chase.
 	 */
 	let { data } = $props();
+
+	const TILES = $derived<Stat[]>([
+		{
+			key: 'owed',
+			label: 'Owed to the clinic',
+			value: data.totalOwed,
+			format: 'money',
+			group: 'billing'
+		},
+		{
+			key: 'owing',
+			label: 'Patients who owe',
+			value: data.owing.length,
+			format: 'count',
+			group: 'billing'
+		},
+		{
+			key: 'awaiting',
+			label: 'Bills waiting for a manager',
+			value: data.awaitingManager,
+			format: 'count',
+			group: 'billing',
+			tone: data.awaitingManager ? 'warning' : 'neutral'
+		}
+	]);
 </script>
 
 <svelte:head>
@@ -35,22 +61,15 @@
 	</header>
 
 	<section class="grid grid-cols-1 gap-4 sm:grid-cols-3" aria-label="Receivables">
-		<div class="rounded-lg border bg-card p-4">
-			<p class="text-sm text-muted-foreground">Owed to the clinic</p>
-			<p class="text-2xl font-bold tabular-nums">{formatETB(data.totalOwed)}</p>
-		</div>
-		<div class="rounded-lg border bg-card p-4">
-			<p class="text-sm text-muted-foreground">Patients who owe</p>
-			<p class="text-2xl font-bold tabular-nums">{data.owing.length}</p>
-		</div>
-		<div class="rounded-lg border bg-card p-4">
-			<p class="text-sm text-muted-foreground">Bills waiting for a manager</p>
-			<p class="text-2xl font-bold tabular-nums">{data.awaitingManager}</p>
-			{#if data.awaitingManager && data.canApprove}
-				<a class="text-xs underline" href="/dashboard/approvals/invoices">Open the queue</a>
-			{/if}
-		</div>
+		{#each TILES as stat (stat.key)}
+			<StatCard {stat} amharicMoney={false} />
+		{/each}
 	</section>
+	{#if data.awaitingManager && data.canApprove}
+		<a class="-mt-3 self-end text-sm underline" href="/dashboard/approvals/invoices">
+			Open the bills waiting for a manager
+		</a>
+	{/if}
 
 	<Section title="Who owes" IconComp={HandCoins} style="identityIcon">
 		{#if data.owing.length}

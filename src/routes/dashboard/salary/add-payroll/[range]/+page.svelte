@@ -1,4 +1,6 @@
 <script lang="ts">
+	import StatCard from '@nahu/admin-kit/components/reports/StatCard.svelte';
+	import type { Stat } from '@nahu/admin-kit/components/reports/types.js';
 	import ArrowRight from '@lucide/svelte/icons/arrow-right';
 	import BanknoteArrowUp from '@lucide/svelte/icons/banknote-arrow-up';
 	import Landmark from '@lucide/svelte/icons/landmark';
@@ -46,12 +48,26 @@
 	const sum = (key: 'gross' | 'taxAmount' | 'penEm' | 'penOrg' | 'netPay') =>
 		Math.round(counted.reduce((total, row) => total + row[key], 0) * 100) / 100;
 
-	const TILES = $derived([
-		{ label: selected.length ? 'Ticked' : 'Unpaid', value: counted.length.toLocaleString() },
-		{ label: 'Gross', value: formatETB(sum('gross')) },
-		{ label: 'Income tax', value: formatETB(sum('taxAmount')) },
-		{ label: 'Pension (both shares)', value: formatETB(sum('penEm') + sum('penOrg')) },
-		{ label: 'Net to pay', value: formatETB(sum('netPay')) }
+	const money = (key: string, label: string, value: number, tone?: Stat['tone']): Stat => ({
+		key,
+		label,
+		value,
+		format: 'money',
+		group: 'payroll',
+		tone
+	});
+	const TILES = $derived<Stat[]>([
+		{
+			key: 'count',
+			label: selected.length ? 'Ticked' : 'Unpaid',
+			value: counted.length,
+			format: 'count',
+			group: 'payroll'
+		},
+		money('gross', 'Gross', sum('gross')),
+		money('tax', 'Income tax', sum('taxAmount')),
+		money('pension', 'Pension (both shares)', sum('penEm') + sum('penOrg')),
+		money('net', 'Net to pay', sum('netPay'), 'positive')
 	]);
 
 	function openPay() {
@@ -123,11 +139,8 @@
 		{/if}
 
 		<section class="grid grid-cols-2 gap-4 sm:grid-cols-5" aria-label="Payroll at a glance">
-			{#each TILES as tile (tile.label)}
-				<div class="rounded-lg border bg-card p-4">
-					<p class="text-sm text-muted-foreground">{tile.label}</p>
-					<p class="text-xl font-bold tabular-nums">{tile.value}</p>
-				</div>
+			{#each TILES as stat (stat.key)}
+				<StatCard {stat} amharicMoney={false} />
 			{/each}
 		</section>
 

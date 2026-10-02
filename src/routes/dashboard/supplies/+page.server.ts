@@ -1,55 +1,35 @@
 import { db } from '$lib/server/db';
 import { supplies, supplyTypes } from '$lib/server/db/schema';
-import { and, asc, eq, isNull, like, or } from 'drizzle-orm';
+import { and, asc, eq, like, or } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
 import {
 	parseTableQuery,
 	buildWhere,
 	pagination,
 	currentQuery,
-	paginate
+	paginate,
+	facetInMemory
 } from '$lib/server/queryFilters';
-import { UNSPECIFIED_UNIT } from './filters';
-import type { PageServerLoad } from '../$types';
+import { STOCK_STATUSES, SUPPLY_KINDS, UNSPECIFIED_UNIT } from './filters';
+import type { PageServerLoad } from './$types';
 import { onHand } from '$lib/server/stock';
 
 export const load: PageServerLoad = async ({ url }) => {
 	const query = parseTableQuery(url, ['supplyTypeId', 'kind', 'unitOfMeasure', 'stockStatus']);
 
+	// Search and the date window narrow the catalogue in SQL; the column filters are applied in
+	// memory below, because stock status is worked out from the lots, not stored.
 	const whereClause = buildWhere(query, {
 		base: [notDeleted(supplies)],
 		search: (term) => or(like(supplies.name, `%${term}%`), like(supplies.description, `%${term}%`)),
-		dateColumn: supplies.createdAt,
-		filters: {
-			supplyTypeId: (v) => eq(supplies.supplyTypeId, Number(v)),
-			kind: (v) =>
-				v === 'returnable' || v === 'consumable'
-					? eq(supplies.returnable, v === 'returnable')
-					: undefined,
-			// The unit is nullable, so "unspecified" is a real choice on the list.
-			unitOfMeasure: (v) =>
-				v === UNSPECIFIED_UNIT ? isNull(supplies.unitOfMeasure) : eq(supplies.unitOfMeasure, v)
-		}
+		dateColumn: supplies.createdAt
 	});
-
-	// --- Filter option lists (the whole catalogue, not just the current page) ---
-	const [typeOptions, unitRows] = await Promise.all([
-		db
-			.select({ id: supplyTypes.id, name: supplyTypes.name })
-			.from(supplyTypes)
-			.where(notDeleted(supplyTypes))
-			.orderBy(asc(supplyTypes.name)),
-		db
-			.selectDistinct({ unit: supplies.unitOfMeasure })
-			.from(supplies)
-			.where(notDeleted(supplies))
-			.orderBy(asc(supplies.unitOfMeasure))
-	]);
 
 	const supplyList = await db
 		.select({
 			id: supplies.id,
 			name: supplies.name,
+			supplyTypeId: supplies.supplyTypeId,
 			type: supplyTypes.name,
 			description: supplies.description,
 			quantity: onHand(),
@@ -65,37 +45,50 @@ export const load: PageServerLoad = async ({ url }) => {
 
 	const rows = supplyList.map((row) => {
 		// Stock on hand is derived from the item's open lots — see `server/stock.ts`.
-		const onHand = Number(row.quantity ?? 0);
-		const belowReorder = row.reorderLevel != null && onHand <= Number(row.reorderLevel);
-
+		const stock = Number(row.quantity ?? 0);
+		const belowReorder = row.reorderLevel != null && stock <= Number(row.reorderLevel);
+		const stockStatus = stock === 0 ? 'out-of-stock' : belowReorder ? 'at-reorder' : 'in-stock';
 		return {
 			...row,
-			onHand,
-			kind: row.returnable ? 'Returnable' : 'Consumable',
+			onHand: stock,
+			kind: row.returnable ? 'returnable' : 'consumable',
 			unitOfMeasure: row.unitOfMeasure ?? UNSPECIFIED_UNIT,
 			belowReorder,
-			stockStatus: onHand === 0 ? 'out-of-stock' : belowReorder ? 'at-reorder' : 'in-stock'
+			stockStatus
 		};
 	});
 
-	/**
-	 * `stockStatus` is worked out in JS from the reorder level, so it narrows the rows here
-	 * rather than in the `WHERE`. `paginate` then slices what is left, keeping the shape a
-	 * SQL-paginated page returns.
+	/*
+	 * The column filters and their counts, over the whole catalogue, in memory — stock status
+	 * cannot be a SQL facet. It used to be a separate filter bar whose dropdowns had no counts.
 	 */
-	const narrowed = rows.filter(
-		(row) => !query.filters.stockStatus || row.stockStatus === query.filters.stockStatus
-	);
+	const label = (options: { value: string; name: string }[], value: string) =>
+		options.find((o) => o.value === value)?.name ?? value;
+	const { rows: narrowed, facets } = facetInMemory(rows, query, {
+		supplyTypeId: {
+			key: 'type',
+			value: (r) => (r.supplyTypeId === null ? null : String(r.supplyTypeId)),
+			label: (r) => r.type
+		},
+		kind: { key: 'kind', value: (r) => r.kind, label: (r) => label(SUPPLY_KINDS, r.kind) },
+		unitOfMeasure: {
+			key: 'unitOfMeasure',
+			value: (r) => r.unitOfMeasure,
+			label: (r) => (r.unitOfMeasure === UNSPECIFIED_UNIT ? 'Not given' : r.unitOfMeasure)
+		},
+		stockStatus: {
+			key: 'stockStatus',
+			value: (r) => r.stockStatus,
+			label: (r) => label(STOCK_STATUSES, r.stockStatus)
+		}
+	});
 
 	const { rows: paged, total } = paginate(narrowed, query);
-
 	return {
 		supplyList: paged,
+		facets,
+		atReorder: rows.filter((r) => r.stockStatus !== 'in-stock').length,
 		pagination: pagination(query, total),
-		filterOptions: {
-			supplyTypes: typeOptions,
-			units: [...new Set(unitRows.map((row) => row.unit || UNSPECIFIED_UNIT))]
-		},
 		currentQuery: currentQuery(query)
 	};
 };

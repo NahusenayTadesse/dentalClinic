@@ -1,4 +1,6 @@
 <script lang="ts">
+	import StatCard from '@nahu/admin-kit/components/reports/StatCard.svelte';
+	import type { Stat } from '@nahu/admin-kit/components/reports/types.js';
 	import PhoneCall from '@lucide/svelte/icons/phone-call';
 	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
@@ -14,6 +16,44 @@
 	let { data } = $props();
 
 	const a = $derived(data.acceptance);
+
+	const TILES = $derived<Stat[]>([
+		{
+			key: 'rate',
+			label: 'Case acceptance',
+			value: a.rate ?? 0,
+			format: 'percent',
+			group: 'plans',
+			hint:
+				a.rate === null
+					? `No quote answered in the last ${data.acceptanceDays} days`
+					: `of quoted value, last ${data.acceptanceDays} days`
+		},
+		{
+			key: 'agreed',
+			label: 'Agreed',
+			value: a.accepted,
+			format: 'money',
+			group: 'plans',
+			hint: `of ${formatETB(a.quoted)} answered`
+		},
+		{
+			key: 'waiting',
+			label: 'Awaiting an answer',
+			value: data.waiting.length,
+			format: 'count',
+			group: 'plans',
+			hint: 'quotes still standing'
+		},
+		{
+			key: 'expired',
+			label: 'Expired unanswered',
+			value: a.expired,
+			format: 'count',
+			group: 'plans',
+			hint: `last ${data.acceptanceDays} days`
+		}
+	]);
 </script>
 
 <svelte:head>
@@ -32,26 +72,9 @@
 		class="grid grid-cols-2 gap-4 md:grid-cols-4"
 		aria-label="Case acceptance, last {data.acceptanceDays} days"
 	>
-		<div class="rounded-lg border bg-card p-4">
-			<p class="text-sm text-muted-foreground">Case acceptance</p>
-			<p class="text-2xl font-bold tabular-nums">{a.rate === null ? '—' : `${a.rate}%`}</p>
-			<p class="text-xs text-muted-foreground">of quoted value, last {data.acceptanceDays} days</p>
-		</div>
-		<div class="rounded-lg border bg-card p-4">
-			<p class="text-sm text-muted-foreground">Agreed</p>
-			<p class="text-2xl font-bold tabular-nums">{formatETB(a.accepted)}</p>
-			<p class="text-xs text-muted-foreground">of {formatETB(a.quoted)} answered</p>
-		</div>
-		<div class="rounded-lg border bg-card p-4">
-			<p class="text-sm text-muted-foreground">Awaiting an answer</p>
-			<p class="text-2xl font-bold tabular-nums">{data.waiting.length}</p>
-			<p class="text-xs text-muted-foreground">quotes still standing</p>
-		</div>
-		<div class="rounded-lg border bg-card p-4">
-			<p class="text-sm text-muted-foreground">Expired unanswered</p>
-			<p class="text-2xl font-bold tabular-nums">{a.expired}</p>
-			<p class="text-xs text-muted-foreground">last {data.acceptanceDays} days</p>
-		</div>
+		{#each TILES as stat (stat.key)}
+			<StatCard {stat} amharicMoney={false} />
+		{/each}
 	</section>
 
 	<Section title="Awaiting an answer" IconComp={PhoneCall} style="identityIcon">

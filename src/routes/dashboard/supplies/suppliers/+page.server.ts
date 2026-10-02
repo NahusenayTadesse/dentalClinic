@@ -1,32 +1,20 @@
-import { setError, superValidate, message, fail } from 'sveltekit-superforms';
-import { zod4 } from 'sveltekit-superforms/adapters';
-import { and, asc, eq, isNull, isNotNull, like, ne, or, sql } from 'drizzle-orm';
+import { and, asc, eq, like, or, sql } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
 import {
 	parseTableQuery,
 	buildWhere,
 	pagination,
 	currentQuery,
-	paginate
+	paginate,
+	facetInMemory
 } from '$lib/server/queryFilters';
+import { SUPPLIER_ACTIVITY, SUPPLIER_CONTACT, SUPPLIER_STATUSES } from '../filters';
 import { currentMonthFilter } from '$lib/global.svelte';
 
-import { add, edit } from './schema';
 import { db } from '$lib/server/db';
-import {
-	supplySuppliers,
-	supplies,
-	subcity,
-	address,
-	suppliesAdjustments
-} from '$lib/server/db/schema/';
-import type { Actions } from './$types';
-import type { PageServerLoad } from './$types.js';
-import { subcities } from '$lib/server/fastData';
+import { supplySuppliers, subcity, address, suppliesAdjustments } from '$lib/server/db/schema/';
+import type { PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ url }) => {
-	const form = await superValidate(zod4(add));
-	const editForm = await superValidate(zod4(edit));
-
 	const query = parseTableQuery(url, ['subcityId', 'status', 'contact', 'activity']);
 
 	const whereClause = buildWhere(query, {
@@ -36,21 +24,9 @@ export const load: PageServerLoad = async ({ url }) => {
 				like(supplySuppliers.name, `%${term}%`),
 				like(supplySuppliers.phone, `%${term}%`),
 				like(supplySuppliers.email, `%${term}%`)
-			),
-		filters: {
-			subcityId: (v) => eq(address.subcityId, Number(v)),
-			status: (v) =>
-				v === 'active' || v === 'inactive' ? eq(supplySuppliers.status, v === 'active') : undefined,
-			// An email column that is present but blank is still "phone only".
-			contact: (v) =>
-				v === 'with-email'
-					? and(isNotNull(supplySuppliers.email), ne(supplySuppliers.email, ''))
-					: v === 'phone-only'
-						? or(isNull(supplySuppliers.email), eq(supplySuppliers.email, ''))
-						: undefined
-			// `activity` counts deliveries, which only exist once the rows are
-			// grouped — applied below rather than in the WHERE.
-		}
+			)
+		// The column filters are applied in memory below: `activity` counts deliveries, which only
+		// exist once the rows are grouped, and the list is a clinic's handful of suppliers.
 	});
 
 	/**
@@ -116,8 +92,6 @@ export const load: PageServerLoad = async ({ url }) => {
 		// Pagination needs a stable order or page 2 is undefined.
 		.orderBy(asc(supplySuppliers.name), asc(supplySuppliers.id));
 
-	const subcitiesList = await subcities();
-
 	const rows = allData.map((row) => ({
 		...row,
 		totalSpend: Number(row.totalSpend ?? 0),
@@ -125,98 +99,45 @@ export const load: PageServerLoad = async ({ url }) => {
 		itemsSupplied: Number(row.itemsSupplied ?? 0)
 	}));
 
-	// Deliveries are an aggregate, so this one narrows after the grouping.
-	const activity = query.filters.activity;
-	const narrowed = rows.filter(
-		(row) => !activity || (activity === 'has-supplied' ? row.deliveries > 0 : row.deliveries === 0)
-	);
+	/*
+	 * The column filters and their counts, over every supplier the search matches — it used to be
+	 * a separate filter bar whose dropdowns had no counts. An email that is present but blank is
+	 * still "phone only".
+	 */
+	const nameOf = (options: { value: string; name: string }[], value: string) =>
+		options.find((o) => o.value === value)?.name ?? value;
+	const contactOf = (email: string | null) => (email?.trim() ? 'with-email' : 'phone-only');
+	const activityOf = (deliveries: number) => (deliveries > 0 ? 'has-supplied' : 'never-supplied');
+	const statusOf = (active: boolean) => (active ? 'active' : 'inactive');
+	const { rows: narrowed, facets } = facetInMemory(rows, query, {
+		subcityId: {
+			key: 'subcity',
+			value: (r) => (r.subcityId === null ? null : String(r.subcityId)),
+			label: (r) => r.subcity
+		},
+		status: {
+			key: 'status',
+			value: (r) => statusOf(r.status),
+			label: (r) => nameOf(SUPPLIER_STATUSES, statusOf(r.status))
+		},
+		contact: {
+			key: 'email',
+			value: (r) => contactOf(r.email),
+			label: (r) => nameOf(SUPPLIER_CONTACT, contactOf(r.email))
+		},
+		activity: {
+			key: 'deliveries',
+			value: (r) => activityOf(r.deliveries),
+			label: (r) => nameOf(SUPPLIER_ACTIVITY, activityOf(r.deliveries))
+		}
+	});
 
 	const { rows: paged, total } = paginate(narrowed, query);
 
 	return {
-		form,
-		editForm,
 		allData: paged,
+		facets,
 		pagination: pagination(query, total),
-		currentQuery: currentQuery(query),
-		// Doubles as the Subcity filter's option list and the add/edit form's.
-		subcitiesList
+		currentQuery: currentQuery(query)
 	};
-};
-
-export const actions: Actions = {
-	add: async ({ request }) => {
-		const form = await superValidate(request, zod4(add));
-
-		if (!form.valid) {
-			return message(form, { type: 'error', text: 'Please check the form for Errors' });
-		}
-
-		const {
-			name,
-			subcity,
-			street,
-			kebele,
-			buildingNumber,
-			floor,
-			houseNumber,
-			phone,
-			description
-		} = form.data;
-
-		try {
-			const [addressId] = await db
-				.insert(address)
-				.values({
-					subcity,
-					street,
-					kebele,
-					buildingNumber,
-					floor,
-					houseNumber
-				})
-				.$returningId();
-
-			await db.insert(supplySuppliers).values({
-				name,
-				phone,
-				description,
-				address: addressId.id,
-				status: status
-			});
-
-			return message(form, { type: 'success', text: 'Supplier   Successfully Added' });
-		} catch (err: any) {
-			return message(form, {
-				type: 'error',
-				text: 'Error: ' + err?.message
-			});
-		}
-	},
-	edit: async ({ request }) => {
-		const form = await superValidate(request, zod4(edit));
-		if (!form.valid) {
-			return fail(400, { form });
-		}
-
-		const { id, name, phone, location, description, status } = form.data;
-
-		try {
-			await db
-				.update(supplySuppliers)
-				.set({ name, phone, location, description, status })
-				.where(eq(supplySuppliers.id, id));
-			return message(form, { type: 'success', text: 'Department Successfully Updated' });
-		} catch (err: any) {
-			if (err.code === 'ER_DUP_ENTRY') return;
-			setError(form, 'name', 'Department name already exists.');
-			return message(form, {
-				type: 'error',
-				text:
-					err.code === 'ER_DUP_ENTRY'
-						? 'Department name is already taken. Please choose another one.'
-						: err.message
-			});
-		}
-	}
 };

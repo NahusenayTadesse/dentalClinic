@@ -1,12 +1,12 @@
 /**
  * The one place server-side table filtering lives.
  *
- * Every paginated list page in the dashboard is driven by the same filter bar
- * (`$lib/QueryBuilder.svelte`): a search box, a page size, an optional date
- * range, and a handful of dropdowns that list out what you can pick. Before
- * this module each `+page.server.ts` re-parsed those params, re-assembled the
- * `WHERE`, re-ran its own `count()` and re-shaped its own return object — nine
- * copies of the same five steps, drifting apart from each other.
+ * Every paginated list in the dashboard is the kit's table in server mode: a search box, a page
+ * size, an optional date window, and a filter on each column with its count. Before this module
+ * each `+page.server.ts` re-parsed those params, re-assembled the `WHERE`, re-ran its own
+ * `count()` and re-shaped its own return object — nine copies of the same five steps, drifting
+ * apart from each other. (The separate filter bar those params once came from, `QueryBuilder`, is
+ * gone; only the reports keep a panel, for filters that also drive their charts.)
  *
  * A load now declares *what* its filters mean and leaves the mechanics here:
  *
@@ -202,6 +202,58 @@ export function currentQuery<F extends string>(query: TableQuery<F>) {
  */
 export function paginate<T>(rows: T[], query: TableQuery): { rows: T[]; total: number } {
 	return { rows: rows.slice(query.offset, query.offset + query.limit), total: rows.length };
+}
+
+/**
+ * The column filters and their tallies for a list whose filtered columns are computed in JS —
+ * supply stock status, which is the sum of an item's open lots. `facetCounts` is the SQL version;
+ * this is the same rule in memory: the rows come back with every filter applied, and each facet is
+ * counted with every filter applied **but its own**, so the choices within one column stay
+ * comparable (see `facetCounts` for why). Hand it the rows already narrowed by search and date.
+ *
+ *     const { rows, facets } = facetInMemory(all, query, {
+ *       stockStatus: { key: 'stockStatus', value: (r) => r.stockStatus, label: (r) => r.stockLabel }
+ *     });
+ *
+ * `key` is the column id the facet is drawn in; the map is keyed by the URL param it filters on.
+ */
+export function facetInMemory<T, F extends string>(
+	rows: T[],
+	query: TableQuery<F>,
+	fields: Partial<
+		Record<F, { key: string; value: (row: T) => string | null; label?: (row: T) => string | null }>
+	>
+): { rows: T[]; facets: Record<string, Facet[]> } {
+	const entries = Object.entries(fields) as [
+		F,
+		{ key: string; value: (row: T) => string | null; label?: (row: T) => string | null }
+	][];
+	const passes = (row: T, except?: F) =>
+		entries.every(([param, field]) => {
+			const chosen = query.filters[param];
+			return param === except || !chosen || field.value(row) === chosen;
+		});
+
+	const facets: Record<string, Facet[]> = {};
+	for (const [param, field] of entries) {
+		const tally = new Map<string, Facet>();
+		for (const row of rows) {
+			if (!passes(row, param)) continue;
+			const value = field.value(row);
+			if (value === null || value === '') continue;
+			const entry = tally.get(value) ?? {
+				value,
+				label: field.label?.(row) ?? value,
+				count: 0
+			};
+			entry.count++;
+			tally.set(value, entry);
+		}
+		facets[field.key] = [...tally.values()].sort(
+			(a, b) => b.count - a.count || a.label.localeCompare(b.label)
+		);
+	}
+	return { rows: rows.filter((row) => passes(row)), facets };
 }
 
 /**

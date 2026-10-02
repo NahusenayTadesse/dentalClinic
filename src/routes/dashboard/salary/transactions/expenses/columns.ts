@@ -1,142 +1,61 @@
+import type { ColumnDef } from '@tanstack/table-core';
 import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DeleteEntity from '@nahu/admin-kit/components/DeleteEntity.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
-import DataTableActions from './data-table-actions.svelte';
-import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
-import { formatEthiopianDate, fileUrl } from '$lib/global.svelte';
+import { formatETB } from '$lib/global.svelte';
+import { ethiopianDate } from '$lib/tableCells';
+import type { PageData } from './$types';
+
+/** One expense, as the load returns it. */
+type Row = PageData['rows'][number];
 
 /**
- * Built per request rather than exported as a constant: the delete column
- * needs to know whether the viewer is a super admin, which only the page has.
+ * The expenses columns. Ids match the facet and sort keys in the load. Built per request rather
+ * than exported as a constant: the delete column needs to know whether the viewer is a super
+ * admin, which only the page has — and the action re-checks.
  */
-export const makeColumns = (canDelete = false) => [
+export const makeColumns = (canDelete = false): ColumnDef<Row>[] => [
 	{
-		accessorKey: 'index',
-		header: '#',
-		cell: (info) => info.row.index + 1
+		id: 'date',
+		header: 'Date',
+		accessorFn: (row) => row.date,
+		cell: ({ row }) => ethiopianDate(row.original.date)
 	},
-
+	{ id: 'expenseType', header: 'Category', accessorFn: (row) => row.expenseType ?? '—' },
+	{ id: 'description', header: 'Description', accessorFn: (row) => row.description ?? '' },
+	{ id: 'payee', header: 'Paid to', accessorFn: (row) => row.payee ?? '—' },
 	{
-		accessorKey: 'date',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Paid At',
-				onclick: column.getToggleSortingHandler()
-			}),
-		cell: ({ row }) => {
-			return renderComponent(DataTableLinks, {
-				id: row.original.id,
-				name: formatEthiopianDate(new Date(row.original.date)),
-				link: '/dashboard/transactions/single'
-			});
-		}
+		id: 'amount',
+		header: 'Amount',
+		accessorFn: (row) => row.amount,
+		cell: ({ row }) => formatETB(row.original.amount),
+		meta: { align: 'right' }
 	},
-
+	{ id: 'paymentMethod', header: 'Paid from', accessorFn: (row) => row.paymentMethod ?? '—' },
 	{
-		accessorKey: 'expenseType',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Expense Type',
-				onclick: column.getToggleSortingHandler()
-			})
-	},
-
-	{
-		accessorKey: 'amount',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Amount',
-				onclick: column.getToggleSortingHandler()
-			})
-	},
-
-	{
-		accessorKey: 'paymentMethods',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Payment Method',
-				onclick: column.getToggleSortingHandler()
-			})
-	},
-
-	{
-		accessorKey: 'recievedBy',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Recieved By',
-				onclick: column.getToggleSortingHandler()
-			}),
-
-		cell: ({ row }) => {
-			return renderComponent(DataTableLinks, {
+		id: 'recievedBy',
+		header: 'Recorded by',
+		accessorFn: (row) => row.recievedBy ?? '',
+		cell: ({ row }) =>
+			renderComponent(DataTableLinks, {
 				id: row.original.recievedById,
 				name: row.original.recievedBy,
 				entity: 'user'
-			});
-		}
+			})
 	},
-
-	// {
-	// 	accessorKey: 'noOfProducts',
-	// 	header: ({ column }) =>
-	// 		renderComponent(DataTableSort, {
-	// 			name: 'No. of Products',
-	// 			onclick: column.getToggleSortingHandler()
-	// 		}),
-
-	// 	sortable: true
-	// },
-
-	// {
-	// 	accessorKey: 'noOfServices',
-	// 	header: ({ column }) =>
-	// 		renderComponent(DataTableSort, {
-	// 			name: 'No. of Services',
-	// 			onclick: column.getToggleSortingHandler()
-	// 		}),
-
-	// 	sortable: true
-	// },
-
-	// {
-	// 	accessorKey: 'noOfSupplies',
-	// 	header: ({ column }) =>
-	// 		renderComponent(DataTableSort, {
-	// 			name: 'No. of Supplies',
-	// 			onclick: column.getToggleSortingHandler()
-	// 		}),
-
-	// 	sortable: true
-	// },
-
 	{
-		accessorKey: 'recieptLink',
-		header: 'Reciept',
-		cell: ({ row }) => {
-			// You can pass whatever you need from `row.original` to the component
-			return renderComponent(DataTableLinks, {
-				id: row.original.extraSettings,
-				name: 'View Reciept',
-				link: fileUrl(row.original.recieptLink),
-				target: '_blank'
-			});
-		}
+		id: 'recieptLink',
+		header: 'Receipt',
+		cell: ({ row }) =>
+			row.original.recieptLink
+				? renderComponent(DataTableLinks, {
+						id: row.original.recieptLink,
+						name: 'View',
+						link: '/dashboard/files',
+						target: '_blank'
+					})
+				: '—'
 	},
-
-	// {
-	// 	accessorKey: 'action',
-	// 	header: 'Actions',
-	// 	cell: ({ row }) => {
-	// 		// You can pass whatever you need from `row.original` to the component
-	// 		return renderComponent(DataTableActions, {
-	// 			id: row.original.id,
-	// 			booker: row.original.recievedById,
-	// 			recieptLink: row.original.recieptLink,
-	// 			date: row.original.date
-	// 		});
-	// 	}
-	// },
-
 	{
 		id: 'delete',
 		header: '',
@@ -145,8 +64,8 @@ export const makeColumns = (canDelete = false) => [
 		cell: ({ row }) =>
 			renderComponent(DeleteEntity, {
 				entity: 'Expense',
-				name: row.original?.expenseType,
-				id: row.original?.expenseId,
+				name: row.original.expenseType ?? 'expense',
+				id: row.original.expenseId ?? undefined,
 				icon: true,
 				canDelete
 			})

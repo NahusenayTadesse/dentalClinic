@@ -1,13 +1,15 @@
 import type { ColumnDef } from '@tanstack/table-core';
 import type { PageData } from './$types';
 
-/** One row of the table this file describes, taken from the load so the two cannot drift. */
-type RowData = NonNullable<PageData['userList']>[number];
+/** The rows of the two tables here, taken from the load so they cannot drift. */
+type PermissionRow = PageData['permissionList'][number];
+type UserRow = NonNullable<PageData['userList']>[number];
 
 import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTableSort from '@nahu/admin-kit/components/Table/data-table-sort.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
-export const columns: ColumnDef<RowData>[] = [
+/** The role's permissions. */
+export const columns: ColumnDef<PermissionRow>[] = [
 	{
 		accessorKey: 'index',
 		header: '#',
@@ -30,7 +32,8 @@ export const columns: ColumnDef<RowData>[] = [
 	}
 ];
 
-export const userColumns = [
+/** The users holding the role. */
+export const userColumns: ColumnDef<UserRow>[] = [
 	{
 		accessorKey: 'index',
 		header: '#',

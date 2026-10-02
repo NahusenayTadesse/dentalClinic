@@ -1,4 +1,6 @@
 <script lang="ts">
+	import StatCard from '@nahu/admin-kit/components/reports/StatCard.svelte';
+	import type { Stat } from '@nahu/admin-kit/components/reports/types.js';
 	import BellRing from '@lucide/svelte/icons/bell-ring';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Section from '@nahu/admin-kit/components/Section.svelte';
@@ -38,6 +40,39 @@
 		{ value: 'declined', name: 'Declined — do not ring again for this' },
 		{ value: 'stopped', name: 'Stop — moved away, treated elsewhere, or died' }
 	];
+
+	const TILES = $derived<Stat[]>([
+		{
+			key: 'due',
+			label: 'Due in this window',
+			value: data.summary.dueNow,
+			format: 'count',
+			group: 'recall'
+		},
+		{
+			key: 'overdue',
+			label: 'Overdue',
+			value: data.summary.overdue,
+			format: 'count',
+			group: 'recall',
+			tone: data.summary.overdue ? 'warning' : 'neutral'
+		},
+		{
+			key: 'booked',
+			label: 'Booked',
+			value: data.summary.booked,
+			format: 'count',
+			group: 'recall'
+		},
+		{
+			key: 'cameBack',
+			label: 'Came back when asked',
+			value: data.summary.cameBack ?? 0,
+			format: 'percent',
+			group: 'recall',
+			hint: data.summary.cameBack === null ? 'Nobody has been due long enough to tell' : undefined
+		}
+	]);
 </script>
 
 <svelte:head>
@@ -54,26 +89,9 @@
 	</header>
 
 	<section class="grid grid-cols-2 gap-4 sm:grid-cols-4" aria-label="Recalls at a glance">
-		<div class="rounded-lg border bg-card p-4">
-			<p class="text-sm text-muted-foreground">Due in this window</p>
-			<p class="text-2xl font-bold tabular-nums">{data.summary.dueNow}</p>
-		</div>
-		<div class="rounded-lg border bg-card p-4">
-			<p class="text-sm text-muted-foreground">Overdue</p>
-			<p class="text-2xl font-bold tabular-nums {data.summary.overdue ? 'text-destructive' : ''}">
-				{data.summary.overdue}
-			</p>
-		</div>
-		<div class="rounded-lg border bg-card p-4">
-			<p class="text-sm text-muted-foreground">Booked</p>
-			<p class="text-2xl font-bold tabular-nums">{data.summary.booked}</p>
-		</div>
-		<div class="rounded-lg border bg-card p-4">
-			<p class="text-sm text-muted-foreground">Came back when asked</p>
-			<p class="text-2xl font-bold tabular-nums">
-				{data.summary.cameBack === null ? '—' : `${data.summary.cameBack}%`}
-			</p>
-		</div>
+		{#each TILES as stat (stat.key)}
+			<StatCard {stat} amharicMoney={false} />
+		{/each}
 	</section>
 
 	<Section title="Due back" IconComp={BellRing} style="identityIcon">

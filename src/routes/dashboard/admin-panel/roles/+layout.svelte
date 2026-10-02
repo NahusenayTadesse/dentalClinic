@@ -2,7 +2,6 @@
 	import { page } from '$app/state';
 	import Button from '@nahu/admin-kit/components/ui/button/button.svelte';
 	// import DialogComp from "@nahu/admin-kit/formComponents/DialogComp.svelte";
-	// import AddCustomer from "$lib/forms/AddCustomer.svelte";
 	import { Plus, Sheet } from '@lucide/svelte';
 	let { children } = $props();
 </script>

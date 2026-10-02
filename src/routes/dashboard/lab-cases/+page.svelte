@@ -3,7 +3,10 @@
 	import Gauge from '@lucide/svelte/icons/gauge';
 	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
+	import StatCard from '@nahu/admin-kit/components/reports/StatCard.svelte';
+	import type { Stat } from '@nahu/admin-kit/components/reports/types.js';
 	import { labCaseColumns } from '$lib/components/labCases/columns';
+	import { performanceColumns } from './columns';
 
 	/**
 	 * The lab board: what is out, what is late, and what is back to fit. New work is sent from the
@@ -13,11 +16,30 @@
 
 	const columns = $derived(labCaseColumns({ withPatient: true, move: data.move }));
 
-	const TILES = $derived([
-		{ label: 'Being prepared', value: data.summary.preparing, warn: false },
-		{ label: 'At the lab', value: data.summary.out, warn: false },
-		{ label: 'Overdue from the lab', value: data.summary.overdue, warn: true },
-		{ label: 'Back — ready to fit', value: data.summary.ready, warn: false }
+	const TILES = $derived<Stat[]>([
+		{
+			key: 'preparing',
+			label: 'Being prepared',
+			value: data.summary.preparing,
+			format: 'count',
+			group: 'lab'
+		},
+		{ key: 'out', label: 'At the lab', value: data.summary.out, format: 'count', group: 'lab' },
+		{
+			key: 'overdue',
+			label: 'Overdue from the lab',
+			value: data.summary.overdue,
+			format: 'count',
+			group: 'lab',
+			tone: data.summary.overdue ? 'warning' : 'neutral'
+		},
+		{
+			key: 'ready',
+			label: 'Back — ready to fit',
+			value: data.summary.ready,
+			format: 'count',
+			group: 'lab'
+		}
 	]);
 </script>
 
@@ -35,17 +57,8 @@
 	</header>
 
 	<section class="grid grid-cols-2 gap-4 sm:grid-cols-4" aria-label="Lab work at a glance">
-		{#each TILES as tile (tile.label)}
-			<div class="rounded-lg border bg-card p-4">
-				<p class="text-sm text-muted-foreground">{tile.label}</p>
-				<p
-					class="text-2xl font-bold tabular-nums {tile.warn && tile.value
-						? 'text-destructive'
-						: ''}"
-				>
-					{tile.value}
-				</p>
-			</div>
+		{#each TILES as stat (stat.key)}
+			<StatCard {stat} />
 		{/each}
 	</section>
 
@@ -69,40 +82,13 @@
 			Work sent in the past year. Late is received after the day the laboratory promised.
 		</p>
 		{#if data.performance.length}
-			<div class="overflow-x-auto">
-				<table class="w-full text-sm">
-					<thead class="text-left text-muted-foreground">
-						<tr class="border-b">
-							<th class="py-2 pr-4 font-medium">Laboratory</th>
-							<th class="py-2 pr-4 text-right font-medium">Cases</th>
-							<th class="py-2 pr-4 text-right font-medium">Usually says</th>
-							<th class="py-2 pr-4 text-right font-medium">Took on average</th>
-							<th class="py-2 pr-4 text-right font-medium">Late</th>
-							<th class="py-2 text-right font-medium">Remakes</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each data.performance as lab (lab.lab)}
-							<tr class="border-b last:border-0">
-								<td class="py-2 pr-4">{lab.lab}</td>
-								<td class="py-2 pr-4 text-right tabular-nums">{lab.cases}</td>
-								<td class="py-2 pr-4 text-right tabular-nums">
-									{lab.promised ? `${lab.promised} days` : '—'}
-								</td>
-								<td class="py-2 pr-4 text-right tabular-nums">
-									{lab.averageDays === null ? '—' : `${lab.averageDays} days`}
-								</td>
-								<td class="py-2 pr-4 text-right tabular-nums">
-									{lab.late}{lab.averageLateDays ? ` · ${lab.averageLateDays} days on average` : ''}
-								</td>
-								<td class="py-2 text-right tabular-nums {lab.remakes ? 'text-destructive' : ''}">
-									{lab.remakes}
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
+			<DataTable
+				data={data.performance}
+				columns={performanceColumns}
+				variant="compact"
+				fileName="laboratory-performance"
+				rowClass={(lab) => (lab.remakes ? 'bg-destructive/10' : null)}
+			/>
 		{:else}
 			<p class="text-sm text-muted-foreground">
 				No work has come back from a laboratory this year.

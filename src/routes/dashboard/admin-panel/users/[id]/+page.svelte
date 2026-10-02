@@ -1,189 +1,100 @@
 <script lang="ts">
-	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
-	import { Label } from '@nahu/admin-kit/components/ui/label/index.js';
-	import { zod4Client } from 'sveltekit-superforms/adapters';
+	import Eye from '@lucide/svelte/icons/eye';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
+	import SingleTable from '@nahu/admin-kit/components/SingleTable.svelte';
+	import SingleView from '@nahu/admin-kit/components/SingleView.svelte';
+	import DeleteEntity from '@nahu/admin-kit/components/DeleteEntity.svelte';
+	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
+	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import { editUserSchema } from './schema';
+	import { columns } from './columns';
 
+	/** One user account: who they are, their role and permissions, changed in a dialog. */
 	let { data } = $props();
 
-	import SingleTable from '@nahu/admin-kit/components/SingleTable.svelte';
-	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import { superForm } from 'sveltekit-superforms/client';
-
-	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
-	import { ArrowLeft, Eye, Pencil, Save } from '@lucide/svelte';
-	import SelectComp from '@nahu/admin-kit/formComponents/SelectComp.svelte';
-	import type { Snapshot } from '@sveltejs/kit';
-
-	import DeleteEntity from '@nahu/admin-kit/components/DeleteEntity.svelte';
-	import SingleView from '@nahu/admin-kit/components/SingleView.svelte';
-	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
-	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
-	import { columns } from './columns.js';
-
-	let singleTable = $derived([
-		{ name: 'Name', value: data.singleUser?.name },
-		{ name: 'Email', value: data.singleUser?.email },
-		{ name: 'Role', value: data.singleUser?.role },
-		{ name: 'Status', value: data.singleUser?.status ? 'Active' : 'Inactive' },
-		{ name: 'Created At', value: data.singleUser?.createdAt.toLocaleString() },
-		{ name: 'Updated At', value: data.singleUser?.updatedAt.toLocaleString() }
+	const singleTable = $derived([
+		{ name: 'Name', value: data.singleUser.name },
+		{ name: 'Email', value: data.singleUser.email },
+		{ name: 'Role', value: data.singleUser.role },
+		{ name: 'Status', value: data.singleUser.status ? 'Active' : 'Inactive' },
+		{ name: 'Created At', value: data.singleUser.createdAt.toLocaleString() },
+		{ name: 'Updated At', value: data.singleUser.updatedAt.toLocaleString() }
 	]);
 
-	const { form, errors, enhance, delayed, capture, restore, allErrors, message } = superForm(
-		data.form,
-		{
-			validators: zod4Client(editUserSchema),
-			resetForm: false,
-			dataType: 'json'
-		}
-	);
-
-	import { toast } from 'svelte-sonner';
-	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
-
-	export const snapshot: Snapshot = { capture, restore };
-
-	//   let date = $derived(dateProxy(editForm, 'appointmentDate', { format: 'date'}));
-
-	let edit = $state(false);
-
-	$form.name = data.singleUser?.name;
-	$form.email = data.singleUser?.email;
-	$form.role = data.singleUser?.roleId;
-	$form.status = data.singleUser?.status;
-	$form.permissionsList = data?.permissionList.map((item) => item.value) || [];
+	const roles = $derived(data.roleList.map((r) => ({ value: r.value, name: r.name ?? '' })));
 </script>
 
 <svelte:head>
-	<title>User Details</title>
+	<title>{data.singleUser.name} · User</title>
 </svelte:head>
-<SingleView title="User Details">
+
+<SingleView title={data.singleUser.name}>
 	<div class="mt-4 flex w-full flex-row items-start justify-start gap-2 pl-4">
-		<Button onclick={() => (edit = !edit)}>
-			{#if !edit}
-				<Pencil class="h-4 w-4" />
-				Edit
-			{:else}
-				<ArrowLeft class="h-4 w-4" />
-
-				Back
-			{/if}
-		</Button>
-		{#if data?.singleUser?.employeeId}
-			<Button href="/dashboard/employees/single/{data?.singleUser?.employeeId}">
-				<Eye /> View User's Employee's Details
-			</Button>
-		{/if}
-		<DeleteEntity
-			entity="User"
-			name={data?.singleUser?.name}
-			consequence="They are signed out everywhere and their extra permissions are revoked. Records they created stay, still showing their name."
-			canDelete={data?.isSuperAdmin && data?.singleUser?.id !== data?.user?.id}
-		/>
-	</div>
-	{#if edit === false}
-		<div class="w-full p-4"><SingleTable {singleTable} /></div>
-	{/if}
-	{#if edit}
-		<div class="w-full p-4">
-			<form action="?/editUser" use:enhance class="flex flex-col gap-4" id="edit" method="post">
-				<h3 class="text-center text-red-500">
-					Any changes made here will signout the user from every device they are logged in on.
-				</h3>
-
-				<Errors allErrors={$allErrors} />
-
-				{@render fe('Name', 'name', 'text', 'Change Name', true)}
-				{@render fe('Email', 'email', 'email', 'Change email', true)}
-
-				{@render selects('role', data?.roleList)}
-				{@render selects('status', [
-					{ value: true, name: 'Active' },
-					{ value: false, name: 'Inactive' }
-				])}
-
+		<FormDialog
+			title="Change this user"
+			description="Saving signs them out on every device they are signed in on."
+			action="?/editUser"
+			data={data.form}
+			schema={editUserSchema}
+			triggerLabel="Edit"
+		>
+			{#snippet fields({ form, errors, values })}
+				<InputComp {form} {errors} label="Name" name="name" required />
+				<InputComp {form} {errors} label="Email" type="email" name="email" required />
+				<InputComp {form} {errors} label="Role" type="select" name="role" items={roles} />
+				<InputComp
+					{form}
+					{errors}
+					label="Status"
+					type="select"
+					name="status"
+					items={[
+						{ value: true, name: 'Active' },
+						{ value: false, name: 'Inactive' }
+					]}
+				/>
 				<InputComp
 					{form}
 					{errors}
 					name="editPermission"
 					type="checkboxSingle"
-					label="Edit Permission"
-					placeholder="Edit and Modify User Permissions"
+					label="Give them their own permissions"
+					placeholder="Instead of their role’s"
 				/>
-				{#if $form.editPermission}
+				{#if values.editPermission}
 					<InputComp
+						{form}
+						{errors}
 						label="Permissions"
 						name="permissionsList"
 						type="checkbox"
-						{form}
-						{errors}
-						placeholder="Enter Role Name"
-						items={data?.allPerms}
+						items={data.allPerms}
 					/>
 				{/if}
-
-				<Button form="edit" type="submit" class="mt-4">
-					{#if $delayed}
-						<LoadingBtn name="Saving Changes" />
-					{:else}
-						<Save class="h-4 w-4" />
-						Save Changes
-					{/if}
-				</Button>
-			</form>
-		</div>
-	{/if}
+			{/snippet}
+		</FormDialog>
+		{#if data.singleUser.employeeId}
+			<Button variant="outline" href="/dashboard/employees/single/{data.singleUser.employeeId}">
+				<Eye class="size-4" /> Their employee record
+			</Button>
+		{/if}
+		<DeleteEntity
+			entity="User"
+			name={data.singleUser.name}
+			consequence="They are signed out everywhere and their extra permissions are revoked. Records they created stay, still showing their name."
+			canDelete={data.isSuperAdmin && data.singleUser.id !== data.viewerId}
+		/>
+	</div>
+	<div class="w-full p-4"><SingleTable {singleTable} /></div>
 </SingleView>
 
-<br />
-
-<DataTable
-	data={data?.permissionList}
-	{columns}
-	fileName="{data?.singleUser?.name}Permission List"
-/>
-
-{#snippet fe(
-	label = '',
-	name = '',
-	type = '',
-	placeholder = '',
-	required = false,
-	min = '',
-	max = ''
-)}
-	<div class="flex w-full flex-col justify-start gap-2">
-		<Label for={name}>{label}</Label>
-		<Input
-			{type}
-			{name}
-			{placeholder}
-			{required}
-			{min}
-			{max}
-			bind:value={$form[name]}
-			aria-invalid={$errors[name] ? 'true' : undefined}
-		/>
-		{#if $errors[name]}
-			<span class="text-red-500">{$errors[name]}</span>
-		{/if}
-	</div>
-{/snippet}
-{#snippet selects(name, items)}
-	<div class="flex w-full flex-col justify-start gap-2">
-		<Label for={name} class="capitalize">{name.replace(/([a-z])([A-Z])/g, '$1 $2')}:</Label>
-
-		<SelectComp {name} bind:value={$form[name]} {items} />
-		{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
-	</div>
-{/snippet}
+<section class="mt-6 flex flex-col gap-2">
+	<h2 class="text-lg font-semibold">Permissions</h2>
+	<DataTable
+		data={data.permissionList}
+		{columns}
+		fileName="{data.singleUser.name} permissions"
+		variant="compact"
+	/>
+</section>

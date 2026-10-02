@@ -3,11 +3,11 @@
 	import { page as pageState } from '$app/state';
 
 	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
-	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
 	import StatCard from '@nahu/admin-kit/components/reports/StatCard.svelte';
 	import ReportChart from '@nahu/admin-kit/components/reports/ReportChart.svelte';
 
-	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
+	import { navigateWithQuery } from '@nahu/admin-kit/queryFilters.js';
+	import { reportHref } from '../../../routes/dashboard/reports/query';
 	import Label from '@nahu/admin-kit/components/ui/label/label.svelte';
 	import {
 		Select,
@@ -62,6 +62,8 @@
 
 	const section = $derived(sectionMeta(sectionKey));
 	const columns = $derived(columnsFor(sectionKey));
+	/** The ledger's columns with sorting off — see the table below. */
+	const unsortable = $derived(columns.map((column) => ({ ...column, enableSorting: false })));
 	const ledgers = $derived(sectionsInGroup(group));
 
 	/**
@@ -70,27 +72,10 @@
 	 * table reads its page size off the array length once, when it mounts, so a
 	 * component seeded with `[]` would page zero rows and stay blank.
 	 */
-	let filteredRows = $derived(detail.rows);
-
-	const pageCount = $derived(Math.max(1, Math.ceil(detail.total / detail.pageSize)));
 	const fileName = $derived(`${section.label} ${pageState.url.search}`.trim());
 
-	function navigate(overrides: Record<string, string | number | null>, path?: string) {
-		const params = new URLSearchParams(pageState.url.searchParams);
-
-		for (const [key, value] of Object.entries(overrides)) {
-			if (value === null || value === '') params.delete(key);
-			else params.set(key, String(value));
-		}
-
-		goto(`${path ?? pageState.url.pathname}?${params.toString()}`, {
-			keepFocus: true,
-			noScroll: true
-		});
-	}
-
 	function openLedger(next: string) {
-		navigate({ section: next, page: 1 });
+		navigateWithQuery({ section: next, page: 1 });
 	}
 
 	/**
@@ -102,7 +87,14 @@
 		const target = pageForSection(next);
 		const stays = ledgers.some((ledger) => ledger.key === next);
 
-		navigate({ section: next, page: 1 }, stays ? undefined : `/dashboard/reports/${target.slug}`);
+		if (stays) {
+			navigateWithQuery({ section: next, page: 1 });
+			return;
+		}
+		goto(
+			// eslint-disable-next-line svelte/no-navigation-without-resolve -- `resolve()` takes a route id; this is a built address on another report, keeping the query.
+			reportHref(pageState.url, { section: next, page: 1 }, `/dashboard/reports/${target.slug}`)
+		);
 	}
 </script>
 
@@ -182,43 +174,24 @@
 					Showing {detail.rows.length} of {detail.total.toLocaleString()} rows.
 				</p>
 
-				<!-- Re-mounted whenever the query changes, so the table picks up the new
-				     column set and re-reads its page size from the new row count. -->
-				{#key `${sectionKey}-${detail.page}-${detail.pageSize}`}
-					<FilterMenu
+				<!--
+					The kit's table in server mode: the ledger is paged and searched by the loader
+					(`loadSection`), so the table's pager and search write the query. Its rows are one
+					page, so they are not counted for column filters — the report's own filters narrow
+					them, and they apply to the charts as well. Sorting is off: the loader orders each
+					ledger itself, and arrows that reordered one page would mislead.
+				-->
+				{#key sectionKey}
+					<DataTable
 						data={detail.rows}
-						bind:filteredList={filteredRows}
-						filterKeys={section.filterKeys.filter((key) =>
-							Object.prototype.hasOwnProperty.call(detail.rows[0] ?? {}, key)
-						)}
+						columns={unsortable}
+						{fileName}
+						server={{
+							pagination: { page: detail.page, pageSize: detail.pageSize, total: detail.total },
+							filters: { search: pageState.url.searchParams.get('search') ?? '' }
+						}}
 					/>
-
-					<DataTable data={filteredRows} {columns} {fileName} />
 				{/key}
-
-				{#if pageCount > 1}
-					<div class="flex items-center justify-between text-sm text-muted-foreground">
-						<span>Page {detail.page} of {pageCount}</span>
-						<div class="flex gap-2">
-							<Button
-								variant="outline"
-								size="sm"
-								disabled={detail.page <= 1}
-								onclick={() => navigate({ page: detail.page - 1 })}
-							>
-								Previous
-							</Button>
-							<Button
-								variant="outline"
-								size="sm"
-								disabled={detail.page >= pageCount}
-								onclick={() => navigate({ page: detail.page + 1 })}
-							>
-								Next
-							</Button>
-						</div>
-					</div>
-				{/if}
 			{/if}
 		</CardContent>
 	</Card>

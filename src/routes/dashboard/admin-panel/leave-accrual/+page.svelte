@@ -1,56 +1,65 @@
-<script>
+<script lang="ts">
+	import type { ColumnDef } from '@tanstack/table-core';
+	import type { PageData } from './$types';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 	import { formatDays } from '$lib/leaveDays';
-	import { superForm } from 'sveltekit-superforms/client';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import { page } from '$app/state';
-	import { toast } from 'svelte-sonner';
 	import { CalendarPlus, TriangleAlert, CircleCheckBig, CircleX, Clock } from '@lucide/svelte';
 
 	let { data } = $props();
 
-	const { enhance, delayed, message } = superForm(data.form, { invalidateAll: true });
+	// svelte-ignore state_referenced_locally
+	const { enhance, delayed } = createForm(data.form, undefined, { invalidateAll: true });
 
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
+	type Grant = PageData['pendingGrants'][number];
+	type Expiry = PageData['pendingExpiries'][number];
+	type Skipped = PageData['skipped'][number];
 
-	const staffLink = ({ row }) =>
+	/** Every table here names an employee; the name links to them where the viewer may open it. */
+	const staffLink = ({ row }: { row: { original: { staffId: number; name: string } } }) =>
 		renderComponent(DataTableLinks, {
 			id: row.original.staffId,
 			name: row.original.name,
 			entity: 'employee'
 		});
 
-	const grantColumns = [
+	const grantColumns: ColumnDef<Grant>[] = [
 		{ accessorKey: 'name', header: 'Employee', cell: staffLink },
 		{ accessorKey: 'hireDate', header: 'Hired' },
 		{ accessorKey: 'serviceYear', header: 'Service Year' },
 		{ accessorKey: 'grantDate', header: 'Grant Date' },
 		{ accessorKey: 'expiryDate', header: 'Expires On' },
-		{ accessorKey: 'days', header: 'Days', cell: (info) => formatDays(info.getValue()) }
+		{ accessorKey: 'days', header: 'Days', cell: (info) => formatDays(Number(info.getValue())) }
 	];
 
-	const expiryColumns = [
+	const expiryColumns: ColumnDef<Expiry>[] = [
 		{ accessorKey: 'name', header: 'Employee', cell: staffLink },
 		{ accessorKey: 'serviceYear', header: 'Service Year' },
 		{ accessorKey: 'grantDate', header: 'Granted' },
 		{ accessorKey: 'expiryDate', header: 'Expired On' },
-		{ accessorKey: 'daysGranted', header: 'Granted', cell: (info) => formatDays(info.getValue()) },
-		{ accessorKey: 'daysUsed', header: 'Used', cell: (info) => formatDays(info.getValue()) },
-		{ accessorKey: 'daysLost', header: 'Days Voided', cell: (info) => formatDays(info.getValue()) }
+		{
+			accessorKey: 'daysGranted',
+			header: 'Granted',
+			cell: (info) => formatDays(Number(info.getValue()))
+		},
+		{
+			accessorKey: 'daysUsed',
+			header: 'Used',
+			cell: (info) => formatDays(Number(info.getValue()))
+		},
+		{
+			accessorKey: 'daysLost',
+			header: 'Days Voided',
+			cell: (info) => formatDays(Number(info.getValue()))
+		}
 	];
 
-	const skippedColumns = [
+	const skippedColumns: ColumnDef<Skipped>[] = [
 		{ accessorKey: 'name', header: 'Employee', cell: staffLink },
 		{ accessorKey: 'serviceYear', header: 'Service Year' },
 		{ accessorKey: 'reason', header: 'Why It Was Skipped' }
@@ -72,9 +81,13 @@
 			(hoursSinceRun ?? 0) >= data.backstopAfterHours
 	);
 
-	const runLabel = { cron: 'Scheduled', manual: 'Run by hand', backstop: 'Backstop' };
+	const runLabel: Record<string, string> = {
+		cron: 'Scheduled',
+		manual: 'Run by hand',
+		backstop: 'Backstop'
+	};
 
-	function whenText(value) {
+	function whenText(value: string | Date) {
 		const stamp = new Date(value);
 		const hours = (Date.now() - stamp.getTime()) / 3600000;
 		const rel =
@@ -177,7 +190,7 @@
 			</p>
 		{:else}
 			<ul class="text-sm text-muted-foreground">
-				{#each data.brackets as bracket}
+				{#each data.brackets as bracket (bracket.fromYears)}
 					<li>
 						{bracket.toYears === null
 							? `${bracket.fromYears} years and above`

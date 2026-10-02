@@ -8,36 +8,28 @@
 
 	import { Pen, Percent, Plus } from '@lucide/svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
 	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import { salaryChangeSchema as schema } from './schema';
-	import { superForm } from 'sveltekit-superforms/client';
+	import { createForm, confirmLeave } from '@nahu/admin-kit/forms/createForm.js';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
+	import { formatETB } from '$lib/global.svelte';
 	let { data } = $props();
 
-	const { form, errors, enhance, delayed, allErrors, capture, restore, message } = superForm(
+	// svelte-ignore state_referenced_locally
+	const { form, errors, enhance, delayed, allErrors, capture, restore } = createForm(
 		data.form,
+		schema,
 		{
-			taintedMessage: () => {
-				return new Promise((resolve) => {
-					resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
-				});
-			},
-			validators: zod4Client(schema),
+			taintedMessage: confirmLeave,
 			resetForm: false
 		}
 	);
 
 	export const snapshot: Snapshot = { capture, restore };
 
-	let current = data?.salaryDetail?.baseSalary;
-
-	$form.amount = Number(data?.salaryDetail?.baseSalary);
-	$form.housingAllowance = Number(data?.salaryDetail?.housingAllowance);
-	$form.transportationAllowance = Number(data?.salaryDetail?.transportationAllowance);
-	$form.nonTaxAllowance = Number(data?.salaryDetail?.nonTaxAllowance);
-	$form.positionAllowance = Number(data?.salaryDetail?.positionAllowance);
+	// What they are paid now; the new amount is worked out from it.
+	const current = $derived(data.currentSalary);
 	let percentage = $state(0);
 	let amount = $state(0);
 
@@ -53,24 +45,13 @@
 		if (byPercent) $form.amount = (percentage / 100) * Number(current) + Number(current);
 		else $form.amount = amount + Number(current);
 	}
-
-	import { toast } from 'svelte-sonner';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
 </script>
 
 <svelte:head>
 	<title>Change Salary or Branch</title>
 </svelte:head>
 
-<FormCard title="Change Salary, Branch, Position or Department for {data.salaryDetail.name}">
+<FormCard title="Change Salary, Branch, Position or Department for {data.name}">
 	<div class="flex flex-col gap-4">
 		<div class="flex flex-row gap-2">
 			<Button variant={byPercent ? 'default' : 'outline'} {onclick}
@@ -98,9 +79,7 @@
 			<Errors allErrors={$allErrors} />
 
 			<h4>
-				Current Salary <bold class="font-bold!"
-					>ETB {Number(data.salaryDetail.baseSalary).toFixed(2)}</bold
-				>
+				Current Salary <bold class="font-bold!">{formatETB(data.currentSalary)}</bold>
 			</h4>
 			<h5>
 				Calculating New Salary By <bold class="font-bold! text-red-500">

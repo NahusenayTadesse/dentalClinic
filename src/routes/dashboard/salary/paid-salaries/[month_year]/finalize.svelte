@@ -5,7 +5,8 @@
 	import type { FinalizePayroll } from './schema';
 
 	import type { SuperValidated } from 'sveltekit-superforms';
-	import { superForm } from 'sveltekit-superforms';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
+	import { finalizePayroll } from './schema';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 
 	let {
@@ -18,29 +19,25 @@
 		employees: Item[];
 	} = $props();
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
+	// svelte-ignore state_referenced_locally
+	const { form, errors, enhance, delayed, allErrors } = createForm(data, finalizePayroll, {
+		onUpdated({ form: result }) {
+			if (result.message?.type === 'success') open = false;
+		},
 		resetForm: false,
 		dataType: 'json'
 	});
 
 	let open = $state(false);
 
-	$form.id = id;
+	// Kept in step with the run being shown.
+	$effect(() => {
+		$form.id = id;
+	});
 
-	import { toast } from 'svelte-sonner';
 	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import type { Item } from '$lib/global.svelte';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-				open = false;
-			}
-		}
-	});
 </script>
 
 <DialogComp title="Finalize Payroll" variant="default" IconComp={CheckCheck} bind:open>

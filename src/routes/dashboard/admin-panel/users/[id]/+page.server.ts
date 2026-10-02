@@ -14,14 +14,14 @@ import {
 } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import { notDeleted, softDeleteUser } from '$lib/server/softDelete';
+import { recordAudit } from '$lib/server/audit';
 import { requireSuperAdmin, syncAdminRole } from '$lib/server/permissions';
 import { setFlash, redirect } from 'sveltekit-flash-message/server';
+import { error } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { fail } from 'sveltekit-superforms';
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, locals }) => {
 	const { id } = params;
-
-	const form = await superValidate(zod4(schema));
 
 	const singleUser = await db
 		.select({
@@ -41,9 +41,8 @@ export const load: PageServerLoad = async ({ params }) => {
 		.where(and(eq(user.id, id), notDeleted(user)))
 		.then((rows) => rows[0]);
 
-	if (!singleUser) {
-		return fail(404, { message: 'User not found' });
-	}
+	// A thrown 404, not a returned `fail`: returning made every field of the page's data optional.
+	if (!singleUser) error(404, 'User not found');
 
 	const roleList = await db
 		.select({
@@ -81,12 +80,8 @@ export const load: PageServerLoad = async ({ params }) => {
 		)
 		.where(eq(userPermissions.userId, id));
 
-	let permissionList;
-	if (userPermissionsList.length > 0) {
-		permissionList = userPermissionsList;
-	} else {
-		permissionList = rolePermissionList;
-	}
+	// A user's own permissions replace their role's; with none of their own, they have the role's.
+	const permissionList = userPermissionsList.length > 0 ? userPermissionsList : rolePermissionList;
 
 	const allPerms = await db
 		.select({
@@ -97,9 +92,25 @@ export const load: PageServerLoad = async ({ params }) => {
 		.from(permissions)
 		.orderBy(permissions.name);
 
+	// The edit dialog starts from what is saved, so the form is validated from the row itself.
+	const form = await superValidate(
+		{
+			name: singleUser.name,
+			email: singleUser.email,
+			role: singleUser.roleId,
+			status: singleUser.status,
+			permissionsList: permissionList.map((p) => p.value),
+			editPermission: false
+		},
+		zod4(schema),
+		{ errors: false }
+	);
+
 	return {
 		singleUser,
 		id,
+		// So the page can stop someone deleting their own account (the action refuses it too).
+		viewerId: locals.user?.id ?? null,
 		form,
 		roleList,
 		permissionList,
@@ -107,56 +118,57 @@ export const load: PageServerLoad = async ({ params }) => {
 	};
 };
 
-// import { saveUploadedFile } from '$lib/server/upload';
-
 export const actions: Actions = {
-	editUser: async ({ request, params }) => {
+	/**
+	 * Changes a user's name, email, role, status and — when asked — their own permission set, then
+	 * ends their sessions so the change bites on their next request. Audited (CLAUDE.md §11: who
+	 * may do what); the permission set is recorded as changed, by count, not listed.
+	 */
+	editUser: async (event) => {
+		const { request, params } = event;
 		const form = await superValidate(request, zod4(schema));
-		console.log(form.data);
-
-		const { id } = params;
-
 		if (!form.valid) {
-			// Stay on the same page and set a flash message
-			return message(form, { type: 'error', text: 'Please check your form data.' });
+			return message(form, { type: 'error', text: 'Please check the form for errors.' });
 		}
 
-		const { name, email, role, permissionsList, editPermission } = form.data;
+		const { id } = params;
+		const { name, email, role, status, permissionsList, editPermission } = form.data;
+
+		// Refused before anything is written: inside the transaction the refusal used to be returned
+		// from the callback, which committed the name and role change it was meant to stop.
+		if (editPermission && permissionsList.length === 0) {
+			return setError(form, 'permissionsList._errors', 'Choose at least one permission');
+		}
 
 		try {
 			await db.transaction(async (tx) => {
-				// Client-side (to sync the changes)
-
-				await tx
-					.update(user)
-					.set({
-						name,
-						email,
-						roleId: role
+				const [before] = await tx
+					.select({
+						name: user.name,
+						email: user.email,
+						roleId: user.roleId,
+						isActive: user.isActive
 					})
+					.from(user)
 					.where(eq(user.id, id));
-
-				// 2. Wipe existing permissions
+				const after = { name, email, roleId: role, isActive: status };
+				await tx.update(user).set(after).where(eq(user.id, id));
 
 				if (editPermission) {
-					// 3. Insert new permissions (using 'tx', not 'db')
-					if (permissionsList.length > 0) {
-						await tx.delete(userPermissions).where(eq(userPermissions.userId, id));
-						await tx.insert(userPermissions).values(
-							permissionsList.map((permId) => ({
-								userId: id,
-								permissionId: permId
-							}))
-						);
-					} else {
-						setError(form, 'permissionsList', 'Permission cannot be empty');
-						return message(
-							form,
-							{ type: 'error', text: 'Permission cannot be empty' },
-							{ status: 400 }
-						);
-					}
+					await tx.delete(userPermissions).where(eq(userPermissions.userId, id));
+					await tx
+						.insert(userPermissions)
+						.values(permissionsList.map((permissionId) => ({ userId: id, permissionId })));
 				}
+
+				await recordAudit(tx, event, {
+					table: 'user',
+					recordId: id,
+					action: 'update',
+					before,
+					after,
+					detail: editPermission ? { permissionsSet: permissionsList.length } : undefined
+				});
 
 				// A role or permission change has to bite on the next request, not whenever the
 				// cookie happens to expire, so every session this user holds is ended here.
@@ -166,14 +178,12 @@ export const actions: Actions = {
 			// `roleId` just changed, so the admin plugin's own `user.role` has to follow it.
 			// See `syncAdminRole` for why the two are kept in step rather than set by hand.
 			await syncAdminRole(id, role);
-
-			// Stay on the same page and set a flash message
-			return message(form, { type: 'success', text: 'User Updated Successfully' });
-		} catch (err) {
-			console.error('User Update Failed', err);
-			const text = err instanceof Error ? err.message : 'User Update Failed';
-			return message(form, { type: 'error', text });
+		} catch (err: unknown) {
+			// Loud in the log, quiet to the client (CLAUDE.md §9).
+			console.error('user update failed', err);
+			return message(form, { type: 'error', text: 'The user could not be saved' }, { status: 500 });
 		}
+		return message(form, { type: 'success', text: 'User saved. They have been signed out.' });
 	},
 
 	/**

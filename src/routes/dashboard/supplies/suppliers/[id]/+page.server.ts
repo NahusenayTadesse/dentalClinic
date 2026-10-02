@@ -1,21 +1,19 @@
-import { setError, superValidate, message, fail } from 'sveltekit-superforms';
+import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
+import { error, fail } from '@sveltejs/kit';
 import { and, eq } from 'drizzle-orm';
 import { notDeleted, softDeleteSupplier } from '$lib/server/softDelete';
-
-import { add, edit } from './schema';
 import { db } from '$lib/server/db';
-import { supplySuppliers, supplies, subcity, address } from '$lib/server/db/schema/';
+import { supplySuppliers, subcity, address } from '$lib/server/db/schema/';
 import { requireSuperAdmin } from '$lib/server/permissions';
 import { setFlash, redirect } from 'sveltekit-flash-message/server';
-import type { Actions } from './$types';
-import type { PageServerLoad } from './$types.js';
-import { subcities, cities } from '$lib/server/fastData';
-export const load: PageServerLoad = async ({ params }) => {
-	const form = await superValidate(zod4(add));
-	const editForm = await superValidate(zod4(edit));
-	const { id } = params;
+import { subcities } from '$lib/server/fastData';
+import { supplier } from '$lib/forms/supplier';
+import { updateSupplier } from '$lib/server/suppliers';
+import type { Actions, PageServerLoad } from './$types';
 
+/** One supplier: its details, an edit dialog seeded from them, and soft delete. */
+export const load: PageServerLoad = async ({ params }) => {
 	const single = await db
 		.select({
 			id: supplySuppliers.id,
@@ -24,7 +22,6 @@ export const load: PageServerLoad = async ({ params }) => {
 			email: supplySuppliers.email,
 			subcityId: address.subcityId,
 			subcity: subcity.name,
-			addressId: address.id,
 			street: address.street,
 			kebele: address.kebele,
 			buildingNumber: address.buildingNumber,
@@ -36,73 +33,56 @@ export const load: PageServerLoad = async ({ params }) => {
 		.from(supplySuppliers)
 		.leftJoin(address, and(eq(supplySuppliers.address, address.id), notDeleted(address)))
 		.leftJoin(subcity, and(eq(address.subcityId, subcity.id), notDeleted(subcity)))
-		.where(and(eq(supplySuppliers.id, Number(id)), notDeleted(supplySuppliers)))
+		.where(and(eq(supplySuppliers.id, Number(params.id)), notDeleted(supplySuppliers)))
 		.then((rows) => rows[0]);
+	if (!single) error(404, 'Supplier not found');
 
-	const subcitiesList = await subcities();
+	// The dialog starts from what is saved, so the form is validated from the row itself.
+	const editForm = await superValidate(
+		{
+			name: single.name,
+			phone: single.phone,
+			email: single.email ?? '',
+			description: single.description ?? '',
+			subcity: single.subcityId ?? undefined,
+			street: single.street ?? '',
+			kebele: single.kebele ?? '',
+			buildingNumber: single.buildingNumber ?? '',
+			floor: single.floor ?? 0,
+			houseNumber: single.houseNumber ?? 0,
+			status: single.status
+		},
+		zod4(supplier),
+		{ errors: false }
+	);
 
-	return {
-		form,
-		editForm,
-		single,
-		subcitiesList
-	};
+	return { editForm, single, subcitiesList: await subcities() };
 };
 
 export const actions: Actions = {
 	edit: async ({ request, params }) => {
-		const form = await superValidate(request, zod4(edit));
-		const { id } = params;
+		const form = await superValidate(request, zod4(supplier));
 		if (!form.valid) {
-			return message(form, { type: 'error', text: 'Please check the form for Errors' });
+			return message(form, { type: 'error', text: 'Please check the form for errors' });
 		}
-
-		const {
-			name,
-			addressId,
-			subcity,
-			email,
-			street,
-			kebele,
-			buildingNumber,
-			floor,
-			houseNumber,
-			phone,
-			description,
-			status
-		} = form.data;
-
 		try {
-			await db
-				.update(address)
-				.set({
-					subcityId: Number(subcity),
-					street,
-					kebele,
-					buildingNumber,
-					floor,
-					houseNumber
-				})
-				.where(eq(address.id, Number(addressId)));
-
-			await db
-				.update(supplySuppliers)
-				.set({
-					name,
-					phone,
-					email,
-					description,
-					status: status
-				})
-				.where(eq(supplySuppliers.id, id));
-
-			return message(form, { type: 'success', text: 'Supplier Successfully Updated' });
-		} catch (err: any) {
-			return message(form, {
-				type: 'error',
-				text: 'Error: ' + err?.message
-			});
+			const found = await updateSupplier(Number(params.id), form.data);
+			if (!found)
+				return message(
+					form,
+					{ type: 'error', text: 'That supplier was not found' },
+					{ status: 404 }
+				);
+		} catch (err: unknown) {
+			// Loud in the log, quiet to the client (CLAUDE.md §9).
+			console.error('update supplier failed', err);
+			return message(
+				form,
+				{ type: 'error', text: 'The supplier could not be saved' },
+				{ status: 500 }
+			);
 		}
+		return message(form, { type: 'success', text: 'Supplier saved' });
 	},
 
 	/**
@@ -129,7 +109,7 @@ export const actions: Actions = {
 			setFlash(
 				{
 					type: 'error',
-					message: `Could not delete supplier: ${err instanceof Error ? err.message : 'Unknown error'}`
+					message: 'The supplier could not be deleted.'
 				},
 				cookies
 			);

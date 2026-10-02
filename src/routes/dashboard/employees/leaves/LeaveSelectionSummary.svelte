@@ -14,27 +14,12 @@
 	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 	import { Eye } from '@lucide/svelte';
+	import type { LeaveRow } from '$lib/components/leaves/columns';
 
-	type LeaveRow = {
-		id: number;
-		staffId: number;
-		name: string | null;
-		department: string | null;
-		branchName: string | null;
-		requestDate: Date | string;
-		startDate: Date | string;
-		endDate: Date | string;
-		leaveTypeName: string | null;
-		reason: string | null;
-		leaveLetter: string | null;
-		approvedBy?: string | null;
-		rejectionReason?: string | null;
-		status: string | null;
-		halfDayStart?: boolean;
-		halfDayEnd?: boolean;
-		numberOfDays: number;
-	};
-
+	/**
+	 * The ticked rows, as the leave tables carry them (`$lib/components/leaves/columns`). It had a
+	 * private copy of that type, which had drifted — the day count a number here, nullable there.
+	 */
 	let { selected }: { selected: LeaveRow[] } = $props();
 
 	const leave = $derived(selected.length === 1 ? selected[0] : null);
@@ -76,7 +61,7 @@
 			{@render field('To', formatEthiopianDate(new Date(leave.endDate)))}
 			{@render field(
 				'Duration',
-				`${formatDays(leave.numberOfDays)}${halfDayNote ? ` (${halfDayNote})` : ''}`
+				`${formatDays(Number(leave.numberOfDays ?? 0))}${halfDayNote ? ` (${halfDayNote})` : ''}`
 			)}
 		</div>
 

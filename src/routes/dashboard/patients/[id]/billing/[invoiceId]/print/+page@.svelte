@@ -1,6 +1,8 @@
 <script lang="ts">
 	import PrintSheet from '@nahu/admin-kit/components/PrintSheet.svelte';
+	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
+	import { lineColumns, paymentColumns } from './columns';
 
 	/**
 	 * A bill on paper: its lines as issued, what has been paid with each receipt number, and what is
@@ -9,6 +11,16 @@
 	let { data } = $props();
 
 	const bill = $derived(data.bill);
+	/** Under the lines: the subtotal and discount when there is one, and the total. */
+	const summary = $derived([
+		...(bill.discount
+			? [
+					{ label: 'Subtotal', value: formatETB(bill.subtotal) },
+					{ label: 'Discount', value: `−${formatETB(bill.discount)}` }
+				]
+			: []),
+		{ label: 'Total', value: formatETB(bill.total), strong: true }
+	]);
 	const day = (value: string | null) => (value ? formatEthiopianDate(new Date(value)) : '—');
 </script>
 
@@ -38,66 +50,10 @@
 		</dl>
 	</section>
 
-	<table class="w-full border-collapse text-sm">
-		<thead>
-			<tr class="border-b text-left">
-				<th class="py-2">What</th>
-				<th class="py-2 text-right">Qty</th>
-				<th class="py-2 text-right">Price</th>
-				<th class="py-2 text-right">Total</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each bill.lines as line (line.id)}
-				<tr class="break-inside-avoid border-b">
-					<td class="py-2">{line.description}</td>
-					<td class="py-2 text-right tabular-nums">{line.quantity}</td>
-					<td class="py-2 text-right tabular-nums">{formatETB(line.unitPrice)}</td>
-					<td class="py-2 text-right tabular-nums">{formatETB(line.lineTotal)}</td>
-				</tr>
-			{/each}
-		</tbody>
-		<tfoot>
-			{#if bill.discount}
-				<tr>
-					<td class="py-1" colspan="3">Subtotal</td>
-					<td class="py-1 text-right tabular-nums">{formatETB(bill.subtotal)}</td>
-				</tr>
-				<tr>
-					<td class="py-1" colspan="3">Discount</td>
-					<td class="py-1 text-right tabular-nums">−{formatETB(bill.discount)}</td>
-				</tr>
-			{/if}
-			<tr class="font-semibold">
-				<td class="py-2" colspan="3">Total</td>
-				<td class="py-2 text-right tabular-nums">{formatETB(bill.total)}</td>
-			</tr>
-		</tfoot>
-	</table>
+	<DataTable variant="print" data={bill.lines} columns={lineColumns} {summary} />
 
 	{#if bill.payments.length}
-		<table class="w-full border-collapse text-sm">
-			<thead>
-				<tr class="border-b text-left">
-					<th class="py-2">Paid</th>
-					<th class="py-2">Receipt</th>
-					<th class="py-2">How</th>
-					<th class="py-2 text-right">Amount</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each bill.payments as paid (paid.id)}
-					<tr class="border-b">
-						<td class="py-2">{day(paid.occurredOn)}</td>
-						<td class="py-2">
-							{paid.receiptNumber ?? '—'}{paid.direction === 'out' ? ' (refund)' : ''}
-						</td>
-						<td class="py-2">{paid.method ?? '—'}</td>
-						<td class="py-2 text-right tabular-nums">{formatETB(paid.amount)}</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
+		<DataTable variant="print" data={bill.payments} columns={paymentColumns} />
 	{/if}
 
 	<p class="text-right text-lg font-semibold">

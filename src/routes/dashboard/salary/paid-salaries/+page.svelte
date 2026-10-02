@@ -1,6 +1,7 @@
 <script lang="ts">
+	import StatCard from '@nahu/admin-kit/components/reports/StatCard.svelte';
+	import type { Stat } from '@nahu/admin-kit/components/reports/types.js';
 	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
-	import { formatETB } from '$lib/global.svelte';
 	import { payslipColumns } from './columns';
 
 	/**
@@ -11,13 +12,27 @@
 
 	const q = $derived(data.currentQuery);
 
-	const TILES = $derived([
-		{ label: 'Payslips', value: data.totals.payslips.toLocaleString() },
-		{ label: 'Employees', value: data.totals.employees.toLocaleString() },
-		{ label: 'Gross', value: formatETB(data.totals.gross) },
-		{ label: 'Income tax', value: formatETB(data.totals.tax) },
-		{ label: 'Pension (both shares)', value: formatETB(data.totals.pension) },
-		{ label: 'Net paid', value: formatETB(data.totals.net) }
+	const count = (key: string, label: string, value: number): Stat => ({
+		key,
+		label,
+		value,
+		format: 'count',
+		group: 'payroll'
+	});
+	const money = (key: string, label: string, value: number): Stat => ({
+		key,
+		label,
+		value,
+		format: 'money',
+		group: 'payroll'
+	});
+	const TILES = $derived<Stat[]>([
+		count('payslips', 'Payslips', data.totals.payslips),
+		count('employees', 'Employees', data.totals.employees),
+		money('gross', 'Gross', data.totals.gross),
+		money('tax', 'Income tax', data.totals.tax),
+		money('pension', 'Pension (both shares)', data.totals.pension),
+		{ ...money('net', 'Net paid', data.totals.net), tone: 'positive' }
 	]);
 </script>
 
@@ -34,15 +49,19 @@
 		</p>
 	</header>
 
+	{#if data.forEmployee}
+		<p class="flex flex-wrap items-center gap-2 rounded-lg border p-3 text-sm">
+			Showing <strong>{data.forEmployee}</strong>’s payslips only.
+			<a class="underline" href="/dashboard/salary/paid-salaries">Show everyone</a>
+		</p>
+	{/if}
+
 	<section
 		class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6"
 		aria-label="Paid salaries at a glance"
 	>
-		{#each TILES as tile (tile.label)}
-			<div class="rounded-lg border bg-card p-4">
-				<p class="text-sm text-muted-foreground">{tile.label}</p>
-				<p class="text-xl font-bold tabular-nums">{tile.value}</p>
-			</div>
+		{#each TILES as stat (stat.key)}
+			<StatCard {stat} amharicMoney={false} />
 		{/each}
 	</section>
 

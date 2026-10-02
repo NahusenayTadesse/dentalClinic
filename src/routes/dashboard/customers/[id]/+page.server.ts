@@ -1,9 +1,9 @@
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { db } from '$lib/server/db';
-import { customers, user, address, subcity, customerContacts } from '$lib/server/db/schema';
+import { customers, user, address, subcity } from '$lib/server/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/mysql-core';
-import { notDeleted, softDeleteCustomer, softDeleteOwnedRecord } from '$lib/server/softDelete';
+import { notDeleted, softDeleteCustomer } from '$lib/server/softDelete';
 import { hasPermission, requireSuperAdmin } from '$lib/server/permissions';
 import { payerInvoices } from '$lib/server/billing';
 import { openSessionFor } from '$lib/server/cashDrawer';
@@ -18,16 +18,11 @@ import { error, type Actions } from '@sveltejs/kit';
 import { fail, message } from 'sveltekit-superforms';
 import { setFlash, redirect } from 'sveltekit-flash-message/server';
 
-import { subcities, service } from '$lib/server/fastData';
+import { subcities } from '$lib/server/fastData';
 
-import {
-	editDetail,
-	editAddress,
-	addContact,
-	editContact,
-	addContract,
-	editContract
-} from './schema';
+import { editDetail, editAddress } from './schema';
+import { SECTIONS } from './sections';
+import { childActions } from '$lib/server/childCrud';
 import { daysBetween, isoDate, today } from '$lib/server/db/dialect';
 
 /** Who may see what a payer owes and take their money — the same as for a patient's bills. */
@@ -80,14 +75,7 @@ async function livePayerId(raw: string): Promise<number> {
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { id } = params;
 
-	const addressForm = await superValidate(zod4(editAddress));
-	const addContactForm = await superValidate(zod4(addContact));
-	const editContactForm = await superValidate(zod4(editContact));
-	const addContractForm = await superValidate(zod4(addContract));
-	const editContractForm = await superValidate(zod4(editContract));
-
 	const subcityList = await subcities();
-	const serviceList = await service();
 
 	// The approval trail names three different actors, so each needs its own join onto `user`.
 	const requester = alias(user, 'requester');
@@ -166,18 +154,25 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.where(eq(customers.id, Number(id)))
 		.then((rows) => rows[0]);
 
-	const contacts = await db
-		.select({
-			id: customerContacts.id,
-			contactType: customerContacts.contactType,
-			contactDetail: customerContacts.contactDetail,
-			status: customerContacts.isActive,
-			addedBy: user.name,
-			addedById: user.id
-		})
-		.from(customerContacts)
-		.leftJoin(user, eq(customerContacts.createdBy, user.id))
-		.where(and(eq(customerContacts.customerId, Number(id)), notDeleted(customerContacts)));
+	// Seeded from the address, so the dialog opens on what is saved.
+	const addressForm = await superValidate(
+		customerAddress
+			? {
+					subcity: customerAddress.subcityId ?? undefined,
+					street: customerAddress.street ?? '',
+					kebele: customerAddress.kebele ?? '',
+					buildingNumber: customerAddress.buildingNumber ?? '',
+					floor: customerAddress.floor === null ? '' : String(customerAddress.floor),
+					houseNumber:
+						customerAddress.houseNumber === null ? '' : String(customerAddress.houseNumber),
+					status: customerAddress.status
+				}
+			: undefined,
+		zod4(editAddress),
+		{ errors: false }
+	);
+
+	const contacts = await SECTIONS.Contact.load(customer.id);
 
 	return {
 		customer,
@@ -185,12 +180,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		detailForm,
 		addressForm,
 		subcityList,
-		addContactForm,
-		editContactForm,
-		addContractForm,
-		editContractForm,
 		contacts,
-		serviceList,
 		account
 	};
 };
@@ -292,71 +282,8 @@ export const actions: Actions = {
 			return message(form, { type: 'error', text: 'The address could not be saved.' });
 		}
 	},
-	addContact: async ({ request, locals, params }) => {
-		const { id } = params;
-		const form = await superValidate(request, zod4(addContact));
-
-		if (!form.valid) {
-			return message(form, { type: 'error', text: `Error: check the form` });
-		}
-
-		const { contactDetail, contactType, status } = form.data;
-
-		try {
-			await db.transaction(async (tx) => {
-				await tx.insert(customerContacts).values({
-					customerId: Number(id),
-					contactDetail,
-					contactType,
-					isActive: status,
-					createdBy: locals?.user?.id
-				});
-
-				return message(form, {
-					type: 'success',
-					text: 'Contact Details Created Successfully!'
-				});
-			});
-		} catch (err) {
-			return message(form, {
-				type: 'error',
-				text: `Creating Contact failed: ${err instanceof Error ? err.message : 'Unknown error'}`
-			});
-		}
-	},
-	editContact: async ({ request, locals }) => {
-		const form = await superValidate(request, zod4(editContact));
-
-		if (!form.valid) {
-			return message(form, { type: 'error', text: `Error: check the form` });
-		}
-
-		const { id, contactDetail, contactType, status } = form.data;
-
-		try {
-			await db.transaction(async (tx) => {
-				await tx
-					.update(customerContacts)
-					.set({
-						contactDetail,
-						contactType,
-						isActive: status,
-						updatedBy: locals?.user?.id
-					})
-					.where(eq(customerContacts.id, id));
-
-				return message(form, {
-					type: 'success',
-					text: 'Contact Details Updated Successfully!'
-				});
-			});
-		} catch (err) {
-			return message(form, {
-				type: 'error',
-				text: `Updated Contact failed: ${err instanceof Error ? err.message : 'Unknown error'}`
-			});
-		}
-	},
+	/** The contact section's add, edit and delete (`sections.ts`). */
+	...childActions(SECTIONS, (event) => livePayerId(event.params.id ?? '')),
 
 	delete: async ({ locals, params, cookies }) => {
 		requireSuperAdmin(locals);
@@ -371,7 +298,7 @@ export const actions: Actions = {
 			setFlash(
 				{
 					type: 'error',
-					message: `Could not delete customer: ${err instanceof Error ? err.message : 'Unknown error'}`
+					message: 'The payer could not be deleted.'
 				},
 				cookies
 			);
@@ -379,53 +306,5 @@ export const actions: Actions = {
 		}
 
 		redirect('/dashboard/customers', { type: 'success', message: 'Payer deleted.' }, cookies);
-	},
-	/**
-	 * Soft delete of one customer. Super admin only — `requireSuperAdmin` throws
-	 * 403 rather than failing quietly, because the hidden button is UX, not
-	 * access control.
-	 */
-	deleteContact: async ({ request, params, locals, cookies }) => {
-		requireSuperAdmin(locals);
-
-		const data = await request.formData();
-		const contactId = Number(data.get('id'));
-
-		if (!contactId) {
-			setFlash({ type: 'error', message: 'No contact was selected.' }, cookies);
-			return fail(400);
-		}
-
-		try {
-			const deleted = await db.transaction(async (tx) =>
-				softDeleteOwnedRecord(
-					tx,
-					customerContacts,
-					customerContacts.customerId,
-					contactId,
-					Number(params.id),
-					locals.user?.id
-				)
-			);
-
-			if (!deleted) {
-				// Either already gone, or the id belongs to a different customer.
-				setFlash({ type: 'error', message: 'That contact was not found.' }, cookies);
-				return fail(404);
-			}
-		} catch (err) {
-			console.error('Error deleting contact:', err);
-			setFlash(
-				{
-					type: 'error',
-					message: `Could not delete contact: ${err instanceof Error ? err.message : 'Unknown error'}`
-				},
-				cookies
-			);
-			return fail(500);
-		}
-
-		setFlash({ type: 'success', message: 'Contact deleted.' }, cookies);
-		return { success: true };
 	}
 };

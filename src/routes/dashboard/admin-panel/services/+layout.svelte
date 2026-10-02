@@ -1,10 +1,8 @@
 <script>
 	import { page } from '$app/state';
 	import Button from '@nahu/admin-kit/components/ui/button/button.svelte';
-	// import DialogComp from "@nahu/admin-kit/formComponents/DialogComp.svelte";
-	// import AddCustomer from "$lib/forms/AddCustomer.svelte";
 	import { Sheet } from '@lucide/svelte';
-	let { data, children } = $props();
+	let { children } = $props();
 </script>
 
 <div class="mb-8 flex flex-row items-center justify-start gap-2">
@@ -19,13 +17,6 @@
 			? 'default'
 			: 'outline'}><Sheet /> Services Categories</Button
 	>
-	<!-- <DialogComp title="Add New Customer" {content} /> -->
 </div>
-
-<!-- {#snippet content()}
-
-  <AddCustomer data={data?.form} action="/dashbaord/customers?/addCustomer" />
-
-{/snippet} -->
 
 {@render children?.()}

@@ -1,101 +1,126 @@
+import { and, desc, eq, like, or, sql, type SQL } from 'drizzle-orm';
+import type { SelectedFields } from 'drizzle-orm/mysql-core';
+
 import { db } from '$lib/server/db';
+import { joinedSelect } from '$lib/server/db/joinedSelect';
 import { paymentMethods, transactions, expenses, expensesType, user } from '$lib/server/db/schema';
 import { isApproved } from '$lib/server/approvals';
-import { and, desc, eq, count } from 'drizzle-orm';
 import { notDeleted, softDeleteExpense } from '$lib/server/softDelete';
 import { requireSuperAdmin } from '$lib/server/permissions';
+import { branchFilter } from '$lib/server/branchScope';
 import { fail } from '@sveltejs/kit';
 import { setFlash } from 'sveltekit-flash-message/server';
-
-import { parseTableQuery, buildWhere, pagination, currentQuery } from '$lib/server/queryFilters';
+import {
+	buildWhere,
+	currentQuery,
+	facetCounts,
+	orderBy,
+	pagination,
+	parseTableQuery,
+	type WhereSpec
+} from '$lib/server/queryFilters';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ url }) => {
-	const query = parseTableQuery(url, ['paymentMethodId', 'expenseTypeId', 'recievedById']);
+/**
+ * The clinic's own spending, approved, over any period — filtered, faceted and totalled in SQL.
+ * Like the transactions list, it stacked a paging filter bar with a menu that counted only the
+ * page; one server-driven table now counts the whole result. Dated by the expense's own day, and
+ * scoped to the branch its money left from (CLAUDE.md §15).
+ */
 
-	const whereClause = buildWhere(query, {
-		// Only approved expenses belong in the main list.
-		base: [notDeleted(expenses), isApproved(expenses)!],
-		dateColumn: transactions.createdAt,
+const FILTERS = ['expenseTypeId', 'paymentMethodId', 'recievedById'] as const;
+type Filter = (typeof FILTERS)[number];
+
+const SORTABLE = {
+	date: expenses.expenseDate,
+	amount: expenses.total,
+	expenseType: expensesType.name,
+	paymentMethod: paymentMethods.name
+};
+
+export const load: PageServerLoad = async ({ url, locals }) => {
+	const query = parseTableQuery(url, FILTERS, 25, Object.keys(SORTABLE));
+
+	const spec: WhereSpec<Filter> = {
+		// Only approved expenses belong in the main list; pending ones are in the approvals queue.
+		base: [
+			notDeleted(expenses),
+			isApproved(expenses),
+			branchFilter(transactions.branchId, locals.branch)
+		],
+		search: (term) =>
+			or(like(expenses.description, `%${term}%`), like(expenses.payeeName, `%${term}%`)),
+		dateColumn: expenses.expenseDate,
 		filters: {
-			paymentMethodId: (v) => eq(transactions.paymentMethodId, Number(v)),
 			expenseTypeId: (v) => eq(expenses.type, Number(v)),
+			paymentMethodId: (v) => eq(transactions.paymentMethodId, Number(v)),
 			// varchar — no Number() cast
 			recievedById: (v) => eq(transactions.createdBy, v)
 		}
-	});
+	};
+	const where = buildWhere(query, spec);
 
-	// --- Filter option lists ---
-	const [paymentMethodOptions, expenseTypeOptions, userOptions] = await Promise.all([
-		db
-			.select({ id: paymentMethods.id, name: paymentMethods.name })
-			.from(paymentMethods)
-			.where(notDeleted(paymentMethods)),
-		db
-			.select({ id: expensesType.id, name: expensesType.name })
-			.from(expensesType)
-			.where(notDeleted(expensesType)),
-		db.select({ id: user.id, name: user.name }).from(user)
-	]);
+	const joined = <T extends SelectedFields>(fields: T) =>
+		joinedSelect(fields, expenses)
+			.leftJoin(
+				transactions,
+				and(eq(expenses.transactionId, transactions.id), notDeleted(transactions))
+			)
+			.leftJoin(expensesType, and(eq(expenses.type, expensesType.id), notDeleted(expensesType)))
+			.leftJoin(paymentMethods, eq(transactions.paymentMethodId, paymentMethods.id))
+			// Attribution, not filtered: a deleted user still recorded it (§9).
+			.leftJoin(user, eq(transactions.createdBy, user.id));
 
-	// --- Total count (same joins the WHERE clause needs) ---
-	const [{ total }] = await db
-		.select({ total: count() })
-		.from(expenses)
-		.leftJoin(
-			transactions,
-			and(eq(expenses.transactionId, transactions.id), notDeleted(transactions))
-		)
-		.where(whereClause);
-
-	// --- Main query ---
-	const allTransactions = await db
-		.select({
+	const [rows, [totals]] = await Promise.all([
+		joined({
 			id: transactions.id,
 			// The delete action needs the expense row, not the transaction row.
 			expenseId: expenses.id,
-			date: transactions.createdAt,
+			date: sql<string>`${expenses.expenseDate}`,
 			expenseType: expensesType.name,
 			expenseTypeId: expensesType.id,
-			amount: expenses.total,
-			paymentMethods: paymentMethods.name,
+			description: expenses.description,
+			payee: expenses.payeeName,
+			amount: sql<string>`${expenses.total}`,
+			paymentMethod: paymentMethods.name,
 			recievedBy: user.name,
 			recievedById: user.id,
 			recieptLink: transactions.recieptLink
 		})
-		.from(expenses)
-		.leftJoin(
-			transactions,
-			and(eq(expenses.transactionId, transactions.id), notDeleted(transactions))
-		)
-		.leftJoin(expensesType, and(eq(expenses.type, expensesType.id), notDeleted(expensesType)))
-		.leftJoin(paymentMethods, eq(transactions.paymentMethodId, paymentMethods.id))
-		.leftJoin(user, eq(transactions.createdBy, user.id))
-		.where(whereClause)
-		.groupBy(
-			transactions.id,
-			transactions.createdAt,
-			expenses.total,
-			expensesType.name,
-			expensesType.id,
-			paymentMethods.name,
-			user.name,
-			user.id,
-			transactions.recieptLink
-		)
-		.orderBy(desc(transactions.createdAt))
-		.limit(query.limit)
-		.offset(query.offset);
+			.where(where)
+			.orderBy(...(orderBy(query, SORTABLE) ?? [desc(expenses.expenseDate)]), desc(expenses.id))
+			.limit(query.limit)
+			.offset(query.offset),
+		joined({
+			total: sql<number>`count(*)`,
+			amount: sql<string>`coalesce(sum(${expenses.total}), 0)`
+		}).where(where)
+	]);
+
+	/** A facet: every filter applied but its own (`facetCounts`). */
+	const facet = async (
+		value: SQL<string | number | null>,
+		label: SQL<string | null>,
+		except: Filter
+	) =>
+		joined({ value, label, count: sql<number>`count(*)` })
+			.where(buildWhere(query, spec, { except }))
+			.groupBy(value, label);
+
+	const facets = await facetCounts({
+		expenseType: () => facet(sql`${expensesType.id}`, sql`${expensesType.name}`, 'expenseTypeId'),
+		paymentMethod: () =>
+			facet(sql`${paymentMethods.id}`, sql`${paymentMethods.name}`, 'paymentMethodId'),
+		recievedBy: () => facet(sql`${user.id}`, sql`${user.name}`, 'recievedById')
+	});
 
 	return {
-		allTransactions,
-		pagination: pagination(query, total),
-		filterOptions: {
-			paymentMethods: paymentMethodOptions,
-			expenseTypes: expenseTypeOptions,
-			users: userOptions
-		},
-		currentQuery: currentQuery(query)
+		rows: rows.map((row) => ({ ...row, amount: Number(row.amount ?? 0) })),
+		totals: { count: Number(totals?.total ?? 0), amount: Number(totals?.amount ?? 0) },
+		facets,
+		pagination: pagination(query, totals?.total ?? 0),
+		currentQuery: currentQuery(query),
+		isSuperAdmin: locals.isSuperAdmin === true
 	};
 };
 

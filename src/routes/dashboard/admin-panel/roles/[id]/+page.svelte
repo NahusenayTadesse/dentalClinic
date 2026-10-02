@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { editRoleSchema } from './schema';
 
 	let { data } = $props();
 
 	import SingleTable from '@nahu/admin-kit/components/SingleTable.svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import { superForm } from 'sveltekit-superforms/client';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { ArrowLeft, Pencil, Save, Trash } from '@lucide/svelte';
@@ -33,35 +32,21 @@
 		{ name: 'Permission Count', value: data?.permissionList?.length || 0 }
 	]);
 
-	const { form, errors, enhance, delayed, capture, restore, allErrors, message } = superForm(
+	// svelte-ignore state_referenced_locally
+	const { form, errors, enhance, delayed, capture, restore, allErrors } = createForm(
 		data.form,
+		editRoleSchema,
 		{
-			validators: zod4Client(editRoleSchema),
 			dataType: 'json',
 			resetForm: false
 		}
 	);
 
 	import { toast } from 'svelte-sonner';
-	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
-
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
 
 	export const snapshot: Snapshot = { capture, restore };
 
 	let edit = $state(false);
-
-	$form.name = data.singleUser?.name;
-	$form.description = data.singleUser?.description || '';
-	$form.permissions = data.permissionList.map((item) => String(item.id)) || [];
 </script>
 
 <svelte:head>

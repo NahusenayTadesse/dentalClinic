@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Logo from '$lib/components/Logo.svelte';
-	import { toast } from 'svelte-sonner';
 	import {
 		Card,
 		CardHeader,
@@ -13,21 +12,15 @@
 	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
 	import { Label } from '@nahu/admin-kit/components/ui/label/index.js';
 	import { ArrowRight, ShieldCheck } from '@lucide/svelte';
-	import { superForm } from 'sveltekit-superforms';
-	import { zod4Client } from 'sveltekit-superforms/adapters';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import { setupSchema as schema } from './schema';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 
 	let { data } = $props();
 
-	const { form, errors, enhance, allErrors, message, delayed } = superForm(data.form, {
-		validators: zod4Client(schema)
-	});
-
-	$effect(() => {
-		if ($message?.type === 'error') toast.error($message.text);
-	});
+	// svelte-ignore state_referenced_locally
+	const { form, errors, enhance, allErrors, delayed } = createForm(data.form, schema);
 </script>
 
 <svelte:head>

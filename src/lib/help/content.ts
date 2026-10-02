@@ -1964,45 +1964,10 @@ export const ROUTE_MAP: RouteEntry[] = [
 		group: 'Employees'
 	},
 	{
-		path: '/dashboard/employees/single/[id]/salary/add-bonus',
-		title: 'Add a bonus',
-		purpose: 'A bonus for one employee, picked up by that month’s payroll.',
-		permission: 'employees.create_followup',
-		group: 'Employees'
-	},
-	{
-		path: '/dashboard/employees/single/[id]/salary/add-deduction',
-		title: 'Add a deduction',
-		purpose: 'A deduction for one employee, taken by that month’s payroll.',
-		permission: 'employees.create_followup',
-		group: 'Employees'
-	},
-	{
-		path: '/dashboard/employees/single/[id]/salary/add-overtime',
-		title: 'Add overtime',
-		purpose: 'Overtime for one employee, paid by that month’s payroll.',
-		permission: 'employees.create_followup',
-		group: 'Employees'
-	},
-	{
 		path: '/dashboard/salary',
 		title: 'Paid salary history',
 		purpose: 'Every payroll run paid so far, month by month.',
 		permission: 'salary.manage',
-		group: 'Finance'
-	},
-	{
-		path: '/dashboard/salary/transactions/ranges/[range]',
-		title: 'Transactions for a period',
-		purpose: 'Money in and out between two dates.',
-		permission: 'transactions.manage',
-		group: 'Finance'
-	},
-	{
-		path: '/dashboard/salary/transactions/expenses/ranges/[range]',
-		title: 'Expenses for a period',
-		purpose: 'Expenses between two dates.',
-		permission: 'transactions.manage',
 		group: 'Finance'
 	},
 	{
@@ -2198,13 +2163,6 @@ export const ROUTE_MAP: RouteEntry[] = [
 		group: 'Employees'
 	},
 	{
-		path: '/dashboard/employees/single/[id]/salary',
-		title: 'Employee salary',
-		purpose: 'Current package, plus bonuses, deductions, overtime and salary changes.',
-		permission: 'employees.create_followup',
-		group: 'Employees'
-	},
-	{
 		path: '/dashboard/employees/single/[id]/salary/change-salary',
 		title: 'Change salary',
 		purpose: 'Raise a salary change; goes to the Salary Changes queue.',
@@ -2282,13 +2240,6 @@ export const ROUTE_MAP: RouteEntry[] = [
 		path: '/dashboard/salary/paid-salaries/adjust/[id]',
 		title: 'Adjust a payslip',
 		purpose: 'Correct a paid payslip with a separate, approvable adjustment.',
-		permission: 'salary.manage',
-		group: 'Finance'
-	},
-	{
-		path: '/dashboard/salary/single/[id]',
-		title: 'One payslip',
-		purpose: 'A single payslip in full.',
 		permission: 'salary.manage',
 		group: 'Finance'
 	},

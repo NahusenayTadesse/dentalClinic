@@ -7,7 +7,11 @@
 			"sections": [
 				{
 					"heading": "The two screens",
-					"body": "• Transactions — money in and money out, browsable by date range.\n• Expenses — the company's own spending, by category. Add expense records one: category, amount, date, payment method, description and receipt. Categories manages the list the form chooses from.\n\nExpenses wait in the Expenses approval queue before they count."
+					"body": "• Transactions — money in and money out at this branch, over any date range.\n• Expenses — the company's own spending, by category. Add expense records one: category, amount, date, payment method, description and receipt. Categories manages the list the form chooses from.\n\nExpenses wait in the Expenses approval queue before they count."
+				},
+				{
+					"heading": "Finding and totalling",
+					"body": "Both lists filter on the server: choose a date range, search a description or receipt number, and use the filter on each column — in or out, payment method, payment and approval status, who recorded it; for expenses, the category. The figures at the top and the charts count everything the filters match, not only the page you are on."
 				},
 				{
 					"heading": "Do not enter payroll twice",
@@ -32,6 +36,10 @@
 				{
 					"heading": "ሁለቱ ገጾች",
 					"body": "• ግብይቶች — ገቢና ወጪ በቀን ክልል ማየት ይቻላል።\n• ወጪዎች — የድርጅቱ ወጪ በምድብ። Add expense አንዱን ይመዘግባል፦ ምድብ፣ መጠን፣ ቀን፣ የክፍያ ዘዴ፣ መግለጫና ደረሰኝ። Categories ቅጹ የሚመርጥበትን ዝርዝር ያስተዳድራል።\n\nወጪዎች ከመቆጠራቸው በፊት በወጪ ማጽደቅ ወረፋ ውስጥ ይጠብቃሉ።"
+				},
+				{
+					"heading": "መፈለግና መደመር",
+					"body": "ሁለቱም ዝርዝሮች በአገልጋዩ ላይ ያጣራሉ፦ የቀን ክልል ይምረጡ፣ መግለጫ ወይም የደረሰኝ ቁጥር ይፈልጉ፣ በእያንዳንዱ ዓምድ ያጣሩ። ከላይ ያሉት አሃዞችና ገበታዎች ማጣሪያው የሚያገኘውን ሁሉ ይቆጥራሉ።"
 				},
 				{
 					"heading": "ደመወዝን ሁለት ጊዜ አያስገቡ",

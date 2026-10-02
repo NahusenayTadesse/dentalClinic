@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit';
-import type { PageServerLoad } from '../$types';
+import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async () => {
-	throw redirect(302, `/dashboard/salary/paid-salaries/`);
+/** The Salary section has no page of its own; it opens on Paid Salaries. */
+export const load: PageServerLoad = () => {
+	redirect(302, '/dashboard/salary/paid-salaries');
 };

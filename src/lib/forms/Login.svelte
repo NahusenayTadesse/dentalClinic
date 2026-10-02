@@ -6,7 +6,8 @@
 	import { Label } from '@nahu/admin-kit/components/ui/label/index.js';
 
 	import type { SuperValidated, Infer } from 'sveltekit-superforms';
-	import { superForm } from 'sveltekit-superforms';
+	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
+	import { loginSchema } from '$lib/ZodSchema';
 	import type { LoginSchema } from '$lib/ZodSchema';
 	import DarkMode from '@nahu/admin-kit/components/shell/DarkMode.svelte';
 	import { Eye, EyeOff } from '@lucide/svelte';
@@ -15,18 +16,8 @@
 	let { data, action = '?/login' }: { data: SuperValidated<Infer<LoginSchema>>; action: string } =
 		$props();
 
-	const { form, errors, enhance, allErrors, message } = superForm(data, {});
-
-	import { toast } from 'svelte-sonner';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
+	// svelte-ignore state_referenced_locally
+	const { form, errors, enhance, allErrors } = createForm(data, loginSchema);
 
 	let eye = $state(false);
 	let EyeIcon = $derived(eye ? EyeOff : Eye);

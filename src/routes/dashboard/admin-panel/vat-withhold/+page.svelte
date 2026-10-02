@@ -1,104 +1,57 @@
-<script>
-	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
-	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-
-	let { data } = $props();
-	import { superForm } from 'sveltekit-superforms/client';
+<script lang="ts">
+	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
 	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
-	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
-	import { Save, SquarePen } from '@lucide/svelte';
+	import { formatEthiopianDate } from '$lib/global.svelte';
+	import { add } from './schema';
 
-	const { form, errors, enhance, delayed, message } = superForm(data.form, {});
+	/** The VAT and withholding rates: one row, shown as two figures and changed in one dialog. */
+	let { data } = $props();
 
-	import { toast } from 'svelte-sonner';
-	import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
-	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
-	$effect(() => {
-		if ($message) {
-			if ($message.type === 'error') {
-				toast.error($message.text);
-			} else {
-				toast.success($message.text);
-			}
-		}
-	});
+	const RATES = $derived([
+		{ label: 'VAT', hint: 'Value added tax applied to sales', value: data.allData?.vat },
+		{ label: 'Withholding', hint: 'Tax withheld at source', value: data.allData?.withHold }
+	]);
 </script>
 
 <svelte:head>
-	<title>Vat and Withhold</title>
+	<title>VAT and Withholding</title>
 </svelte:head>
-{#key data.allData}
-	<FormCard title="Change Vat or Withhold" class="mx-auto mt-10 max-w-md">
-		<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-			<div class="border-b border-slate-200 bg-slate-50 px-6 py-4">
-				<h3 class="text-lg font-semibold text-slate-800">Tax Configurations</h3>
-				<p class="text-sm text-slate-500">
-					Current active rates as of {formatEthiopianDate(new Date())}
-				</p>
-			</div>
 
-			<div class="space-y-6 p-6">
-				<div class="flex items-center justify-between">
-					<div class="space-y-1">
-						<p class="text-sm font-medium tracking-wider text-slate-600 uppercase">VAT Rate</p>
-						<p class="text-xs text-slate-400">Value Added Tax applied to sales</p>
-					</div>
-					<div class="flex items-baseline">
-						<span class="text-3xl font-bold text-indigo-600">{data?.allData?.vat}</span>
-						<span class="ml-1 text-lg font-medium text-indigo-400">%</span>
-					</div>
-				</div>
-
-				<div class="h-px bg-border"></div>
-
-				<div class="flex items-center justify-between">
-					<div class="space-y-1">
-						<p class="text-sm font-medium tracking-wider text-slate-600 uppercase">Withholding</p>
-						<p class="text-xs text-slate-400">Tax withheld at source</p>
-					</div>
-					<div class="flex items-baseline">
-						<span class="text-3xl font-bold text-emerald-600">{data?.allData?.withHold} </span>
-						<span class="ml-1 text-lg font-medium text-emerald-400">%</span>
-					</div>
-				</div>
-			</div>
-
-			<div class="flex justify-end border-t border-slate-100 bg-slate-50 px-6 py-4">
-				<DialogComp title="Change Vat or Withhold" variant="default" IconComp={SquarePen}>
-					<form action="?/add" use:enhance id="main" class="flex flex-col gap-4" method="post">
-						<InputComp
-							{form}
-							{errors}
-							label="vat"
-							type="number"
-							name="vat"
-							placeholder="Enter vat amount"
-							required={true}
-						/>
-						<InputComp
-							{form}
-							{errors}
-							label="Withhold"
-							type="number"
-							name="withHold"
-							placeholder="Enter withhold amount"
-							required={true}
-						/>
-
-						<Button type="submit" form="main">
-							{#if $delayed}
-								<LoadingBtn name="Saving Changes" />
-							{:else}
-								<Save /> Save Changes
-							{/if}
-						</Button>
-					</form>
-				</DialogComp>
-			</div>
+<section class="mx-auto mt-10 flex max-w-md flex-col gap-4 rounded-lg border bg-card p-6">
+	<header class="flex flex-wrap items-start justify-between gap-3">
+		<div class="flex flex-col gap-1">
+			<h1 class="text-xl font-semibold">Tax rates</h1>
+			<p class="text-sm text-muted-foreground">
+				In force as of {formatEthiopianDate(new Date())}
+			</p>
 		</div>
+		<FormDialog
+			title="Change VAT or withholding"
+			action="?/add"
+			data={data.form}
+			schema={add}
+			triggerLabel="Change"
+		>
+			{#snippet fields({ form, errors })}
+				<InputComp {form} {errors} label="VAT (%)" type="number" name="vat" required />
+				<InputComp {form} {errors} label="Withholding (%)" type="number" name="withHold" required />
+			{/snippet}
+		</FormDialog>
+	</header>
 
-		<p class="mt-4 text-center text-xs text-slate-400">
-			Note: Updating these values will not overwrite existing records.
-		</p>
-	</FormCard>
-{/key}
+	<dl class="flex flex-col divide-y">
+		{#each RATES as rate (rate.label)}
+			<div class="flex items-center justify-between py-4">
+				<div>
+					<dt class="text-sm font-medium">{rate.label}</dt>
+					<dd class="text-xs text-muted-foreground">{rate.hint}</dd>
+				</div>
+				<dd class="text-2xl font-bold tabular-nums">{rate.value ?? '—'}%</dd>
+			</div>
+		{/each}
+	</dl>
+
+	<p class="text-xs text-muted-foreground">
+		Changing a rate does not rewrite records already made with the old one.
+	</p>
+</section>

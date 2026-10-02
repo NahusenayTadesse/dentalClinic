@@ -1,57 +1,14 @@
-import { superValidate, message } from 'sveltekit-superforms';
-import { zod4 } from 'sveltekit-superforms/adapters';
-import { bonusSchema as schema } from './schema';
+import { redirect } from '@sveltejs/kit';
+import { ledgerHref } from '$lib/payrollLedger';
+import type { PageServerLoad } from './$types';
 
-import { db } from '$lib/server/db';
-import { bonuses } from '$lib/server/db/schema';
-import type { Actions, PageServerLoad } from './$types';
-import { fail } from 'sveltekit-superforms';
-import { setFlash } from 'sveltekit-flash-message/server';
-
-export const load: PageServerLoad = async () => {
-	const form = await superValidate(zod4(schema));
-
-	return {
-		form
-	};
-};
-
-export const actions: Actions = {
-	addBonus: async ({ request, cookies, params, locals }) => {
-		const { id } = params;
-		const form = await superValidate(request, zod4(schema));
-
-		if (!form.valid) {
-			// Stay on the same page and set a flash message
-			setFlash({ type: 'error', message: 'Please check your form data.' }, cookies);
-
-			return fail(400, { form });
-		}
-
-		const { description, bonusDate, amount } = form.data;
-
-		try {
-			await db.insert(bonuses).values({
-				staffId: Number(id),
-				amount,
-
-				description,
-				bonusDate,
-				createdBy: locals.user?.id
-			});
-
-			// Stay on the same page and set a flash message
-			setFlash({ type: 'success', message: 'Bonus Successuflly Added' }, cookies);
-			return message(form, { type: 'success', text: 'Bonus Successfully Added' });
-		} catch (err) {
-			setFlash(
-				{ type: 'error', message: 'An Error occured while adding Bonus' + err.message },
-				cookies
-			);
-			return message(form, {
-				type: 'error',
-				text: 'An Error occured while adding Bonus' + err.message
-			});
-		}
-	}
+/**
+ * Recording a bonus for one employee happens on the bonuses ledger, opened on that employee.
+ *
+ * This page wrote the row itself — without the audit row every pay adjustment carries, and without
+ * the check that refuses an entry inside a period already paid (`payrollLedgerWrites.ts`). It now
+ * hands over to the ledger, so old links and bookmarks still land somewhere that works.
+ */
+export const load: PageServerLoad = ({ params }) => {
+	redirect(308, `${ledgerHref('bonuses')}?staffId=${encodeURIComponent(params.id)}`);
 };

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import StatCard from '@nahu/admin-kit/components/reports/StatCard.svelte';
+	import type { Stat } from '@nahu/admin-kit/components/reports/types.js';
 	import CalendarRange from '@lucide/svelte/icons/calendar-range';
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
@@ -68,13 +70,27 @@
 		excuseOpen = true;
 	}
 
-	const TILES = $derived([
-		{ label: 'Scheduled', value: data.totals.scheduled },
-		{ label: 'In', value: data.totals.present },
-		{ label: data.isToday ? 'Not in yet' : 'Absent', value: data.totals.waiting, warn: true },
-		{ label: 'Still in', value: data.totals.stillIn },
-		{ label: 'Late', value: data.totals.late },
-		{ label: 'Excused or on leave', value: data.totals.excused + data.totals.leave }
+	const tile = (key: string, label: string, value: number, tone?: Stat['tone']): Stat => ({
+		key,
+		label,
+		value,
+		format: 'count',
+		group: 'attendance',
+		tone
+	});
+	const TILES = $derived<Stat[]>([
+		tile('scheduled', 'Scheduled', data.totals.scheduled),
+		tile('in', 'In', data.totals.present),
+		// Not in yet is only a problem once the day is over; until then it is a count.
+		tile(
+			'waiting',
+			data.isToday ? 'Not in yet' : 'Absent',
+			data.totals.waiting,
+			data.totals.waiting && !data.isToday ? 'warning' : 'neutral'
+		),
+		tile('stillIn', 'Still in', data.totals.stillIn),
+		tile('late', 'Late', data.totals.late),
+		tile('excused', 'Excused or on leave', data.totals.excused + data.totals.leave)
 	]);
 </script>
 
@@ -120,17 +136,8 @@
 	</header>
 
 	<section class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6" aria-label="The day">
-		{#each TILES as tile (tile.label)}
-			<div class="rounded-lg border bg-card p-3">
-				<p class="text-sm text-muted-foreground">{tile.label}</p>
-				<p
-					class="text-2xl font-bold tabular-nums {tile.warn && tile.value && !data.isToday
-						? 'text-destructive'
-						: ''}"
-				>
-					{tile.value}
-				</p>
-			</div>
+		{#each TILES as stat (stat.key)}
+			<StatCard {stat} />
 		{/each}
 	</section>
 

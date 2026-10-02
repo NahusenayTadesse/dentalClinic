@@ -10,9 +10,10 @@
 	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
 	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
-	import { editDetail } from './schema';
-	import EditAddress from './editAddress.svelte';
-	import Contacts from './contacts.svelte';
+	import LookupSection from '@nahu/admin-kit/components/lookup/LookupSection.svelte';
+	import { childActionPaths } from '@nahu/admin-kit/components/lookup/actions.js';
+	import { editDetail, editAddress, addContact, editContact } from './schema';
+	import { contactConfig } from './configs';
 	import PayerAccount from './PayerAccount.svelte';
 	import DeleteEntity from '@nahu/admin-kit/components/DeleteEntity.svelte';
 	import { systemInfoRows } from '$lib/systemInfo';
@@ -37,6 +38,9 @@
 			updatedBy: data?.customer?.updatedBy
 		})
 	);
+
+	// A subcity with no name still has to be choosable, so it reads as blank rather than failing.
+	const subcities = $derived(data.subcityList.map((s) => ({ value: s.value, name: s.name ?? '' })));
 
 	let customerAddress = $derived([
 		{ name: 'Subcity', value: data.customerAddress?.subcity },
@@ -92,14 +96,29 @@
 			{#snippet editDialog()}
 				<!-- Only with an address to edit: the dialog read `address.id` and crashed the page for a
 				     customer without one. The action refuses too — it edits the customer's own address. -->
-				{#if data?.customerAddress}
-					{#key data.customerAddress}
-						<EditAddress
-							data={data?.addressForm}
-							address={data.customerAddress}
-							subcityList={data?.subcityList}
-						/>
-					{/key}
+				{#if data.customerAddress}
+					<FormDialog
+						title="Edit the address"
+						action="?/editAddress"
+						data={data.addressForm}
+						schema={editAddress}
+					>
+						{#snippet fields({ form, errors })}
+							<InputComp
+								label="Subcity"
+								name="subcity"
+								type="combo"
+								items={subcities}
+								{form}
+								{errors}
+							/>
+							<InputComp label="Street" name="street" {form} {errors} />
+							<InputComp label="Kebele" name="kebele" {form} {errors} />
+							<InputComp label="Building" name="buildingNumber" {form} {errors} required={false} />
+							<InputComp label="Floor" name="floor" {form} {errors} required={false} />
+							<InputComp label="House number" name="houseNumber" {form} {errors} />
+						{/snippet}
+					</FormDialog>
 				{/if}
 			{/snippet}
 			<SingleTable singleTable={customerAddress} />
@@ -110,11 +129,14 @@
 			IconComp={Phone}
 			style="identityIcon"
 		>
-			<Contacts
-				data={data?.contacts}
-				form={data?.editContactForm}
-				addForm={data?.addContactForm}
-				canDelete={data?.isSuperAdmin}
+			<LookupSection
+				config={contactConfig}
+				rows={data.contacts.rows}
+				addForm={data.contacts.addForm}
+				editForm={data.contacts.editForm}
+				actions={childActionPaths('Contact')}
+				schemas={{ add: addContact, edit: editContact }}
+				canDelete={data.isSuperAdmin ?? false}
 			/>
 		</Section>
 
