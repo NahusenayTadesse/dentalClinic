@@ -8,6 +8,10 @@
 				{
 					"heading": "The discount limit",
 					"body": "A bill issued with a discount over this share of it waits in Approvals → Discounts and Voids, and takes no payment until a manager approves it. 10% unless changed. 0 sends every discount to a manager; 100 sends none."
+				},
+				{
+					"heading": "Tax",
+					"body": "Enter the clinic's TIN: it is printed on every bill. If the clinic is registered for VAT, tick VAT and set the rate (15% by default). Bills then charge VAT on lines marked VAT applies — goods sold, such as a toothbrush — after any discount, and print it as its own line. Treatment is not taxed unless you tick Treatment, since medical services are exempt as this system understands Ethiopian VAT law; ask your accountant. A change applies to bills issued from now on; an issued bill keeps the rate it was issued at."
 				}
 			],
 			"links": [
@@ -24,6 +28,10 @@
 				{
 					"heading": "የቅናሽ ገደቡ",
 					"body": "ከዚህ ድርሻ በላይ ቅናሽ ተደርጎበት የወጣ ሂሳብ በApprovals → Discounts and Voids ይጠብቃል፤ ሥራ አስኪያጅ እስኪያጸድቅም ክፍያ አይቀበልም። ካልተቀየረ 10%። 0 ሁሉንም ቅናሽ ወደ ሥራ አስኪያጅ ይልካል፤ 100 ምንም አይልክም።"
+				},
+				{
+					"heading": "ግብር",
+					"body": "የክሊኒኩን የግብር ከፋይ መለያ ቁጥር (TIN) ያስገቡ፤ በእያንዳንዱ ሂሳብ ላይ ይታተማል። ክሊኒኩ ለተ.እ.ታ ከተመዘገበ «VAT»ን ምልክት አድርገው መጠኑን ያስቀምጡ (በነባሪ 15%)። ከዚያ ሂሳቦች «ተ.እ.ታ ይከፈልበታል» በተባሉ መስመሮች ላይ — እንደ የጥርስ ብሩሽ ያሉ የተሸጡ ዕቃዎች — ከቅናሽ በኋላ ተ.እ.ታ ያስከፍላሉ። የሕክምና አገልግሎቶች ነፃ ስለሆኑ «Treatment» ካልተመረጠ ሕክምና ግብር አይከፈልበትም፤ የሂሳብ ባለሙያዎን ይጠይቁ። ለውጥ ከዚህ በኋላ ለሚወጡ ሂሳቦች ይሠራል።"
 				}
 			],
 			"links": [

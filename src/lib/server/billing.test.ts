@@ -20,6 +20,7 @@ import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { WriteRefused } from './childCrud';
 import { patientBalance, payerInvoices, unbilledWork } from './billing';
 import {
+	addCharge,
 	createInvoice,
 	issueInvoice,
 	requestVoid,
@@ -342,6 +343,52 @@ describe('billing', async () => {
 		});
 		expect(message).toMatch(/open the cash drawer/);
 	});
+
+	it.skipIf(!ready)(
+		'charges VAT on goods only, after the discount, and keeps it when a discount is refused',
+		async () => {
+			const result = await inRollback(async (tx) => {
+				// A VAT-registered clinic at 15% that does not tax treatment, and a 1% discount limit
+				// so the discount below goes to a manager.
+				await tx
+					.update(clinicSettings)
+					.set({
+						vatRegistered: true,
+						vatRate: 15,
+						vatOnServices: false,
+						discountApprovalPercent: 1
+					})
+					.where(eq(clinicSettings.id, 1));
+				const [filling] = await doneWork(tx, [1800]);
+				const id = await createInvoice(tx, request, {
+					patientId: someone.id,
+					procedureIds: [filling],
+					branchId: place.id
+				});
+				await addCharge(tx, request, someone.id, id, {
+					description: 'Toothbrush',
+					quantity: 2,
+					unitPrice: 100,
+					taxable: true
+				});
+				await setDiscount(tx, request, someone.id, id, 200);
+				await issueInvoice(tx, request, someone.id, id, { dueOn: null });
+				const [issued] = await tx.select().from(invoice).where(eq(invoice.id, id));
+				// The manager refuses the discount: full price again, VAT recomputed at 15%.
+				await settleInvoiceRequests([id], 'rejected', tx);
+				const [refused] = await tx.select().from(invoice).where(eq(invoice.id, id));
+				return { issued, refused };
+			});
+			// 2,000 of lines, 200 of them taxable; 10% off spreads to 180 taxable; 15% of 180 is 27.
+			expect(result.issued.subtotal).toBe(2000);
+			expect(result.issued.vatRate).toBe(15);
+			expect(result.issued.vatAmount).toBe(27);
+			expect(result.issued.total).toBe(1827);
+			// Without the discount: 15% of 200.
+			expect(result.refused.vatAmount).toBe(30);
+			expect(result.refused.total).toBe(2030);
+		}
+	);
 
 	it.skipIf(!ready)(
 		'needs a mobile payment’s transaction ID, and never takes the same one twice',

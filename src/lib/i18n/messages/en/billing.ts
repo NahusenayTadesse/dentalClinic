@@ -103,6 +103,10 @@ export const billing = {
 	},
 
 	bill: {
+		vat: (rate: number) => `VAT (${rate}%)`,
+		vatAtIssue: (rate: number) => `VAT (${rate}%), charged when issued`,
+		chargeTaxable: 'VAT applies',
+		chargeTaxableHint: 'Goods sold — a toothbrush, a whitening kit. Treatment is not taxed.',
 		pageTitle: (name: string, number: string) => `${name} — ${number}`,
 		notFound: 'Bill not found',
 		notThisPatient: 'That bill is not on this patient’s record.',
@@ -219,6 +223,11 @@ export const billing = {
 
 	/** The bill on paper. */
 	print: {
+		vat: (rate: number) => `VAT (${rate}%)`,
+		clinicTin: (tin: string) => `TIN ${tin}`,
+		payerTin: 'Payer’s TIN',
+		vatCharged: (rate: number) =>
+			`VAT at ${rate}% is charged on goods; medical services are exempt.`,
 		fallbackName: 'Dental clinic',
 		bill: 'Bill',
 		billVoid: 'Bill — VOID',

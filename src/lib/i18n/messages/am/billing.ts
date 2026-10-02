@@ -95,6 +95,10 @@ export const billing: typeof en = {
 	},
 
 	bill: {
+		vat: (rate) => `ተ.እ.ታ (${rate}%)`,
+		vatAtIssue: (rate) => `ተ.እ.ታ (${rate}%)፣ ሂሳቡ ሲወጣ የሚታከል`,
+		chargeTaxable: 'ተ.እ.ታ ይከፈልበታል',
+		chargeTaxableHint: 'የተሸጠ ዕቃ — የጥርስ ብሩሽ፣ ማንጫ። ሕክምና ግብር አይከፈልበትም።',
 		pageTitle: (name, number) => `${name} — ${number}`,
 		notFound: 'ሂሳቡ አልተገኘም',
 		notThisPatient: 'ያ ሂሳብ በዚህ ታካሚ መዝገብ ላይ የለም።',
@@ -200,6 +204,10 @@ export const billing: typeof en = {
 	},
 
 	print: {
+		vat: (rate) => `ተ.እ.ታ (${rate}%)`,
+		clinicTin: (tin) => `የግብር ከፋይ መለያ ቁጥር ${tin}`,
+		payerTin: 'የከፋዩ የግብር መለያ ቁጥር',
+		vatCharged: (rate) => `በዕቃዎች ላይ ${rate}% ተ.እ.ታ ተከፍሏል፤ የሕክምና አገልግሎቶች ነፃ ናቸው።`,
 		fallbackName: 'የጥርስ ክሊኒክ',
 		bill: 'ሂሳብ',
 		billVoid: 'ሂሳብ — የተሰረዘ',

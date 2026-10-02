@@ -18,15 +18,33 @@ import { clinicSettings } from '$lib/server/db/schema';
 type Reader = Pick<typeof db, 'select'>;
 
 /** The settings every read gets, whether or not the row is there. */
-export type ClinicSettings = { discountApprovalPercent: number };
+export type ClinicSettings = {
+	discountApprovalPercent: number;
+	tin: string | null;
+	vatRegistered: boolean;
+	vatRate: number;
+	vatOnServices: boolean;
+};
 
 /** What a clinic that never touched its settings gets — the same values as the column defaults. */
-export const DEFAULT_SETTINGS: ClinicSettings = { discountApprovalPercent: 10 };
+export const DEFAULT_SETTINGS: ClinicSettings = {
+	discountApprovalPercent: 10,
+	tin: null,
+	vatRegistered: false,
+	vatRate: 15,
+	vatOnServices: false
+};
 
 /** The clinic's settings. */
 export async function readSettings(reader: Reader = db): Promise<ClinicSettings> {
 	const [row] = await reader
-		.select({ discountApprovalPercent: clinicSettings.discountApprovalPercent })
+		.select({
+			discountApprovalPercent: clinicSettings.discountApprovalPercent,
+			tin: clinicSettings.tin,
+			vatRegistered: clinicSettings.vatRegistered,
+			vatRate: clinicSettings.vatRate,
+			vatOnServices: clinicSettings.vatOnServices
+		})
 		.from(clinicSettings)
 		.where(eq(clinicSettings.id, 1))
 		.limit(1);

@@ -108,6 +108,7 @@ export const load: PageServerLoad = async (event) => {
 		payerName: payers.find((p) => p.value === bill.customerId)?.name ?? null,
 		drawerOpen: drawer !== null,
 		discountThreshold: settings.discountApprovalPercent,
+		vatRegistered: settings.vatRegistered,
 		forms: {
 			add,
 			charge,

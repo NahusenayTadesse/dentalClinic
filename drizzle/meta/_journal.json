@@ -351,6 +351,13 @@
       "when": 1790975253514,
       "tag": "0049_mobile_money_reconciled",
       "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "5",
+      "when": 1790976183456,
+      "tag": "0050_vat",
+      "breakpoints": true
     }
   ]
 }

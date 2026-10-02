@@ -2179,7 +2179,8 @@ export const ROUTE_MAP: RouteEntry[] = [
 	{
 		path: '/dashboard/admin-panel/billing-settings',
 		title: 'Billing settings',
-		purpose: 'How big a discount the front desk may give before a manager has to approve it.',
+		purpose:
+			'How big a discount the front desk may give before a manager approves it, and the clinic’s TIN and VAT standing.',
 		permission: 'settings.manage',
 		group: 'Admin panel'
 	},

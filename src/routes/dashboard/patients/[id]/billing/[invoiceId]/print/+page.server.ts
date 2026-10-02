@@ -7,6 +7,7 @@ import { requirePermission } from '$lib/server/permissions';
 import { livePatient, livePatientId, logPatientView, patientFullName } from '$lib/server/patients';
 import { invoiceDetail } from '$lib/server/billing';
 import { clinicToday } from '$lib/clinicTime';
+import { readSettings } from '$lib/server/settings';
 import { messagesFor } from '$lib/i18n/messages';
 import { BILLING_PERMISSION } from '../../billingAction';
 import type { PageServerLoad } from './$types';
@@ -30,7 +31,7 @@ export const load: PageServerLoad = async (event) => {
 	if (!bill) error(404, say.bill.notThisPatient);
 	if (bill.status === 'draft') error(409, say.print.draftNotPrinted);
 
-	const [[person], [place], [payer]] = await Promise.all([
+	const [[person], [place], [payer], settings] = await Promise.all([
 		db
 			.select({ fullName: patientFullName, fileNo: patient.fileNo, phone: patient.phone })
 			.from(patient)
@@ -48,10 +49,12 @@ export const load: PageServerLoad = async (event) => {
 		bill.customerId === null
 			? Promise.resolve([])
 			: db
-					.select({ name: customers.name })
+					.select({ name: customers.name, tin: customers.tinNo })
 					.from(customers)
 					.where(eq(customers.id, bill.customerId))
-					.limit(1)
+					.limit(1),
+		// The clinic's TIN, printed on every bill.
+		readSettings()
 	]);
 	if (!person) error(404, say.print.patientNotFound);
 
@@ -61,6 +64,8 @@ export const load: PageServerLoad = async (event) => {
 		// Paper records what happened: a refund waiting for a manager, or refused, has not.
 		bill: { ...bill, payments: bill.payments.filter((p) => p.approvalStatus === 'approved') },
 		payer: payer?.name ?? null,
+		payerTin: payer?.tin ?? null,
+		clinicTin: settings.tin,
 		patient: person,
 		branch: place ?? { name: null, address: null, phone: null },
 		printedOn: clinicToday()

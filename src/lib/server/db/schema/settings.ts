@@ -1,5 +1,5 @@
 // settings.ts - The handful of choices a clinic makes about how it runs, and document numbering.
-import { mysqlTable, int, decimal, varchar, timestamp } from 'drizzle-orm/mysql-core';
+import { mysqlTable, int, decimal, varchar, timestamp, boolean } from 'drizzle-orm/mysql-core';
 // Relative, not `$lib/…`: drizzle-kit loads the schema without SvelteKit's aliases.
 import { DEFAULT_SMS_TEMPLATES } from '../../../smsTemplates';
 import { sql } from 'drizzle-orm';
@@ -32,6 +32,27 @@ export const clinicSettings = mysqlTable('clinic_settings', {
 	})
 		.notNull()
 		.default(10),
+
+	// ── Tax, as the clinic's accountant has set it up ───────────────────────────────────────────
+
+	/** The clinic's Taxpayer Identification Number, printed on every bill and receipt. */
+	tin: varchar('tin', { length: 20 }),
+
+	/**
+	 * Whether the clinic is registered for VAT. Off by default, because most small clinics are not
+	 * — they pay turnover tax on their own return, which puts nothing extra on the patient's bill.
+	 * Registered, a bill charges VAT on its taxable lines at `vatRate` (`$lib/billTax.ts`).
+	 */
+	vatRegistered: boolean('vat_registered').notNull().default(false),
+	vatRate: decimal('vat_rate', { precision: 5, scale: 2, mode: 'number' }).notNull().default(15),
+
+	/**
+	 * Whether charted treatment carries VAT. Off: medical services are, as this app understands
+	 * Ethiopian VAT law, exempt, while goods the clinic sells (a toothbrush, a whitening kit) are
+	 * not. A setting rather than a rule in code because it is the clinic's accountant's call, not
+	 * the software's — and the day the law or their reading of it changes, it is one switch.
+	 */
+	vatOnServices: boolean('vat_on_services').notNull().default(false),
 
 	/**
 	 * The text of an appointment reminder and of a recall, with `{name}`, `{date}`, `{time}`,

@@ -23,12 +23,30 @@ import { paidOn } from '$lib/server/payments';
 import { billingRefusals } from '$lib/server/cashDrawer';
 import { clinicToday } from '$lib/clinicTime';
 import { canEditInvoice, canRequestVoid, cents, discountNeedsApproval } from '$lib/invoiceStatus';
+import { billTotals, type BillTotals, type VatStanding } from '$lib/billTax';
 
 /** A transaction on the database, as `db.transaction` hands it over. */
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 /** The database, or a transaction on it. */
 type Reader = typeof db | Tx;
+
+/**
+ * A bill's totals from its live lines, under a VAT standing — the only way a bill's `total` is
+ * worked out, at issue and when a refused discount puts it back to full price (`$lib/billTax.ts`).
+ */
+export async function totalsFromLines(
+	reader: Reader,
+	invoiceId: number,
+	discount: number,
+	vat: VatStanding
+): Promise<BillTotals & { lines: number }> {
+	const lines = await reader
+		.select({ lineTotal: invoiceLine.lineTotal, taxable: invoiceLine.taxable })
+		.from(invoiceLine)
+		.where(and(eq(invoiceLine.invoiceId, invoiceId), notDeleted(invoiceLine)));
+	return { ...billTotals(lines, discount, vat), lines: lines.length };
+}
 
 /** Writes lines onto a draft for these pieces of work, each checked to be unbilled and theirs. */
 async function writeWorkLines(
@@ -46,8 +64,11 @@ async function writeWorkLines(
 		billingRefusals(event).alreadyBilled,
 		'procedureIds'
 	);
+	// Charted treatment carries VAT only where the clinic's accountant has said services do.
+	const { vatOnServices } = await readSettings(tx);
 	for (const [index, work] of chosen.entries()) {
 		const id = await insertReturningId(tx, invoiceLine, {
+			taxable: vatOnServices,
 			invoiceId,
 			procedureId: work.id,
 			description: work.description,
@@ -158,7 +179,7 @@ export async function addCharge(
 	event: AuditRequest,
 	patientId: number,
 	invoiceId: number,
-	charge: { description: string; quantity: number; unitPrice: number }
+	charge: { description: string; quantity: number; unitPrice: number; taxable?: boolean }
 ) {
 	const bill = await billFor(tx, patientId, invoiceId);
 	refuseUnless(canEditInvoice(bill.status), billingRefusals(event).onlyDraft);
@@ -168,6 +189,7 @@ export async function addCharge(
 		quantity: charge.quantity,
 		unitPrice: charge.unitPrice,
 		lineTotal: cents(charge.quantity * charge.unitPrice),
+		taxable: charge.taxable ?? false,
 		sortOrder: 1000,
 		createdBy: event.locals.user?.id
 	});
@@ -276,28 +298,29 @@ export async function issueInvoice(
 	const bill = await billFor(tx, patientId, invoiceId);
 	refuseUnless(bill.status === 'draft', billingRefusals(event).alreadyIssued);
 
-	const [{ subtotal, lines }] = await tx
-		.select({
-			subtotal: sql<number>`COALESCE(SUM(${invoiceLine.lineTotal}), 0)`,
-			lines: sql<number>`COUNT(*)`
-		})
-		.from(invoiceLine)
-		.where(and(eq(invoiceLine.invoiceId, invoiceId), notDeleted(invoiceLine)));
-	refuseUnless(Number(lines) > 0, billingRefusals(event).needsLine);
-
-	const gross = cents(Number(subtotal));
-	const discount = bill.discount ?? 0;
-	refuseUnless(discount <= gross, billingRefusals(event).discountOverBill);
 	const settings = await readSettings(tx);
-	const needsManager = discountNeedsApproval(gross, discount, settings.discountApprovalPercent);
+	const discount = bill.discount ?? 0;
+	const totals = await totalsFromLines(tx, invoiceId, discount, {
+		registered: settings.vatRegistered,
+		rate: settings.vatRate
+	});
+	refuseUnless(totals.lines > 0, billingRefusals(event).needsLine);
+	refuseUnless(discount <= totals.subtotal, billingRefusals(event).discountOverBill);
+	const needsManager = discountNeedsApproval(
+		totals.subtotal,
+		discount,
+		settings.discountApprovalPercent
+	);
 
 	const written = {
 		status: 'issued' as const,
 		invoiceNumber: await nextNumber(tx, 'invoice'),
 		issuedOn: clinicToday(),
 		dueOn: options.dueOn,
-		subtotal: gross,
-		total: cents(gross - discount),
+		subtotal: totals.subtotal,
+		vatAmount: totals.vat,
+		vatRate: totals.rate,
+		total: totals.total,
 		...(needsManager
 			? asRequested(event.locals.user?.id)
 			: { approvalStatus: 'approved' as const }),
@@ -384,7 +407,7 @@ export async function settleInvoiceRequests(
 		.select({
 			id: invoice.id,
 			voidReason: invoice.voidReason,
-			subtotal: invoice.subtotal
+			vatRate: invoice.vatRate
 		})
 		.from(invoice)
 		.where(and(inArray(invoice.id, ids), ne(invoice.status, 'void')));
@@ -400,9 +423,19 @@ export async function settleInvoiceRequests(
 				)
 				.where(eq(invoice.id, bill.id));
 		} else if (decision === 'rejected') {
+			// Full price again, VAT and all, at the rate the bill was issued at.
+			const full = await totalsFromLines(database, bill.id, 0, {
+				registered: bill.vatRate !== null,
+				rate: bill.vatRate ?? 0
+			});
 			await database
 				.update(invoice)
-				.set({ discount: null, total: bill.subtotal, approvalStatus: 'approved' })
+				.set({
+					discount: null,
+					vatAmount: full.vat,
+					total: full.total,
+					approvalStatus: 'approved'
+				})
 				.where(eq(invoice.id, bill.id));
 		}
 	}

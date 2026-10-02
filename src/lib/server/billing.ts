@@ -50,6 +50,8 @@ import { branchFilter, type BranchContext } from '$lib/server/branchScope';
 import { whereLabel } from '$lib/teeth';
 import { isoDate } from '$lib/server/db/dialect';
 import { cents, type InvoiceStatus } from '$lib/invoiceStatus';
+import { billTotals } from '$lib/billTax';
+import { readSettings } from '$lib/server/settings';
 
 /** A transaction on the database, as `db.transaction` hands it over. */
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -248,6 +250,12 @@ function lineDescription(service: string | null, area: string | null, where: str
 }
 
 /** One bill of this patient's with its lines and payments, or null when it is not theirs. */
+/** The clinic's VAT standing now, for a draft's preview. */
+async function vatStanding() {
+	const settings = await readSettings();
+	return { registered: settings.vatRegistered, rate: settings.vatRate };
+}
+
 export async function invoiceDetail(patientId: number, invoiceId: number) {
 	const [bill] = await db
 		.select()
@@ -264,7 +272,8 @@ export async function invoiceDetail(patientId: number, invoiceId: number) {
 				description: invoiceLine.description,
 				quantity: invoiceLine.quantity,
 				unitPrice: invoiceLine.unitPrice,
-				lineTotal: invoiceLine.lineTotal
+				lineTotal: invoiceLine.lineTotal,
+				taxable: invoiceLine.taxable
 			})
 			.from(invoiceLine)
 			.where(and(eq(invoiceLine.invoiceId, invoiceId), notDeleted(invoiceLine)))
@@ -307,17 +316,26 @@ export async function invoiceDetail(patientId: number, invoiceId: number) {
 				: 0
 	}));
 
-	const subtotal = cents(lines.reduce((sum, l) => sum + l.lineTotal, 0));
 	const paid = cents(
 		payments.filter((p) => p.approvalStatus === 'approved').reduce((sum, p) => sum + p.amount, 0)
 	);
-	// A draft's figures are worked out live from its lines; an issued bill's are its own, as issued.
-	const total = bill.status === 'draft' ? cents(subtotal - (bill.discount ?? 0)) : bill.total;
+	/*
+	 * A draft's figures are worked out live from its lines, VAT included, by the rule issuing will
+	 * use (`$lib/billTax.ts`) — so what the patient is told is what the bill will say. An issued
+	 * bill's are its own, as issued.
+	 */
+	const draft = bill.status === 'draft';
+	const live = draft
+		? billTotals(lines, bill.discount ?? 0, await vatStanding())
+		: { subtotal: bill.subtotal, vat: bill.vatAmount, rate: bill.vatRate, total: bill.total };
+	const total = live.total;
 	return {
 		...bill,
 		lines,
 		payments: withRefundable,
-		subtotal: bill.status === 'draft' ? subtotal : bill.subtotal,
+		subtotal: live.subtotal,
+		vatAmount: live.vat,
+		vatRate: live.rate,
 		total,
 		paid,
 		owed: bill.status === 'draft' || bill.status === 'void' ? 0 : cents(total - paid)

@@ -272,6 +272,15 @@
 					</Table.Cell>
 					{#if draft}<Table.Cell></Table.Cell>{/if}
 				</Table.Row>
+				{#if bill.vatAmount !== null && bill.vatRate !== null}
+					<Table.Row>
+						<Table.Cell colspan={3}>
+							{draft ? w.vatAtIssue(bill.vatRate) : w.vat(bill.vatRate)}
+						</Table.Cell>
+						<Table.Cell class="text-right tabular-nums">{formatETB(bill.vatAmount)}</Table.Cell>
+						{#if draft}<Table.Cell></Table.Cell>{/if}
+					</Table.Row>
+				{/if}
 				<Table.Row class="font-semibold">
 					<Table.Cell colspan={3}>{w.total}</Table.Cell>
 					<Table.Cell class="text-right tabular-nums">{formatETB(bill.total)}</Table.Cell>
@@ -350,6 +359,16 @@
 			{form}
 			{errors}
 		/>
+		{#if data.vatRegistered}
+			<InputComp
+				label={w.chargeTaxable}
+				name="taxable"
+				type="checkboxSingle"
+				placeholder={w.chargeTaxableHint}
+				{form}
+				{errors}
+			/>
+		{/if}
 	{/snippet}
 </FormDialog>
 

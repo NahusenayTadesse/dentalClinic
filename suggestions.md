@@ -109,7 +109,7 @@ can check.
   tick is audited with who and when (migration 0049).
 - **Later:** a payment gateway (Chapa, ArifPay) to take the payment directly.
 
-### 5. Receipts that satisfy the tax rules
+### 5. 🟡 Receipts that satisfy the tax rules — VAT and TIN done; e-invoicing not
 
 - As I understand the rules, dental services are VAT-exempt but goods sold (toothbrushes,
   whitening kits) are taxable, and a clinic is on VAT or on turnover tax depending on its turnover.
@@ -118,6 +118,16 @@ can check.
 - The receipt needs the clinic's TIN, and the payer's for a company payer, and must meet the
   Ministry of Revenues' requirements (sales registration machine or e-invoicing).
 - **Build on:** `server/invoiceWrites.ts`, the `vat_and_withhold` table, the existing printed bill.
+- **Done:** Billing Settings holds the clinic's TIN, whether it is VAT-registered, the rate (15%) and
+  whether treatment carries VAT (off: services exempt; the accountant's switch). A typed charge can
+  be marked "VAT applies"; at issue VAT is charged on the taxable part after the discount is spread
+  in proportion (`$lib/billTax.ts`), frozen on the bill with its rate, and a refused discount
+  recomputes it. The draft shows the same figure before issue. The printed bill shows the clinic's
+  TIN, the payer's TIN, and VAT as its own line. All of it is off by default (migration 0050).
+- **Not done, and why:** clearance through the Ministry of Revenues' e-invoicing system. Its field
+  specification and API are not published; `transactions.fiscalStatus`, `fiscalReference` and
+  `fiscalQr` are waiting for them. Turnover tax is the clinic's own return, not a bill line, so it
+  is left to the accounting export (under Running the business).
 
 ### 6. Insurance and employer credit, done properly
 

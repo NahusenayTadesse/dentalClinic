@@ -22,7 +22,9 @@ export const addWork = z.object({ procedureIds: work });
 export const addCharge = z.object({
 	description: z.string().trim().min(1, 'Say what the charge is for.').max(255),
 	quantity: z.coerce.number().positive('At least one.').max(1000),
-	unitPrice: z.coerce.number().min(0, 'A price cannot be negative.').max(10_000_000)
+	unitPrice: z.coerce.number().min(0, 'A price cannot be negative.').max(10_000_000),
+	/** Goods sold carry VAT when the clinic is registered; treatment does not (`$lib/billTax.ts`). */
+	taxable: z.boolean().default(false)
 });
 
 /** A draft line's wording, quantity and price. */

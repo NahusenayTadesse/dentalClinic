@@ -10,7 +10,8 @@ import {
 	datetime,
 	text,
 	unique,
-	index
+	index,
+	boolean
 } from 'drizzle-orm/mysql-core';
 import { relations } from 'drizzle-orm';
 import { approvalFields, secureFields } from './secureFields';
@@ -104,6 +105,12 @@ export const invoice = mysqlTable(
 		subtotal: decimal('subtotal', { precision: 10, scale: 2, mode: 'number' }).notNull(),
 		discount: decimal('discount', { precision: 10, scale: 2, mode: 'number' }),
 		vatAmount: decimal('vat_amount', { precision: 10, scale: 2, mode: 'number' }),
+		/**
+		 * The VAT rate the bill was issued at, as a percentage — null when the clinic was not
+		 * VAT-registered then. Frozen with the bill, so a later rate change cannot reprint an old
+		 * bill at a rate it was never charged at.
+		 */
+		vatRate: decimal('vat_rate', { precision: 5, scale: 2, mode: 'number' }),
 		withholdingAmount: decimal('withholding_amount', { precision: 10, scale: 2, mode: 'number' }),
 		total: decimal('total', { precision: 10, scale: 2, mode: 'number' }).notNull(),
 
@@ -198,6 +205,11 @@ export const invoiceLine = mysqlTable(
 		unitPrice: decimal('unit_price', { precision: 10, scale: 2, mode: 'number' }).notNull(),
 		/** Snapshot, and stored rather than computed: quantity × price is what the paper says. */
 		lineTotal: decimal('line_total', { precision: 10, scale: 2, mode: 'number' }).notNull(),
+		/**
+		 * Whether VAT applies to this line, when the clinic charges it. Charted work follows the
+		 * clinic's `vatOnServices`; a typed charge — something sold — is marked when it is added.
+		 */
+		taxable: boolean('taxable').notNull().default(false),
 
 		sortOrder: int('sort_order').notNull().default(0),
 

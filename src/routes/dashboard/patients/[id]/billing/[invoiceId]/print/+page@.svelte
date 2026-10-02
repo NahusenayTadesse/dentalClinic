@@ -17,13 +17,13 @@
 	const paidColumns = $derived(paymentColumns(t.m));
 
 	const bill = $derived(data.bill);
-	/** Under the lines: the subtotal and discount when there is one, and the total. */
+	/** Under the lines: the subtotal, the discount and VAT where there are any, and the total. */
+	const taxed = $derived(bill.vatAmount !== null && bill.vatRate !== null);
 	const summary = $derived([
-		...(bill.discount
-			? [
-					{ label: w.subtotal, value: formatETB(bill.subtotal) },
-					{ label: w.discount, value: `−${formatETB(bill.discount)}` }
-				]
+		...(bill.discount || taxed ? [{ label: w.subtotal, value: formatETB(bill.subtotal) }] : []),
+		...(bill.discount ? [{ label: w.discount, value: `−${formatETB(bill.discount)}` }] : []),
+		...(taxed && bill.vatRate !== null && bill.vatAmount !== null
+			? [{ label: w.vat(bill.vatRate), value: formatETB(bill.vatAmount) }]
 			: []),
 		{ label: w.total, value: formatETB(bill.total), strong: true }
 	]);
@@ -40,6 +40,7 @@
 			{bill.status === 'void' ? w.billVoid : w.bill}
 			{bill.invoiceNumber}
 		</p>
+		{#if data.clinicTin}<p class="text-sm">{w.clinicTin(data.clinicTin)}</p>{/if}
 		<dl class="grid grid-cols-2 gap-x-6 gap-y-1 text-sm">
 			<dt class="text-muted-foreground">{w.patient}</dt>
 			<dd>
@@ -48,6 +49,10 @@
 			{#if data.payer}
 				<dt class="text-muted-foreground">{w.billTo}</dt>
 				<dd>{data.payer}</dd>
+				{#if data.payerTin}
+					<dt class="text-muted-foreground">{w.payerTin}</dt>
+					<dd>{data.payerTin}</dd>
+				{/if}
 			{/if}
 			<dt class="text-muted-foreground">{w.issued}</dt>
 			<dd>{day(bill.issuedOn)}</dd>
@@ -69,7 +74,7 @@
 	</p>
 
 	<footer class="mt-8 flex flex-col gap-6 text-sm text-muted-foreground">
-		<p>{w.vatExempt}</p>
+		<p>{taxed && bill.vatRate !== null ? w.vatCharged(bill.vatRate) : w.vatExempt}</p>
 		<div class="grid grid-cols-2 gap-8 pt-8">
 			<p class="border-t pt-2">{w.receivedBy}</p>
 			<p class="border-t pt-2">{w.forTheClinic}</p>
