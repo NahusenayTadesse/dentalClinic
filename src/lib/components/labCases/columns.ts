@@ -1,6 +1,6 @@
 import type { ColumnDef } from '@tanstack/table-core';
 import type { SuperValidated } from 'sveltekit-superforms';
-import { renderComponent } from '$lib/components/ui/data-table/index.js';
+import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Copy from '$lib/Copy.svelte';
 import { formatETB } from '$lib/global.svelte';

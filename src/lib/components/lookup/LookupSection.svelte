@@ -2,7 +2,7 @@
 	import { Plus } from '@lucide/svelte';
 	import { createForm } from '$lib/forms/createForm';
 
-	import { Button } from '$lib/components/ui/button/index';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';

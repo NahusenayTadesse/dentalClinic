@@ -1,12 +1,12 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
-	import { Button, type ButtonVariant } from '$lib/components/ui/button/index.js';
+	import { Button, type ButtonVariant } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Trash } from '@lucide/svelte';
 	import type { Snippet } from 'svelte';
 	import type { Component } from 'svelte';
 	import type { IconProps } from '@lucide/svelte';
 
-	import ScrollArea from '$lib/components/ui/scroll-area/scroll-area.svelte';
+	import ScrollArea from '@nahu/admin-kit/components/ui/scroll-area/scroll-area.svelte';
 
 	let {
 		title,

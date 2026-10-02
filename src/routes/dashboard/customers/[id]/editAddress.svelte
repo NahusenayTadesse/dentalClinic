@@ -4,7 +4,7 @@
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { type EditAddress } from './schema';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import { SquarePen, Save } from '@lucide/svelte';

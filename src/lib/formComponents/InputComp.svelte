@@ -20,14 +20,14 @@
 	 */
 	type FormStore = Writable<Record<string, any>>;
 	/* eslint-enable @typescript-eslint/no-explicit-any */
-	import { Input } from '$lib/components/ui/input/index';
+	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
 	import { Textarea } from '$lib/components/ui/textarea/index';
-	import { Label } from '$lib/components/ui/label/index.js';
-	import { Checkbox } from '$lib/components/ui/checkbox';
+	import { Label } from '@nahu/admin-kit/components/ui/label/index.js';
+	import { Checkbox } from '@nahu/admin-kit/components/ui/checkbox/index.js';
 	import CircleAlert from '@lucide/svelte/icons/circle-alert';
 	import Eye from '@lucide/svelte/icons/eye';
 	import EyeOff from '@lucide/svelte/icons/eye-off';
-	import Button from '$lib/components/ui/button/button.svelte';
+	import Button from '@nahu/admin-kit/components/ui/button/button.svelte';
 
 	import FileUpload from './FileUpload.svelte';
 	import DatePicker from './DatePicker.svelte';

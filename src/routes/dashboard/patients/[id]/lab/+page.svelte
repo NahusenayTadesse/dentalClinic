@@ -1,7 +1,7 @@
 <script lang="ts">
 	import FlaskConical from '@lucide/svelte/icons/flask-conical';
 	import Plus from '@lucide/svelte/icons/plus';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Section from '$lib/components/Section.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import FormDialog from '$lib/formComponents/FormDialog.svelte';

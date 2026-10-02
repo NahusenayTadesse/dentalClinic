@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Check from '@lucide/svelte/icons/check';
 	import Filter from '@lucide/svelte/icons/filter';
-	import * as Popover from '$lib/components/ui/popover/index.js';
-	import * as Command from '$lib/components/ui/command/index.js';
-	import { Badge } from '$lib/components/ui/badge/index';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import * as Popover from '@nahu/admin-kit/components/ui/popover/index.js';
+	import * as Command from '@nahu/admin-kit/components/ui/command/index.js';
+	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import type { Facet } from './table-state.svelte';
 
 	/**

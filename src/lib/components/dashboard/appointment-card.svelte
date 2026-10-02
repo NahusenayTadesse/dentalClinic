@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Card, CardContent } from '$lib/components/ui/card';
+	import { Card, CardContent } from '@nahu/admin-kit/components/ui/card/index.js';
 	import { CalendarIcon } from '@lucide/svelte';
 
 	interface Props {

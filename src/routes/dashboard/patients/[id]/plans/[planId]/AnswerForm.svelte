@@ -3,7 +3,7 @@
 	import X from '@lucide/svelte/icons/x';
 	import Save from '@lucide/svelte/icons/save';
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';

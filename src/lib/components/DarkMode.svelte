@@ -4,7 +4,7 @@
 
 	import { resetMode, setMode } from 'mode-watcher';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import { buttonVariants } from '$lib/components/ui/button/index.js';
+	import { buttonVariants } from '@nahu/admin-kit/components/ui/button/index.js';
 </script>
 
 <DropdownMenu.Root>

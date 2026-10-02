@@ -7,8 +7,8 @@
 		CardDescription,
 		CardHeader,
 		CardTitle
-	} from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
+	} from '@nahu/admin-kit/components/ui/card/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Table2, ChartColumnBig } from '@lucide/svelte';
 	import { formatETB } from '$lib/global.svelte';
 	import { THEME, fade, type ThemeName } from './palette';

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Save from '@lucide/svelte/icons/save';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import FormCard from '$lib/formComponents/FormCard.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';

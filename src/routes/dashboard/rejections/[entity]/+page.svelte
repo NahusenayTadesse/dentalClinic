@@ -5,7 +5,7 @@
 	import FormCard from '$lib/formComponents/FormCard.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Undo2, X, PartyPopper, ArrowBigLeft, ArrowRight } from '@lucide/svelte';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { toast } from 'svelte-sonner';

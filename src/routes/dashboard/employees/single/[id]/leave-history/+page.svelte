@@ -7,7 +7,7 @@
 
 	import Loading from '$lib/components/Loading.svelte';
 	import { Frown, ArrowRight, ArrowBigLeft } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { page } from '$app/state';
 
 	let month = $state(

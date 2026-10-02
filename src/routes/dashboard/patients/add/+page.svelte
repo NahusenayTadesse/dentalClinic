@@ -4,7 +4,7 @@
 	import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
 	import ExternalLink from '@lucide/svelte/icons/external-link';
 
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { createForm, confirmLeave } from '$lib/forms/createForm';
 	import FormCard from '$lib/formComponents/FormCard.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';

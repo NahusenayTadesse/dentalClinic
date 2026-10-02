@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { Input } from '$lib/components/ui/input/index.js';
-	import { Label } from '$lib/components/ui/label/index.js';
+	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
+	import { Label } from '@nahu/admin-kit/components/ui/label/index.js';
 	import type { Snapshot } from '@sveltejs/kit';
 
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import DatePicker from '$lib/formComponents/DatePicker.svelte';
 
-	import * as Card from '$lib/components/ui/card/index.js';
+	import * as Card from '@nahu/admin-kit/components/ui/card/index.js';
 	import { Plus } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { bonusSchema as schema } from './schema';
 	import { superForm } from 'sveltekit-superforms/client';

@@ -1,10 +1,10 @@
-import { renderComponent } from '$lib/components/ui/data-table/index.js';
+import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 // Assuming a new actions component
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
-import { Checkbox } from '$lib/components/ui/checkbox/index.js';
+import { Checkbox } from '@nahu/admin-kit/components/ui/checkbox/index.js';
 import Edit from '$lib/components/leaves/edit.svelte';
 import { Eye, X } from '@lucide/svelte';
 import { formatDays } from '$lib/leaveDays';

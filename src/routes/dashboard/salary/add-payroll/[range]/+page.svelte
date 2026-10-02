@@ -3,7 +3,7 @@
 	import BanknoteArrowUp from '@lucide/svelte/icons/banknote-arrow-up';
 	import Landmark from '@lucide/svelte/icons/landmark';
 	import ListChecks from '@lucide/svelte/icons/list-checks';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';

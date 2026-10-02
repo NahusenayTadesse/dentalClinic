@@ -7,9 +7,9 @@
 
 	import Loading from '$lib/components/Loading.svelte';
 	import { Frown, Plus } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
-	import Badge from '$lib/components/ui/badge/badge.svelte';
+	import Badge from '@nahu/admin-kit/components/ui/badge/badge.svelte';
 
 	let filteredList = $derived(data?.staffList);
 </script>

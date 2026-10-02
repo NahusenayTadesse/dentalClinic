@@ -1,6 +1,6 @@
 <script>
 	import { ArrowBigLeft } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	let { data } = $props();
 
 	import IdCard from './IdCard.svelte';

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Menubar from '$lib/components/ui/menubar/index.js';
+	import * as Menubar from '@nahu/admin-kit/components/ui/menubar/index.js';
 	import { selectItem } from '$lib/global.svelte';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 	import { fly, slide } from 'svelte/transition';

@@ -5,7 +5,7 @@
 		CardTitle,
 		CardDescription,
 		CardContent
-	} from '$lib/components/ui/card';
+	} from '@nahu/admin-kit/components/ui/card/index.js';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import type { Component } from 'svelte';
 	import type { IconProps } from '@lucide/svelte';

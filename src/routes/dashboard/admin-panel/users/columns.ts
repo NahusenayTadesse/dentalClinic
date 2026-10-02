@@ -4,7 +4,7 @@ import type { PageData } from './$types';
 /** One row of the table this file describes, taken from the load so the two cannot drift. */
 type RowData = NonNullable<PageData['userList']>[number];
 
-import { renderComponent } from '$lib/components/ui/data-table/index.js';
+import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Copy from '$lib/Copy.svelte';
 import DataTableActions from './data-table-actions.svelte';

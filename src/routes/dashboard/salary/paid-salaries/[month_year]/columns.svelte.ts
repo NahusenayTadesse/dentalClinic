@@ -10,11 +10,11 @@ type RowData = NonNullable<PageData['payrollData']>[number];
 type ReceiptRow = NonNullable<PageData['payrollReciept']>[number];
 type AdjustmentRow = NonNullable<PageData['adjustments']>[number];
 
-import { renderComponent } from '$lib/components/ui/data-table/index.js';
+import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import { formatETB } from '$lib/global.svelte';
-import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
+import Checkbox from '@nahu/admin-kit/components/ui/checkbox/checkbox.svelte';
 import { Link } from '@lucide/svelte';
 
 /** A decimal column's value for `formatETB`: the driver hands decimals back as strings. */

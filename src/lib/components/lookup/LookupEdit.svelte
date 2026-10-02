@@ -2,7 +2,7 @@
 	import { SquarePen, Save } from '@lucide/svelte';
 	import { createForm } from '$lib/forms/createForm';
 
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import Messages from '$lib/formComponents/Messages.svelte';

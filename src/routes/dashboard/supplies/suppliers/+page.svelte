@@ -2,9 +2,14 @@
 	import { applyQueryToUrl, navigateWithQuery } from '$lib/queryFilters';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import QueryBuilder from '$lib/QueryBuilder.svelte';
-	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
-	import Label from '$lib/components/ui/label/label.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import {
+		Select,
+		SelectContent,
+		SelectItem,
+		SelectTrigger
+	} from '@nahu/admin-kit/components/ui/select/index.js';
+	import Label from '@nahu/admin-kit/components/ui/label/label.svelte';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { columns } from './columns';
 
 	import { SUPPLIER_STATUSES, SUPPLIER_ACTIVITY, SUPPLIER_CONTACT, labelOf } from '../filters';

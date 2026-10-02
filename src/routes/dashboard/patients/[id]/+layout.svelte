@@ -3,7 +3,7 @@
 	import MapPinned from '@lucide/svelte/icons/map-pinned';
 	import GitMerge from '@lucide/svelte/icons/git-merge';
 	import { page } from '$app/state';
-	import { Badge } from '$lib/components/ui/badge/index.js';
+	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 
 	/**

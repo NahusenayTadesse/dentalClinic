@@ -1,5 +1,5 @@
 import type { ColumnDef } from '@tanstack/table-core';
-import { renderComponent } from '$lib/components/ui/data-table/index.js';
+import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 import RowButton from '$lib/components/RowButton.svelte';

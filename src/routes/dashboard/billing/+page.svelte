@@ -2,7 +2,7 @@
 	import Building from '@lucide/svelte/icons/building-2';
 	import HandCoins from '@lucide/svelte/icons/hand-coins';
 	import Vault from '@lucide/svelte/icons/vault';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Section from '$lib/components/Section.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import { formatETB } from '$lib/global.svelte';

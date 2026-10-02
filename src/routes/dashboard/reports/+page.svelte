@@ -2,8 +2,13 @@
 	import { page as pageState } from '$app/state';
 
 	import StatCard from '$lib/components/reports/StatCard.svelte';
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
+	import {
+		Card,
+		CardContent,
+		CardHeader,
+		CardTitle
+	} from '@nahu/admin-kit/components/ui/card/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { ArrowRight } from '@lucide/svelte';
 
 	import { REPORT_PAGES } from './sections';

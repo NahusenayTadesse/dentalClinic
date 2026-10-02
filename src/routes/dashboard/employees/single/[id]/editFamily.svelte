@@ -2,7 +2,7 @@
 	import { createForm } from '$lib/forms/createForm';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import { SquarePen, Plus, Save } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { editFamily, type EditFamily } from './schema';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 

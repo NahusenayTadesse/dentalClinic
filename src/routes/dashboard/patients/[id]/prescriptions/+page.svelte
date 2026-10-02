@@ -3,7 +3,7 @@
 	import Plus from '@lucide/svelte/icons/plus';
 	import Printer from '@lucide/svelte/icons/printer';
 	import { page } from '$app/state';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Section from '$lib/components/Section.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';

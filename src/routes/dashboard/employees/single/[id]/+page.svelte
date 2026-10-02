@@ -3,7 +3,7 @@
 
 	import SingleTable from '$lib/components/SingleTable.svelte';
 	import { formatDays } from '$lib/leaveDays';
-	import { Button } from '$lib/components/ui/button/index';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { page } from '$app/state';
 
 	import {

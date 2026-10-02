@@ -2,7 +2,7 @@
 	import Receipt from '@lucide/svelte/icons/receipt';
 	import Banknote from '@lucide/svelte/icons/banknote';
 	import Plus from '@lucide/svelte/icons/plus';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Section from '$lib/components/Section.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';

@@ -1,13 +1,13 @@
 <script lang="ts">
 	import CommissionFields from '$lib/forms/CommissionFields.svelte';
-	import { Input } from '$lib/components/ui/input/index.js';
-	import { Label } from '$lib/components/ui/label/index.js';
+	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
+	import { Label } from '@nahu/admin-kit/components/ui/label/index.js';
 	import type { Snapshot } from '@sveltejs/kit';
 
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 
 	import { Pen, Percent, Plus } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import FormCard from '$lib/formComponents/FormCard.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';

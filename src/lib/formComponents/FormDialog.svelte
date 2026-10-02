@@ -4,7 +4,7 @@
 	import SquarePen from '@lucide/svelte/icons/square-pen';
 	import Save from '@lucide/svelte/icons/save';
 
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { createForm } from '$lib/forms/createForm';
 	import DialogComp from './DialogComp.svelte';
 	import Errors from './Errors.svelte';

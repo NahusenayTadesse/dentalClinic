@@ -2,7 +2,7 @@
 	import Banknote from '@lucide/svelte/icons/banknote';
 	import Receipt from '@lucide/svelte/icons/receipt';
 	import type { SuperValidated } from 'sveltekit-superforms';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import PaymentForm from '$lib/components/PaymentForm.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';

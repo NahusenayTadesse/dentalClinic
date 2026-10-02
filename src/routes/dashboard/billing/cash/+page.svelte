@@ -1,7 +1,7 @@
 <script lang="ts">
 	import History from '@lucide/svelte/icons/history';
 	import Vault from '@lucide/svelte/icons/vault';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Section from '$lib/components/Section.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import FormDialog from '$lib/formComponents/FormDialog.svelte';

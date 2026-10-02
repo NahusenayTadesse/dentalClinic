@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import Button from '$lib/components/ui/button/button.svelte';
+	import Button from '@nahu/admin-kit/components/ui/button/button.svelte';
 	import Sheet from '@lucide/svelte/icons/sheet';
 	import Plus from '@lucide/svelte/icons/plus';
 	let { children } = $props();

@@ -1,6 +1,6 @@
 <script>
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
-	import { Button } from '$lib/components/ui/button/index';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 
 	let { data } = $props();
 	import { superForm } from 'sveltekit-superforms/client';

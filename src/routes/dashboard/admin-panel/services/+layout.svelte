@@ -1,6 +1,6 @@
 <script>
 	import { page } from '$app/state';
-	import Button from '$lib/components/ui/button/button.svelte';
+	import Button from '@nahu/admin-kit/components/ui/button/button.svelte';
 	// import DialogComp from "$lib/formComponents/DialogComp.svelte";
 	// import AddCustomer from "$lib/forms/AddCustomer.svelte";
 	import { Sheet } from '@lucide/svelte';

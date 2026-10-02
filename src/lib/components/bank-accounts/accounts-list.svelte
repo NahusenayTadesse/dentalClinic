@@ -5,7 +5,7 @@
 		CardTitle,
 		CardDescription,
 		CardContent
-	} from '$lib/components/ui/card';
+	} from '@nahu/admin-kit/components/ui/card/index.js';
 	import { Wallet } from '@lucide/svelte';
 	import SummaryCard from './summary-card.svelte';
 	import AccountItem from './account-item.svelte';

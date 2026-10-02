@@ -2,7 +2,7 @@
 	import FileText from '@lucide/svelte/icons/file-text';
 	import Trash from '@lucide/svelte/icons/trash-2';
 	import type { SuperValidated } from 'sveltekit-superforms';
-	import { Badge } from '$lib/components/ui/badge/index.js';
+	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import StepButton from '$lib/formComponents/StepButton.svelte';
 	import { fileUrl, formatEthiopianDate } from '$lib/global.svelte';
 	import type { patientFiles } from '$lib/server/patientFiles';

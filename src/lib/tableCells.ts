@@ -4,7 +4,7 @@
  * Lives outside `$lib/server` because `columns.ts` files run in the browser.
  */
 
-import { renderComponent } from '$lib/components/ui/data-table/index.js';
+import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import { formatEthiopianDate } from '$lib/global.svelte';
 

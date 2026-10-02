@@ -11,7 +11,7 @@
 	 */
 	import { formatEthiopianDate } from '$lib/global.svelte';
 	import { formatDays } from '$lib/leaveDays';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 	import { Eye } from '@lucide/svelte';
 

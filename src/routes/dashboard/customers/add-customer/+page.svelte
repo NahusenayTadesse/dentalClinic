@@ -6,7 +6,7 @@
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 
 	import { Plus } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { customerSchema as schema } from './schema';
 	import Errors from '$lib/formComponents/Errors.svelte';
 

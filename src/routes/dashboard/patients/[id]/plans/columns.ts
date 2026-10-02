@@ -1,5 +1,5 @@
 import type { ColumnDef } from '@tanstack/table-core';
-import { renderComponent } from '$lib/components/ui/data-table/index.js';
+import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import PlanStatusBadge from '$lib/components/PlanStatusBadge.svelte';
 import { PLAN_STATUS_LABEL } from '$lib/treatmentPlanStatus';

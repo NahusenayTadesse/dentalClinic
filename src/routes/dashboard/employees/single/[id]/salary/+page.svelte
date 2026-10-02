@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { Input } from '$lib/components/ui/input/index.js';
-	import { Label } from '$lib/components/ui/label/index.js';
+	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
+	import { Label } from '@nahu/admin-kit/components/ui/label/index.js';
 	import type { Snapshot } from '@sveltejs/kit';
 
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 
-	import * as Card from '$lib/components/ui/card/index.js';
+	import * as Card from '@nahu/admin-kit/components/ui/card/index.js';
 	import { Plus } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { addLeavePayrollSchema as schema } from './schema';
 	import { fileProxy, superForm } from 'sveltekit-superforms/client';
@@ -18,10 +18,10 @@
 	import FileUpload from '$lib/formComponents/FileUpload.svelte';
 	import { type DateValue } from '@internationalized/date';
 	import { CalendarIcon } from '@lucide/svelte';
-	import * as Popover from '$lib/components/ui/popover/index.js';
+	import * as Popover from '@nahu/admin-kit/components/ui/popover/index.js';
 
 	import { cn } from '$lib/utils.js';
-	import { buttonVariants } from '$lib/components/ui/button/index.js';
+	import { buttonVariants } from '@nahu/admin-kit/components/ui/button/index.js';
 
 	let { data } = $props();
 

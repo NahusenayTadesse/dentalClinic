@@ -5,7 +5,7 @@
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 
 	import { Plus } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { supplyItemSchema } from './schema';
 	import FormCard from '$lib/formComponents/FormCard.svelte';
 	import SupplyFields from '../SupplyFields.svelte';

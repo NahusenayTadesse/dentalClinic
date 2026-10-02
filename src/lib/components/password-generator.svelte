@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Checkbox as Switch } from '$lib/components/ui/checkbox/index.js';
-	import { Slider } from '$lib/components/ui/slider';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
+	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
+	import { Label } from '@nahu/admin-kit/components/ui/label/index.js';
+	import { Checkbox as Switch } from '@nahu/admin-kit/components/ui/checkbox/index.js';
+	import { Slider } from '@nahu/admin-kit/components/ui/slider/index.js';
 	import {
 		Card,
 		CardContent,
 		CardDescription,
 		CardHeader,
 		CardTitle
-	} from '$lib/components/ui/card';
+	} from '@nahu/admin-kit/components/ui/card/index.js';
 	import {
 		RefreshCwIcon,
 		CopyIcon,

@@ -14,23 +14,23 @@
 		ChartPie,
 		ChartColumnBig
 	} from '@lucide/svelte';
-	import * as Popover from '$lib/components/ui/popover/index.js';
-	import * as Command from '$lib/components/ui/command/index.js';
+	import * as Popover from '@nahu/admin-kit/components/ui/popover/index.js';
+	import * as Command from '@nahu/admin-kit/components/ui/command/index.js';
 	import { Checkbox } from 'bits-ui';
-	import { Label } from '$lib/components/ui/label/index';
-	import { Badge } from '$lib/components/ui/badge/index';
-	import Button from '$lib/components/ui/button/button.svelte';
+	import { Label } from '@nahu/admin-kit/components/ui/label/index.js';
+	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
+	import Button from '@nahu/admin-kit/components/ui/button/button.svelte';
 	import {
 		Card,
 		CardHeader,
 		CardTitle,
 		CardDescription,
 		CardContent
-	} from '$lib/components/ui/card';
+	} from '@nahu/admin-kit/components/ui/card/index.js';
 	import pluralize from 'pluralize';
 	import { toast } from 'svelte-sonner';
 	import { fly, fade } from 'svelte/transition';
-	import { buttonVariants } from '$lib/components/ui/button/index.js';
+	import { buttonVariants } from '@nahu/admin-kit/components/ui/button/index.js';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 
 	type ChartType = 'bar' | 'pie' | 'doughnut' | 'line' | 'polarArea' | 'radar';

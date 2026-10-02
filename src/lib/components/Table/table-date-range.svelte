@@ -5,8 +5,8 @@
 	import type { DateRange } from 'bits-ui';
 
 	import RangeCalendar from '$lib/components/ui/range-calendar/range-calendar.svelte';
-	import * as Popover from '$lib/components/ui/popover/index.js';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import * as Popover from '@nahu/admin-kit/components/ui/popover/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { setServerParams } from './table-state.svelte';
 
 	/**

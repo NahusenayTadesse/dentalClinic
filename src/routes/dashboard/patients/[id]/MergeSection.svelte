@@ -1,7 +1,7 @@
 <script lang="ts">
 	import GitMerge from '@lucide/svelte/icons/git-merge';
 	import type { SuperValidated } from 'sveltekit-superforms';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import PatientPicker from '$lib/components/PatientPicker.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import FormDialog from '$lib/formComponents/FormDialog.svelte';

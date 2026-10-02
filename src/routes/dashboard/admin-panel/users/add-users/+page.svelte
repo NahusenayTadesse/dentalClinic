@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { Snapshot } from '@sveltejs/kit';
-	import * as Card from '$lib/components/ui/card/index.js';
+	import * as Card from '@nahu/admin-kit/components/ui/card/index.js';
 	import { Plus } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { addUserSchema } from '$lib/ZodSchema';
 	import { superForm } from 'sveltekit-superforms/client';

@@ -2,8 +2,8 @@
 	import type { Component } from 'svelte';
 	import type { SuperValidated } from 'sveltekit-superforms';
 	import type { IconProps } from '@lucide/svelte';
-	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
-	import { Button, type ButtonVariant } from '$lib/components/ui/button/index.js';
+	import * as AlertDialog from '@nahu/admin-kit/components/ui/alert-dialog/index.js';
+	import { Button, type ButtonVariant } from '@nahu/admin-kit/components/ui/button/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import { createForm } from '$lib/forms/createForm';
 

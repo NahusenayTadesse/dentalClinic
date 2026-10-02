@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { BadgeCheck, ArrowRight } from '@lucide/svelte';
 	import { page } from '$app/state';
 	import { canVisit } from '$lib/routeAccess';

@@ -5,8 +5,8 @@
 		CardDescription,
 		CardHeader,
 		CardTitle
-	} from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
+	} from '@nahu/admin-kit/components/ui/card/index.js';
+	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import { AlertCircleIcon } from '@lucide/svelte';
 	import type { IconProps } from '@lucide/svelte';
 	import type { Component } from 'svelte';

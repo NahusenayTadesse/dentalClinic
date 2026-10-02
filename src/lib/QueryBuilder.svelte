@@ -1,11 +1,21 @@
 <script lang="ts" generics="T extends Record<string, unknown> = Record<string, unknown>">
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Separator } from '$lib/components/ui/separator';
-	import { Input } from '$lib/components/ui/input';
-	import Label from '$lib/components/ui/label/label.svelte';
+	import {
+		Card,
+		CardContent,
+		CardHeader,
+		CardTitle
+	} from '@nahu/admin-kit/components/ui/card/index.js';
+	import {
+		Select,
+		SelectContent,
+		SelectItem,
+		SelectTrigger
+	} from '@nahu/admin-kit/components/ui/select/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
+	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
+	import { Separator } from '@nahu/admin-kit/components/ui/separator/index.js';
+	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
+	import Label from '@nahu/admin-kit/components/ui/label/label.svelte';
 	import DateMonth from './date-month.svelte';
 
 	import {

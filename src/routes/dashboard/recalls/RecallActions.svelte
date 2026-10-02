@@ -1,7 +1,7 @@
 <script lang="ts">
 	import CalendarPlus from '@lucide/svelte/icons/calendar-plus';
 	import Phone from '@lucide/svelte/icons/phone';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 
 	/** A recall row's two actions: book the visit it is for, or log a call. */
 	let {

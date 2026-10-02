@@ -1,6 +1,6 @@
 import type { ColumnDef, HeaderContext } from '@tanstack/table-core';
 import type { SuperValidated } from 'sveltekit-superforms';
-import { renderComponent } from '$lib/components/ui/data-table/index.js';
+import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import Statuses from '$lib/components/Table/statuses.svelte';

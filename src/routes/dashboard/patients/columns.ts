@@ -1,6 +1,6 @@
 import type { ColumnDef } from '@tanstack/table-core';
 import type { PageData } from './$types';
-import { renderComponent } from '$lib/components/ui/data-table/index.js';
+import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import Copy from '$lib/Copy.svelte';
 import { formatETB, formatEthiopianDate } from '$lib/global.svelte';

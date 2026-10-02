@@ -1,10 +1,10 @@
 <script>
-	import { renderComponent } from '$lib/components/ui/data-table/index.js';
+	import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 	import Statuses from '$lib/components/Table/statuses.svelte';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
-	import { Button } from '$lib/components/ui/button/index';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Edit from './edit.svelte';
 	const columns = [
 		{

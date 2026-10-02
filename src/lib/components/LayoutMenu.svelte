@@ -18,7 +18,7 @@
 
 <script lang="ts">
 	import { page } from '$app/state';
-	import Button from '$lib/components/ui/button/button.svelte';
+	import Button from '@nahu/admin-kit/components/ui/button/button.svelte';
 	import { canVisit } from '$lib/routeAccess';
 
 	let {

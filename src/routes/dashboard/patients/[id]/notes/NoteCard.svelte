@@ -4,8 +4,8 @@
 	import Signature from '@lucide/svelte/icons/signature';
 	import Trash from '@lucide/svelte/icons/trash-2';
 	import type { SuperValidated } from 'sveltekit-superforms';
-	import { Badge } from '$lib/components/ui/badge/index.js';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import StepButton from '$lib/formComponents/StepButton.svelte';
 	import { clinicDate, ethiopianClock } from '$lib/clinicTime';
 	import { formatEthiopianDate } from '$lib/global.svelte';

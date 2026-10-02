@@ -2,7 +2,7 @@
 	import '../app.css';
 	import { getFlash } from 'sveltekit-flash-message';
 	import { page, updated } from '$app/state';
-	import { Toaster } from '$lib/components/ui/sonner/index.js';
+	import { Toaster } from '@nahu/admin-kit/components/ui/sonner/index.js';
 	import { ProgressBar } from '@prgm/sveltekit-progress-bar';
 
 	const flash = getFlash(page, { clearAfterMs: 5000 });

@@ -3,11 +3,11 @@
 	import { CalendarDate, type DateValue } from '@internationalized/date';
 	import { CalendarIcon, SlidersHorizontal } from '@lucide/svelte';
 	import type { DateRange } from 'bits-ui';
-	import * as Popover from '$lib/components/ui/popover/index.js';
+	import * as Popover from '@nahu/admin-kit/components/ui/popover/index.js';
 
 	import { cn } from '$lib/utils.js';
-	import { buttonVariants } from '$lib/components/ui/button/index.js';
-	import Button from '$lib/components/ui/button/button.svelte';
+	import { buttonVariants } from '@nahu/admin-kit/components/ui/button/index.js';
+	import Button from '@nahu/admin-kit/components/ui/button/button.svelte';
 	import { isMobile } from '$lib/global.svelte';
 	import { goto } from '$app/navigation';
 

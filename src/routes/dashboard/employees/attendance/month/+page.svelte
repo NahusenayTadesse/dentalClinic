@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ArrowRight from '@lucide/svelte/icons/arrow-right';
 	import ClipboardCheck from '@lucide/svelte/icons/clipboard-check';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import MonthYear from '$lib/formComponents/MonthYear.svelte';
 	import { DAY_LABEL } from '$lib/attendance';

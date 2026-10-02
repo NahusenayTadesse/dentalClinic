@@ -2,7 +2,7 @@
 	import Pencil from '@lucide/svelte/icons/pencil';
 	import Trash from '@lucide/svelte/icons/trash-2';
 	import type { SuperValidated } from 'sveltekit-superforms';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import StepButton from '$lib/formComponents/StepButton.svelte';
 
 	/**

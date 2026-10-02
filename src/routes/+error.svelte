@@ -1,6 +1,6 @@
 <script>
 	import { page } from '$app/state';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 </script>
 
 <svelte:head>

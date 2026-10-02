@@ -11,11 +11,11 @@
 	import Eye from '@lucide/svelte/icons/eye';
 	import CalendarDays from '@lucide/svelte/icons/calendar-days';
 	import CalendarPlus from '@lucide/svelte/icons/calendar-plus';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { clinicClock, clinicDate } from '$lib/clinicTime';
 	import { STATUS_LABEL, isAppointmentStatus } from '$lib/appointmentStatus';
 
-	import { Badge } from '$lib/components/ui/badge/index.js';
+	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import Section from '$lib/components/Section.svelte';
 	import SingleTable from '$lib/components/SingleTable.svelte';
 	import LookupSection from '$lib/components/lookup/LookupSection.svelte';

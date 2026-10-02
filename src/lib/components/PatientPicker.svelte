@@ -4,9 +4,9 @@
 	import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
 	import type { Writable } from 'svelte/store';
 
-	import { Input } from '$lib/components/ui/input/index.js';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import { Badge } from '$lib/components/ui/badge/index.js';
+	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
+	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 
 	/**
 	 * Choose a patient by searching for them — for any form with a `patientId`.

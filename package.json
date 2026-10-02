@@ -78,6 +78,7 @@
 		"zod": "^4.6.5"
 	},
 	"dependencies": {
+		"@nahu/admin-kit": "file:../admin-kit",
 		"browser-image-compression": "^2.0.2",
 		"chart.js": "^4.5.1",
 		"ethiopian-calendar-new": "^1.1.0",

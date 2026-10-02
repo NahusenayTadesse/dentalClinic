@@ -3,9 +3,11 @@ import { playwright } from '@vitest/browser-playwright';
 import devtoolsJson from 'vite-plugin-devtools-json';
 import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { adminKit } from '@nahu/admin-kit/vite';
 
 export default defineConfig({
-	plugins: [tailwindcss(), sveltekit(), devtoolsJson()],
+	// adminKit(): lets Vite 8's dependency scan read the kit's components (see the kit's src/lib/vite.ts).
+	plugins: [tailwindcss(), sveltekit(), devtoolsJson(), adminKit()],
 	ssr: { noExternal: ['bits-ui', '@lucide/svelte'] },
 	optimizeDeps: { include: ['@lucide/svelte'] },
 	test: {

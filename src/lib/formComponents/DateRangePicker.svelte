@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
+	import { Button, buttonVariants } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Calendar } from '$lib/components/ui/calendar';
-	import * as Popover from '$lib/components/ui/popover/index.js';
-	import ScrollArea from '$lib/components/ui/scroll-area/scroll-area.svelte';
+	import * as Popover from '@nahu/admin-kit/components/ui/popover/index.js';
+	import ScrollArea from '@nahu/admin-kit/components/ui/scroll-area/scroll-area.svelte';
 	import { cn } from '$lib/utils.js';
 	import { CalendarDate, getLocalTimeZone, today, parseDate } from '@internationalized/date';
 	import { CalendarIcon } from '@lucide/svelte';

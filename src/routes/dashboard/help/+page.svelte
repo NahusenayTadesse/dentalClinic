@@ -20,9 +20,9 @@
 		Lock,
 		ArrowUpRight
 	} from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button/index';
-	import { Input } from '$lib/components/ui/input/index';
-	import { Badge } from '$lib/components/ui/badge/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
+	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
+	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import {
 		HELP_SECTIONS,
 		ALL_TOPICS,

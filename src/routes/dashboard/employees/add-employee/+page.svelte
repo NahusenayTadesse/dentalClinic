@@ -2,7 +2,7 @@
 	import CommissionFields from '$lib/forms/CommissionFields.svelte';
 	import type { Snapshot } from '@sveltejs/kit';
 	import { ExternalLink, Plus } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { add } from './schema';
 	import { createForm, confirmLeave } from '$lib/forms/createForm';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';

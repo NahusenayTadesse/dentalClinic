@@ -7,7 +7,7 @@
 
 	import Loading from '$lib/components/Loading.svelte';
 	import { Frown, ArrowRight } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import MonthYear from '$lib/formComponents/MonthYear.svelte';
 
 	let month = $state('');

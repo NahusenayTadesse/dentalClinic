@@ -1,5 +1,5 @@
 import type { LookupConfig } from '$lib/components/lookup/types';
-import { renderComponent } from '$lib/components/ui/data-table/index.js';
+import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import ExpiryCell from '$lib/components/Table/expiry-cell.svelte';
 import { LICENCE_WARNING_DAYS } from './licence';
 

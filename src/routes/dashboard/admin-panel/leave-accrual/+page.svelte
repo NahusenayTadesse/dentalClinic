@@ -1,8 +1,8 @@
 <script>
-	import { Button } from '$lib/components/ui/button/index';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
-	import { renderComponent } from '$lib/components/ui/data-table/index.js';
+	import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 	import { formatDays } from '$lib/leaveDays';
 	import { superForm } from 'sveltekit-superforms/client';

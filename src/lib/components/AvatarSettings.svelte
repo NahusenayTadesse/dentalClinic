@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import * as Avatar from '$lib/components/ui/avatar/index.js';
+	import * as Avatar from '@nahu/admin-kit/components/ui/avatar/index.js';
 
 	import { LogOut, KeyRound } from '@lucide/svelte';
 	import { enhance } from '$app/forms';

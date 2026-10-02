@@ -6,7 +6,7 @@
 	import DataTable from '$lib/components/Table/data-table.svelte';
 
 	import { Frown, ArrowRight } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import MonthYear from '$lib/formComponents/MonthYear.svelte';
 
 	let month = $state('');

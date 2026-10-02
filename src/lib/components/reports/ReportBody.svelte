@@ -7,16 +7,21 @@
 	import StatCard from './StatCard.svelte';
 	import ReportChart from './ReportChart.svelte';
 
-	import { Button } from '$lib/components/ui/button';
-	import Label from '$lib/components/ui/label/label.svelte';
-	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
+	import Label from '@nahu/admin-kit/components/ui/label/label.svelte';
+	import {
+		Select,
+		SelectContent,
+		SelectItem,
+		SelectTrigger
+	} from '@nahu/admin-kit/components/ui/select/index.js';
 	import {
 		Card,
 		CardContent,
 		CardDescription,
 		CardHeader,
 		CardTitle
-	} from '$lib/components/ui/card';
+	} from '@nahu/admin-kit/components/ui/card/index.js';
 	import { TriangleAlert, Frown } from '@lucide/svelte';
 
 	import { columnsFor } from '../../../routes/dashboard/reports/columns';

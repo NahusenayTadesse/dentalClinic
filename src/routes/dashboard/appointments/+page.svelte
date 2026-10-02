@@ -6,8 +6,8 @@
 	import List from '@lucide/svelte/icons/list';
 	import CalendarOff from '@lucide/svelte/icons/calendar-off';
 
-	import { Button } from '$lib/components/ui/button/index.js';
-	import { Input } from '$lib/components/ui/input/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
+	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
 	import { formatEthiopianDate } from '$lib/global.svelte';
 	import { clinicClock } from '$lib/clinicTime';
 	import { STATUS_LABEL, APPOINTMENT_STATUSES } from '$lib/appointmentStatus';

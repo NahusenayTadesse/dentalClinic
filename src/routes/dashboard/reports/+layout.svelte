@@ -4,11 +4,16 @@
 	import { applyQueryToUrl } from '$lib/queryFilters';
 
 	import QueryBuilder from '$lib/QueryBuilder.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import Label from '$lib/components/ui/label/label.svelte';
-	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
+	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
+	import Label from '@nahu/admin-kit/components/ui/label/label.svelte';
+	import {
+		Select,
+		SelectContent,
+		SelectItem,
+		SelectTrigger
+	} from '@nahu/admin-kit/components/ui/select/index.js';
+	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import { CalendarRange, LayoutGrid, Funnel, X } from '@lucide/svelte';
 
 	import { formatEthiopianDate } from '$lib/global.svelte';

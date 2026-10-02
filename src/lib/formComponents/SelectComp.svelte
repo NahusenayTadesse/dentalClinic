@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Select from '$lib/components/ui/select/index.js';
+	import * as Select from '@nahu/admin-kit/components/ui/select/index.js';
 	import { selectItem, type Item } from '$lib/global.svelte';
 
 	// `onValueChange` is optional and simply forwarded to `Select.Root`. It lets a

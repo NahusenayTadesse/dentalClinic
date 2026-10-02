@@ -1,6 +1,10 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Popover, PopoverContent, PopoverTrigger } from '$lib/components/ui/popover';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
+	import {
+		Popover,
+		PopoverContent,
+		PopoverTrigger
+	} from '@nahu/admin-kit/components/ui/popover/index.js';
 	import { getEthiopianYearInt } from '$lib/global.svelte';
 	import { ChevronLeftIcon, ChevronRightIcon } from '@lucide/svelte';
 

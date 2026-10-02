@@ -1,5 +1,5 @@
 import type { ColumnDef } from '@tanstack/table-core';
-import { renderComponent } from '$lib/components/ui/data-table/index.js';
+import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import { hoursAndMinutes } from '$lib/attendance';
 import DayCell from './DayCell.svelte';
@@ -29,16 +29,14 @@ export function monthColumns(days: string[]): ColumnDef<Row>[] {
 				})
 		},
 		{ id: 'department', header: 'Department', accessorFn: (row) => row.department ?? '—' },
-		...days.map(
-			(day, i): ColumnDef<Row> => ({
-				id: day,
-				// Day of the Ethiopian month (the range starts on its first), and the weekday.
-				header: `${i + 1} ${WEEKDAY[new Date(`${day}T00:00:00Z`).getUTCDay()]}`,
-				accessorFn: (row) => row.cells[day]?.kind ?? '',
-				cell: ({ row }) => renderComponent(DayCell, { day, cell: row.original.cells[day] }),
-				enableSorting: false
-			})
-		),
+		...days.map((day, i): ColumnDef<Row> => ({
+			id: day,
+			// Day of the Ethiopian month (the range starts on its first), and the weekday.
+			header: `${i + 1} ${WEEKDAY[new Date(`${day}T00:00:00Z`).getUTCDay()]}`,
+			accessorFn: (row) => row.cells[day]?.kind ?? '',
+			cell: ({ row }) => renderComponent(DayCell, { day, cell: row.original.cells[day] }),
+			enableSorting: false
+		})),
 		{ id: 'present', header: 'Present', accessorFn: (row) => row.present },
 		{ id: 'absent', header: 'Absent', accessorFn: (row) => row.absent },
 		{ id: 'excused', header: 'Excused', accessorFn: (row) => row.excused },

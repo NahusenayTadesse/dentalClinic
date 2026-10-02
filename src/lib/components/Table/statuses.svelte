@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Badge } from '$lib/components/ui/badge/index.js';
+	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import { BadgeCheck, Loader, OctagonMinus } from '@lucide/svelte';
 
 	/* ---------- public prop ---------- */

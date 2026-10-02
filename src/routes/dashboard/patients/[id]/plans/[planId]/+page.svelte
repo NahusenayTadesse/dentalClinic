@@ -4,9 +4,9 @@
 	import Pencil from '@lucide/svelte/icons/pencil';
 	import Send from '@lucide/svelte/icons/send';
 	import History from '@lucide/svelte/icons/history';
-	import { Badge } from '$lib/components/ui/badge/index.js';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import * as Table from '$lib/components/ui/table/index.js';
+	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
+	import * as Table from '@nahu/admin-kit/components/ui/table/index.js';
 	import Section from '$lib/components/Section.svelte';
 	import PlanStatusBadge from '$lib/components/PlanStatusBadge.svelte';
 	import FormDialog from '$lib/formComponents/FormDialog.svelte';

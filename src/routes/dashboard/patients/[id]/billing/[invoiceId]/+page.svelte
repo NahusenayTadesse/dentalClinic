@@ -8,8 +8,8 @@
 	import Receipt from '@lucide/svelte/icons/receipt';
 	import Send from '@lucide/svelte/icons/send';
 	import Trash from '@lucide/svelte/icons/trash-2';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import * as Table from '$lib/components/ui/table/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
+	import * as Table from '@nahu/admin-kit/components/ui/table/index.js';
 	import Section from '$lib/components/Section.svelte';
 	import InvoiceStatusBadge from '$lib/components/InvoiceStatusBadge.svelte';
 	import ProcedurePicker from '$lib/components/ProcedurePicker.svelte';

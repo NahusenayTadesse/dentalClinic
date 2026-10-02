@@ -1,8 +1,8 @@
 <script lang="ts">
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import * as Select from '$lib/components/ui/select/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
+	import * as Select from '@nahu/admin-kit/components/ui/select/index.js';
 
 	/**
 	 * The pager, for both modes.

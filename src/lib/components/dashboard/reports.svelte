@@ -1,6 +1,11 @@
 <script lang="ts">
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
+	import {
+		Card,
+		CardContent,
+		CardHeader,
+		CardTitle
+	} from '@nahu/admin-kit/components/ui/card/index.js';
+	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import {
 		TrendingUpIcon,
 		TrendingDownIcon,

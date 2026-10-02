@@ -1,7 +1,7 @@
 <script lang="ts">
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import { SquarePen, Plus, Save } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 
 	import type { SuperValidated } from 'sveltekit-superforms';

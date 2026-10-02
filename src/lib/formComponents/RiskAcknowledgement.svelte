@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Checkbox } from '$lib/components/ui/checkbox/index.js';
+	import { Checkbox } from '@nahu/admin-kit/components/ui/checkbox/index.js';
 	import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
 
 	/**

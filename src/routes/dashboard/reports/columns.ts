@@ -1,4 +1,4 @@
-import { renderComponent } from '$lib/components/ui/data-table/index.js';
+import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Statuses from '$lib/components/Table/statuses.svelte';

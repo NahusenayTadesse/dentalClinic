@@ -1,6 +1,6 @@
 <script>
 	import { page } from '$app/state';
-	import Button from '$lib/components/ui/button/button.svelte';
+	import Button from '@nahu/admin-kit/components/ui/button/button.svelte';
 
 	import { ArrowBigLeft } from '@lucide/svelte';
 	let { children, data } = $props();

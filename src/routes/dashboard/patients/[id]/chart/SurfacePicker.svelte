@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ComponentProps } from 'svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import { Label } from '$lib/components/ui/label/index.js';
+	import { Label } from '@nahu/admin-kit/components/ui/label/index.js';
 	import { SURFACE_NAMES, SURFACE_ORDER, surfacesOf } from '$lib/teeth';
 
 	/**

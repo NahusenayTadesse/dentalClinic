@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Badge } from '$lib/components/ui/badge/index.js';
+	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import { INVOICE_STATUS_LABEL, type InvoiceStatus } from '$lib/invoiceStatus';
 
 	/**

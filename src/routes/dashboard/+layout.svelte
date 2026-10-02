@@ -4,7 +4,7 @@
 	import DarkMode from '$lib/components/DarkMode.svelte';
 	import Search from '$lib/components/Search.svelte';
 	import AvatarSettings from '$lib/components/AvatarSettings.svelte';
-	import Button from '$lib/components/ui/button/button.svelte';
+	import Button from '@nahu/admin-kit/components/ui/button/button.svelte';
 	import { CloudDownload } from '@lucide/svelte';
 	import HelpButton from '$lib/components/HelpButton.svelte';
 	import BranchSelector from '$lib/components/BranchSelector.svelte';

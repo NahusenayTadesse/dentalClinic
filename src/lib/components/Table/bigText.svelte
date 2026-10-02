@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { Popover, PopoverContent, PopoverTrigger } from '$lib/components/ui/popover';
+	import {
+		Popover,
+		PopoverContent,
+		PopoverTrigger
+	} from '@nahu/admin-kit/components/ui/popover/index.js';
 
 	const { text }: { text: string | null | undefined } = $props();
 

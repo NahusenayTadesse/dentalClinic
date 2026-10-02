@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createForm } from '$lib/forms/createForm';
-	import { renderComponent } from '$lib/components/ui/data-table/index.js';
+	import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 	import DeleteEntity from '$lib/components/DeleteEntity.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import Copy from '$lib/Copy.svelte';
@@ -11,7 +11,7 @@
 	import DialogComp from '$lib/formComponents/DialogComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 
 	const relationShips = [

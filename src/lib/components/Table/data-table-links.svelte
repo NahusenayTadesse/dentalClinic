@@ -2,8 +2,8 @@
 	import type { Component } from 'svelte';
 	import type { IconProps } from '@lucide/svelte';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
-	import { Button, type ButtonVariant } from '$lib/components/ui/button/index.js';
-	import { buttonVariants } from '../ui/button/index.js';
+	import { Button, type ButtonVariant } from '@nahu/admin-kit/components/ui/button/index.js';
+	import { buttonVariants } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { entityHref, type EntityKind } from '$lib/entityLinks';
 	import { viewerPermissions } from '$lib/viewer.svelte';
 

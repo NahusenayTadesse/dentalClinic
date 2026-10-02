@@ -1,7 +1,7 @@
-import { renderComponent } from '$lib/components/ui/data-table/index.js';
+import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.js';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
-import { Checkbox } from '$lib/components/ui/checkbox/index.js';
+import { Checkbox } from '@nahu/admin-kit/components/ui/checkbox/index.js';
 import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 import { Building2, CircleUser, UserRound, Users } from '@lucide/svelte';
 

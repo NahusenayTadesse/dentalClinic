@@ -1,7 +1,7 @@
 <script lang="ts">
 	import NotebookPen from '@lucide/svelte/icons/notebook-pen';
 	import Plus from '@lucide/svelte/icons/plus';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Section from '$lib/components/Section.svelte';
 	import FormDialog from '$lib/formComponents/FormDialog.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';

@@ -7,7 +7,7 @@
 	import { page } from '$app/state';
 
 	import { Plus, ArrowBigLeft } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { addLeave as schema } from './schema';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import { computeLeaveDays, formatDays } from '$lib/leaveDays';

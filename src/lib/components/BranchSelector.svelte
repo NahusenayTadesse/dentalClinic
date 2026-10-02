@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Building2 from '@lucide/svelte/icons/building-2';
 	import { invalidateAll } from '$app/navigation';
-	import * as Select from '$lib/components/ui/select/index.js';
+	import * as Select from '@nahu/admin-kit/components/ui/select/index.js';
 	import type { BranchContext } from '$lib/server/branchScope';
 
 	/**

@@ -7,8 +7,13 @@
 	 * status, so picking one can never return an empty table. `approvedBy` is off
 	 * for the pending desk, where nothing has been decided yet.
 	 */
-	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
-	import Label from '$lib/components/ui/label/label.svelte';
+	import {
+		Select,
+		SelectContent,
+		SelectItem,
+		SelectTrigger
+	} from '@nahu/admin-kit/components/ui/select/index.js';
+	import Label from '@nahu/admin-kit/components/ui/label/label.svelte';
 
 	type Option = { id: string | number; name: string | null };
 

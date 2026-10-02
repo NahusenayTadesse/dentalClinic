@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import Printer from '@lucide/svelte/icons/printer';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 
 	/**
 	 * A document the clinic hands over on paper — a treatment quote, a bill — with its letterhead and
