@@ -4,7 +4,7 @@
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import NoteCard from './NoteCard.svelte';
 	import { amendNote, editNote, newNote, type AmendNote, type EditNote } from './schema';
 

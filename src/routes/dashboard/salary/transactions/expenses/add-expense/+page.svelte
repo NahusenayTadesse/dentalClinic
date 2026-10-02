@@ -11,7 +11,7 @@
 	import { Plus, Upload, X } from '@lucide/svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { insertExpenseSchema as expensesSchema } from './expenseSchema';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 
 	let { data } = $props();
 

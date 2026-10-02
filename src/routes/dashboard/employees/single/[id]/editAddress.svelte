@@ -2,7 +2,7 @@
 	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import { type Item } from '$lib/global.svelte';
 	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import { editAddress, type EditAddress } from './schema';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';

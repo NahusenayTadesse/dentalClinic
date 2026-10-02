@@ -16,7 +16,7 @@
 	import SingleView from '@nahu/admin-kit/components/SingleView.svelte';
 	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import { columns, userColumns } from './columns.js';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 
 	let singleTable = $derived([

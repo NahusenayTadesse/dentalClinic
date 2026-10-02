@@ -4,7 +4,7 @@
 	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import { recallColumns } from './columns';
 	import { logCall, type LogCall } from './schema';
 

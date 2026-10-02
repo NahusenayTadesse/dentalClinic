@@ -5,7 +5,7 @@
 
 	import * as Dialog from '@nahu/admin-kit/components/ui/dialog/index.js';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import PatientPicker from '$lib/components/PatientPicker.svelte';

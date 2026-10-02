@@ -8,7 +8,7 @@
 	// and wrapping it again leaves every `$form.x` untyped.
 	import { inventoryAdjustmentFormSchema } from '$lib/ZodSchema';
 	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import type { Item } from '$lib/global.svelte';
 	import PatientPicker from '$lib/components/PatientPicker.svelte';

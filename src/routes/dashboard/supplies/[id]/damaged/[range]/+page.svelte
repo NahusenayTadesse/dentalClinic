@@ -10,7 +10,7 @@
 
 	import Loading from '@nahu/admin-kit/components/Loading.svelte';
 	import { Frown, ArrowLeft } from '@lucide/svelte';
-	import DateMonth from '$lib/formComponents/DateMonth.svelte';
+	import DateMonth from '@nahu/admin-kit/formComponents/DateMonth.svelte';
 	import { page } from '$app/state';
 </script>
 

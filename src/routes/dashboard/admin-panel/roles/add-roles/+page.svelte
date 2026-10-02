@@ -30,7 +30,7 @@
 
 	import { toast } from 'svelte-sonner';
 	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	// $effect(() => {
 	// 	if ($message) {
 	// 		if ($message.type === 'error') {

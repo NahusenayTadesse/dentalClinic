@@ -24,7 +24,7 @@
 
 	import { BadgeCheck, Plus, X } from '@lucide/svelte';
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 
 	let selected = $state([]);
 

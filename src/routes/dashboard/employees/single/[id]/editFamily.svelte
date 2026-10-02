@@ -96,7 +96,7 @@
 	$form.otherRelationship = otherRelationship;
 	$form.status = status;
 
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 </script>
 
 <DialogComp title="Edit {name}" variant="ghost" bind:open triggerClass="justify-self-start p-0!">

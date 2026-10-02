@@ -7,7 +7,7 @@
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 
 	const isActives = [
 		{ value: true, name: 'Active' },

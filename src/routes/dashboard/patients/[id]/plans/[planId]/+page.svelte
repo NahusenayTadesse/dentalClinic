@@ -10,7 +10,7 @@
 	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import PlanStatusBadge from '$lib/components/PlanStatusBadge.svelte';
 	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 	import {
 		canAddLines,

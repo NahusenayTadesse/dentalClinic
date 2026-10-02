@@ -4,7 +4,7 @@
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
-	import CheckboxComp from '$lib/formComponents/CheckboxComp.svelte';
+	import CheckboxComp from '@nahu/admin-kit/formComponents/CheckboxComp.svelte';
 	import { formatETB } from '$lib/global.svelte';
 	import { clinicToday } from '$lib/clinicTime';
 	import { LEDGER, LEDGER_KINDS, ledgerHref } from '$lib/payrollLedger';

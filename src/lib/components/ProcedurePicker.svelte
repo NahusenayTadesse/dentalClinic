@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ComponentProps, Snippet } from 'svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import { formatETB } from '$lib/global.svelte';
 
 	/**

@@ -5,7 +5,7 @@
 
 	import { Textarea } from '@nahu/admin-kit/components/ui/textarea/index.js';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
-	import DatePicker from '$lib/formComponents/DatePicker.svelte';
+	import DatePicker from '@nahu/admin-kit/formComponents/DatePicker.svelte';
 
 	import * as Card from '@nahu/admin-kit/components/ui/card/index.js';
 	import { Plus } from '@lucide/svelte';
@@ -28,7 +28,7 @@
 		}
 	);
 
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 
 	export const snapshot: Snapshot = { capture, restore };
 

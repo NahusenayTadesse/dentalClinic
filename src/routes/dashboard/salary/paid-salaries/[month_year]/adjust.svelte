@@ -41,7 +41,7 @@
 	$form.id = id;
 
 	import { toast } from 'svelte-sonner';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import type { Item } from '$lib/global.svelte';
 	$effect(() => {

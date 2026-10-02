@@ -4,7 +4,7 @@
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
 	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { BadgeCheck, X, Frown, ArrowBigLeft, ArrowRight } from '@lucide/svelte';

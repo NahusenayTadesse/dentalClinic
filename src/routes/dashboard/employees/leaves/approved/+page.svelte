@@ -23,7 +23,7 @@
 	let link = $derived(`${month}`);
 
 	import { BadgeCheck, Plus, X } from '@lucide/svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import QueryBuilder from '$lib/QueryBuilder.svelte';
 	import LeaveFilters from '../LeaveFilters.svelte';
 	import { applyQueryToUrl, navigateWithQuery } from '@nahu/admin-kit/queryFilters.js';

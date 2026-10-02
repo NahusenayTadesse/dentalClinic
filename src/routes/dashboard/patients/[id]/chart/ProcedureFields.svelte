@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ComponentProps } from 'svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 	import { clinicClock } from '$lib/clinicTime';
 	import {

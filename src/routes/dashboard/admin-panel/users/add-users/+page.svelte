@@ -30,7 +30,7 @@
 	});
 
 	import { toast } from 'svelte-sonner';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import PasswordGenerator from '$lib/components/password-generator.svelte';
 	// $effect(() => {
 	// 	if ($message) {

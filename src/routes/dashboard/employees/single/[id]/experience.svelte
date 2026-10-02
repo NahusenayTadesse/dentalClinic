@@ -9,7 +9,7 @@
 	import Edit from './editExperience.svelte';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';

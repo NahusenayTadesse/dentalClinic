@@ -48,7 +48,7 @@
 	$form.startDate = startDate?.toLocaleDateString('en-CA');
 	$form.endDate = endDate?.toLocaleDateString('en-CA');
 
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import type { Item } from '$lib/global.svelte';
 </script>
 

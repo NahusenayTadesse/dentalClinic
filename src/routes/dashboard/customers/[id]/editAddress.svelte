@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { type Item } from '$lib/global.svelte';
 	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { type EditAddress } from './schema';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';

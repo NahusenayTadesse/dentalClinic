@@ -6,7 +6,7 @@
 	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 
 	import { Frown } from '@lucide/svelte';
-	import DateMonth from '$lib/formComponents/DateMonth.svelte';
+	import DateMonth from '@nahu/admin-kit/formComponents/DateMonth.svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte';
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
 	let filteredList = $derived(data?.allTransactions);

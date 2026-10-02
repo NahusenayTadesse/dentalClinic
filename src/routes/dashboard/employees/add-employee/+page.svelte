@@ -7,7 +7,7 @@
 	import { createForm, confirmLeave } from '@nahu/admin-kit/forms/createForm.js';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
-	import Input from '$lib/formComponents/InputComp.svelte';
+	import Input from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 
 	let { data } = $props();

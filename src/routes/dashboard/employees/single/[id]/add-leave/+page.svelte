@@ -3,7 +3,7 @@
 	import type { Snapshot } from '@sveltejs/kit';
 
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import { page } from '$app/state';
 
 	import { Plus, ArrowBigLeft } from '@lucide/svelte';

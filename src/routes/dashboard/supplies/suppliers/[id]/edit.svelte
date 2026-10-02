@@ -65,7 +65,7 @@
 	$form.status = status;
 
 	import { toast } from 'svelte-sonner';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import Messages from '@nahu/admin-kit/formComponents/Messages.svelte';
 	$effect(() => {
 		if ($message) {

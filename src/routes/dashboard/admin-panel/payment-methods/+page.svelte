@@ -3,7 +3,7 @@
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
 	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import { paymentMethodColumns } from './columns';
 	import {
 		PAYMENT_KINDS,

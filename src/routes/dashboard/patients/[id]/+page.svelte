@@ -21,7 +21,7 @@
 	import LookupSection from '@nahu/admin-kit/components/lookup/LookupSection.svelte';
 	import { childActionPaths } from '@nahu/admin-kit/components/lookup/actions.js';
 	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 	import MergeSection from './MergeSection.svelte';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte';

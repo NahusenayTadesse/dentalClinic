@@ -9,7 +9,7 @@
 	import { formatEthiopianDate } from '$lib/global.svelte';
 	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import { editDetail } from './schema';
 	import EditAddress from './editAddress.svelte';
 	import Contacts from './contacts.svelte';

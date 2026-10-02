@@ -14,7 +14,7 @@
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	let { data } = $props();
 
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 
 	const { form, errors, enhance, delayed, allErrors, capture, restore } = createForm(
 		data.form,

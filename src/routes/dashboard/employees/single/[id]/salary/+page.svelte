@@ -12,7 +12,7 @@
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { addLeavePayrollSchema as schema } from './schema';
 	import { fileProxy, superForm } from 'sveltekit-superforms/client';
-	import DatePicker from '$lib/formComponents/DatePicker.svelte';
+	import DatePicker from '@nahu/admin-kit/formComponents/DatePicker.svelte';
 	import ComboboxComp from '@nahu/admin-kit/formComponents/ComboboxComp.svelte';
 	import MonthYear from '@nahu/admin-kit/formComponents/MonthYear.svelte';
 	import FileUpload from '@nahu/admin-kit/formComponents/FileUpload.svelte';

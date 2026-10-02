@@ -6,7 +6,7 @@
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 	import { damagedFormSchema } from '$lib/ZodSchema';
 	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import type { Item } from '$lib/global.svelte';
 

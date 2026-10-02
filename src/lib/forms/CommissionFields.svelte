@@ -1,5 +1,5 @@
 <script lang="ts">
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import type { SuperForm } from 'sveltekit-superforms';
 
 	/**

@@ -5,7 +5,7 @@
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import { formatETB } from '$lib/global.svelte';

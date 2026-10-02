@@ -7,8 +7,8 @@
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { createForm, confirmLeave } from '@nahu/admin-kit/forms/createForm.js';
 	import FormCard from '@nahu/admin-kit/formComponents/FormCard.svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
-	import CheckboxComp from '$lib/formComponents/CheckboxComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
+	import CheckboxComp from '@nahu/admin-kit/formComponents/CheckboxComp.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
 	import { BLOOD_TYPE_OPTIONS, SEX_OPTIONS, registerPatient } from '../schema';

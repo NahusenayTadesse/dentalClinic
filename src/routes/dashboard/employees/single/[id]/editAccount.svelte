@@ -6,7 +6,7 @@
 
 	import type { SuperValidated } from 'sveltekit-superforms';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
-	import InputComp from '$lib/formComponents/InputComp.svelte';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import type { Item } from '$lib/global.svelte';
 	import { editAccount, type EditAccount } from './schema';
