@@ -4,6 +4,10 @@
 	import { page, updated } from '$app/state';
 	import { Toaster } from '@nahu/admin-kit/components/ui/sonner/index.js';
 	import { ProgressBar } from '@prgm/sveltekit-progress-bar';
+	import { setKitLabels } from '@nahu/admin-kit/labels';
+
+	// The kit's date pickers draw their grids in Amharic, as this app's own pickers always did.
+	setKitLabels({ dateLocale: 'am-ET' });
 
 	const flash = getFlash(page, { clearAfterMs: 5000 });
 

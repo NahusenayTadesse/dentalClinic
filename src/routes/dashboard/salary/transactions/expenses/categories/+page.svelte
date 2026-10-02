@@ -81,7 +81,7 @@
 	const { form, errors, enhance, delayed, message } = superForm(data.form, {});
 
 	import { toast } from 'svelte-sonner';
-	// import BigText from '$lib/components/Table/bigText.svelte';
+	// import BigText from '@nahu/admin-kit/components/Table/bigText.svelte';
 	import Delete from './delete.svelte';
 	$effect(() => {
 		if ($message) {

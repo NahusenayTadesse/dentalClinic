@@ -30,7 +30,7 @@
 	import TableFacet from '@nahu/admin-kit/components/Table/table-facet.svelte';
 	import TableCharts from '@nahu/admin-kit/components/Table/table-charts.svelte';
 	import TablePagination from '@nahu/admin-kit/components/Table/table-pagination.svelte';
-	import TableDateRange from './table-date-range.svelte';
+	import TableDateRange from '@nahu/admin-kit/components/Table/table-date-range.svelte';
 	import {
 		applyFacets,
 		facetsFromRows,
