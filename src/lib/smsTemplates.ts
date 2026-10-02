@@ -15,6 +15,7 @@
  * Non-goals: GSM-7's extended characters (`{ } [ ] ~ \ | ^ €`) counting double — the templates do
  * not use them — and delivery reports, which neither gateway's plain send returns.
  */
+import { fillPlaceholders } from './placeholders';
 
 /**
  * The gateways the clinic can send through. Here rather than beside the table, because the SMS
@@ -51,19 +52,15 @@ export const DEFAULT_SMS_TEMPLATES = {
 } as const;
 
 /**
- * A template with its placeholders filled. A placeholder with no value is left out rather than
- * printed as `{phone}`; an unknown `{word}` is left as written, so a typo shows in the preview.
+ * A template with its placeholders filled (`$lib/placeholders.ts`). A text is one line, so line
+ * breaks close up too.
  */
 export function fillTemplate(
 	template: string,
 	values: Partial<Record<SmsPlaceholder, string | null>>
 ): string {
-	return template
-		.replace(/\{(\w+)\}/g, (whole, key: string) =>
-			isPlaceholder(key) ? (values[key] ?? '') : whole
-		)
-		.replace(/\s{2,}/g, ' ')
-		.trim();
+	const keys = Object.keys(SMS_PLACEHOLDERS).filter(isPlaceholder);
+	return fillPlaceholders(template, values, keys).replace(/\s{2,}/g, ' ');
 }
 
 /** The GSM-7 basic character set: a message of only these is sent at 160 a segment. */

@@ -222,6 +222,7 @@ export const patients: typeof en = {
 		historyTaken: (date, by) => `የተወሰደው ${date}${by ? ` በ${by}` : ''}።`,
 		historyNever: 'ተወስዶ አያውቅም።',
 		noOtherNotes: 'ሌላ ማስታወሻ የለም።',
+		printQuestionnaire: 'የሚሞላና የሚፈረም መጠይቅ፦',
 		bookAppointment: 'ቀጠሮ ያዝ',
 		nextDue: 'እንደገና መምጣት ያለባቸው፦',
 		aVisit: 'ጉብኝት',

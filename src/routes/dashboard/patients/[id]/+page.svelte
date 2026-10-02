@@ -25,6 +25,7 @@
 	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 	import MergeSection from './MergeSection.svelte';
+	import HistoryFormLinks from './HistoryFormLinks.svelte';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 	import { viewedLabel } from '$lib/accessLog';
 
@@ -293,6 +294,7 @@
 			<p class="text-sm whitespace-pre-line text-muted-foreground">
 				{p.medicalNotes || o.noOtherNotes}
 			</p>
+			<HistoryFormLinks patientId={p.id} />
 		</div>
 	</Section>
 

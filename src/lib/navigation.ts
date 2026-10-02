@@ -52,6 +52,7 @@ import MapPin from '@lucide/svelte/icons/map-pin';
 import Megaphone from '@lucide/svelte/icons/megaphone';
 import OctagonMinus from '@lucide/svelte/icons/octagon-minus';
 import Phone from '@lucide/svelte/icons/phone';
+import FileSignature from '@lucide/svelte/icons/file-signature';
 import FolderInput from '@lucide/svelte/icons/folder-input';
 import DatabaseBackup from '@lucide/svelte/icons/database-backup';
 import MessageSquare from '@lucide/svelte/icons/message-square';
@@ -280,6 +281,7 @@ export const NAVIGATION: NavItem[] = [
 			{ title: 'Allergens', url: '/dashboard/admin-panel/allergens', icon: ShieldAlert },
 			{ title: 'Conditions', url: '/dashboard/admin-panel/conditions', icon: Activity },
 			{ title: 'Medicines', url: '/dashboard/admin-panel/medicines', icon: Pill },
+			{ title: 'Consent Forms', url: '/dashboard/admin-panel/consent-forms', icon: FileSignature },
 			{
 				title: 'Referral Sources',
 				url: '/dashboard/admin-panel/referral-sources',

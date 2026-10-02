@@ -6,6 +6,8 @@ import { patient } from './patients';
 import { provider } from './providers';
 import { procedures } from './procedures';
 import { patientFile } from './patientFiles';
+// Relative, not `$lib/…`: drizzle-kit loads the schema without SvelteKit's aliases.
+import { CONSENT_TYPES } from '../../../consentForms';
 
 /**
  * A record that consent was given, separate from the paper it was given on.
@@ -52,14 +54,7 @@ export const patientConsent = mysqlTable(
 		 * `photography` — clinical photographs, which often end up being used for teaching
 		 * `dataSharing` — sharing records with an employer, insurer or another clinic
 		 */
-		consentType: mysqlEnum('consent_type', [
-			'treatment',
-			'surgical',
-			'anaesthetic',
-			'radiograph',
-			'photography',
-			'dataSharing'
-		]).notNull(),
+		consentType: mysqlEnum('consent_type', CONSENT_TYPES).notNull(),
 
 		/**
 		 * How it was established. `verbal` is not a lesser record — see the note above — but it is
@@ -110,3 +105,21 @@ export const patientConsentRelations = relations(patientConsent, ({ one }) => ({
 		references: [patientFile.id]
 	})
 }));
+
+/**
+ * The wording of a printed consent form, in English and Amharic — the clinic's own, edited under
+ * Clinic Setup → Consent Forms. The migration that made the table filled it with the wording in
+ * `$lib/consentForms.ts`, so a new clinic has a form for every kind of consent from the start.
+ *
+ * Placeholders (`{patient}`, `{clinic}`, `{treatment}`, `{clinician}`) are filled when printing.
+ * Not audited: like every lookup table it carries who changed it last (`secureFields`), and a
+ * printed form's words are on the paper the patient signed.
+ */
+export const consentTemplate = mysqlTable('consent_template', {
+	id: int('id').primaryKey().autoincrement(),
+	name: varchar('name', { length: 100 }).notNull(),
+	consentType: mysqlEnum('consent_type', CONSENT_TYPES).notNull(),
+	bodyEn: text('body_en').notNull(),
+	bodyAm: text('body_am').notNull(),
+	...secureFields
+});

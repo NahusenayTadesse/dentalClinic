@@ -2,7 +2,8 @@ import { error } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 
 import { db } from '$lib/server/db';
-import { branch, customers } from '$lib/server/db/schema';
+import { customers } from '$lib/server/db/schema';
+import { letterheadFor } from '$lib/server/branchScope';
 import { requirePermission } from '$lib/server/permissions';
 import { payerClaim } from '$lib/server/payerCover';
 import { readSettings } from '$lib/server/settings';
@@ -26,20 +27,14 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
 		error(400, 'Choose the month to claim for.');
 	}
 
-	const [[payer], settings, [letterhead]] = await Promise.all([
+	const [[payer], settings, letterhead] = await Promise.all([
 		db
 			.select({ name: customers.name, tin: customers.tinNo, phone: customers.phone })
 			.from(customers)
 			.where(eq(customers.id, customerId))
 			.limit(1),
 		readSettings(),
-		locals.branch.active === null
-			? Promise.resolve([])
-			: db
-					.select({ name: branch.name, address: branch.address, phone: branch.phone })
-					.from(branch)
-					.where(eq(branch.id, locals.branch.active))
-					.limit(1)
+		letterheadFor(locals.branch.active)
 	]);
 	if (!payer) error(404, 'That payer no longer exists.');
 
@@ -48,7 +43,7 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
 	return {
 		payer,
 		clinicTin: settings.tin,
-		branch: letterhead ?? { name: null, address: null, phone: null },
+		branch: letterhead,
 		monthName: name,
 		year,
 		period,

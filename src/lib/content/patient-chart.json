@@ -7,7 +7,7 @@
 			"sections": [
 				{
 					"heading": "Medical alerts",
-					"body": "The red panel at the top lists severe allergies, medicines that change treatment, and any other allergy. It also warns when no medical history has been taken, or when it is over a year old — an empty allergy list means nothing until someone has asked."
+					"body": "The red panel at the top lists severe allergies, medicines that change treatment, and any other allergy. It also warns when no medical history has been taken, or when it is over a year old — an empty allergy list means nothing until someone has asked. The overview's Medical history card prints the questionnaire, in Amharic or English, for the patient to fill in and sign — with their recorded allergies, conditions and medicines for them to check."
 				},
 				{
 					"heading": "The sections",
@@ -47,7 +47,7 @@
 				},
 				{
 					"heading": "Consents",
-					"body": "The Consents tab records what the patient agreed to — treatment, surgery, anaesthetic, radiographs, photographs, sharing records — how, and when. For a child, say who gave it and their relationship. A verbal consent must name the clinician who witnessed it. Attach a signed form on the Files tab first, then choose it here. A consent is never deleted: to withdraw it, give the reason, and it is dated."
+					"body": "The Consents tab records what the patient agreed to — treatment, surgery, anaesthetic, radiographs, photographs, sharing records — how, and when. For a child, say who gave it and their relationship. A verbal consent must name the clinician who witnessed it. Attach a signed form on the Files tab first, then choose it here. A consent is never deleted: to withdraw it, give the reason, and it is dated. Print a consent form gives the clinic's wording for the patient to sign — Amharic or English — with their name, the treatment and the clinician filled in. Sign it, photograph it onto the Files tab, and record it here."
 				},
 				{
 					"heading": "Lab work",
@@ -83,7 +83,7 @@
 			"sections": [
 				{
 					"heading": "የሕክምና ማስጠንቀቂያዎች",
-					"body": "ከላይ ያለው ቀይ ሳጥን ከባድ አለርጂዎችን፣ ሕክምናን የሚቀይሩ መድኃኒቶችንና ሌሎች አለርጂዎችን ይዘረዝራል። የሕክምና ታሪክ ካልተወሰደ ወይም ከአንድ ዓመት በላይ ከሆነው ያስጠነቅቃል — አንድ ሰው እስኪጠይቅ ድረስ ባዶ የአለርጂ ዝርዝር ምንም ማለት አይደለም።"
+					"body": "ከላይ ያለው ቀይ ሳጥን ከባድ አለርጂዎችን፣ ሕክምናን የሚቀይሩ መድኃኒቶችንና ሌሎች አለርጂዎችን ይዘረዝራል። የሕክምና ታሪክ ካልተወሰደ ወይም ከአንድ ዓመት በላይ ከሆነው ያስጠነቅቃል — አንድ ሰው እስኪጠይቅ ድረስ ባዶ የአለርጂ ዝርዝር ምንም ማለት አይደለም። በአጠቃላይ እይታው የሕክምና ታሪክ ካርድ ላይ መጠይቁን በአማርኛ ወይም በእንግሊዝኛ ለታካሚው ለመሙላትና ለመፈረም ማተም ይቻላል — የተመዘገቡ አለርጂዎች፣ በሽታዎችና መድኃኒቶች ለማረጋገጥ ይታተማሉ።"
 				},
 				{
 					"heading": "ክፍሎቹ",
@@ -123,7 +123,7 @@
 				},
 				{
 					"heading": "ስምምነቶች",
-					"body": "የስምምነቶች ክፍል ታካሚው የተስማማበትን ይመዘግባል — ሕክምና፣ ቀዶ ሕክምና፣ ማደንዘዣ፣ ራጅ፣ ፎቶ፣ መረጃ ማጋራት — እንዴትና መቼ። ለሕፃን ማን እንደሰጠውና ዝምድናውን ይናገሩ። በቃል የተሰጠ ስምምነት የመሰከረውን ክሊኒሻን መጥቀስ አለበት። የተፈረመ ቅጽ መጀመሪያ በፋይሎች ክፍል ያያይዙ፣ ከዚያ እዚህ ይምረጡት። ስምምነት አይሰረዝም፦ ለማንሳት ምክንያቱን ይስጡ፣ ቀኑም ይመዘገባል።"
+					"body": "የስምምነቶች ክፍል ታካሚው የተስማማበትን ይመዘግባል — ሕክምና፣ ቀዶ ሕክምና፣ ማደንዘዣ፣ ራጅ፣ ፎቶ፣ መረጃ ማጋራት — እንዴትና መቼ። ለሕፃን ማን እንደሰጠውና ዝምድናውን ይናገሩ። በቃል የተሰጠ ስምምነት የመሰከረውን ክሊኒሻን መጥቀስ አለበት። የተፈረመ ቅጽ መጀመሪያ በፋይሎች ክፍል ያያይዙ፣ ከዚያ እዚህ ይምረጡት። ስምምነት አይሰረዝም፦ ለማንሳት ምክንያቱን ይስጡ፣ ቀኑም ይመዘገባል። Print a consent form የክሊኒኩን ቃላት — በአማርኛ ወይም በእንግሊዝኛ — የታካሚውን ስም፣ ሕክምናውንና ሐኪሙን ሞልቶ ለፊርማ ያትማል። ተፈርሞ ወደ Files ትር ፎቶ ይነሳል፣ እዚህም ይመዘገባል።"
 				},
 				{
 					"heading": "የላቦራቶሪ ሥራ",

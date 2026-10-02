@@ -4,6 +4,7 @@
 	import LookupSection from '@nahu/admin-kit/components/lookup/LookupSection.svelte';
 	import { childActionPaths } from '@nahu/admin-kit/components/lookup/actions.js';
 	import { consentConfig } from './config';
+	import PrintConsent from './PrintConsent.svelte';
 	import { addConsent, editConsent } from './schema';
 
 	/**
@@ -20,6 +21,17 @@
 </svelte:head>
 
 <Section title="Consents" IconComp={FileSignature} style="identityIcon">
+	{#snippet editDialog()}
+		<div class="ml-auto">
+			<PrintConsent
+				base="/dashboard/patients/{data.patient.id}/consents"
+				printable={data.printable}
+				treatments={data.options.procedureId}
+				clinicians={data.options.witnessedBy}
+				lang={data.lang}
+			/>
+		</div>
+	{/snippet}
 	<p class="mb-3 text-sm text-muted-foreground">
 		{standing} standing{data.withdrawn ? `, ${data.withdrawn} withdrawn` : ''}. A verbal consent
 		names the clinician who witnessed it; a signed form is attached on the

@@ -79,6 +79,9 @@ const HELP_FAMILY = new Set([
 	'/dashboard/patients/[id]/perio',
 	'/dashboard/patients/[id]/perio/[examId]',
 	'/dashboard/patients/[id]/perio/[examId]/print',
+	// Paper to sign: covered by the chart's "Consents" and "Medical alerts" sections.
+	'/dashboard/patients/[id]/consents/print',
+	'/dashboard/patients/[id]/history-form',
 	'/dashboard/employees/single/[id]/add-leave',
 	'/dashboard/employees/single/[id]/id-maker',
 	'/dashboard/employees/single/[id]/leave-history',

@@ -71,6 +71,7 @@ export const nav: Record<string, string> = {
 	Services: 'አገልግሎቶች',
 	'Service Categories': 'የአገልግሎት ምድቦች',
 	Medicines: 'መድኃኒቶች',
+	'Consent Forms': 'የስምምነት ቅጾች',
 	Allergens: 'አለርጂ አምጪዎች',
 	Conditions: 'ሕመሞች',
 	Specialties: 'ስፔሻሊቲዎች',

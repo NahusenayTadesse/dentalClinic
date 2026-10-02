@@ -241,6 +241,7 @@ export const patients = {
 		historyTaken: (date: string, by: string | null) => `Taken ${date}${by ? ` by ${by}` : ''}.`,
 		historyNever: 'Never taken.',
 		noOtherNotes: 'No other notes.',
+		printQuestionnaire: 'The questionnaire to fill in and sign:',
 		bookAppointment: 'Book appointment',
 		nextDue: 'Next due back:',
 		aVisit: 'A visit',

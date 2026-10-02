@@ -1,0 +1,41 @@
+{
+	"path": "/dashboard/admin-panel/consent-forms",
+	"languages": {
+		"en": {
+			"title": "Consent forms",
+			"summary": "The wording of the consent forms patients sign, in English and Amharic, printed from a patient's Consents tab.",
+			"sections": [
+				{
+					"heading": "The wording is yours",
+					"body": "Six forms come ready — treatment, surgery or extraction, anaesthetic or sedation, radiographs, photographs and sharing records — in plain English and Amharic. Change them to the wording your clinic and its lawyer approve, or add more: a form for wisdom teeth beside the general surgical one."
+				},
+				{
+					"heading": "Placeholders",
+					"body": "Write {patient}, {clinic}, {treatment} and {clinician} where the form should name them. They are filled in when printing; a treatment or clinician not chosen prints as a line to write on. Write them in Latin letters in the Amharic wording too. A blank line starts a new paragraph."
+				},
+				{
+					"heading": "Retiring a form",
+					"body": "Set it Inactive to stop it being offered. A form already signed keeps its words: they are on the paper."
+				}
+			]
+		},
+		"am": {
+			"title": "የስምምነት ቅጾች",
+			"summary": "ታካሚዎች የሚፈርሙባቸው የስምምነት ቅጾች ቃላት፣ በእንግሊዝኛና በአማርኛ፣ ከታካሚው Consents ትር የሚታተሙ።",
+			"sections": [
+				{
+					"heading": "ቃላቱ የእርስዎ ናቸው",
+					"body": "ስድስት ቅጾች ተዘጋጅተው ይመጣሉ — ሕክምና፣ ቀዶ ሕክምና ወይም ጥርስ ማውጣት፣ ማደንዘዣ፣ ራጅ፣ ፎቶግራፍ እና መረጃ ማጋራት። ክሊኒክዎና የሕግ አማካሪዎ ወደሚያጸድቁት ቃላት ይቀይሩዋቸው ወይም ሌሎችን ይጨምሩ።"
+				},
+				{
+					"heading": "ቦታ ያዦች",
+					"body": "{patient}፣ {clinic}፣ {treatment} እና {clinician} ቅጹ እንዲጠራቸው በሚፈልጉበት ቦታ ይጻፉ። ሲታተም ይሞላሉ፤ ያልተመረጠ ሕክምና ወይም ሐኪም እንደ መጻፊያ መስመር ይታተማል። በአማርኛው ቃላት ውስጥም በላቲን ፊደላት ይጻፉዋቸው። ባዶ መስመር አዲስ አንቀጽ ይጀምራል።"
+				},
+				{
+					"heading": "ቅጽን ማቆም",
+					"body": "እንዳይቀርብ Inactive ያድርጉት። አስቀድሞ የተፈረመ ቅጽ ቃላቱን ይይዛል፦ በወረቀቱ ላይ ናቸው።"
+				}
+			]
+		}
+	}
+}

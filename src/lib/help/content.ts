@@ -680,6 +680,36 @@ export const HELP_SECTIONS: HelpSection[] = [
 				]
 			},
 			{
+				id: 'paper-forms',
+				title: 'Paper to sign: consents and the medical history',
+				summary:
+					'Consent forms and the medical-history questionnaire printed in Amharic or English, for the patient to read and sign at the desk.',
+				where:
+					'A patient’s **Consents → Print a consent form**; the **Medical history** card on the overview; **Clinic Setup → Consent Forms**',
+				permission: 'patients.view to print; settings.manage to change the wording',
+				steps: [
+					'On the overview, under **Medical history**, press **አማርኛ** or **English** to print the questionnaire. The patient answers each question and checks the allergies, conditions and medicines already on record.',
+					'Enter what they wrote — allergies, conditions, medicines and notes — and tick **I asked the medical history questions today**.',
+					'For a consent, open **Consents → Print a consent form**, choose the form, the treatment and the clinician who explained it, and the language. Explain it, and have it signed — by a parent or guardian for a child.',
+					'Photograph the signed sheet onto the **Files** tab, then record the consent on the **Consents** tab with the photograph chosen as the signed form.'
+				],
+				notes: [
+					'The consent wording is the clinic’s own, under **Clinic Setup → Consent Forms**. Six come ready in plain English and Amharic; change them to what your clinic and its lawyer approve.',
+					'A treatment or clinician not chosen prints as a line to write on, so the form can be filled in by hand.',
+					'Printing either form is recorded in the patient’s access log.',
+					'The questionnaire asks about khat and smoking as well as the usual illnesses, and about bone medicines that make an extraction risky.'
+				],
+				keywords: [
+					'consent',
+					'signature',
+					'questionnaire',
+					'medical history',
+					'amharic',
+					'form',
+					'print'
+				]
+			},
+			{
 				id: 'treatment-plans',
 				title: 'Treatment plans and case acceptance',
 				summary:
@@ -2085,6 +2115,13 @@ export const ROUTE_MAP: RouteEntry[] = [
 		group: 'Clinic setup'
 	},
 	{
+		path: '/dashboard/admin-panel/consent-forms',
+		title: 'Consent forms',
+		purpose: 'The wording of the consent forms patients sign, in English and Amharic.',
+		permission: 'settings.manage',
+		group: 'Clinic setup'
+	},
+	{
 		path: '/dashboard/admin-panel/medicines',
 		title: 'Medicines',
 		purpose:
@@ -2227,6 +2264,22 @@ export const ROUTE_MAP: RouteEntry[] = [
 		path: '/dashboard/patients/[id]/perio/[examId]/print',
 		title: 'Periodontal chart (printed)',
 		purpose: 'One periodontal exam on paper, under the branch letterhead, for a referral.',
+		permission: 'patients.view',
+		group: 'Patients'
+	},
+	{
+		path: '/dashboard/patients/[id]/consents/print',
+		title: 'Consent form (printed)',
+		purpose:
+			'A consent form to sign, in Amharic or English, with the patient and treatment filled in.',
+		permission: 'patients.view',
+		group: 'Patients'
+	},
+	{
+		path: '/dashboard/patients/[id]/history-form',
+		title: 'Medical-history questionnaire (printed)',
+		purpose:
+			'The health questions on paper for the patient to answer and sign, with what is on record.',
 		permission: 'patients.view',
 		group: 'Patients'
 	},

@@ -185,8 +185,13 @@ Credit income keeps many clinics running, so this matters more than it looks.
   tooth, with zoom, pan, brightness, contrast, invert and turn, the two moving together. Not done:
   DICOM and TIFF (browsers cannot draw them; the inbox lists them and says to export JPEG/PNG), and
   measuring on the image (needs the sensor's calibration).
-- **Medical-history questionnaire and consent templates** in Amharic, printed for signature.
-  Consents are recorded (`patient_consent`) but there are no templates to print.
+- ✅ **Medical-history questionnaire and consent templates — done.** The overview's Medical
+  history card prints a questionnaire in Amharic or English (twenty questions, khat and bone
+  medicines included, and what is on record to check) to fill in and sign. **Consents → Print a
+  consent form** prints the clinic's wording with the patient, treatment and clinician filled in;
+  six forms come ready in English and Amharic, editable under Clinic Setup → Consent Forms. The
+  Amharic wording wants a native speaker's and the clinic's lawyer's reading. Not done: signing on
+  a screen.
 - **Sterilisation and infection-control log:** autoclave cycles, and which instrument packs were used
   on which patient. Inspectors ask for this.
 - **Controlled-medicine register** for the Ethiopian Food and Drug Authority, built on the stock lots

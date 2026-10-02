@@ -21,6 +21,7 @@ import { help as enHelp } from './en/help';
 import { appointments as enAppointments } from './en/appointments';
 import { patients as enPatients } from './en/patients';
 import { billing as enBilling } from './en/billing';
+import { forms as enForms } from './en/forms';
 import { common as amCommon } from './am/common';
 import { nav as amNav } from './am/nav';
 import { kit as amKit } from './am/kit';
@@ -28,6 +29,7 @@ import { help as amHelp } from './am/help';
 import { appointments as amAppointments } from './am/appointments';
 import { patients as amPatients } from './am/patients';
 import { billing as amBilling } from './am/billing';
+import { forms as amForms } from './am/forms';
 import type { Lang } from '../lang';
 
 const en = {
@@ -37,7 +39,8 @@ const en = {
 	help: enHelp,
 	appointments: enAppointments,
 	patients: enPatients,
-	billing: enBilling
+	billing: enBilling,
+	forms: enForms
 };
 
 /** The messages of one language. */
@@ -50,7 +53,8 @@ const am: Messages = {
 	help: amHelp,
 	appointments: amAppointments,
 	patients: amPatients,
-	billing: amBilling
+	billing: amBilling,
+	forms: amForms
 };
 
 /** Every language's messages. */

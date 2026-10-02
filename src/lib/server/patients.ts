@@ -437,6 +437,33 @@ export async function flagsFor(ids: number[]): Promise<Map<number, PatientFlags>
 	return out;
 }
 
+/**
+ * What the chart holds of a patient's medical history, for the questionnaire they check and sign:
+ * their allergies, current conditions, and the medicines they are taking, by name.
+ */
+export async function recordedHistory(patientId: number) {
+	const [flags, medicines] = await Promise.all([
+		flagsFor([patientId]),
+		db
+			.select({ name: medicine.genericName, strength: medicine.strength })
+			.from(patientMedications)
+			.innerJoin(medicine, eq(medicine.id, patientMedications.medicineId))
+			.where(
+				and(
+					eq(patientMedications.patientId, patientId),
+					notDeleted(patientMedications),
+					eq(patientMedications.status, 'active')
+				)
+			)
+	]);
+	const flagsOf = flags.get(patientId);
+	return {
+		allergies: flagsOf?.allergies.map((a) => a.name) ?? [],
+		conditions: flagsOf?.conditions ?? [],
+		medicines: medicines.map((m) => (m.strength ? `${m.name} ${m.strength}` : m.name))
+	};
+}
+
 /* ── Duplicates ─────────────────────────────────────────────────────────────────────────────── */
 
 export type PossibleDuplicate = {

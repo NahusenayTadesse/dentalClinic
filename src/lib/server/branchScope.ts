@@ -194,3 +194,21 @@ export async function branchCount(): Promise<number> {
 		.where(and(isNull(branch.deletedAt)));
 	return Number(row?.total ?? 0);
 }
+
+/** What heads a printout: a branch's name, address and phone. */
+export type Letterhead = { name: string | null; address: string | null; phone: string | null };
+
+/**
+ * The letterhead of the branch someone is working at, for a paper they print there — a consent
+ * form, a payer's claim. Blank lines rather than an error when no single branch is chosen: the
+ * paper still prints, under `PrintSheet`'s fallback name.
+ */
+export async function letterheadFor(branchId: number | null): Promise<Letterhead> {
+	if (branchId === null) return { name: null, address: null, phone: null };
+	const [row] = await db
+		.select({ name: branch.name, address: branch.address, phone: branch.phone })
+		.from(branch)
+		.where(eq(branch.id, branchId))
+		.limit(1);
+	return row ?? { name: null, address: null, phone: null };
+}
