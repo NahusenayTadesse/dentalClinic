@@ -25,7 +25,6 @@
 	} from '$lib/forms/appointmentSchemas';
 	import {
 		NEXT_STATUS,
-		STATUS_LABEL,
 		isAppointmentStatus,
 		isMovable,
 		type AppointmentStatus
@@ -33,6 +32,7 @@
 	import { clinicClock, clinicDate, ethiopianClock } from '$lib/clinicTime';
 	import { formatEthiopianDate } from '$lib/global.svelte';
 	import { availabilityWarnings, type ProviderAvailability } from '$lib/providerHours';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
 	import type { DayAppointment } from './types';
 
 	/**
@@ -70,6 +70,12 @@
 		/** Whether the viewer may record clinical work, which completing a visit offers. */
 		canChart?: boolean;
 	} = $props();
+
+	const t = useI18n();
+	const dl = $derived(t.m.appointments.dialog);
+	const c = $derived(t.m.common);
+	const statusName = $derived(t.m.appointments.status);
+	const actionName = $derived(t.m.appointments.action);
 
 	const close = {
 		onUpdated({ form }: { form: { message?: { type: string } } }) {
@@ -127,7 +133,8 @@
 			who,
 			String($mForm.date),
 			time,
-			Number($mForm.durationMinutes) || 30
+			Number($mForm.durationMinutes) || 30,
+			t.m.appointments.hours
 		);
 	});
 
@@ -136,7 +143,9 @@
 	/** "12 min" between two instants, for waiting and chair time. */
 	const gap = (from: Date | string | null, to: Date | string | null) =>
 		from && to
-			? `${Math.max(0, Math.round((new Date(to).getTime() - new Date(from).getTime()) / 60_000))} min`
+			? t.m.appointments.day.minutes(
+					Math.max(0, Math.round((new Date(to).getTime() - new Date(from).getTime()) / 60_000))
+				)
 			: null;
 </script>
 
@@ -150,11 +159,13 @@
 					entity="patient"
 					display="inline"
 				/>
-				<Badge variant="secondary">{STATUS_LABEL[status].label}</Badge>
+				<Badge variant="secondary">{statusName[status]}</Badge>
 			</Dialog.Title>
 			<Dialog.Description>
 				{formatEthiopianDate(new Date(appointment.startsAt))} · {clinicClock(appointment.startsAt)}
-				({ethiopianClock(appointment.startsAt)}) · {appointment.durationMinutes} min
+				({ethiopianClock(appointment.startsAt)}) · {t.m.appointments.day.minutes(
+					appointment.durationMinutes
+				)}
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -162,7 +173,7 @@
 			<div class="flex flex-wrap gap-2">
 				{#each appointment.severeAllergies as allergy (allergy)}
 					<Badge variant="destructive" class="gap-1"
-						><TriangleAlert class="size-3" />Severe allergy: {allergy}</Badge
+						><TriangleAlert class="size-3" />{dl.severeAllergy(allergy)}</Badge
 					>
 				{/each}
 				{#each appointment.medicineAlerts as alert (alert)}
@@ -176,64 +187,62 @@
 			<a href="/dashboard/patients/{appointment.patientId}/lab" class="flex flex-wrap gap-2">
 				{#if appointment.lab.ready}
 					<Badge variant="secondary" class="gap-1"
-						><FlaskConical class="size-3" />Lab work back — ready to fit ({appointment.lab
-							.ready})</Badge
+						><FlaskConical class="size-3" />{dl.labReady(appointment.lab.ready)}</Badge
 					>
 				{/if}
 				{#if appointment.lab.overdue}
 					<Badge variant="destructive" class="gap-1"
-						><FlaskConical class="size-3" />Overdue from the lab ({appointment.lab.overdue})</Badge
+						><FlaskConical class="size-3" />{dl.labOverdue(appointment.lab.overdue)}</Badge
 					>
 				{:else if appointment.lab.out}
 					<Badge variant="outline" class="gap-1"
-						><FlaskConical class="size-3" />At the lab ({appointment.lab.out})</Badge
+						><FlaskConical class="size-3" />{dl.labOut(appointment.lab.out)}</Badge
 					>
 				{/if}
 			</a>
 		{/if}
 
 		<dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
-			<dt class="text-muted-foreground">File</dt>
+			<dt class="text-muted-foreground">{dl.file}</dt>
 			<dd>{appointment.fileNo ?? '—'}{appointment.phone ? ` · ${appointment.phone}` : ''}</dd>
-			<dt class="text-muted-foreground">For</dt>
-			<dd>{appointment.type ?? 'Not given'}</dd>
-			<dt class="text-muted-foreground">Dentist</dt>
-			<dd>{appointment.provider ?? 'Not assigned'}</dd>
-			<dt class="text-muted-foreground">Chair</dt>
-			<dd>{appointment.chair ?? 'Not assigned'}</dd>
+			<dt class="text-muted-foreground">{c.what}</dt>
+			<dd>{appointment.type ?? dl.notGiven}</dd>
+			<dt class="text-muted-foreground">{c.dentist}</dt>
+			<dd>{appointment.provider ?? c.notAssigned}</dd>
+			<dt class="text-muted-foreground">{c.chair}</dt>
+			<dd>{appointment.chair ?? c.notAssigned}</dd>
 			{#if appointment.note}
-				<dt class="text-muted-foreground">Note</dt>
+				<dt class="text-muted-foreground">{c.note}</dt>
 				<dd class="whitespace-pre-line">{appointment.note}</dd>
 			{/if}
 			{#if appointment.arrivedAt}
-				<dt class="text-muted-foreground">Arrived</dt>
+				<dt class="text-muted-foreground">{dl.arrived}</dt>
 				<dd>
 					{clinicClock(appointment.arrivedAt)}
-					{#if gap(appointment.arrivedAt, appointment.seatedAt)}· waited {gap(
-							appointment.arrivedAt,
-							appointment.seatedAt
+					{#if gap(appointment.arrivedAt, appointment.seatedAt)}· {dl.waited(
+							gap(appointment.arrivedAt, appointment.seatedAt) ?? ''
 						)}{/if}
 				</dd>
 			{/if}
 			{#if appointment.dismissedAt}
-				<dt class="text-muted-foreground">Finished</dt>
+				<dt class="text-muted-foreground">{dl.finished}</dt>
 				<dd>
 					{clinicClock(appointment.dismissedAt)}
-					{#if gap(appointment.seatedAt, appointment.dismissedAt)}· in chair {gap(
-							appointment.seatedAt,
-							appointment.dismissedAt
+					{#if gap(appointment.seatedAt, appointment.dismissedAt)}· {dl.inChairFor(
+							gap(appointment.seatedAt, appointment.dismissedAt) ?? ''
 						)}{/if}
 				</dd>
 			{/if}
 			{#if appointment.cancelReason}
-				<dt class="text-muted-foreground">Cancelled</dt>
+				<dt class="text-muted-foreground">{dl.cancelled}</dt>
 				<dd>{appointment.cancelReason}</dd>
 			{/if}
 		</dl>
 
 		<div class="flex flex-wrap gap-2">
 			<Button variant="ghost" size="sm" href="/dashboard/patients/{appointment.patientId}">
-				<ExternalLink class="size-4" /> Patient chart
+				<ExternalLink class="size-4" />
+				{dl.patientChart}
 			</Button>
 		</div>
 
@@ -256,7 +265,7 @@
 							disabled={$sDelayed}
 							onclick={() => ($sForm.to = next)}
 						>
-							{STATUS_LABEL[next].action}
+							{actionName[next]}
 						</Button>
 					{/each}
 				</form>
@@ -265,15 +274,17 @@
 			<div class="flex flex-wrap gap-2">
 				{#if canComplete}
 					<Button size="sm" onclick={() => (showComplete = !showComplete)}>
-						{STATUS_LABEL.completed.action}
+						{actionName.completed}
 					</Button>
 				{/if}
 				{#if isMovable(status)}
-					<Button variant="outline" size="sm" onclick={() => (showMove = !showMove)}>Move</Button>
+					<Button variant="outline" size="sm" onclick={() => (showMove = !showMove)}
+						>{dl.move}</Button
+					>
 				{/if}
 				{#if canCancel}
 					<Button variant="outline" size="sm" onclick={() => (showCancel = !showCancel)}>
-						Cancel appointment
+						{dl.cancelAppointment}
 					</Button>
 				{/if}
 			</div>
@@ -298,12 +309,12 @@
 					<Errors allErrors={$mAllErrors} />
 					<input type="hidden" name="id" value={appointment.id} />
 					<div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-						<InputComp form={mForm} errors={mErrors} name="date" label="Date" type="date" year />
+						<InputComp form={mForm} errors={mErrors} name="date" label={c.date} type="date" year />
 						<InputComp
 							form={mForm}
 							errors={mErrors}
 							name="time"
-							label="Time"
+							label={c.time}
 							type="time"
 							step={300}
 						/>
@@ -311,7 +322,7 @@
 							form={mForm}
 							errors={mErrors}
 							name="durationMinutes"
-							label="Minutes"
+							label={c.minutes}
 							type="number"
 							min={5}
 							step={5}
@@ -320,7 +331,7 @@
 							form={mForm}
 							errors={mErrors}
 							name="providerId"
-							label="Dentist"
+							label={c.dentist}
 							type="select"
 							items={providers}
 						/>
@@ -328,7 +339,7 @@
 							form={mForm}
 							errors={mErrors}
 							name="operatoryId"
-							label="Chair"
+							label={c.chair}
 							type="select"
 							items={chairOptions}
 						/>
@@ -336,9 +347,9 @@
 					<RiskAcknowledgement
 						show={hoursWarnings.length > 0}
 						name="hoursAcknowledged"
-						title="The dentist is not working then"
+						title={t.m.appointments.book.hoursTitle}
 						message={hoursWarnings.join(' ')}
-						confirmLabel="Book anyway"
+						confirmLabel={t.m.appointments.book.bookAnyway}
 						bind:checked={$mForm.hoursAcknowledged}
 					/>
 					<Button
@@ -347,7 +358,7 @@
 						form="move-{appointment.id}"
 						disabled={$mDelayed || (hoursWarnings.length > 0 && !$mForm.hoursAcknowledged)}
 					>
-						{#if $mDelayed}<LoadingBtn name="Moving" />{:else}Move appointment{/if}
+						{#if $mDelayed}<LoadingBtn name={dl.moving} />{:else}{dl.moveAppointment}{/if}
 					</Button>
 				</form>
 			{/if}
@@ -365,13 +376,13 @@
 						form={cForm}
 						errors={cErrors}
 						name="reason"
-						label="Why is it cancelled?"
+						label={dl.cancelReason}
 						type="textarea"
 						rows={2}
 						required
 					/>
 					<Button type="submit" size="sm" variant="destructive" form="cancel-{appointment.id}">
-						{#if $cDelayed}<LoadingBtn name="Cancelling" />{:else}Cancel appointment{/if}
+						{#if $cDelayed}<LoadingBtn name={dl.cancelling} />{:else}{dl.cancelAppointment}{/if}
 					</Button>
 				</form>
 			{/if}

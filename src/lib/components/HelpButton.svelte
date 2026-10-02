@@ -7,21 +7,20 @@
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Separator } from '@nahu/admin-kit/components/ui/separator/index.js';
 	import { resolveHelp } from '$lib/Registry';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
+	import type { Lang } from '$lib/i18n/lang';
 
+	const t = useI18n();
 	let open = $state(false);
-	let language = $state<'en' | 'am'>('en');
+	// The interface's language until someone flips the panel's own switch: help can be read in the
+	// other language without changing the whole screen.
+	let chosen = $state<Lang | null>(null);
+	const language = $derived(chosen ?? t.lang);
+	const h = $derived(t.m.help);
 
 	const entry = $derived(resolveHelp(page.url.pathname));
 
-	const displayEntry = $derived.by(() => {
-		if (!entry) return null;
-
-		const rawEntry = entry as any;
-		if (rawEntry.languages && rawEntry.languages[language]) {
-			return rawEntry.languages[language];
-		}
-		return entry;
-	});
+	const displayEntry = $derived(entry ? (entry.languages[language] ?? entry.languages.en) : null);
 
 	/**
 	 * Where "See more" goes: the chapter of the help centre this screen belongs to,
@@ -29,29 +28,30 @@
 	 * centre for an entry that names none, so the button is always useful.
 	 */
 	const seeMoreHref = $derived(
-		(displayEntry?.links ?? []).find((link: { href: string }) =>
-			link.href.startsWith('/dashboard/help')
-		)?.href ?? '/dashboard/help'
+		(displayEntry?.links ?? []).find((link) => link.href.startsWith('/dashboard/help'))?.href ??
+			'/dashboard/help'
 	);
 
 	// The guide link is the "See more" button now, so listing it again below the
 	// sections would just be the same link twice.
 	const extraLinks = $derived(
-		(displayEntry?.links ?? []).filter(
-			(link: { href: string }) => !link.href.startsWith('/dashboard/help')
-		)
+		(displayEntry?.links ?? []).filter((link) => !link.href.startsWith('/dashboard/help'))
 	);
 
 	// Close the panel when the route changes, so it never explains the wrong page.
 	$effect(() => {
-		page.url.pathname;
+		void page.url.pathname;
 		open = false;
 	});
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key !== '?' || e.metaKey || e.ctrlKey || e.altKey) return;
-		const t = e.target as HTMLElement | null;
-		if (t?.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(t?.tagName ?? '')) return;
+		const target = e.target instanceof HTMLElement ? e.target : null;
+		if (
+			target?.isContentEditable ||
+			['INPUT', 'TEXTAREA', 'SELECT'].includes(target?.tagName ?? '')
+		)
+			return;
 		e.preventDefault();
 		open = !open;
 	}
@@ -66,8 +66,8 @@
 				{...props}
 				size="icon"
 				variant="default"
-				aria-label="Help for this page"
-				title="Help for this page (?)"
+				aria-label={h.forPage}
+				title={h.forPageKey}
 				class="size-11 rounded-full border shadow-lg"
 			>
 				<CircleQuestionMark class="size-5" />
@@ -78,19 +78,19 @@
 	<Sheet.Content side="right" class="flex w-full flex-col gap-0 sm:max-w-md">
 		<Sheet.Header class="flex items-start justify-between gap-1">
 			<div class="space-y-1">
-				<Sheet.Title>{displayEntry?.title ?? 'Help'}</Sheet.Title>
+				<Sheet.Title>{displayEntry?.title ?? t.m.common.help}</Sheet.Title>
 				{#if displayEntry?.summary}
 					<Sheet.Description>{displayEntry.summary}</Sheet.Description>
 				{:else}
 					<Sheet.Description>
-						This screen has no page-specific note yet — the help centre covers it.
+						{h.noNote}
 					</Sheet.Description>
 				{/if}
 			</div>
 			{#if entry}
 				<div class="flex gap-1">
 					<button
-						onclick={() => (language = 'en')}
+						onclick={() => (chosen = 'en')}
 						class="rounded px-2 py-1 text-xs font-medium transition-colors {language === 'en'
 							? 'bg-primary text-primary-foreground'
 							: 'bg-muted text-muted-foreground hover:bg-muted/80'}"
@@ -98,7 +98,7 @@
 						EN
 					</button>
 					<button
-						onclick={() => (language = 'am')}
+						onclick={() => (chosen = 'am')}
 						class="rounded px-2 py-1 text-xs font-medium transition-colors {language === 'am'
 							? 'bg-primary text-primary-foreground'
 							: 'bg-muted text-muted-foreground hover:bg-muted/80'}"
@@ -112,9 +112,7 @@
 		<div class="flex-1 space-y-6 overflow-y-auto px-4 pb-6">
 			{#if !entry}
 				<p class="text-sm leading-relaxed text-muted-foreground">
-					Nobody has written a note for this particular screen yet. The help centre explains every
-					screen in the system, the workflow behind it and the permission it sits behind — and it is
-					searchable.
+					{h.noNoteLong}
 				</p>
 			{/if}
 
@@ -145,12 +143,13 @@
 
 		<Sheet.Footer class="gap-3 border-t">
 			<Button href={seeMoreHref} variant="secondary" class="w-full">
-				See more
+				{h.seeMore}
 				<ArrowRight class="size-4" />
 			</Button>
 			<p class="text-xs text-muted-foreground">
-				Opens this screen's chapter in the help centre. Press
-				<kbd class="rounded border bg-muted px-1 font-mono">?</kbd> anywhere to open this panel.
+				{h.seeMoreHint}
+				<kbd class="rounded border bg-muted px-1 font-mono">?</kbd>
+				{h.seeMoreHintEnd}
 			</p>
 		</Sheet.Footer>
 	</Sheet.Content>

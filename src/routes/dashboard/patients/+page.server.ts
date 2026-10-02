@@ -41,6 +41,8 @@ import {
 	patientFullName,
 	patientSearch
 } from '$lib/server/patients';
+import { messagesFor } from '$lib/i18n/messages';
+import { alertName } from './labels.server';
 import type { PageServerLoad } from './$types';
 
 /**
@@ -94,6 +96,9 @@ function oneOf<T extends string>(values: readonly T[], value: string): value is 
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const query = parseTableQuery(url, FILTERS, 20, Object.keys(SORTABLE));
+	// Facet and alert labels are made here, so they are made in the viewer's language.
+	const m = messagesFor(locals.lang);
+	const pm = m.patients;
 
 	/*
 	 * A deliberate search crosses branches; browsing does not. Decided once, here, from whether the
@@ -162,20 +167,24 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		canBill ? balancesFor(rows.map((r) => r.id)) : Promise.resolve(null)
 	]);
 
-	const patients = rows.map((row) => ({
-		...row,
-		age: row.age === null ? null : Number(row.age),
-		...(flags.get(row.id) ?? { allergies: [], conditions: [], medicineAlerts: [] }),
-		owes: balances ? (balances.get(row.id) ?? 0) : null,
-		/*
-		 * Only meaningful while working at one branch. Seeing across all of them, nobody is "from
-		 * another branch" — and a patient with no branch recorded predates branches, not elsewhere.
-		 */
-		fromOtherBranch:
-			locals.branch.active !== null &&
-			row.branchId !== null &&
-			row.branchId !== locals.branch.active
-	}));
+	const patients = rows.map((row) => {
+		const flag = flags.get(row.id) ?? { allergies: [], conditions: [], medicineAlerts: [] };
+		return {
+			...row,
+			age: row.age === null ? null : Number(row.age),
+			...flag,
+			medicineAlerts: flag.medicineAlerts.map((label) => alertName(m, label)),
+			owes: balances ? (balances.get(row.id) ?? 0) : null,
+			/*
+			 * Only meaningful while working at one branch. Seeing across all of them, nobody is "from
+			 * another branch" — and a patient with no branch recorded predates branches, not elsewhere.
+			 */
+			fromOtherBranch:
+				locals.branch.active !== null &&
+				row.branchId !== null &&
+				row.branchId !== locals.branch.active
+		};
+	});
 
 	/* ── Facets ──────────────────────────────────────────────────────────────────────────────
 	 * Each tally applies every filter but its own (see `facetCounts`), and every one is counted
@@ -215,13 +224,17 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const facets: Record<string, Facet[]> = await facetCounts({
 		sex: relabel(
 			[
-				{ value: 'male', label: 'Male' },
-				{ value: 'female', label: 'Female' }
+				{ value: 'male', label: pm.sex.male },
+				{ value: 'female', label: pm.sex.female }
 			],
 			() => grouped(sql<string>`${patient.sex}`, sql<string>`${patient.sex}`, 'sex')
 		),
-		age: relabel([...AGE_BANDS, { value: 'unknown', label: 'No birth date' }], () =>
-			grouped(ageBandExpr(), ageBandExpr(), 'ageBand')
+		age: relabel(
+			[...AGE_BANDS, { value: 'unknown' as const }].map((b) => ({
+				value: b.value,
+				label: pm.ageBands[b.value]
+			})),
+			() => grouped(ageBandExpr(), ageBandExpr(), 'ageBand')
 		),
 		bloodType: () =>
 			grouped(sql<string>`${patient.bloodType}`, sql<string>`${patient.bloodType}`, 'bloodType'),
@@ -230,10 +243,13 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		payer: () =>
 			grouped(
 				sql<string>`coalesce(${customers.id}, 'self')`,
-				sql<string>`coalesce(${customers.name}, 'Pays at the desk')`,
+				sql<string>`coalesce(${customers.name}, ${pm.payAtDesk})`,
 				'payer'
 			),
-		history: relabel(HISTORY_STATES, () => grouped(historyExpr(), historyExpr(), 'history')),
+		history: relabel(
+			HISTORY_STATES.map((h) => ({ value: h.value, label: pm.history[h.value] })),
+			() => grouped(historyExpr(), historyExpr(), 'history')
+		),
 		allergies: () =>
 			db
 				.select({
@@ -279,7 +295,11 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 						.select({ count: count() })
 						.from(patient)
 						.where(and(buildWhere(query, spec, { except: 'alert' }), alert.where()));
-					return { value: key, label: alert.label, count: Number(row?.count ?? 0) };
+					return {
+						value: key,
+						label: isAlertKey(key) ? pm.alerts[key] : alert.label,
+						count: Number(row?.count ?? 0)
+					};
 				})
 			)
 	});

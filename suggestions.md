@@ -54,7 +54,7 @@ HMIS age group, printed or downloaded for DHIS2. See ROADMAP Stage 9.
 condition each diagnoses (Clinic Setup → Services). Check the age groups against the form the health
 office currently issues — they are one constant in `$lib/hmisReport.ts`.
 
-### 2. Amharic screens, not just Amharic help
+### 2. ✅ Amharic screens, not just Amharic help — front desk done
 
 Every label, button and message is in English. Reception staff in most clinics will work faster in
 Amharic; Afaan Oromo matters for clinics in Oromia.
@@ -62,6 +62,18 @@ Amharic; Afaan Oromo matters for clinics in Oromia.
 - **Build on:** the kit already reads its own labels through `useLabels()`, and the help system
   already switches language. The app's own strings are the gap.
 - **Size:** large but mechanical. Start with the front desk: patients, the diary, billing.
+- **Done (front desk):** an EN/አማ switch in the top bar (a cookie, read by a hook into
+  `locals.lang`, and `<html lang>` follows it). Translated: the menus and search palette, the kit's
+  tables, pickers and dialogs, the help panel, the appointments day view, list and dialogs,
+  Reminders, Recalls, the patient list, registration, chart header, tabs and overview, Who Owes,
+  the cash drawer, a patient's billing, bills, receipts and the payment form — and the server's
+  replies to all of them, including booking refusals and the dentist-hours warning. The dictionary
+  is `$lib/i18n/messages`, one module per area; an Amharic area missing a key does not compile, and
+  `i18n.test.ts` fails on a menu entry with no Amharic name.
+- **Still English:** form validation messages (shared zod schemas), the clinical chart tabs
+  (dental chart, plans, notes, prescriptions, files, consents, lab work) and every back-office
+  screen. Data — names, chairs, visit types, services — is shown as entered. The Amharic should be
+  read by a native speaker before a clinic relies on it.
 
 ### 3. SMS reminders and recalls
 

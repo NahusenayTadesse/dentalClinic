@@ -8,10 +8,13 @@
 	import { CloudDownload } from '@lucide/svelte';
 	import HelpButton from '$lib/components/HelpButton.svelte';
 	import BranchSelector from '$lib/components/BranchSelector.svelte';
+	import LanguageToggle from '$lib/components/LanguageToggle.svelte';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
 	import { canVisit } from '$lib/routeAccess';
 	import { setViewer } from '$lib/viewer.svelte';
 
 	let { children, data } = $props();
+	const t = useI18n();
 
 	// Set once, here, so any mention of a record anywhere below can decide whether to be a link
 	// without the permission list being threaded through every columns.ts. Passed as a getter so
@@ -34,6 +37,7 @@
 			<Sidebar.Trigger class="rounded-lg bg-white p-4 dark:bg-black" />
 			<div class="flex min-w-0 flex-row items-center gap-1.5 sm:gap-4">
 				<BranchSelector branch={data?.branch} />
+				<LanguageToggle />
 				<Search permList={data?.permList} />
 				<HelpButton />
 				<DarkMode />
@@ -41,7 +45,8 @@
 				{#if canDownloadBackup}
 					<Button
 						href="/dashboard/backup"
-						title="Download Database Backup"
+						title={t.m.common.backup}
+						aria-label={t.m.common.backup}
 						variant="outline"
 						size="icon"
 					>

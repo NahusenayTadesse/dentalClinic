@@ -11,9 +11,18 @@
 	import CheckboxComp from '@nahu/admin-kit/formComponents/CheckboxComp.svelte';
 	import Errors from '@nahu/admin-kit/formComponents/Errors.svelte';
 	import LoadingBtn from '@nahu/admin-kit/formComponents/LoadingBtn.svelte';
-	import { BLOOD_TYPE_OPTIONS, SEX_OPTIONS, registerPatient } from '../schema';
+	import { BLOOD_TYPE_OPTIONS, registerPatient } from '../schema';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
 
 	let { data } = $props();
+
+	const t = useI18n();
+	const r = $derived(t.m.patients.register);
+	const pm = $derived(t.m.patients);
+	const sexOptions = $derived([
+		{ value: 'female', name: pm.sex.female },
+		{ value: 'male', name: pm.sex.male }
+	]);
 
 	/*
 	 * Long enough that losing it to a stray back button costs real re-typing, with someone waiting
@@ -34,14 +43,10 @@
 </script>
 
 <svelte:head>
-	<title>Register a patient</title>
+	<title>{r.title}</title>
 </svelte:head>
 
-<FormCard
-	title="Register a patient"
-	description="Only the given name, father’s name and sex are required. Record what the patient can tell you now — the rest can be added on their chart."
-	className="lg:w-full!"
->
+<FormCard title={r.title} description={r.description} className="lg:w-full!">
 	<form method="post" use:enhance class="flex flex-col gap-6">
 		<Errors allErrors={$allErrors} />
 
@@ -55,7 +60,8 @@
 				class="flex flex-col gap-2 rounded-lg border border-destructive bg-destructive/10 p-4 text-sm"
 			>
 				<p class="flex items-center gap-2 font-semibold text-destructive">
-					<TriangleAlert class="size-4" /> This may be a patient who is already registered
+					<TriangleAlert class="size-4" />
+					{r.duplicateTitle}
 				</p>
 				<div>
 					<ul class="my-2 flex flex-col gap-1">
@@ -69,14 +75,13 @@
 									{match.name}
 									<ExternalLink class="size-3" />
 								</a>
-								<span>{match.fileNo ? `File ${match.fileNo}` : 'No file number'}</span>
+								<span>{match.fileNo ? pm.file(match.fileNo) : pm.noFileNumber}</span>
 								{#if match.phone}<span>· {match.phone}</span>{/if}
 								<span class="text-xs">({match.reason})</span>
 							</li>
 						{/each}
 					</ul>
-					If one of these is the person in front of you, open their chart instead. If not, confirm below
-					and register again.
+					{r.duplicateHelp}
 				</div>
 			</div>
 
@@ -85,38 +90,38 @@
 				{errors}
 				name="confirmNotDuplicate"
 				type="checkboxSingle"
-				label="Not a duplicate"
-				placeholder="I have checked — this is a different person"
+				label={r.notDuplicate}
+				placeholder={r.notDuplicateConfirm}
 			/>
 		{/if}
 
 		<section class="flex flex-col gap-4">
-			<h3 class="text-lg font-semibold">Who they are</h3>
+			<h3 class="text-lg font-semibold">{r.who}</h3>
 			<div class={section}>
-				<InputComp {form} {errors} name="name" label="Given name" required />
-				<InputComp {form} {errors} name="fatherName" label="Father’s name" required />
-				<InputComp {form} {errors} name="grandFatherName" label="Grandfather’s name" />
+				<InputComp {form} {errors} name="name" label={r.givenName} required />
+				<InputComp {form} {errors} name="fatherName" label={r.fatherName} required />
+				<InputComp {form} {errors} name="grandFatherName" label={r.grandFatherName} />
 				<InputComp
 					{form}
 					{errors}
 					name="sex"
-					label="Sex"
+					label={r.sex}
 					type="select"
-					items={SEX_OPTIONS}
+					items={sexOptions}
 					required
 				/>
 				<InputComp
 					{form}
 					{errors}
 					name="fileNo"
-					label="File number"
-					placeholder="Leave empty if not assigned yet"
+					label={r.fileNo}
+					placeholder={r.fileNoPlaceholder}
 				/>
 				<InputComp
 					{form}
 					{errors}
 					name="bloodType"
-					label="Blood type"
+					label={r.bloodType}
 					type="select"
 					items={BLOOD_TYPE_OPTIONS}
 				/>
@@ -128,45 +133,45 @@
 					{errors}
 					name="knowsBirthDate"
 					type="checkboxSingle"
-					label="Birth date"
-					placeholder="The patient knows their date of birth"
+					label={r.birthDate}
+					placeholder={r.knowsBirthDate}
 				/>
 				{#if $form.knowsBirthDate}
-					<InputComp {form} {errors} name="birthDate" label="Date of birth" type="date" year />
+					<InputComp {form} {errors} name="birthDate" label={r.dateOfBirth} type="date" year />
 				{:else}
 					<InputComp
 						{form}
 						{errors}
 						name="ageYears"
-						label="Approximate age"
+						label={r.approxAge}
 						type="number"
 						min={0}
 						max={120}
-						description="Saved as an estimated birth date, and shown with a ~."
+						description={r.approxAgeHint}
 					/>
 				{/if}
 			</div>
 		</section>
 
 		<section class="flex flex-col gap-4">
-			<h3 class="text-lg font-semibold">How to reach them</h3>
+			<h3 class="text-lg font-semibold">{r.reach}</h3>
 			<div class={section}>
 				<InputComp
 					{form}
 					{errors}
 					name="phone"
-					label="Phone"
+					label={r.phone}
 					type="tel"
 					placeholder="0911 23 45 67"
 				/>
-				<InputComp {form} {errors} name="altPhone" label="Second phone" type="tel" />
+				<InputComp {form} {errors} name="altPhone" label={r.altPhone} type="tel" />
 			</div>
 		</section>
 
 		<section class="flex flex-col gap-4">
-			<h3 class="text-lg font-semibold">Health</h3>
+			<h3 class="text-lg font-semibold">{r.health}</h3>
 			<div class="flex flex-col gap-2">
-				<span class="text-sm font-medium">Allergies the patient reports</span>
+				<span class="text-sm font-medium">{r.allergiesReported}</span>
 				<!--
 					A getter/setter binding: the checkboxes hold ids, the form posts one comma-separated
 					string, and neither side needs an effect to keep the other in step.
@@ -184,28 +189,28 @@
 				/>
 				<input type="hidden" name="allergenIds" value={$form.allergenIds ?? ''} />
 				<p class="text-xs text-muted-foreground">
-					Recorded as severity “unknown”. A clinician grades each one on the chart.
+					{r.allergiesNote}
 				</p>
 			</div>
 			<InputComp
 				{form}
 				{errors}
 				name="medicalNotes"
-				label="Other medical notes"
+				label={r.otherNotes}
 				type="textarea"
 				rows={3}
-				placeholder="Anything that is not an allergy, condition or medicine"
+				placeholder={r.otherNotesPlaceholder}
 			/>
 		</section>
 
 		<section class="flex flex-col gap-4">
-			<h3 class="text-lg font-semibold">How they came, and who pays</h3>
+			<h3 class="text-lg font-semibold">{r.howCame}</h3>
 			<div class={section}>
 				<InputComp
 					{form}
 					{errors}
 					name="referralSourceId"
-					label="Heard of us through"
+					label={r.heardThrough}
 					type="combo"
 					items={data.referralList}
 				/>
@@ -213,26 +218,26 @@
 					{form}
 					{errors}
 					name="referredBy"
-					label="Referred by"
-					placeholder="Dr Tesfaye at Bethel, her sister Almaz…"
+					label={r.referredBy}
+					placeholder={r.referredByPlaceholder}
 				/>
 				<InputComp
 					{form}
 					{errors}
 					name="customerId"
-					label="Billed to"
+					label={r.billedTo}
 					type="combo"
 					items={data.customers}
-					description="An employer or insurer. Leave empty when the patient pays at the desk."
+					description={r.billedToHint}
 				/>
 			</div>
 		</section>
 
 		<Button type="submit" class="self-start">
 			{#if $delayed}
-				<LoadingBtn name="Registering" />
+				<LoadingBtn name={r.registering} />
 			{:else}
-				<UserPlus /> Register patient
+				<UserPlus /> {r.submit}
 			{/if}
 		</Button>
 	</form>

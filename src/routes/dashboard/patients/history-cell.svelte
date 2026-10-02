@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import { formatEthiopianDate } from '$lib/global.svelte';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
 
 	/**
 	 * Whether anyone has asked this patient the medical questions, and how long ago.
@@ -10,14 +11,17 @@
 	 * look alike to a dentist about to give an injection.
 	 */
 	let { state, takenAt }: { state: string; takenAt: string | null } = $props();
+
+	const t = useI18n();
+	const h = $derived(t.m.patients.history);
 </script>
 
 {#if state === 'never'}
-	<Badge variant="destructive">Never taken</Badge>
+	<Badge variant="destructive">{h.never}</Badge>
 {:else if state === 'stale'}
 	<Badge class="bg-amber-500 text-white">
-		{takenAt ? formatEthiopianDate(new Date(takenAt)) : 'Over a year old'}
+		{takenAt ? formatEthiopianDate(new Date(takenAt)) : h.stale}
 	</Badge>
 {:else}
-	<Badge variant="secondary">{takenAt ? formatEthiopianDate(new Date(takenAt)) : 'Current'}</Badge>
+	<Badge variant="secondary">{takenAt ? formatEthiopianDate(new Date(takenAt)) : h.current}</Badge>
 {/if}

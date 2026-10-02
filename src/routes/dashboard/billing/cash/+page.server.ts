@@ -7,6 +7,7 @@ import { requirePermission } from '$lib/server/permissions';
 import { WriteRefused } from '$lib/server/childCrud';
 import { closeDrawer, drawerState, openDrawer } from '$lib/server/cashDrawer';
 import { formatETB } from '$lib/global.svelte';
+import { messagesFor } from '$lib/i18n/messages';
 import { closeDrawerForm, openDrawerForm } from './schema';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -33,6 +34,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 /** The drawer's two writes share their refusal handling: the reason under its field, as a 400. */
 async function drawerWrite(
+	event: RequestEvent,
 	form: SuperValidated<Record<string, unknown>>,
 	write: () => Promise<string>
 ) {
@@ -46,7 +48,7 @@ async function drawerWrite(
 		console.error('[cash drawer] write failed:', err);
 		return message(
 			form,
-			{ type: 'error' as const, text: 'That could not be saved.' },
+			{ type: 'error' as const, text: messagesFor(event.locals.lang).billing.cash.notSaved },
 			{ status: 500 }
 		);
 	}
@@ -55,23 +57,23 @@ async function drawerWrite(
 export const actions: Actions = {
 	open: async (event: RequestEvent) => {
 		requirePermission(event.locals, DRAWER_PERMISSION);
+		const say = messagesFor(event.locals.lang).billing.cash;
 		const form = await superValidate(event.request, zod4(openDrawerForm));
-		if (!form.valid)
-			return message(form, { type: 'error', text: 'Check the form.' }, { status: 400 });
-		return drawerWrite(form, async () => {
+		if (!form.valid) return message(form, { type: 'error', text: say.checkForm }, { status: 400 });
+		return drawerWrite(event, form, async () => {
 			await db.transaction((tx) =>
 				openDrawer(tx, event, event.locals.branch.active, form.data.openingFloat)
 			);
-			return `Drawer open with ${formatETB(form.data.openingFloat)}.`;
+			return say.openedWith(formatETB(form.data.openingFloat));
 		});
 	},
 
 	close: async (event: RequestEvent) => {
 		requirePermission(event.locals, DRAWER_PERMISSION);
+		const say = messagesFor(event.locals.lang).billing.cash;
 		const form = await superValidate(event.request, zod4(closeDrawerForm));
-		if (!form.valid)
-			return message(form, { type: 'error', text: 'Check the form.' }, { status: 400 });
-		return drawerWrite(form, async () => {
+		if (!form.valid) return message(form, { type: 'error', text: say.checkForm }, { status: 400 });
+		return drawerWrite(event, form, async () => {
 			const variance = await db.transaction((tx) =>
 				closeDrawer(tx, event, event.locals.branch.active, {
 					counted: form.data.countedAmount,
@@ -80,8 +82,8 @@ export const actions: Actions = {
 				})
 			);
 			return variance === 0
-				? 'Drawer counted and closed. It balanced.'
-				: `Drawer closed ${variance > 0 ? 'over' : 'short'} by ${formatETB(Math.abs(variance))}.`;
+				? say.closedBalanced
+				: say.closedOff(variance > 0, formatETB(Math.abs(variance)));
 		});
 	}
 };

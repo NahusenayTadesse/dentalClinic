@@ -25,7 +25,11 @@ import { notDeleted } from '$lib/server/softDelete';
 import { isoDate } from '$lib/server/db/dialect';
 import { providerEmployee, providerName } from '$lib/server/appointments';
 import { clinicClock, clinicDate } from '$lib/clinicTime';
-import { availabilityWarnings, type ProviderAvailability } from '$lib/providerHours';
+import {
+	availabilityWarnings,
+	type HoursWords,
+	type ProviderAvailability
+} from '$lib/providerHours';
 
 /** The database or a transaction on it. */
 type Reader = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -110,7 +114,8 @@ export async function providerAvailability(
  */
 export async function outsideHours(
 	reader: Reader,
-	request: { providerId: number | null; startsAt: Date; durationMinutes: number }
+	request: { providerId: number | null; startsAt: Date; durationMinutes: number },
+	words?: HoursWords
 ): Promise<string[]> {
 	if (request.providerId === null) return [];
 	const day = clinicDate(request.startsAt);
@@ -118,6 +123,6 @@ export async function outsideHours(
 		request.providerId
 	);
 	return who
-		? availabilityWarnings(who, day, clinicClock(request.startsAt), request.durationMinutes)
+		? availabilityWarnings(who, day, clinicClock(request.startsAt), request.durationMinutes, words)
 		: [];
 }

@@ -5,6 +5,8 @@ import { appointmentType, patient, recall } from '$lib/server/db/schema';
 import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { notDeleted } from '$lib/server/softDelete';
 import { refuseUnless } from '$lib/server/childCrud';
+import { messagesFor } from '$lib/i18n/messages';
+import type { Lang } from '$lib/i18n/lang';
 import { branchFilter, type BranchContext } from '$lib/server/branchScope';
 import { livePatient, patientFullName } from '$lib/server/patients';
 import { addClinicMonths, clinicDate, clinicToday } from '$lib/clinicTime';
@@ -185,22 +187,24 @@ export async function dueRecalls(
 	}));
 }
 
-/** One recall, locked, checked to be live and still waiting. */
-async function openRecall(tx: Tx, recallId: number) {
+/** One recall, locked, checked to be live and still waiting; a refusal in `lang`. */
+async function openRecall(tx: Tx, recallId: number, lang: Lang) {
+	const say = messagesFor(lang).appointments.toast;
 	const [row] = await tx
 		.select()
 		.from(recall)
 		.where(and(eq(recall.id, recallId), notDeleted(recall)))
 		.limit(1)
 		.for('update');
-	refuseUnless(Boolean(row), 'That recall no longer exists.');
-	refuseUnless(row.status === 'due', 'That recall is no longer waiting — it was booked or closed.');
+	refuseUnless(Boolean(row), say.recallGone);
+	refuseUnless(row.status === 'due', say.recallNotWaiting);
 	return row;
 }
 
 /**
  * A call to a recalled patient: counted, dated, and noted. `declined` closes it — the patient said
- * no — and `stopped` ends it for the clinic's reasons: moved away, died, treated elsewhere.
+ * no — and `stopped` ends it for the clinic's reasons: moved away, died, treated elsewhere. A
+ * refusal is in `lang`, English unless the caller passes the viewer's.
  */
 export async function logRecallCall(
 	tx: Tx,
@@ -208,10 +212,15 @@ export async function logRecallCall(
 	recallId: number,
 	{
 		outcome,
-		note
-	}: { outcome: 'noAnswer' | 'callBack' | 'declined' | 'stopped'; note: string | null }
+		note,
+		lang = 'en'
+	}: {
+		outcome: 'noAnswer' | 'callBack' | 'declined' | 'stopped';
+		note: string | null;
+		lang?: Lang;
+	}
 ) {
-	const row = await openRecall(tx, recallId);
+	const row = await openRecall(tx, recallId, lang);
 	const counted = outcome === 'noAnswer' || outcome === 'callBack' || outcome === 'declined';
 	await tx
 		.update(recall)

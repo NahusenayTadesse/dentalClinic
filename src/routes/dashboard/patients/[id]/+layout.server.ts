@@ -15,6 +15,8 @@ import {
 } from '$lib/server/patients';
 import { BOOK_PERMISSION } from '$lib/server/appointmentActions';
 import { patientBalance } from '$lib/server/billing';
+import { messagesFor } from '$lib/i18n/messages';
+import { alertName } from '../labels.server';
 import type { LayoutServerLoad } from './$types';
 
 /**
@@ -123,7 +125,12 @@ export const load: LayoutServerLoad = async ({ params, locals, url }) => {
 			age: record.age === null ? null : Number(record.age),
 			historyState: historyState(record.historyTakenAt)
 		},
-		flags: flags.get(id) ?? { allergies: [], conditions: [], medicineAlerts: [] },
+		flags: (() => {
+			const flag = flags.get(id) ?? { allergies: [], conditions: [], medicineAlerts: [] };
+			// The header's badges in the viewer's language; the labels are `flagsFor`'s English.
+			const m = messagesFor(locals.lang);
+			return { ...flag, medicineAlerts: flag.medicineAlerts.map((label) => alertName(m, label)) };
+		})(),
 		balance,
 		mergedFrom: Number(url.searchParams.get('mergedFrom')) || null,
 		fromOtherBranch:

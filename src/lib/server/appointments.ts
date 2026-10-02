@@ -54,6 +54,7 @@ import { WriteRefused } from '$lib/server/childCrud';
 import { addMinutes, concatWith, storedInstant } from '$lib/server/db/dialect';
 import { patientFullName } from '$lib/server/patients';
 import { clinicClock, clinicDate } from '$lib/clinicTime';
+import { MESSAGES, type Messages } from '$lib/i18n/messages';
 
 /** The database or a transaction on it. */
 type Reader = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -80,6 +81,9 @@ export const providerName = concatWith(
 	providerEmployee.fatherName
 );
 
+/** How the refusals are worded, in the viewer's language (`$lib/i18n`); English by default. */
+export type BookingWords = Messages['appointments']['refusals'];
+
 export type BookingRequest = {
 	branchId: number;
 	startsAt: Date;
@@ -95,7 +99,11 @@ export type BookingRequest = {
  * be saved. Run it inside the write's transaction so two people cannot book the same chair in the
  * gap between the check and the insert — as close as this can get without a range constraint.
  */
-export async function bookingProblems(reader: Reader, request: BookingRequest): Promise<string[]> {
+export async function bookingProblems(
+	reader: Reader,
+	request: BookingRequest,
+	words: BookingWords = MESSAGES.en.appointments.refusals
+): Promise<string[]> {
 	const problems: string[] = [];
 	const start = request.startsAt;
 	const end = new Date(start.getTime() + request.durationMinutes * 60_000);
@@ -114,7 +122,7 @@ export async function bookingProblems(reader: Reader, request: BookingRequest): 
 			)
 		)
 		.limit(1);
-	if (closure) problems.push(`The clinic is closed that day (${closure.name}).`);
+	if (closure) problems.push(words.closed(closure.name));
 
 	if (request.operatoryId !== null) {
 		const [chair] = await reader
@@ -123,9 +131,8 @@ export async function bookingProblems(reader: Reader, request: BookingRequest): 
 			.where(and(eq(operatory.id, request.operatoryId), notDeleted(operatory)))
 			.limit(1);
 
-		if (!chair) problems.push('That chair no longer exists.');
-		else if (chair.branchId !== request.branchId)
-			problems.push(`${chair.name} is at another branch.`);
+		if (!chair) problems.push(words.chairGone);
+		else if (chair.branchId !== request.branchId) problems.push(words.chairElsewhere(chair.name));
 	}
 
 	/** The first live appointment on this chair (or for this dentist) that overlaps the slot. */
@@ -155,7 +162,7 @@ export async function bookingProblems(reader: Reader, request: BookingRequest): 
 
 	if (request.operatoryId !== null) {
 		const [clash] = await overlapping('operatoryId', request.operatoryId);
-		if (clash) problems.push(`That chair is already booked for ${clash.patient} at that time.`);
+		if (clash) problems.push(words.chairBooked(clash.patient));
 	}
 
 	if (request.providerId !== null) {
@@ -165,7 +172,7 @@ export async function bookingProblems(reader: Reader, request: BookingRequest): 
 		 * branch, and naming its patient would tell this desk who is being seen there (§15).
 		 */
 		if (clash) {
-			problems.push(`That dentist already has an appointment at ${clinicClock(clash.startsAt)}.`);
+			problems.push(words.dentistBusy(clinicClock(clash.startsAt)));
 		}
 	}
 

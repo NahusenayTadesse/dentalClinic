@@ -11,6 +11,8 @@ import { allergens, customerList, referralSources } from '$lib/server/fastData';
 import { birthDateFrom, possibleDuplicates, type PossibleDuplicate } from '$lib/server/patients';
 import type { FormMessage } from '@nahu/admin-kit/forms/createForm.js';
 import { registerPatient } from '../schema';
+import { messagesFor } from '$lib/i18n/messages';
+import { duplicateReason } from '../labels.server';
 import type { Actions, PageServerLoad } from './$types';
 
 /**
@@ -42,17 +44,15 @@ export const load: PageServerLoad = async () => {
 export const actions: Actions = {
 	default: async (event) => {
 		const { request, locals, cookies } = event;
+		const m = messagesFor(locals.lang);
+		const toast = m.patients.toast;
 		const form = await superValidate<typeof registerPatient._output, RegisterMessage>(
 			request,
 			zod4(registerPatient)
 		);
 
 		if (!form.valid) {
-			return message(
-				form,
-				{ type: 'error', text: 'Please check the form for errors' },
-				{ status: 400 }
-			);
+			return message(form, { type: 'error', text: toast.checkForm }, { status: 400 });
 		}
 
 		const data = form.data;
@@ -64,8 +64,8 @@ export const actions: Actions = {
 					form,
 					{
 						type: 'error',
-						text: `This may be someone already registered — ${duplicates.length === 1 ? 'one patient matches' : `${duplicates.length} patients match`}.`,
-						duplicates
+						text: toast.mayBeDuplicate(duplicates.length),
+						duplicates: duplicates.map((d) => ({ ...d, reason: duplicateReason(m, d.reason) }))
 					},
 					{ status: 409 }
 				);
@@ -132,26 +132,18 @@ export const actions: Actions = {
 			});
 		} catch (err: unknown) {
 			if (isDuplicateKey(err)) {
-				setError(form, 'fileNo', 'Another patient already has this file number.');
-				return message(
-					form,
-					{ type: 'error', text: 'That file number is already in use.' },
-					{ status: 400 }
-				);
+				setError(form, 'fileNo', toast.fileNoTaken);
+				return message(form, { type: 'error', text: toast.fileNoInUse }, { status: 400 });
 			}
 
 			// Loud in the log, quiet to the client (§9).
 			console.error('[patients] register failed:', err);
-			return message(
-				form,
-				{ type: 'error', text: 'Could not register the patient. Please try again.' },
-				{ status: 500 }
-			);
+			return message(form, { type: 'error', text: toast.registerFailed }, { status: 500 });
 		}
 
 		redirect(
 			`/dashboard/patients/${id}`,
-			{ type: 'success', message: `${data.name} ${data.fatherName} registered.` },
+			{ type: 'success', message: toast.registered(`${data.name} ${data.fatherName}`) },
 			cookies
 		);
 	}

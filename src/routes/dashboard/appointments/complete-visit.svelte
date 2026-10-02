@@ -8,6 +8,7 @@
 	import { completeVisit, type CompleteVisit } from '$lib/forms/appointmentSchemas';
 	import { formatETB } from '$lib/global.svelte';
 	import ServiceChecklist from '$lib/components/ServiceChecklist.svelte';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
 	import type { DayAppointment } from './types';
 
 	/**
@@ -56,12 +57,15 @@
 		: [];
 	$form.serviceIds = chart ? usual.map((u) => u.serviceId) : [];
 
+	const t = useI18n();
+	const cv = $derived(t.m.appointments.complete);
+
 	/** Where planned work is: a span, a tooth and its surfaces, or the whole mouth. */
 	const where = (p: (typeof planned)[number]) =>
 		p.toothRange
 			? p.toothRange.replaceAll(',', ', ')
 			: p.toothId === null
-				? 'whole mouth'
+				? cv.wholeMouth
 				: `${p.toothId}${p.surfaces ? ` ${p.surfaces}` : ''}`;
 </script>
 
@@ -75,13 +79,12 @@
 	<Errors allErrors={$allErrors} />
 	<input type="hidden" name="id" value={a.id} />
 
-	<p class="text-sm font-semibold">Work done at this visit</p>
+	<p class="text-sm font-semibold">{cv.heading}</p>
 
 	{#if planned.length || usual.length}
 		{#if !canChart}
 			<p class="text-sm text-muted-foreground">
-				Recording the work needs clinical access. The visit can still be completed; the dentist
-				charts the work.
+				{cv.noClinical}
 			</p>
 		{/if}
 
@@ -89,16 +92,14 @@
 			<ServiceChecklist
 				{form}
 				services={usual}
-				legend="Usual for {a.type ?? 'this visit'}"
+				legend={cv.usualFor(a.type ?? cv.thisVisit)}
 				disabled={!canChart}
 			/>
 		{/if}
 
 		{#if planned.length}
 			<fieldset class="flex flex-col gap-1" disabled={!canChart}>
-				<legend class="mb-1 text-xs text-muted-foreground uppercase"
-					>Planned for this patient</legend
-				>
+				<legend class="mb-1 text-xs text-muted-foreground uppercase">{cv.planned}</legend>
 				{#each planned as p (p.id)}
 					<label class="flex items-center gap-2 text-sm">
 						<input
@@ -108,7 +109,7 @@
 							bind:group={$form.procedureIds}
 							class="size-4 accent-primary"
 						/>
-						{p.service ?? 'Retired service'}
+						{p.service ?? cv.retiredService}
 						<span class="text-muted-foreground">{where(p)}</span>
 						{#if p.fee !== null}<span class="ml-auto text-muted-foreground">{formatETB(p.fee)}</span
 							>{/if}
@@ -118,11 +119,12 @@
 		{/if}
 	{:else}
 		<p class="text-sm text-muted-foreground">
-			Nothing is planned for this patient. Work done on a tooth is charted on the dental chart.
+			{cv.nothingPlanned}
 		</p>
 	{/if}
 
 	<Button type="submit" size="sm" form="complete-{a.id}" disabled={$delayed}>
-		{#if $delayed}<LoadingBtn name="Completing" />{:else}<CheckCheck class="size-4" /> Complete visit{/if}
+		{#if $delayed}<LoadingBtn name={cv.completing} />{:else}<CheckCheck class="size-4" />
+			{cv.submit}{/if}
 	</Button>
 </form>

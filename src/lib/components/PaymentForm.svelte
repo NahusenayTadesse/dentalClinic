@@ -9,6 +9,7 @@
 	import { createForm } from '@nahu/admin-kit/forms/createForm.js';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 	import { payment } from '$lib/forms/payment';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
 
 	/**
 	 * Taking a payment: an amount against each bill it settles, and how it was paid. Used on a
@@ -40,6 +41,9 @@
 		/** Called once a payment has been recorded — a dialog closes itself with it. */
 		onpaid?: () => void;
 	} = $props();
+
+	const t = useI18n();
+	const w = $derived(t.m.billing.pay);
 
 	// svelte-ignore state_referenced_locally
 	const { form, errors, enhance, delayed, allErrors } = createForm(data, payment, {
@@ -83,7 +87,7 @@
 	const methodItems = $derived(
 		methods.map((m) => ({
 			value: String(m.value),
-			name: m.kind === 'cash' ? `${m.name} (cash)` : m.name
+			name: m.kind === 'cash' ? w.cash(m.name) : m.name
 		}))
 	);
 </script>
@@ -93,7 +97,7 @@
 
 	{#if bills.length > 1}
 		<Button type="button" variant="outline" size="sm" class="self-start" onclick={payEverything}>
-			Pay everything owed ({formatETB(bills.reduce((s, b) => s + b.owed, 0))})
+			{w.payEverything(formatETB(bills.reduce((s, b) => s + b.owed, 0)))}
 		</Button>
 	{/if}
 
@@ -102,9 +106,9 @@
 			{@const allocated = $form.allocations.find((a) => a.invoiceId === bill.id)}
 			<li class="flex flex-wrap items-center gap-3 px-3 py-2 text-sm">
 				<span class="flex-1">
-					{bill.number ?? 'Bill'}
+					{bill.number ?? w.bill}
 					<span class="text-muted-foreground">
-						· {formatEthiopianDate(new Date(bill.issuedOn))} · owes {formatETB(bill.owed)}
+						· {formatEthiopianDate(new Date(bill.issuedOn))} · {w.owes(formatETB(bill.owed))}
 					</span>
 				</span>
 				<Input
@@ -113,19 +117,21 @@
 					step="0.01"
 					max={bill.owed}
 					class="w-32 text-right"
-					aria-label="Amount toward {bill.number ?? 'this bill'}"
+					aria-label={w.amountToward(bill.number ?? w.thisBill)}
 					value={allocated?.amount || ''}
 					oninput={(e) => setAmount(bill.id, e.currentTarget.value)}
 				/>
 				{#if bills.length === 1}
-					<Button type="button" variant="ghost" size="sm" onclick={payEverything}>All of it</Button>
+					<Button type="button" variant="ghost" size="sm" onclick={payEverything}
+						>{w.allOfIt}</Button
+					>
 				{/if}
 			</li>
 		{/each}
 	</ul>
 
 	<InputComp
-		label="Paid by"
+		label={w.paidBy}
 		name="paymentMethodId"
 		type="select"
 		{form}
@@ -134,26 +140,29 @@
 	/>
 	{#if chosen?.kind === 'cash' && !drawerOpen}
 		<p class="rounded-md border border-amber-500 p-3 text-sm" role="alert">
-			The cash drawer is not open at this branch, so cash cannot be taken. Open it under
-			<strong>Billing → Cash drawer</strong> first.
+			{w.drawerShut}
+			<strong>{w.drawerPlace}</strong>
+			{w.drawerShutEnd}
 		</p>
 	{/if}
 	<InputComp
-		label="Reference"
+		label={w.reference}
 		name="reference"
 		{form}
 		{errors}
 		required={false}
-		placeholder="Bank or mobile-money reference, if there is one"
+		placeholder={w.referencePlaceholder}
 	/>
 
 	<div class="flex items-center justify-between gap-3">
-		<p class="text-sm">Total <span class="font-semibold tabular-nums">{formatETB(total)}</span></p>
+		<p class="text-sm">
+			{w.total} <span class="font-semibold tabular-nums">{formatETB(total)}</span>
+		</p>
 		<Button type="submit" disabled={$delayed || total <= 0}>
 			{#if $delayed}
-				<LoadingBtn name="Recording" />
+				<LoadingBtn name={w.recording} />
 			{:else}
-				<Banknote class="size-4" /> Record payment
+				<Banknote class="size-4" /> {w.record}
 			{/if}
 		</Button>
 	</div>

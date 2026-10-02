@@ -11,6 +11,7 @@ import {
 } from '$lib/server/recalls';
 import { addClinicDays, clinicToday } from '$lib/clinicTime';
 import { logCall } from './schema';
+import { messagesFor } from '$lib/i18n/messages';
 import type { Actions, PageServerLoad } from './$types';
 
 /** How far ahead the list looks, in days. The desk rings the overdue first and books ahead. */
@@ -46,15 +47,17 @@ export const actions: Actions = {
 			logCall,
 			async (data) => data.recallId,
 			async (tx, { ownerId, data }) => {
+				const say = messagesFor(event.locals.lang).appointments.toast;
 				await logRecallCall(tx, event.locals.user?.id, ownerId, {
 					outcome: data.outcome,
-					note: data.note ?? null
+					note: data.note ?? null,
+					lang: event.locals.lang
 				});
 				return {
-					noAnswer: 'Call logged — no answer.',
-					callBack: 'Call logged. Ring again when they asked.',
-					declined: 'Marked declined. They will not be rung again for this recall.',
-					stopped: 'Recall stopped.'
+					noAnswer: say.callNoAnswer,
+					callBack: say.callBack,
+					declined: say.callDeclined,
+					stopped: say.callStopped
 				}[data.outcome];
 			}
 		)

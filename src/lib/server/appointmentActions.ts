@@ -31,13 +31,13 @@ import { recordVisitWork, releaseBookedWork } from '$lib/server/procedures';
 import { reservePlanWork } from '$lib/server/treatmentPlans';
 import { recallAfterVisit, recallOnBooking, recallReleased } from '$lib/server/recalls';
 import { formatEthiopianDate } from '$lib/global.svelte';
+import { messagesFor } from '$lib/i18n/messages';
 import { branchFilter } from '$lib/server/branchScope';
 import { notDeleted } from '$lib/server/softDelete';
 import { livePatient } from '$lib/server/patients';
 import { bookingProblems, sanePeriod } from '$lib/server/appointments';
 import { outsideHours } from '$lib/server/providerHours';
 import {
-	STATUS_LABEL,
 	canMove,
 	isAppointmentStatus,
 	isMovable,
@@ -55,11 +55,21 @@ import {
 /** The permission every appointment write needs. */
 export const BOOK_PERMISSION = 'appointments.book';
 
-const invalid = { type: 'error' as const, text: 'Please check the form for errors' };
-const failed = { type: 'error' as const, text: 'Could not save. Please try again.' };
-
-/** What a refusal over the dentist's hours tells the person booking to do about it. */
-const OVERRIDE_HINT = 'Tick “Book anyway” to keep this time.';
+/**
+ * What the actions answer, in the viewer's language: the sentences, and the two replies every
+ * action shares for a bad form and a failed save.
+ */
+function answers(event: RequestEvent) {
+	const say = messagesFor(event.locals.lang).appointments.toast;
+	return {
+		say,
+		refusals: messagesFor(event.locals.lang).appointments.refusals,
+		hours: messagesFor(event.locals.lang).appointments.hours,
+		status: messagesFor(event.locals.lang).appointments.status,
+		invalid: { type: 'error' as const, text: say.invalid },
+		failed: { type: 'error' as const, text: say.failed }
+	};
+}
 
 /** The appointment `id` names, if it is at the working branch and not deleted. */
 async function findHere(
@@ -116,6 +126,7 @@ function stampsFor(
 export const appointmentActions = {
 	bookAppointment: async (event: RequestEvent) => {
 		requirePermission(event.locals, BOOK_PERMISSION);
+		const { say, refusals, hours: hoursWords, invalid, failed } = answers(event);
 		const form = await superValidate(event.request, zod4(bookAppointment));
 		if (!form.valid) return message(form, invalid, { status: 400 });
 
@@ -125,7 +136,7 @@ export const appointmentActions = {
 				form,
 				{
 					type: 'error',
-					text: 'Choose a branch in the top bar first — an appointment is at one branch.'
+					text: say.chooseBranch
 				},
 				{ status: 400 }
 			);
@@ -138,7 +149,7 @@ export const appointmentActions = {
 		 * the date — the appointment saved, just on the wrong day.
 		 */
 		if (!data.walkIn && (!data.date || !data.time)) {
-			return message(form, { type: 'error', text: 'Pick a date and a time.' }, { status: 400 });
+			return message(form, { type: 'error', text: say.pickDateTime }, { status: 400 });
 		}
 		const startsAt =
 			data.walkIn || !data.date || !data.time ? nowRounded() : fromClinic(data.date, data.time);
@@ -153,24 +164,32 @@ export const appointmentActions = {
 					.limit(1);
 				if (!owner)
 					return {
-						problems: ['That patient no longer exists, or was merged into another record.']
+						problems: [say.patientGone]
 					};
 
-				const problems = await bookingProblems(tx, {
-					branchId,
-					startsAt,
-					durationMinutes,
-					operatoryId: data.operatoryId ?? null,
-					providerId: data.providerId ?? null
-				});
+				const problems = await bookingProblems(
+					tx,
+					{
+						branchId,
+						startsAt,
+						durationMinutes,
+						operatoryId: data.operatoryId ?? null,
+						providerId: data.providerId ?? null
+					},
+					refusals
+				);
 				if (problems.length) return { problems };
-				const hours = await outsideHours(tx, {
-					providerId: data.providerId ?? null,
-					startsAt,
-					durationMinutes
-				});
+				const hours = await outsideHours(
+					tx,
+					{
+						providerId: data.providerId ?? null,
+						startsAt,
+						durationMinutes
+					},
+					hoursWords
+				);
 				if (hours.length && !data.hoursAcknowledged) {
-					return { problems: [...hours, OVERRIDE_HINT] };
+					return { problems: [...hours, say.overrideHint] };
 				}
 
 				const now = new Date();
@@ -223,13 +242,11 @@ export const appointmentActions = {
 			if (result.problems.length) {
 				return message(form, { type: 'error', text: result.problems.join(' ') }, { status: 409 });
 			}
-			const booked = data.walkIn ? 'Walk-in added and marked arrived' : 'Appointment booked';
+			const booked = data.walkIn ? say.walkInAdded : say.booked;
 			const reserved = 'reserved' in result ? result.reserved : 0;
 			return message(form, {
 				type: 'success',
-				text: reserved
-					? `${booked} · ${reserved} planned ${reserved === 1 ? 'procedure' : 'procedures'} booked for it`
-					: booked
+				text: reserved ? `${booked}${say.reserved(reserved)}` : booked
 			});
 		} catch (err: unknown) {
 			console.error('[appointments] book failed:', err);
@@ -239,6 +256,7 @@ export const appointmentActions = {
 
 	changeAppointmentStatus: async (event: RequestEvent) => {
 		requirePermission(event.locals, BOOK_PERMISSION);
+		const { say, status, invalid, failed } = answers(event);
 		const form = await superValidate(event.request, zod4(changeStatus));
 		if (!form.valid) return message(form, invalid, { status: 400 });
 
@@ -275,25 +293,21 @@ export const appointmentActions = {
 			});
 
 			if (outcome === 'missing') {
-				return message(
-					form,
-					{ type: 'error', text: 'That appointment no longer exists here.' },
-					{ status: 404 }
-				);
+				return message(form, { type: 'error', text: say.missing }, { status: 404 });
 			}
 			if (outcome === 'refused') {
 				return message(
 					form,
 					{
 						type: 'error',
-						text: `It cannot be marked “${STATUS_LABEL[to].label}” from where it is now.`
+						text: say.cannotMark(status[to])
 					},
 					{ status: 409 }
 				);
 			}
 			return message(form, {
 				type: 'success',
-				text: `Marked ${STATUS_LABEL[to].label.toLowerCase()}`
+				text: say.marked(status[to])
 			});
 		} catch (err: unknown) {
 			console.error('[appointments] status failed:', err);
@@ -311,6 +325,7 @@ export const appointmentActions = {
 	 */
 	completeVisit: async (event: RequestEvent) => {
 		requirePermission(event.locals, BOOK_PERMISSION);
+		const { say, invalid, failed } = answers(event);
 		const form = await superValidate(event.request, zod4(completeVisit));
 		if (!form.valid) return message(form, invalid, { status: 400 });
 
@@ -323,7 +338,7 @@ export const appointmentActions = {
 				form,
 				{
 					type: 'error',
-					text: 'Recording the work needs clinical access. Complete the visit without it, or ask the dentist.'
+					text: say.needsClinical
 				},
 				{ status: 403 }
 			);
@@ -357,27 +372,16 @@ export const appointmentActions = {
 			});
 
 			if (outcome.kind === 'missing') {
-				return message(
-					form,
-					{ type: 'error', text: 'That appointment no longer exists here.' },
-					{ status: 404 }
-				);
+				return message(form, { type: 'error', text: say.missing }, { status: 404 });
 			}
 			if (outcome.kind === 'refused') {
-				return message(
-					form,
-					{ type: 'error', text: 'Only a visit that has started can be completed.' },
-					{ status: 409 }
-				);
+				return message(form, { type: 'error', text: say.onlyStarted }, { status: 409 });
 			}
-			const work =
-				outcome.recorded === 0
-					? ''
-					: ` · ${outcome.recorded} ${outcome.recorded === 1 ? 'procedure' : 'procedures'} recorded`;
+			const work = outcome.recorded === 0 ? '' : say.recorded(outcome.recorded);
 			const recall = outcome.nextRecall
-				? ` · next due ${formatEthiopianDate(new Date(outcome.nextRecall))}`
+				? say.nextDue(formatEthiopianDate(new Date(outcome.nextRecall)))
 				: '';
-			return message(form, { type: 'success', text: `Visit completed${work}${recall}` });
+			return message(form, { type: 'success', text: `${say.visitCompleted}${work}${recall}` });
 		} catch (err: unknown) {
 			// Thrown inside the transaction, so the completion rolled back with the work.
 			if (err instanceof WriteRefused) {
@@ -390,6 +394,7 @@ export const appointmentActions = {
 
 	cancelAppointment: async (event: RequestEvent) => {
 		requirePermission(event.locals, BOOK_PERMISSION);
+		const { say, invalid, failed } = answers(event);
 		const form = await superValidate(event.request, zod4(cancelAppointment));
 		if (!form.valid) return message(form, invalid, { status: 400 });
 
@@ -422,20 +427,12 @@ export const appointmentActions = {
 			});
 
 			if (outcome === 'missing') {
-				return message(
-					form,
-					{ type: 'error', text: 'That appointment no longer exists here.' },
-					{ status: 404 }
-				);
+				return message(form, { type: 'error', text: say.missing }, { status: 404 });
 			}
 			if (outcome === 'refused') {
-				return message(
-					form,
-					{ type: 'error', text: 'A visit that has started cannot be cancelled.' },
-					{ status: 409 }
-				);
+				return message(form, { type: 'error', text: say.startedCannotCancel }, { status: 409 });
 			}
-			return message(form, { type: 'success', text: 'Appointment cancelled' });
+			return message(form, { type: 'success', text: say.cancelled });
 		} catch (err: unknown) {
 			console.error('[appointments] cancel failed:', err);
 			return message(form, failed, { status: 500 });
@@ -444,6 +441,7 @@ export const appointmentActions = {
 
 	moveAppointment: async (event: RequestEvent) => {
 		requirePermission(event.locals, BOOK_PERMISSION);
+		const { say, refusals, hours: hoursWords, invalid, failed } = answers(event);
 		const form = await superValidate(event.request, zod4(moveAppointment));
 		if (!form.valid) return message(form, invalid, { status: 400 });
 
@@ -454,34 +452,39 @@ export const appointmentActions = {
 		try {
 			const result = await db.transaction(async (tx) => {
 				const row = await findHere(tx, event, data.id);
-				if (!row)
-					return { status: 404 as const, problems: ['That appointment no longer exists here.'] };
+				if (!row) return { status: 404 as const, problems: [say.missing] };
 				if (!isAppointmentStatus(row.status) || !isMovable(row.status)) {
 					return {
 						status: 409 as const,
-						problems: [
-							'Only an appointment that has not started can be moved. Book a new one instead.'
-						]
+						problems: [say.onlyNotStarted]
 					};
 				}
 
-				const problems = await bookingProblems(tx, {
-					// Moved within its own branch: a move to another branch is a new booking there.
-					branchId: row.branchId ?? event.locals.branch.active ?? 0,
-					startsAt,
-					durationMinutes,
-					operatoryId: data.operatoryId ?? null,
-					providerId: data.providerId ?? null,
-					excludeId: row.id
-				});
+				const problems = await bookingProblems(
+					tx,
+					{
+						// Moved within its own branch: a move to another branch is a new booking there.
+						branchId: row.branchId ?? event.locals.branch.active ?? 0,
+						startsAt,
+						durationMinutes,
+						operatoryId: data.operatoryId ?? null,
+						providerId: data.providerId ?? null,
+						excludeId: row.id
+					},
+					refusals
+				);
 				if (problems.length) return { status: 409 as const, problems };
-				const hours = await outsideHours(tx, {
-					providerId: data.providerId ?? null,
-					startsAt,
-					durationMinutes
-				});
+				const hours = await outsideHours(
+					tx,
+					{
+						providerId: data.providerId ?? null,
+						startsAt,
+						durationMinutes
+					},
+					hoursWords
+				);
 				if (hours.length && !data.hoursAcknowledged) {
-					return { status: 409 as const, problems: [...hours, OVERRIDE_HINT] };
+					return { status: 409 as const, problems: [...hours, say.overrideHint] };
 				}
 
 				const values = {
@@ -511,7 +514,7 @@ export const appointmentActions = {
 					{ status: result.status }
 				);
 			}
-			return message(form, { type: 'success', text: 'Appointment moved' });
+			return message(form, { type: 'success', text: say.moved });
 		} catch (err: unknown) {
 			console.error('[appointments] move failed:', err);
 			return message(form, failed, { status: 500 });

@@ -23,6 +23,8 @@ import { db } from '$lib/server/db';
 import { payment } from '$lib/forms/payment';
 import { customerList } from '$lib/server/fastData';
 import { canPay } from '$lib/invoiceStatus';
+import { messagesFor } from '$lib/i18n/messages';
+import type { Lang } from '$lib/i18n/lang';
 import { BILLING_PERMISSION, billingAction, payAction } from '../billingAction';
 import {
 	addCharge as addChargeForm,
@@ -39,9 +41,9 @@ import {
 import type { Actions, PageServerLoad } from './$types';
 
 /** The bill id from the path, or a 404 — never a query for `NaN`. */
-function invoiceIdParam(raw: string): number {
+function invoiceIdParam(raw: string, lang: Lang): number {
 	const id = Number(raw);
-	if (!Number.isInteger(id) || id <= 0) error(404, 'Bill not found');
+	if (!Number.isInteger(id) || id <= 0) error(404, messagesFor(lang).billing.bill.notFound);
 	return id;
 }
 
@@ -53,10 +55,10 @@ function invoiceIdParam(raw: string): number {
 export const load: PageServerLoad = async (event) => {
 	requirePermission(event.locals, BILLING_PERMISSION);
 	const { patient } = await event.parent();
-	const invoiceId = invoiceIdParam(event.params.invoiceId);
+	const invoiceId = invoiceIdParam(event.params.invoiceId, event.locals.lang);
 
 	const bill = await invoiceDetail(patient.id, invoiceId);
-	if (!bill) error(404, 'That bill is not on this patient’s record.');
+	if (!bill) error(404, messagesFor(event.locals.lang).billing.bill.notThisPatient);
 	await logPatientView(patient.id, 'invoice', event, { recordId: invoiceId });
 
 	const draft = bill.status === 'draft';
@@ -122,44 +124,48 @@ export const load: PageServerLoad = async (event) => {
 	};
 };
 
-const billId = (event: { params: { invoiceId: string } }) => invoiceIdParam(event.params.invoiceId);
+const billId = (event: { params: { invoiceId: string }; locals: { lang: Lang } }) =>
+	invoiceIdParam(event.params.invoiceId, event.locals.lang);
+
+/** The bill page's replies, in the language of the request. */
+const words = (event: { locals: { lang: Lang } }) => messagesFor(event.locals.lang).billing.bill;
 
 export const actions: Actions = {
 	addWork: (event) =>
 		billingAction(event, addWork, async (tx, { patientId, data }) => {
 			await addWorkToInvoice(tx, event, patientId, billId(event), data.procedureIds);
-			return 'Added to the bill.';
+			return words(event).added;
 		}),
 
 	addCharge: (event) =>
 		billingAction(event, addChargeForm, async (tx, { patientId, data }) => {
 			await addCharge(tx, event, patientId, billId(event), data);
-			return 'Charge added.';
+			return words(event).chargeAdded;
 		}),
 
 	editLine: (event) =>
 		billingAction(event, editLine, async (tx, { patientId, data }) => {
 			await updateInvoiceLine(tx, event, patientId, billId(event), data);
-			return 'Line updated.';
+			return words(event).lineUpdated;
 		}),
 
 	removeLine: (event) =>
 		billingAction(event, removeLine, async (tx, { patientId, data }) => {
 			await removeInvoiceLine(tx, event, patientId, billId(event), data.lineId);
-			return 'Line removed.';
+			return words(event).lineRemoved;
 		}),
 
 	payer: (event) =>
 		billingAction(event, payer, async (tx, { patientId, data }) => {
 			const customerId = data.customerId ? Number(data.customerId) : null;
 			await setPayer(tx, event, patientId, billId(event), customerId);
-			return customerId ? 'The bill goes to the payer.' : 'The patient pays this bill.';
+			return customerId ? words(event).toPayer : words(event).toPatient;
 		}),
 
 	discount: (event) =>
 		billingAction(event, discount, async (tx, { patientId, data }) => {
 			await setDiscount(tx, event, patientId, billId(event), data.discount);
-			return data.discount > 0 ? 'Discount set.' : 'Discount removed.';
+			return data.discount > 0 ? words(event).discountSet : words(event).discountRemoved;
 		}),
 
 	issue: (event) =>
@@ -167,15 +173,13 @@ export const actions: Actions = {
 			const { needsManager } = await issueInvoice(tx, event, patientId, billId(event), {
 				dueOn: data.dueOn || null
 			});
-			return needsManager
-				? 'Issued. Its discount is over the limit, so a manager must approve it before it can be paid.'
-				: 'Issued.';
+			return needsManager ? words(event).issuedNeedsManager : words(event).issuedDone;
 		}),
 
 	requestVoid: (event) =>
 		billingAction(event, voidRequest, async (tx, { patientId, data }) => {
 			await requestVoid(tx, event, patientId, billId(event), data.reason);
-			return 'Void requested. A manager approves it in Approvals → Discounts and Voids.';
+			return words(event).voidRequested;
 		}),
 
 	discard: (event) =>
@@ -183,7 +187,7 @@ export const actions: Actions = {
 			await discardInvoice(tx, event, patientId, billId(event));
 			return {
 				redirect: `/dashboard/patients/${patientId}/billing`,
-				text: 'Draft thrown away. Its work is unbilled again.'
+				text: words(event).discarded
 			};
 		}),
 
@@ -200,6 +204,6 @@ export const actions: Actions = {
 				reason: data.reason,
 				branchId: event.locals.branch.active
 			});
-			return 'Refund requested. A manager approves it in Approvals → Refunds before the money goes back.';
+			return words(event).refundRequested;
 		})
 };

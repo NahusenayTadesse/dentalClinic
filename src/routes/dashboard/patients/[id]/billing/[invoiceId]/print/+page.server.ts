@@ -7,6 +7,7 @@ import { requirePermission } from '$lib/server/permissions';
 import { livePatient, livePatientId, logPatientView, patientFullName } from '$lib/server/patients';
 import { invoiceDetail } from '$lib/server/billing';
 import { clinicToday } from '$lib/clinicTime';
+import { messagesFor } from '$lib/i18n/messages';
 import { BILLING_PERMISSION } from '../../billingAction';
 import type { PageServerLoad } from './$types';
 
@@ -20,13 +21,14 @@ import type { PageServerLoad } from './$types';
  */
 export const load: PageServerLoad = async (event) => {
 	requirePermission(event.locals, BILLING_PERMISSION);
+	const say = messagesFor(event.locals.lang).billing;
 	const patientId = await livePatientId(event);
 	const invoiceId = Number(event.params.invoiceId);
-	if (!Number.isInteger(invoiceId) || invoiceId <= 0) error(404, 'Bill not found');
+	if (!Number.isInteger(invoiceId) || invoiceId <= 0) error(404, say.bill.notFound);
 
 	const bill = await invoiceDetail(patientId, invoiceId);
-	if (!bill) error(404, 'That bill is not on this patient’s record.');
-	if (bill.status === 'draft') error(409, 'A draft bill is issued before it is printed.');
+	if (!bill) error(404, say.bill.notThisPatient);
+	if (bill.status === 'draft') error(409, say.print.draftNotPrinted);
 
 	const [[person], [place], [payer]] = await Promise.all([
 		db
@@ -51,7 +53,7 @@ export const load: PageServerLoad = async (event) => {
 					.where(eq(customers.id, bill.customerId))
 					.limit(1)
 	]);
-	if (!person) error(404, 'Patient not found');
+	if (!person) error(404, say.print.patientNotFound);
 
 	await logPatientView(patientId, 'invoice', event, { recordId: invoiceId, action: 'print' });
 

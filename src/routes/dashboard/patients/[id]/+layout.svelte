@@ -5,6 +5,7 @@
 	import { page } from '$app/state';
 	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
 
 	/**
 	 * What stays on screen whichever tab of the chart is open: who the patient is, the alerts to
@@ -15,10 +16,14 @@
 	 */
 	let { data, children } = $props();
 
+	const t = useI18n();
+	const pm = $derived(t.m.patients);
+	const c = $derived(pm.chart);
+
 	const p = $derived(data.patient);
 
 	const ageText = $derived(
-		p.age === null ? 'Age not recorded' : `${p.birthDateEstimated ? 'About ' : ''}${p.age} years`
+		p.age === null ? c.ageNotRecorded : c.ageYears(p.age, p.birthDateEstimated)
 	);
 
 	const severeAllergies = $derived(data.flags.allergies.filter((a) => a.severity === 'severe'));
@@ -26,18 +31,18 @@
 
 	const base = $derived(`/dashboard/patients/${p.id}`);
 	const tabs = $derived([
-		{ label: 'Overview', href: base },
-		{ label: 'Dental chart', href: `${base}/chart` },
-		{ label: 'Treatment plans', href: `${base}/plans` },
-		{ label: 'Notes', href: `${base}/notes` },
-		{ label: 'Prescriptions', href: `${base}/prescriptions` },
-		{ label: 'Files', href: `${base}/files` },
-		{ label: 'Consents', href: `${base}/consents` },
-		{ label: 'Lab work', href: `${base}/lab` },
+		{ label: c.tabs.overview, href: base },
+		{ label: c.tabs.chart, href: `${base}/chart` },
+		{ label: c.tabs.plans, href: `${base}/plans` },
+		{ label: c.tabs.notes, href: `${base}/notes` },
+		{ label: c.tabs.prescriptions, href: `${base}/prescriptions` },
+		{ label: c.tabs.files, href: `${base}/files` },
+		{ label: c.tabs.consents, href: `${base}/consents` },
+		{ label: c.tabs.lab, href: `${base}/lab` },
 		// Money is not every chart reader's to see: the tab is there only for `billing.invoice`.
-		...(data.can.bill ? [{ label: 'Billing', href: `${base}/billing` }] : []),
+		...(data.can.bill ? [{ label: c.tabs.billing, href: `${base}/billing` }] : []),
 		// Who has looked is the audit trail's question, not the chart's: `audit_logs.view` only.
-		...(data.can.seeViews ? [{ label: 'Access log', href: `${base}/access` }] : [])
+		...(data.can.seeViews ? [{ label: c.tabs.access, href: `${base}/access` }] : [])
 	]);
 
 	/** The overview is current on its own path only; every other tab also on the pages below it. */
@@ -52,12 +57,12 @@
 	<header class="flex flex-col gap-2">
 		<div class="flex flex-wrap items-center gap-3">
 			<h1 class="text-3xl font-extrabold tracking-tight">{p.fullName}</h1>
-			<Badge variant="secondary">{p.fileNo ? `File ${p.fileNo}` : 'No file number'}</Badge>
-			<Badge variant="outline">{p.sex === 'female' ? 'Female' : 'Male'} · {ageText}</Badge>
-			{#if p.bloodType}<Badge variant="outline">Blood {p.bloodType}</Badge>{/if}
+			<Badge variant="secondary">{p.fileNo ? pm.file(p.fileNo) : pm.noFileNumber}</Badge>
+			<Badge variant="outline">{pm.sex[p.sex]} · {ageText}</Badge>
+			{#if p.bloodType}<Badge variant="outline">{c.blood(p.bloodType)}</Badge>{/if}
 			{#if data.balance}
 				<a href="{base}/billing">
-					<Badge variant="destructive">Owes {formatETB(data.balance)}</Badge>
+					<Badge variant="destructive">{c.owes(formatETB(data.balance))}</Badge>
 				</a>
 			{/if}
 		</div>
@@ -68,15 +73,14 @@
 				class="flex items-center gap-2 rounded-md border border-amber-500 bg-amber-50 p-3 text-amber-900 dark:bg-amber-950/40 dark:text-amber-200"
 			>
 				<MapPinned class="size-4" />
-				This patient is not from this branch ({p.branch ?? 'registered elsewhere'}), but can be
-				treated here.
+				{c.notFromHere(p.branch ?? c.registeredElsewhere)}
 			</p>
 		{/if}
 
 		{#if data.mergedFrom}
 			<p class="flex items-center gap-2 rounded-md border p-3 text-muted-foreground">
 				<GitMerge class="size-4" />
-				You followed a record that was merged into this one. This is the patient’s current chart.
+				{c.mergedFrom}
 			</p>
 		{/if}
 	</header>
@@ -89,38 +93,37 @@
 		>
 			<!-- Not an <h2>: the global heading style renders it in display type, several times too big. -->
 			<p class="flex items-center gap-2 text-lg font-bold text-destructive">
-				<TriangleAlert class="size-5" /> Medical alerts
+				<TriangleAlert class="size-5" />
+				{c.medicalAlerts}
 			</p>
 			<div class="flex flex-wrap gap-2">
 				{#each severeAllergies as allergy (allergy.name)}
-					<Badge variant="destructive">Severe allergy: {allergy.name}</Badge>
+					<Badge variant="destructive">{c.severeAllergy(allergy.name)}</Badge>
 				{/each}
 				{#each data.flags.medicineAlerts as alert (alert)}
 					<Badge class="bg-amber-500 text-white">{alert}</Badge>
 				{/each}
 				{#each otherAllergies as allergy (allergy.name)}
 					<Badge variant="outline" class="border-red-400 text-red-700 dark:text-red-300">
-						Allergy: {allergy.name}
+						{c.allergy(allergy.name)}
 					</Badge>
 				{/each}
 			</div>
 			{#if p.historyState === 'never'}
 				<!-- The difference between "nothing reported" and "nobody asked" (see the schema). -->
 				<p class="text-sm">
-					<strong>No medical history has been taken.</strong> An empty allergy list here means nobody
-					has asked yet — not that there are none.
+					<strong>{c.noHistory}</strong>
+					{c.noHistoryWhy}
 				</p>
 			{:else if p.historyState === 'stale'}
 				<p class="text-sm">
-					The medical history is over a year old (taken {p.historyTakenAt
-						? formatEthiopianDate(new Date(p.historyTakenAt))
-						: '—'}). Ask again before treatment.
+					{c.staleHistory(p.historyTakenAt ? formatEthiopianDate(new Date(p.historyTakenAt)) : '—')}
 				</p>
 			{/if}
 		</section>
 	{/if}
 
-	<nav class="flex gap-1 overflow-x-auto border-b" aria-label="Patient record">
+	<nav class="flex gap-1 overflow-x-auto border-b" aria-label={c.record}>
 		{#each tabs as tab (tab.href)}
 			{@const current = isCurrent(tab.href)}
 			<a

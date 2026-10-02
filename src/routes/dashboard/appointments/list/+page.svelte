@@ -2,20 +2,24 @@
 	import CalendarDays from '@lucide/svelte/icons/calendar-days';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
-	import { columns } from './columns';
+	import { listColumns } from './columns';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
 
 	let { data } = $props();
 	const q = $derived(data.currentQuery);
+	const t = useI18n();
+	const l = $derived(t.m.appointments.list);
+	const columns = $derived(listColumns(t.m));
 </script>
 
 <svelte:head>
-	<title>Appointment list</title>
+	<title>{l.title}</title>
 </svelte:head>
 
 <div class="my-4 flex flex-wrap items-center justify-between gap-2">
-	<h1>Appointment list</h1>
+	<h1>{l.title}</h1>
 	<Button variant="outline" href="/dashboard/appointments"
-		><CalendarDays class="size-4" /> Day view</Button
+		><CalendarDays class="size-4" /> {l.dayView}</Button
 	>
 </div>
 
@@ -24,14 +28,14 @@
 	{columns}
 	fileName="Appointments"
 	charts
-	dateFilter="Date"
+	dateFilter={t.m.common.date}
 	facetKeys={['status', 'type', 'provider', 'chair', 'flags']}
 	facetLabels={{
-		status: 'Status',
-		type: 'What for',
-		provider: 'Dentist',
-		chair: 'Chair',
-		flags: 'Flags'
+		status: t.m.common.status,
+		type: l.whatFor,
+		provider: t.m.common.dentist,
+		chair: t.m.common.chair,
+		flags: l.flags
 	}}
 	facetParams={{ type: 'typeId', provider: 'providerId', chair: 'chairId', flags: 'flag' }}
 	server={{

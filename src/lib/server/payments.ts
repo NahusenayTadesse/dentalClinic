@@ -30,7 +30,7 @@ import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { nextNumber } from '$lib/server/documentNumbers';
 import { asRequested } from '$lib/server/approvals';
 import { billFor } from '$lib/server/billing';
-import { openSessionFor } from '$lib/server/cashDrawer';
+import { billingRefusals, openSessionFor } from '$lib/server/cashDrawer';
 import { clinicToday } from '$lib/clinicTime';
 import { canPay, cents, statusAfterPayment } from '$lib/invoiceStatus';
 
@@ -64,21 +64,23 @@ export async function paidOn(reader: Reader, invoiceId: number): Promise<number>
 }
 
 /** The method, and the open drawer when it is cash — refused when it is cash and there is none. */
-async function methodFor(tx: Tx, paymentMethodId: number, branchId: number | null) {
+async function methodFor(
+	tx: Tx,
+	say: ReturnType<typeof billingRefusals>,
+	paymentMethodId: number,
+	branchId: number | null
+) {
 	const [method] = await tx
 		.select({ id: paymentMethods.id, kind: paymentMethods.kind })
 		.from(paymentMethods)
 		.where(and(eq(paymentMethods.id, paymentMethodId), notDeleted(paymentMethods)))
 		.limit(1);
-	if (!method) throw new WriteRefused('paymentMethodId', 'Choose how it was paid.');
+	if (!method) throw new WriteRefused('paymentMethodId', say.chooseMethod);
 	if (method.kind !== 'cash') return { method, cashSessionId: null };
 
 	const session = await openSessionFor(tx, branchId);
 	if (!session) {
-		throw new WriteRefused(
-			'paymentMethodId',
-			'The cash drawer is not open at this branch. Open it before handling cash.'
-		);
+		throw new WriteRefused('paymentMethodId', say.drawerShut);
 	}
 	return { method, cashSessionId: session.id };
 }
@@ -100,12 +102,13 @@ async function recordPayment(
 	const allocations = input.allocations
 		.map((a) => ({ invoiceId: a.invoiceId, amount: cents(a.amount) }))
 		.filter((a) => a.amount > 0);
-	refuseUnless(allocations.length > 0, 'Enter an amount against at least one bill.');
+	const say = billingRefusals(event);
+	refuseUnless(allocations.length > 0, say.enterAmount);
 	refuseUnless(
 		new Set(allocations.map((a) => a.invoiceId)).size === allocations.length,
-		'A bill appears twice in that payment.'
+		say.billTwice
 	);
-	const { method, cashSessionId } = await methodFor(tx, input.paymentMethodId, input.branchId);
+	const { method, cashSessionId } = await methodFor(tx, say, input.paymentMethodId, input.branchId);
 
 	// Each bill: the right owner's, payable, and not over-paid by this allocation.
 	const checked: { amount: number; bill: Bill; paid: number }[] = [];
@@ -114,15 +117,12 @@ async function recordPayment(
 		refuseUnless(
 			canPay(bill.status, bill.approvalStatus),
 			bill.approvalStatus === 'pending'
-				? `Bill ${bill.invoiceNumber ?? ''} is waiting for a manager to approve its discount or void.`
-				: `Bill ${bill.invoiceNumber ?? ''} cannot take a payment.`
+				? say.billWaiting(bill.invoiceNumber ?? '')
+				: say.billCannotPay(bill.invoiceNumber ?? '')
 		);
 		const paid = await paidOn(tx, bill.id);
 		const owed = cents(bill.total - paid);
-		refuseUnless(
-			a.amount <= owed + 0.005,
-			`That is more than bill ${bill.invoiceNumber ?? ''} still owes (${owed}).`
-		);
+		refuseUnless(a.amount <= owed + 0.005, say.moreThanOwed(bill.invoiceNumber ?? '', owed));
 		checked.push({ amount: a.amount, bill, paid });
 	}
 
@@ -195,14 +195,19 @@ export async function takePayment(
 }
 
 /** One of the payer's bills, locked, or a refusal — the payer-side twin of `billFor`. */
-async function payerBill(tx: Tx, customerId: number, invoiceId: number): Promise<Bill> {
+async function payerBill(
+	tx: Tx,
+	customerId: number,
+	invoiceId: number,
+	missing: string
+): Promise<Bill> {
 	const [row] = await tx
 		.select()
 		.from(invoice)
 		.where(and(eq(invoice.id, invoiceId), eq(invoice.customerId, customerId), notDeleted(invoice)))
 		.limit(1)
 		.for('update');
-	if (!row) throw new WriteRefused(null, 'That bill is not billed to this payer.');
+	if (!row) throw new WriteRefused(null, missing);
 	return row;
 }
 
@@ -224,7 +229,8 @@ export async function takePayerPayment(
 	return recordPayment(tx, event, {
 		...input,
 		patientId: null,
-		fetchBill: (invoiceId) => payerBill(tx, input.customerId, invoiceId)
+		fetchBill: (invoiceId) =>
+			payerBill(tx, input.customerId, invoiceId, billingRefusals(event).notPayersBill)
 	});
 }
 
@@ -235,7 +241,12 @@ export async function takePayerPayment(
  * refunds of it already approved or still waiting. A waiting refund holds its amount, so two
  * requests cannot together refund more than was paid.
  */
-async function refundable(tx: Tx, invoiceId: number, paymentId: number): Promise<number> {
+async function refundable(
+	tx: Tx,
+	invoiceId: number,
+	paymentId: number,
+	missing: string
+): Promise<number> {
 	const [paidRow] = await tx
 		.select({ amount: invoicePayment.amount })
 		.from(invoicePayment)
@@ -256,7 +267,7 @@ async function refundable(tx: Tx, invoiceId: number, paymentId: number): Promise
 			)
 		)
 		.limit(1);
-	if (!paidRow) throw new WriteRefused(null, 'That payment was not made against this bill.');
+	if (!paidRow) throw new WriteRefused(null, missing);
 
 	const [refunded] = await tx
 		.select({ amount: sql<number>`COALESCE(SUM(-${invoicePayment.amount}), 0)` })
@@ -291,23 +302,19 @@ export async function requestRefund(
 		branchId: number | null;
 	}
 ): Promise<number> {
+	const say = billingRefusals(event);
 	const bill = await billFor(tx, input.patientId, input.invoiceId);
-	refuseUnless(
-		bill.status !== 'draft' && bill.status !== 'void',
-		'This bill has nothing to refund.'
-	);
+	refuseUnless(bill.status !== 'draft' && bill.status !== 'void', say.nothingToRefund);
 	const amount = cents(input.amount);
-	refuseUnless(amount > 0, 'Enter an amount to refund.', 'amount');
-	const available = await refundable(tx, bill.id, input.paymentId);
+	refuseUnless(amount > 0, say.enterRefund, 'amount');
+	const available = await refundable(tx, bill.id, input.paymentId, say.paymentNotOnBill);
 	refuseUnless(
 		amount <= available + 0.005,
-		available > 0
-			? `At most ${available} of that payment can be refunded.`
-			: 'That payment has already been refunded in full, or is waiting to be.',
+		available > 0 ? say.atMost(available) : say.refundedAlready,
 		'amount'
 	);
 	const why = input.reason.trim();
-	refuseUnless(why.length > 0, 'Say why the money is being given back.', 'reason');
+	refuseUnless(why.length > 0, say.sayWhyRefund, 'reason');
 
 	// Checked now so the desk knows; checked again at approval, when the cash actually leaves.
 	const [method] = await tx
@@ -315,7 +322,7 @@ export async function requestRefund(
 		.from(paymentMethods)
 		.where(and(eq(paymentMethods.id, input.paymentMethodId), notDeleted(paymentMethods)))
 		.limit(1);
-	if (!method) throw new WriteRefused('paymentMethodId', 'Choose how it is being given back.');
+	if (!method) throw new WriteRefused('paymentMethodId', say.chooseRefundMethod);
 
 	const refundId = await insertReturningId(tx, transactions, {
 		description: `Refund on bill ${bill.invoiceNumber ?? ''}: ${why}`.slice(0, 255),

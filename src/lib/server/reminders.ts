@@ -28,6 +28,8 @@ import { recordAudit, type AuditRequest } from '$lib/server/audit';
 import { appointmentQuery } from '$lib/server/appointments';
 import { canMove, isAppointmentStatus } from '$lib/appointmentStatus';
 import { addClinicDays, clinicDayRange, clinicToday } from '$lib/clinicTime';
+import { messagesFor } from '$lib/i18n/messages';
+import type { Lang } from '$lib/i18n/lang';
 
 /** The database or a transaction on it. */
 type Reader = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -74,7 +76,7 @@ export async function reminderOwner(event: RequestEvent, appointmentId: number):
 			)
 		)
 		.limit(1);
-	if (!row) error(404, 'That appointment is not at this branch.');
+	if (!row) error(404, messagesFor(event.locals.lang).appointments.toast.reminderNotHere);
 	return row.id;
 }
 
@@ -83,24 +85,26 @@ export async function reminderOwner(event: RequestEvent, appointmentId: number):
  * visit. Audited as one change to the appointment. Returns the text for the desk.
  *
  * Re-reminding is allowed and moves the timestamp: it is when a reminder *last* went out, which is
- * what stops a third call the same afternoon.
+ * what stops a third call the same afternoon. `lang` is the language of the answer, English unless
+ * the caller passes the viewer's.
  */
 export async function recordReminder(
 	tx: Tx,
 	event: AuditRequest,
 	appointmentId: number,
-	{ confirmed }: { confirmed: boolean }
+	{ confirmed, lang = 'en' }: { confirmed: boolean; lang?: Lang }
 ): Promise<string> {
+	const say = messagesFor(lang).appointments.toast;
 	const [row] = await tx
 		.select()
 		.from(appointment)
 		.where(and(eq(appointment.id, appointmentId), notDeleted(appointment)))
 		.limit(1)
 		.for('update');
-	refuseUnless(Boolean(row), 'That appointment no longer exists.');
+	refuseUnless(Boolean(row), say.reminderGone);
 	refuseUnless(
 		isAppointmentStatus(row.status) && (AHEAD as readonly string[]).includes(row.status),
-		'Only an appointment still to come can be reminded.'
+		say.reminderNotAhead
 	);
 
 	const now = new Date();
@@ -119,8 +123,8 @@ export async function recordReminder(
 		after: values
 	});
 
-	if (confirms) return 'Reminded, and marked confirmed';
-	return row.status === 'confirmed' ? 'Reminded — already confirmed' : 'Reminder recorded';
+	if (confirms) return say.remindedConfirmed;
+	return row.status === 'confirmed' ? say.remindedAlready : say.reminderRecorded;
 }
 
 /** One side of the comparison: how many visits, and how many of them were missed. */

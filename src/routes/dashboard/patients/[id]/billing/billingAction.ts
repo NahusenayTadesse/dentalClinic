@@ -6,6 +6,7 @@ import { db } from '$lib/server/db';
 import { patientAction } from '$lib/server/patientAction';
 import { takePayment } from '$lib/server/payments';
 import { formatETB } from '$lib/global.svelte';
+import { messagesFor } from '$lib/i18n/messages';
 import { payment } from '$lib/forms/payment';
 
 /** Who may raise a bill and take payment. Reading the tab needs it too — see the tab's load. */
@@ -40,6 +41,6 @@ export function payAction(event: RequestEvent) {
 			reference: data.reference ?? null
 		});
 		const total = data.allocations.reduce((sum, a) => sum + a.amount, 0);
-		return `Payment of ${formatETB(total)} recorded.`;
+		return messagesFor(event.locals.lang).billing.tab.paymentRecorded(formatETB(total));
 	});
 }

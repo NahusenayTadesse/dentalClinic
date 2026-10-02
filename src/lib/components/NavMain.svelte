@@ -6,6 +6,8 @@
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 
 	import type { NavItem } from '$lib/navigation';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
+	import { navTitle } from '$lib/i18n/messages';
 
 	let {
 		items,
@@ -28,6 +30,10 @@
 		return page.url.pathname === url;
 	}
 
+	// Titles are translated where they are drawn only: `activeGroup` and the keys compare the English.
+	const t = useI18n();
+	const label = (title: string) => navTitle(t.m, title);
+
 	let btnStyle = 'text-md w-full! justify-start pl-2! py-6 font-normal';
 </script>
 
@@ -45,12 +51,12 @@
 										variant={current === item.title ? 'default' : 'ghost'}
 										size="lg"
 										class={btnStyle}
-										title="Goto {item.title}"
+										title={label(item.title)}
 									>
 										{#if item.icon}
 											<item.icon class="h-5! w-5!" />
 										{/if}
-										<span>{item.title}</span>
+										<span>{label(item.title)}</span>
 
 										<ChevronRightIcon
 											class="ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
@@ -70,12 +76,12 @@
 												onclick={closeSidebar}
 												class="w-full! justify-start text-sm font-normal"
 												href={subItem.url}
-												title="Goto {subItem.title}"
+												title={label(subItem.title)}
 											>
 												{#if subItem.icon}
 													<subItem.icon class="h-4 w-4" />
 												{/if}
-												<span>{subItem.title}</span>
+												<span>{label(subItem.title)}</span>
 											</Button>
 										</Sidebar.MenuSubItem>
 									{/each}
@@ -85,7 +91,7 @@
 					{/snippet}
 				</Collapsible.Root>
 			{:else}
-				<Sidebar.Menu class="w-full gap-3" title="Goto {item.title}">
+				<Sidebar.Menu class="w-full gap-3" title={label(item.title)}>
 					<Sidebar.MenuItem>
 						<Button
 							size="lg"
@@ -97,7 +103,7 @@
 							{#if item.icon}
 								<item.icon class="h-5! w-5!" />
 							{/if}
-							<span>{item.title}</span>
+							<span>{label(item.title)}</span>
 						</Button>
 					</Sidebar.MenuItem>
 				</Sidebar.Menu>

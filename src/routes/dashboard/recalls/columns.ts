@@ -4,6 +4,7 @@ import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Copy from '@nahu/admin-kit/Copy.svelte';
 import { ethiopianDate } from '$lib/tableCells';
 import RecallActions from './RecallActions.svelte';
+import type { Messages } from '$lib/i18n/messages';
 import type { PageData } from './$types';
 
 /** One recall on the list. */
@@ -11,13 +12,19 @@ type Row = PageData['recalls'][number];
 
 /**
  * The recall list. The patient opens their chart (for someone who may, CLAUDE.md §12); the calls
- * column is what stops a patient being rung a fourth time.
+ * column is what stops a patient being rung a fourth time. In the viewer's language; rebuilt in a
+ * `$derived` on a switch.
  */
-export function recallColumns(oncall: (row: Row) => void, maxAttempts: number): ColumnDef<Row>[] {
+export function recallColumns(
+	m: Messages,
+	oncall: (row: Row) => void,
+	maxAttempts: number
+): ColumnDef<Row>[] {
+	const r = m.appointments.recalls;
 	return [
 		{
 			id: 'patient',
-			header: 'Patient',
+			header: m.common.patient,
 			accessorFn: (row) => row.patient,
 			cell: ({ row }) =>
 				renderComponent(DataTableLinks, {
@@ -28,38 +35,38 @@ export function recallColumns(oncall: (row: Row) => void, maxAttempts: number): 
 		},
 		{
 			accessorKey: 'phone',
-			header: 'Phone',
+			header: m.common.phone,
 			cell: ({ row }) => renderComponent(Copy, { data: row.original.phone })
 		},
 		{
 			id: 'visit',
-			header: 'For',
-			accessorFn: (row) => row.visit ?? 'A visit'
+			header: m.common.what,
+			accessorFn: (row) => row.visit ?? m.common.aVisit
 		},
 		{
 			id: 'dueOn',
-			header: 'Due',
+			header: r.due,
 			accessorFn: (row) => row.dueOn,
 			cell: ({ row }) =>
-				`${ethiopianDate(row.original.dueOn)}${row.original.overdue ? ' · overdue' : ''}`
+				`${ethiopianDate(row.original.dueOn)}${row.original.overdue ? r.overdueSuffix : ''}`
 		},
 		{
 			id: 'lastVisitOn',
-			header: 'Last visit',
+			header: r.lastVisit,
 			accessorFn: (row) => row.lastVisitOn,
 			cell: ({ row }) => ethiopianDate(row.original.lastVisitOn)
 		},
 		{
 			id: 'calls',
-			header: 'Calls',
+			header: r.calls,
 			accessorFn: (row) =>
-				row.attempts === 0 ? 'Not rung yet' : row.attempts >= maxAttempts ? 'Tried enough' : 'Rung',
+				row.attempts === 0 ? r.notRungYet : row.attempts >= maxAttempts ? r.triedEnough : r.rung,
 			cell: ({ row }) =>
 				row.original.attempts === 0
 					? '—'
-					: `${row.original.attempts}× · last ${ethiopianDate(row.original.lastContactedOn)}`
+					: r.callsCell(row.original.attempts, ethiopianDate(row.original.lastContactedOn))
 		},
-		{ accessorKey: 'note', header: 'Note', cell: ({ row }) => row.original.note ?? '' },
+		{ accessorKey: 'note', header: m.common.note, cell: ({ row }) => row.original.note ?? '' },
 		{
 			id: 'actions',
 			header: '',

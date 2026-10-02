@@ -20,6 +20,7 @@ import { readSettings } from '$lib/server/settings';
 import { nextNumber } from '$lib/server/documentNumbers';
 import { billFor, unbilledWork } from '$lib/server/billing';
 import { paidOn } from '$lib/server/payments';
+import { billingRefusals } from '$lib/server/cashDrawer';
 import { clinicToday } from '$lib/clinicTime';
 import { canEditInvoice, canRequestVoid, cents, discountNeedsApproval } from '$lib/invoiceStatus';
 
@@ -42,7 +43,7 @@ async function writeWorkLines(
 	const chosen = offered.filter((w) => wanted.includes(w.id));
 	refuseUnless(
 		chosen.length === wanted.length,
-		'Some of that work is already billed, or no longer done. Reload and choose again.',
+		billingRefusals(event).alreadyBilled,
 		'procedureIds'
 	);
 	for (const [index, work] of chosen.entries()) {
@@ -71,7 +72,7 @@ export async function createInvoice(
 	event: AuditRequest,
 	input: { patientId: number; procedureIds: number[]; branchId: number | null }
 ): Promise<number> {
-	refuseUnless(input.procedureIds.length > 0, 'Choose the work to bill.', 'procedureIds');
+	refuseUnless(input.procedureIds.length > 0, billingRefusals(event).chooseWork, 'procedureIds');
 	// Billed to whoever pays for this patient — their employer or insurer — unless changed on the draft.
 	const [person] = await tx
 		.select({ payer: patient.customerId })
@@ -118,14 +119,14 @@ export async function setPayer(
 	customerId: number | null
 ) {
 	const bill = await billFor(tx, patientId, invoiceId);
-	refuseUnless(canEditInvoice(bill.status), 'Who pays is fixed once the bill is issued.');
+	refuseUnless(canEditInvoice(bill.status), billingRefusals(event).payerFixed);
 	if (customerId !== null) {
 		const [payer] = await tx
 			.select({ id: customers.id })
 			.from(customers)
 			.where(and(eq(customers.id, customerId), notDeleted(customers)))
 			.limit(1);
-		refuseUnless(Boolean(payer), 'Choose a payer from the list.', 'customerId');
+		refuseUnless(Boolean(payer), billingRefusals(event).choosePayer, 'customerId');
 	}
 	const written = { customerId, updatedBy: event.locals.user?.id };
 	await tx.update(invoice).set(written).where(eq(invoice.id, invoiceId));
@@ -147,7 +148,7 @@ export async function addWorkToInvoice(
 	procedureIds: number[]
 ) {
 	const bill = await billFor(tx, patientId, invoiceId);
-	refuseUnless(canEditInvoice(bill.status), 'Only a draft bill can be changed.');
+	refuseUnless(canEditInvoice(bill.status), billingRefusals(event).onlyDraft);
 	await writeWorkLines(tx, event, patientId, invoiceId, procedureIds);
 }
 
@@ -160,7 +161,7 @@ export async function addCharge(
 	charge: { description: string; quantity: number; unitPrice: number }
 ) {
 	const bill = await billFor(tx, patientId, invoiceId);
-	refuseUnless(canEditInvoice(bill.status), 'Only a draft bill can be changed.');
+	refuseUnless(canEditInvoice(bill.status), billingRefusals(event).onlyDraft);
 	const id = await insertReturningId(tx, invoiceLine, {
 		invoiceId,
 		description: charge.description.trim().slice(0, 255),
@@ -182,11 +183,8 @@ export async function updateInvoiceLine(
 	change: { lineId: number; description: string; quantity: number; unitPrice: number }
 ) {
 	const bill = await billFor(tx, patientId, invoiceId);
-	refuseUnless(
-		canEditInvoice(bill.status),
-		'An issued bill is what the patient holds; it is not edited.'
-	);
-	const line = await lineOf(tx, invoiceId, change.lineId);
+	refuseUnless(canEditInvoice(bill.status), billingRefusals(event).issuedNotEdited);
+	const line = await lineOf(tx, invoiceId, change.lineId, billingRefusals(event).lineNotOnBill);
 	const written = {
 		description: change.description.trim().slice(0, 255),
 		quantity: change.quantity,
@@ -213,16 +211,13 @@ export async function removeInvoiceLine(
 	lineId: number
 ) {
 	const bill = await billFor(tx, patientId, invoiceId);
-	refuseUnless(
-		canEditInvoice(bill.status),
-		'An issued bill is what the patient holds; it is not edited.'
-	);
-	const line = await lineOf(tx, invoiceId, lineId);
+	refuseUnless(canEditInvoice(bill.status), billingRefusals(event).issuedNotEdited);
+	const line = await lineOf(tx, invoiceId, lineId, billingRefusals(event).lineNotOnBill);
 	await softDeleteInvoiceLine(tx, line.id, event.locals.user?.id);
 	await recordAudit(tx, event, { table: 'invoice_line', recordId: line.id, action: 'delete' });
 }
 
-async function lineOf(tx: Tx, invoiceId: number, lineId: number) {
+async function lineOf(tx: Tx, invoiceId: number, lineId: number, missing: string) {
 	const [line] = await tx
 		.select()
 		.from(invoiceLine)
@@ -230,7 +225,7 @@ async function lineOf(tx: Tx, invoiceId: number, lineId: number) {
 			and(eq(invoiceLine.id, lineId), eq(invoiceLine.invoiceId, invoiceId), notDeleted(invoiceLine))
 		)
 		.limit(1);
-	if (!line) throw new WriteRefused(null, 'That line is not on this bill.');
+	if (!line) throw new WriteRefused(null, missing);
 	return line;
 }
 
@@ -243,14 +238,14 @@ export async function setDiscount(
 	discount: number
 ) {
 	const bill = await billFor(tx, patientId, invoiceId);
-	refuseUnless(canEditInvoice(bill.status), 'Only a draft bill can be discounted.');
+	refuseUnless(canEditInvoice(bill.status), billingRefusals(event).onlyDraftDiscount);
 	const [{ subtotal }] = await tx
 		.select({ subtotal: sql<number>`COALESCE(SUM(${invoiceLine.lineTotal}), 0)` })
 		.from(invoiceLine)
 		.where(and(eq(invoiceLine.invoiceId, invoiceId), notDeleted(invoiceLine)));
 	refuseUnless(
 		discount >= 0 && discount <= Number(subtotal),
-		'A discount cannot be more than the bill.',
+		billingRefusals(event).discountTooBig,
 		'discount'
 	);
 	const written = {
@@ -279,7 +274,7 @@ export async function issueInvoice(
 	options: { dueOn: string | null }
 ) {
 	const bill = await billFor(tx, patientId, invoiceId);
-	refuseUnless(bill.status === 'draft', 'This bill has already been issued.');
+	refuseUnless(bill.status === 'draft', billingRefusals(event).alreadyIssued);
 
 	const [{ subtotal, lines }] = await tx
 		.select({
@@ -288,11 +283,11 @@ export async function issueInvoice(
 		})
 		.from(invoiceLine)
 		.where(and(eq(invoiceLine.invoiceId, invoiceId), notDeleted(invoiceLine)));
-	refuseUnless(Number(lines) > 0, 'A bill needs at least one line.');
+	refuseUnless(Number(lines) > 0, billingRefusals(event).needsLine);
 
 	const gross = cents(Number(subtotal));
 	const discount = bill.discount ?? 0;
-	refuseUnless(discount <= gross, 'The discount is more than the bill. Change it first.');
+	refuseUnless(discount <= gross, billingRefusals(event).discountOverBill);
 	const settings = await readSettings(tx);
 	const needsManager = discountNeedsApproval(gross, discount, settings.discountApprovalPercent);
 
@@ -327,7 +322,7 @@ export async function discardInvoice(
 	invoiceId: number
 ) {
 	const bill = await billFor(tx, patientId, invoiceId);
-	refuseUnless(bill.status === 'draft', 'An issued bill is voided, not discarded.');
+	refuseUnless(bill.status === 'draft', billingRefusals(event).voidNotDiscard);
 	await softDeleteDraftInvoice(tx, invoiceId, event.locals.user?.id);
 	await recordAudit(tx, event, { table: 'invoice', recordId: invoiceId, action: 'delete' });
 }
@@ -348,12 +343,10 @@ export async function requestVoid(
 	const paid = await paidOn(tx, invoiceId);
 	refuseUnless(
 		canRequestVoid(bill.status, bill.approvalStatus, paid),
-		paid > 0
-			? 'Money has been paid against this bill. Refund it first; a bill is voided with nothing on it.'
-			: 'This bill cannot be voided now.'
+		paid > 0 ? billingRefusals(event).refundFirst : billingRefusals(event).cannotVoid
 	);
 	const why = reason.trim();
-	refuseUnless(why.length > 0, 'Say why it is being voided.', 'reason');
+	refuseUnless(why.length > 0, billingRefusals(event).sayWhyVoid, 'reason');
 	const written = {
 		voidReason: why.slice(0, 255),
 		...asRequested(event.locals.user?.id),

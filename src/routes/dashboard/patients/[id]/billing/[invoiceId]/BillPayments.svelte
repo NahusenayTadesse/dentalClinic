@@ -9,6 +9,7 @@
 	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 	import type { InvoiceDetail } from '$lib/server/billing';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
 	import { refund, type Refund } from '../schema';
 
 	/**
@@ -32,6 +33,9 @@
 		canRefund: boolean;
 	} = $props();
 
+	const t = useI18n();
+	const w = $derived(t.m.billing.payments);
+
 	let open = $state(false);
 	let seed = $state<Partial<Refund>>({});
 	let limit = $state(0);
@@ -39,7 +43,7 @@
 	const methodItems = $derived(
 		methods.map((m) => ({
 			value: String(m.value),
-			name: m.kind === 'cash' ? `${m.name} (cash)` : m.name
+			name: m.kind === 'cash' ? w.cash(m.name) : m.name
 		}))
 	);
 
@@ -50,17 +54,17 @@
 	}
 
 	const day = (value: string | null) => (value ? formatEthiopianDate(new Date(value)) : '—');
-	const waiting = { pending: 'waiting for approval', rejected: 'refused' } as const;
+	const waiting = $derived({ pending: w.waiting, rejected: w.refused });
 </script>
 
-<Section title="Payments" IconComp={Banknote} style="personalIcon">
+<Section title={w.title} IconComp={Banknote} style="personalIcon">
 	<Table.Root>
 		<Table.Header>
 			<Table.Row>
-				<Table.Head>Receipt</Table.Head>
-				<Table.Head>Date</Table.Head>
-				<Table.Head>How</Table.Head>
-				<Table.Head class="text-right">Amount</Table.Head>
+				<Table.Head>{w.receipt}</Table.Head>
+				<Table.Head>{w.date}</Table.Head>
+				<Table.Head>{w.how}</Table.Head>
+				<Table.Head class="text-right">{w.amount}</Table.Head>
 				{#if canRefund}<Table.Head class="w-0"></Table.Head>{/if}
 			</Table.Row>
 		</Table.Header>
@@ -72,7 +76,7 @@
 						: null}
 				<Table.Row class={paid.approvalStatus === 'rejected' ? 'text-muted-foreground' : ''}>
 					<Table.Cell>
-						{paid.receiptNumber ?? (paid.direction === 'out' ? 'Refund' : '—')}
+						{paid.receiptNumber ?? (paid.direction === 'out' ? w.refund : '—')}
 						{#if note}<span class="text-xs text-muted-foreground"> · {note}</span>{/if}
 					</Table.Cell>
 					<Table.Cell>{day(paid.occurredOn)}</Table.Cell>
@@ -88,7 +92,8 @@
 						<Table.Cell>
 							{#if paid.refundable > 0}
 								<Button variant="ghost" size="sm" onclick={() => start(paid)}>
-									<Undo class="size-4" /> Refund
+									<Undo class="size-4" />
+									{w.refund}
 								</Button>
 							{/if}
 						</Table.Cell>
@@ -100,35 +105,35 @@
 </Section>
 
 <FormDialog
-	title="Give money back"
-	description="A manager approves it in Approvals → Refunds. Only then does the bill owe it again, and only then does cash leave the drawer."
+	title={w.giveBackTitle}
+	description={w.giveBackDescription}
 	action="?/requestRefund"
 	data={form}
 	schema={refund}
 	bind:open
 	{seed}
 	hideTrigger
-	submitLabel="Ask for the refund"
+	submitLabel={w.askRefund}
 	disabled={!canRefund}
 >
 	{#snippet fields({ form, errors, values })}
 		<input type="hidden" name="paymentId" value={values.paymentId} />
 		<InputComp
-			label="Amount"
+			label={w.amount}
 			name="amount"
 			type="number"
 			{form}
 			{errors}
-			description="At most {formatETB(limit)} from this payment."
+			description={w.atMost(formatETB(limit))}
 		/>
 		<InputComp
-			label="Given back by"
+			label={w.givenBackBy}
 			name="paymentMethodId"
 			type="select"
 			{form}
 			{errors}
 			items={methodItems}
 		/>
-		<InputComp label="Why" name="reason" {form} {errors} placeholder="Crown not fitted" />
+		<InputComp label={w.why} name="reason" {form} {errors} placeholder={w.whyPlaceholder} />
 	{/snippet}
 </FormDialog>

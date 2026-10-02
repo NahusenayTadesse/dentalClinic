@@ -56,6 +56,10 @@ export const actions: Actions = {
 			REMINDER_PERMISSION,
 			logReminder,
 			(data) => reminderOwner(event, data.appointmentId),
-			(tx, { ownerId, data }) => recordReminder(tx, event, ownerId, { confirmed: data.confirmed })
+			(tx, { ownerId, data }) =>
+				recordReminder(tx, event, ownerId, {
+					confirmed: data.confirmed,
+					lang: event.locals.lang
+				})
 		)
 };

@@ -22,6 +22,7 @@
 	import { canEditInvoice, canPay, canRequestVoid } from '$lib/invoiceStatus';
 	import PaymentForm from '$lib/components/PaymentForm.svelte';
 	import BillPayments from './BillPayments.svelte';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
 	import {
 		addCharge,
 		addWork,
@@ -39,6 +40,9 @@
 	 * are offered; the actions refuse the rest anyway.
 	 */
 	let { data } = $props();
+
+	const t = useI18n();
+	const w = $derived(t.m.billing.bill);
 
 	const bill = $derived(data.bill);
 	const draft = $derived(canEditInvoice(bill.status));
@@ -60,7 +64,7 @@
 	let payOpen = $state(false);
 	let payerOpen = $state(false);
 	const payerItems = $derived([
-		{ value: '', name: 'The patient' },
+		{ value: '', name: w.thePatient },
 		...data.payers.map((p) => ({ value: String(p.value), name: p.name }))
 	]);
 	let editOpen = $state(false);
@@ -78,54 +82,58 @@
 </script>
 
 <svelte:head>
-	<title>{data.patient.fullName} — {bill.invoiceNumber ?? 'Draft bill'}</title>
+	<title>{w.pageTitle(data.patient.fullName, bill.invoiceNumber ?? w.draftBill)}</title>
 </svelte:head>
 
 <div class="flex flex-col gap-6">
 	<div class="flex flex-wrap items-center gap-2">
-		<Button href={base} variant="ghost" size="sm"><ArrowLeft class="size-4" /> All bills</Button>
+		<Button href={base} variant="ghost" size="sm"><ArrowLeft class="size-4" /> {w.allBills}</Button>
 		<div class="ml-auto flex flex-wrap gap-2">
 			{#if !draft}
 				<Button href="{base}/{bill.id}/print" target="_blank" variant="outline" size="sm">
-					<Printer class="size-4" /> Print
+					<Printer class="size-4" />
+					{t.m.common.print}
 				</Button>
 			{/if}
 			{#if payable}
 				<Button size="sm" onclick={() => (payOpen = true)}>
-					<Banknote class="size-4" /> Take a payment
+					<Banknote class="size-4" />
+					{t.m.billing.tab.takePayment}
 				</Button>
 			{/if}
 			{#if voidable}
 				<Button size="sm" variant="ghost" onclick={() => (voidOpen = true)}>
-					<Ban class="size-4" /> Void
+					<Ban class="size-4" />
+					{w.void}
 				</Button>
 			{/if}
 			{#if draft}
 				<Button size="sm" variant="outline" onclick={() => (addOpen = true)}>
-					<Plus class="size-4" /> Add work
+					<Plus class="size-4" />
+					{w.addWork}
 				</Button>
 				<Button size="sm" variant="outline" onclick={() => (chargeOpen = true)}>
-					<Plus class="size-4" /> Add a charge
+					<Plus class="size-4" />
+					{w.addCharge}
 				</Button>
 				<StepButton
 					id="discard-bill"
 					action="?/discard"
 					data={data.forms.confirm}
-					label="Throw away"
+					label={w.throwAway}
 					icon={Trash}
 					variant="ghost"
 					confirm={{
-						title: 'Throw this draft away?',
-						description:
-							'It was never issued, so nothing is lost but the draft. Its work is unbilled again.',
-						action: 'Throw away'
+						title: w.throwAwayTitle,
+						description: w.throwAwayDescription,
+						action: w.throwAway
 					}}
 				/>
 			{/if}
 		</div>
 	</div>
 
-	<Section title={bill.invoiceNumber ?? 'Draft bill'} IconComp={Receipt} style="identityIcon">
+	<Section title={bill.invoiceNumber ?? w.draftBill} IconComp={Receipt} style="identityIcon">
 		{#snippet editDialog()}
 			<div class="ml-auto">
 				<InvoiceStatusBadge status={bill.status} approvalStatus={bill.approvalStatus} />
@@ -134,24 +142,24 @@
 
 		<dl class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm md:grid-cols-5">
 			<div>
-				<dt class="text-muted-foreground">Bill to</dt>
+				<dt class="text-muted-foreground">{w.billTo}</dt>
 				<dd class="flex items-center gap-1">
 					{#if bill.customerId}
 						<Link
 							entity="customer"
 							id={bill.customerId}
-							name={data.payerName ?? 'A payer'}
+							name={data.payerName ?? w.aPayer}
 							display="inline"
 						/>
 					{:else}
-						The patient
+						{w.thePatient}
 					{/if}
 					{#if draft}
 						<Button
 							variant="ghost"
 							size="icon"
 							class="size-6"
-							aria-label="Change who pays"
+							aria-label={w.changeWhoPays}
 							onclick={() => (payerOpen = true)}
 						>
 							<Pencil class="size-3" />
@@ -160,19 +168,19 @@
 				</dd>
 			</div>
 			<div>
-				<dt class="text-muted-foreground">Issued</dt>
-				<dd>{draft ? 'Not yet' : day(bill.issuedOn)}</dd>
+				<dt class="text-muted-foreground">{w.issued}</dt>
+				<dd>{draft ? w.notYet : day(bill.issuedOn)}</dd>
 			</div>
 			<div>
-				<dt class="text-muted-foreground">Due</dt>
-				<dd>{bill.dueOn ? day(bill.dueOn) : 'On the day'}</dd>
+				<dt class="text-muted-foreground">{w.due}</dt>
+				<dd>{bill.dueOn ? day(bill.dueOn) : w.onTheDay}</dd>
 			</div>
 			<div>
-				<dt class="text-muted-foreground">Total</dt>
+				<dt class="text-muted-foreground">{w.total}</dt>
 				<dd class="font-semibold tabular-nums">{formatETB(bill.total)}</dd>
 			</div>
 			<div>
-				<dt class="text-muted-foreground">Still owed</dt>
+				<dt class="text-muted-foreground">{w.stillOwed}</dt>
 				<dd class="font-semibold tabular-nums {bill.owed > 0 ? 'text-destructive' : ''}">
 					{draft ? '—' : formatETB(bill.owed)}
 				</dd>
@@ -182,36 +190,32 @@
 		{#if bill.approvalStatus === 'pending'}
 			<p class="mt-4 rounded-md border border-amber-500 p-3 text-sm">
 				{#if bill.voidReason}
-					A void has been asked for (“{bill.voidReason}”). It waits for a manager in
-					<strong>Approvals → Discounts and Voids</strong>, and takes no payment meanwhile.
+					{w.voidAsked(bill.voidReason)}
+					<strong>{w.queue}</strong>{w.voidAskedEnd}
 				{:else}
-					Its discount is over {data.discountThreshold}% of the bill, so it waits for a manager in
-					<strong>Approvals → Discounts and Voids</strong> and takes no payment until then.
+					{w.discountWaits(data.discountThreshold)}
+					<strong>{w.queue}</strong>
+					{w.discountWaitsEnd}
 				{/if}
 			</p>
 		{/if}
 		{#if bill.status === 'void'}
-			<p class="mt-4 rounded-md border p-3 text-sm">
-				Void{bill.voidReason ? `: ${bill.voidReason}` : ''}. Its number is kept; its work can be
-				billed again.
-			</p>
+			<p class="mt-4 rounded-md border p-3 text-sm">{w.isVoid(bill.voidReason)}</p>
 		{/if}
 		{#if bill.rejectionReason && bill.approvalStatus === 'approved'}
-			<p class="mt-4 text-sm text-muted-foreground">
-				A manager refused a request on this bill: {bill.rejectionReason}
-			</p>
+			<p class="mt-4 text-sm text-muted-foreground">{w.refusedRequest(bill.rejectionReason)}</p>
 		{/if}
 	</Section>
 
-	<Section title="Lines" IconComp={Receipt} style="systemIcon">
+	<Section title={w.lines} IconComp={Receipt} style="systemIcon">
 		<Table.Root>
 			<Table.Header>
 				<Table.Row>
-					<Table.Head>What</Table.Head>
-					<Table.Head class="text-right">Qty</Table.Head>
-					<Table.Head class="text-right">Price</Table.Head>
-					<Table.Head class="text-right">Total</Table.Head>
-					{#if draft}<Table.Head class="sr-only">Change</Table.Head>{/if}
+					<Table.Head>{w.what}</Table.Head>
+					<Table.Head class="text-right">{w.qty}</Table.Head>
+					<Table.Head class="text-right">{w.price}</Table.Head>
+					<Table.Head class="text-right">{w.total}</Table.Head>
+					{#if draft}<Table.Head class="sr-only">{w.change}</Table.Head>{/if}
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
@@ -226,7 +230,7 @@
 								<Button
 									size="icon"
 									variant="ghost"
-									aria-label="Change {line.description}"
+									aria-label={w.changeLine(line.description)}
 									onclick={() => edit(line)}
 								>
 									<Pencil class="size-4" />
@@ -235,7 +239,7 @@
 									id="remove-line-{line.id}"
 									action="?/removeLine"
 									data={data.forms.remove}
-									label="Remove"
+									label={w.remove}
 									variant="ghost"
 									values={{ lineId: line.id }}
 								/>
@@ -244,22 +248,22 @@
 					</Table.Row>
 				{:else}
 					<Table.Row>
-						<Table.Cell colspan={5} class="text-muted-foreground">No lines.</Table.Cell>
+						<Table.Cell colspan={5} class="text-muted-foreground">{w.noLines}</Table.Cell>
 					</Table.Row>
 				{/each}
 			</Table.Body>
 			<Table.Footer>
 				<Table.Row>
-					<Table.Cell colspan={3}>Subtotal</Table.Cell>
+					<Table.Cell colspan={3}>{w.subtotal}</Table.Cell>
 					<Table.Cell class="text-right tabular-nums">{formatETB(bill.subtotal)}</Table.Cell>
 					{#if draft}<Table.Cell></Table.Cell>{/if}
 				</Table.Row>
 				<Table.Row>
 					<Table.Cell colspan={3}>
-						Discount
+						{w.discount}
 						{#if draft}
 							<Button size="sm" variant="ghost" class="ml-2" onclick={() => (discountOpen = true)}>
-								{bill.discount ? 'Change' : 'Add'}
+								{bill.discount ? w.change : w.add}
 							</Button>
 						{/if}
 					</Table.Cell>
@@ -269,7 +273,7 @@
 					{#if draft}<Table.Cell></Table.Cell>{/if}
 				</Table.Row>
 				<Table.Row class="font-semibold">
-					<Table.Cell colspan={3}>Total</Table.Cell>
+					<Table.Cell colspan={3}>{w.total}</Table.Cell>
 					<Table.Cell class="text-right tabular-nums">{formatETB(bill.total)}</Table.Cell>
 					{#if draft}<Table.Cell></Table.Cell>{/if}
 				</Table.Row>
@@ -280,11 +284,10 @@
 			<div class="mt-4 flex items-center justify-end gap-3">
 				{#if bill.discount && Number(discountShare) > data.discountThreshold}
 					<p class="text-sm text-muted-foreground">
-						The {discountShare}% discount is over {data.discountThreshold}%: a manager approves it
-						before it can be paid.
+						{w.overThreshold(discountShare, data.discountThreshold)}
 					</p>
 				{/if}
-				<Button onclick={() => (issueOpen = true)}><Send class="size-4" /> Issue the bill</Button>
+				<Button onclick={() => (issueOpen = true)}><Send class="size-4" /> {w.issueTheBill}</Button>
 			</div>
 		{/if}
 	</Section>
@@ -300,46 +303,46 @@
 </div>
 
 <FormDialog
-	title="Add completed work"
+	title={w.addWorkTitle}
 	action="?/addWork"
 	data={data.forms.add}
 	schema={addWork}
 	bind:open={addOpen}
 	hideTrigger
 	resetOnSuccess
-	submitLabel="Add to bill"
+	submitLabel={w.addToBill}
 	disabled={!draft}
 >
 	{#snippet fields({ form })}
-		<ProcedurePicker {form} work={data.unbilled} legend="Completed work">
-			{#snippet empty()}Nothing else completed is waiting to be billed.{/snippet}
+		<ProcedurePicker {form} work={data.unbilled} legend={t.m.billing.tab.completedWork}>
+			{#snippet empty()}{w.nothingElse}{/snippet}
 		</ProcedurePicker>
 	{/snippet}
 </FormDialog>
 
 <FormDialog
-	title="Add a charge"
-	description="Something that is not charted treatment: a missed-appointment fee, something sold."
+	title={w.addCharge}
+	description={w.chargeDescription}
 	action="?/addCharge"
 	data={data.forms.charge}
 	schema={addCharge}
 	bind:open={chargeOpen}
 	hideTrigger
 	resetOnSuccess
-	submitLabel="Add charge"
+	submitLabel={w.addChargeSubmit}
 	disabled={!draft}
 >
 	{#snippet fields({ form, errors })}
 		<InputComp
-			label="What for"
+			label={w.whatFor}
 			name="description"
 			{form}
 			{errors}
-			placeholder="Missed appointment"
+			placeholder={w.whatForPlaceholder}
 		/>
-		<InputComp label="Quantity" name="quantity" type="number" step="1" min="1" {form} {errors} />
+		<InputComp label={w.quantity} name="quantity" type="number" step="1" min="1" {form} {errors} />
 		<InputComp
-			label="Price each (birr)"
+			label={w.priceEach}
 			name="unitPrice"
 			type="number"
 			step="0.01"
@@ -351,7 +354,7 @@
 </FormDialog>
 
 <FormDialog
-	title="Change line"
+	title={w.changeLineTitle}
 	action="?/editLine"
 	data={data.forms.edit}
 	schema={editLine}
@@ -362,10 +365,10 @@
 >
 	{#snippet fields({ form, errors, values })}
 		<input type="hidden" name="lineId" value={values.lineId} />
-		<InputComp label="What the patient reads" name="description" {form} {errors} />
-		<InputComp label="Quantity" name="quantity" type="number" step="1" min="1" {form} {errors} />
+		<InputComp label={w.whatPatientReads} name="description" {form} {errors} />
+		<InputComp label={w.quantity} name="quantity" type="number" step="1" min="1" {form} {errors} />
 		<InputComp
-			label="Price each (birr)"
+			label={w.priceEach}
 			name="unitPrice"
 			type="number"
 			step="0.01"
@@ -377,8 +380,8 @@
 </FormDialog>
 
 <FormDialog
-	title="Discount"
-	description="In birr, off the whole bill. Over {data.discountThreshold}% of it, a manager approves it before the bill can be paid. 0 removes it."
+	title={w.discount}
+	description={w.discountDescription(data.discountThreshold)}
 	action="?/discount"
 	data={data.forms.discount}
 	schema={discount}
@@ -388,7 +391,7 @@
 >
 	{#snippet fields({ form, errors })}
 		<InputComp
-			label="Discount (birr)"
+			label={w.discountLabel}
 			name="discount"
 			type="number"
 			step="0.01"
@@ -400,19 +403,19 @@
 </FormDialog>
 
 <FormDialog
-	title="Issue this bill"
-	description="It gets its number and is fixed from now on — what the patient holds and what the system shows stay the same."
+	title={w.issueTitle}
+	description={w.issueDescription}
 	action="?/issue"
 	data={data.forms.issue}
 	schema={issue}
 	bind:open={issueOpen}
 	hideTrigger
-	submitLabel="Issue"
+	submitLabel={w.issueSubmit}
 	disabled={!draft}
 >
 	{#snippet fields({ form, errors })}
 		<InputComp
-			label="Payment due"
+			label={w.paymentDue}
 			name="dueOn"
 			type="date"
 			oldDays={false}
@@ -420,14 +423,14 @@
 			required={false}
 			{form}
 			{errors}
-			description="Leave it empty when the patient pays on the day."
+			description={w.paymentDueHint}
 		/>
 	{/snippet}
 </FormDialog>
 
 <FormDialog
-	title="Who pays this bill"
-	description="An employer or insurer that pays for this patient. Their bills are paid, and show as owed, on the payer's own page."
+	title={w.whoPaysTitle}
+	description={w.whoPaysDescription}
 	action="?/payer"
 	data={data.forms.payer}
 	schema={payer}
@@ -436,27 +439,34 @@
 	disabled={!draft}
 >
 	{#snippet fields({ form, errors })}
-		<InputComp label="Bill to" name="customerId" type="select" {form} {errors} items={payerItems} />
+		<InputComp
+			label={w.billTo}
+			name="customerId"
+			type="select"
+			{form}
+			{errors}
+			items={payerItems}
+		/>
 	{/snippet}
 </FormDialog>
 
 <FormDialog
-	title="Void this bill"
-	description="A manager approves it in Approvals → Discounts and Voids. The bill keeps its number; its work can be billed again."
+	title={w.voidTitle}
+	description={w.voidDescription}
 	action="?/requestVoid"
 	data={data.forms.void}
 	schema={voidRequest}
 	bind:open={voidOpen}
 	hideTrigger
-	submitLabel="Ask to void"
+	submitLabel={w.voidSubmit}
 	disabled={!voidable}
 >
 	{#snippet fields({ form, errors })}
-		<InputComp label="Why" name="reason" {form} {errors} placeholder="Billed the wrong patient" />
+		<InputComp label={w.why} name="reason" {form} {errors} placeholder={w.voidPlaceholder} />
 	{/snippet}
 </FormDialog>
 
-<DialogComp title="Take a payment" variant="ghost" bind:open={payOpen}>
+<DialogComp title={t.m.billing.tab.takePayment} variant="ghost" bind:open={payOpen}>
 	{#snippet trigger()}{/snippet}
 	<div class="p-4">
 		<PaymentForm

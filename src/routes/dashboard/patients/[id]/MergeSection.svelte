@@ -8,6 +8,7 @@
 	import StepButton from '@nahu/admin-kit/formComponents/StepButton.svelte';
 	import type { PossibleDuplicate } from '$lib/server/patients';
 	import { mergeForm } from './mergeSchema';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
 
 	/**
 	 * Merging a duplicate registration into this chart — a super admin's. The records the
@@ -26,19 +27,20 @@
 		pick: SuperValidated<Record<string, unknown>>;
 	} = $props();
 
+	const t = useI18n();
+	const g = $derived(t.m.patients.merge);
 	let pickOpen = $state(false);
 	const confirm = (who: string) => ({
-		title: `Merge ${who} into this chart?`,
-		description:
-			'Everything on that record — visits, treatment, bills, notes, allergies — moves here, and it becomes a pointer to this chart. Its file number will lead here. This is recorded and is not undone from the screen.',
-		action: 'Merge'
+		title: g.confirmTitle(who),
+		description: g.confirmText,
+		action: g.confirm
 	});
 </script>
 
-<Section title="Duplicate records" IconComp={GitMerge} style="systemIcon" class="lg:col-span-3">
+<Section title={g.title} IconComp={GitMerge} style="systemIcon" class="lg:col-span-3">
 	{#snippet editDialog()}
 		<Button size="sm" variant="outline" class="ml-auto" onclick={() => (pickOpen = true)}>
-			Find another record
+			{g.find}
 		</Button>
 	{/snippet}
 	{#if duplicates.length}
@@ -47,14 +49,14 @@
 				<li class="flex flex-wrap items-center gap-3 py-2">
 					<a class="font-medium underline" href="/dashboard/patients/{other.id}">{other.name}</a>
 					<span class="text-muted-foreground">
-						{other.fileNo ? `File ${other.fileNo} · ` : ''}{other.reason}
+						{other.fileNo ? `${t.m.patients.file(other.fileNo)} · ` : ''}{other.reason}
 					</span>
 					<span class="ml-auto">
 						<StepButton
 							id="merge-{other.id}"
 							action="?/merge"
 							data={form}
-							label="Merge into this chart"
+							label={g.intoThis}
 							icon={GitMerge}
 							values={{ duplicateId: other.id }}
 							confirm={confirm(other.name)}
@@ -65,21 +67,20 @@
 		</ul>
 	{:else}
 		<p class="text-sm text-muted-foreground">
-			No other record shares this name or phone number. If this patient was registered twice under a
-			different spelling, find the other record by name.
+			{g.none}
 		</p>
 	{/if}
 </Section>
 
 <FormDialog
-	title="Merge another record into this chart"
-	description="The record you choose moves here and becomes a pointer to this chart. Check it is the same person first."
+	title={g.pickTitle}
+	description={g.pickText}
 	action="?/merge"
 	data={pick}
 	schema={mergeForm}
 	bind:open={pickOpen}
 	hideTrigger
-	submitLabel="Merge"
+	submitLabel={g.confirm}
 >
 	{#snippet fields({ form: store })}
 		<PatientPicker form={store} name="duplicateId" />

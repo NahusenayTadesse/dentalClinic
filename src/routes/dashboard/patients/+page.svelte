@@ -3,9 +3,14 @@
 	import Search from '@lucide/svelte/icons/search';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import DataTable from '@nahu/admin-kit/components/Table/data-table.svelte';
-	import { columns, owesColumn } from './columns';
+	import { patientColumns } from './columns';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
 
 	let { data } = $props();
+
+	const t = useI18n();
+	const l = $derived(t.m.patients.list);
+	const columns = $derived(patientColumns(t.m, data.showBalance));
 
 	const q = $derived(data.currentQuery);
 
@@ -31,31 +36,30 @@
 </script>
 
 <svelte:head>
-	<title>Patients</title>
+	<title>{l.title}</title>
 </svelte:head>
 
 {#if data.pagination.total === 0 && !isFiltered}
 	<div class="flex h-96 w-full flex-col items-center justify-center gap-4 text-center">
 		<p class="text-3xl">
-			{data.elsewhere > 0 ? 'No patients registered at this branch' : 'No patients registered yet'}
+			{data.elsewhere > 0 ? l.emptyHere : l.emptyAll}
 		</p>
 
 		{#if data.elsewhere > 0}
 			<p class="text-muted-foreground">
-				{data.elsewhere.toLocaleString()} registered at other branches. Search by name or phone to find
-				one — searches cover every branch.
+				{l.elsewhere(data.elsewhere.toLocaleString())}
 			</p>
 		{/if}
 
 		{#if data.canRegister}
-			<Button href="/dashboard/patients/add"><UserPlus /> Register a patient</Button>
+			<Button href="/dashboard/patients/add"><UserPlus /> {l.register}</Button>
 		{/if}
 	</div>
 {:else}
 	<div class="my-4 flex flex-wrap items-center justify-between gap-2">
-		<h2 class="text-2xl">Patients</h2>
+		<h2 class="text-2xl">{l.title}</h2>
 		{#if data.canRegister}
-			<Button href="/dashboard/patients/add"><UserPlus /> Register a patient</Button>
+			<Button href="/dashboard/patients/add"><UserPlus /> {l.register}</Button>
 		{/if}
 	</div>
 
@@ -63,18 +67,16 @@
 		<!-- The two rules of §15, said where they apply: browsing is this branch, searching is all. -->
 		<p class="flex items-center gap-2 text-sm text-muted-foreground">
 			<Search class="size-4" />
-			{q.search
-				? 'Searching every branch. Patients from elsewhere are marked, and can be treated here.'
-				: 'Showing patients registered at this branch. Search by name, file number or phone to look across every branch.'}
+			{q.search ? l.searching : l.browsing}
 		</p>
 	{/if}
 
 	<DataTable
 		data={data.patients}
-		columns={data.showBalance ? [...columns, owesColumn] : columns}
-		fileName="Patients"
+		{columns}
+		fileName={l.title}
 		charts
-		dateFilter="Registered"
+		dateFilter={l.registered}
 		facetKeys={[
 			'sex',
 			'age',
@@ -86,17 +88,7 @@
 			'referral',
 			'payer'
 		]}
-		facetLabels={{
-			sex: 'Sex',
-			age: 'Age',
-			bloodType: 'Blood type',
-			alerts: 'Alerts',
-			allergies: 'Allergy',
-			conditions: 'Condition',
-			history: 'Medical history',
-			referral: 'Heard of us',
-			payer: 'Who pays'
-		}}
+		facetLabels={l.facets}
 		facetParams={{
 			age: 'ageBand',
 			alerts: 'alert',

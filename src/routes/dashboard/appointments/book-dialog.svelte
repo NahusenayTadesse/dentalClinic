@@ -14,6 +14,7 @@
 	import { bookAppointment, type BookAppointment } from '$lib/forms/appointmentSchemas';
 	import { clinicClock, clinicToday, ethiopianClock, fromClinic } from '$lib/clinicTime';
 	import { availabilityWarnings, type ProviderAvailability } from '$lib/providerHours';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
 
 	type Option = { value: number; name: string; defaultMinutes?: number };
 
@@ -51,6 +52,10 @@
 		types: Option[];
 		chairs: { id: number; name: string }[];
 	} = $props();
+
+	const t = useI18n();
+	const b = $derived(t.m.appointments.book);
+	const c = $derived(t.m.common);
 
 	// svelte-ignore state_referenced_locally
 	const { form, errors, enhance, delayed, allErrors } = createForm(data, bookAppointment, {
@@ -101,7 +106,13 @@
 		const day = $form.walkIn ? clinicToday() : String($form.date ?? '');
 		const time = $form.walkIn ? clinicClock(new Date()) : String($form.time ?? '');
 		if (!who || !day || !/^\d\d:\d\d$/.test(time)) return [];
-		return availabilityWarnings(who, day, time, Number($form.durationMinutes) || 30);
+		return availabilityWarnings(
+			who,
+			day,
+			time,
+			Number($form.durationMinutes) || 30,
+			t.m.appointments.hours
+		);
 	});
 
 	const chairOptions = $derived(chairs.map((c) => ({ value: c.id, name: c.name })));
@@ -116,11 +127,9 @@
 <Dialog.Root bind:open>
 	<Dialog.Content class="max-h-[90vh] overflow-y-auto sm:max-w-xl">
 		<Dialog.Header>
-			<Dialog.Title>{$form.walkIn ? 'Add a walk-in' : 'Book an appointment'}</Dialog.Title>
+			<Dialog.Title>{$form.walkIn ? b.titleWalkIn : b.titleBook}</Dialog.Title>
 			<Dialog.Description>
-				{$form.walkIn
-					? 'The patient is here now. The appointment starts now and is marked arrived.'
-					: 'The chair and the dentist are checked for clashes, and closed days are refused.'}
+				{$form.walkIn ? b.descWalkIn : b.descBook}
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -133,12 +142,12 @@
 				<!-- The server re-reads the plan's work; the id only says which plan. -->
 				<input type="hidden" name="planId" value={plan.id} />
 				<div class="rounded-md border p-3 text-sm">
-					<p class="font-medium">Booked for the agreed treatment:</p>
+					<p class="font-medium">{b.planHeading}</p>
 					<ul class="mt-1 list-disc pl-5 text-muted-foreground">
 						{#each plan.work as line (line)}<li>{line}</li>{/each}
 					</ul>
 					<p class="mt-1 text-muted-foreground">
-						It is reserved to this visit and ticked when the visit is completed.
+						{b.planNote}
 					</p>
 				</div>
 			{/if}
@@ -148,21 +157,21 @@
 				{errors}
 				name="walkIn"
 				type="checkboxSingle"
-				label="Walk-in"
-				placeholder="The patient is here now"
+				label={b.walkIn}
+				placeholder={b.walkInHint}
 			/>
 
 			{#if !$form.walkIn}
 				<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-					<InputComp {form} {errors} name="date" label="Date" type="date" year />
+					<InputComp {form} {errors} name="date" label={c.date} type="date" year />
 					<InputComp
 						{form}
 						{errors}
 						name="time"
-						label="Time"
+						label={c.time}
 						type="time"
 						step={300}
-						description={ethiopian ? `Ethiopian time: ${ethiopian}` : undefined}
+						description={ethiopian ? c.ethiopianTime(ethiopian) : undefined}
 					/>
 				</div>
 			{/if}
@@ -172,7 +181,7 @@
 					{form}
 					{errors}
 					name="appointmentTypeId"
-					label="What for"
+					label={b.whatFor}
 					type="select"
 					items={types}
 				/>
@@ -180,7 +189,7 @@
 					{form}
 					{errors}
 					name="durationMinutes"
-					label="Minutes"
+					label={c.minutes}
 					type="number"
 					min={5}
 					max={720}
@@ -190,7 +199,7 @@
 					{form}
 					{errors}
 					name="providerId"
-					label="Dentist"
+					label={c.dentist}
 					type="select"
 					items={providers}
 				/>
@@ -198,13 +207,13 @@
 					{form}
 					{errors}
 					name="operatoryId"
-					label="Chair"
+					label={c.chair}
 					type="select"
 					items={chairOptions}
 				/>
 			</div>
 
-			<InputComp {form} {errors} name="note" label="Note" type="textarea" rows={2} />
+			<InputComp {form} {errors} name="note" label={c.note} type="textarea" rows={2} />
 
 			<div class="flex flex-wrap gap-6">
 				<InputComp
@@ -212,25 +221,25 @@
 					{errors}
 					name="isNewPatient"
 					type="checkboxSingle"
-					label="First visit"
-					placeholder="First visit to the clinic"
+					label={b.firstVisit}
+					placeholder={b.firstVisitHint}
 				/>
 				<InputComp
 					{form}
 					{errors}
 					name="isAsap"
 					type="checkboxSingle"
-					label="Short notice"
-					placeholder="Will come earlier if a slot frees up"
+					label={b.shortNotice}
+					placeholder={b.shortNoticeHint}
 				/>
 			</div>
 
 			<RiskAcknowledgement
 				show={hoursWarnings.length > 0}
 				name="hoursAcknowledged"
-				title="The dentist is not working then"
+				title={b.hoursTitle}
 				message={hoursWarnings.join(' ')}
-				confirmLabel="Book anyway"
+				confirmLabel={b.bookAnyway}
 				bind:checked={$form.hoursAcknowledged}
 			/>
 
@@ -240,10 +249,10 @@
 				disabled={$delayed || (hoursWarnings.length > 0 && !$form.hoursAcknowledged)}
 			>
 				{#if $delayed}
-					<LoadingBtn name="Saving" />
+					<LoadingBtn name={c.saving} />
 				{:else}
 					<CalendarPlus class="size-4" />
-					{$form.walkIn ? 'Add walk-in' : 'Book'}
+					{$form.walkIn ? b.submitWalkIn : b.submitBook}
 				{/if}
 			</Button>
 		</form>

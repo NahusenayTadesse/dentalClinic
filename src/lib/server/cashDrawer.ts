@@ -24,6 +24,8 @@ import { recordAudit, type AuditRequest } from '$lib/server/audit';
 import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { branchFilter, type BranchContext } from '$lib/server/branchScope';
 import { cents } from '$lib/invoiceStatus';
+import { messagesFor } from '$lib/i18n/messages';
+import { isLang } from '$lib/i18n/lang';
 
 /** A transaction on the database, as `db.transaction` hands it over. */
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -150,6 +152,19 @@ export async function closedSessions(
 	}));
 }
 
+/**
+ * What the billing writers — the drawer here, `payments.ts` and `invoiceWrites.ts` — say when they
+ * refuse a step, in the language of the request that asked.
+ *
+ * Read from `locals` by narrowing rather than by type: `AuditRequest` does not promise a language,
+ * and a caller without one (a test, a job) gets English, which is what the tests assert on.
+ */
+export function billingRefusals(event: { locals: object }) {
+	const { locals } = event;
+	const lang = 'lang' in locals && isLang(locals.lang) ? locals.lang : 'en';
+	return messagesFor(lang).billing.refused;
+}
+
 /** Opens the branch's drawer with the float in it. Refused while one is already open. */
 export async function openDrawer(
 	tx: Tx,
@@ -157,16 +172,10 @@ export async function openDrawer(
 	branchId: number | null,
 	openingFloat: number
 ): Promise<number> {
-	if (branchId === null) {
-		throw new WriteRefused(null, 'Choose the branch you are working at before opening a drawer.');
-	}
-	if (openingFloat < 0) throw new WriteRefused('openingFloat', 'A float cannot be negative.');
-	if (await openSessionFor(tx, branchId)) {
-		throw new WriteRefused(
-			null,
-			'The drawer is already open at this branch. Count and close it first.'
-		);
-	}
+	const say = billingRefusals(event);
+	if (branchId === null) throw new WriteRefused(null, say.chooseBranch);
+	if (openingFloat < 0) throw new WriteRefused('openingFloat', say.negativeFloat);
+	if (await openSessionFor(tx, branchId)) throw new WriteRefused(null, say.alreadyOpen);
 	const id = await insertReturningId(tx, cashSession, {
 		branchId,
 		openingFloat: cents(openingFloat),
@@ -190,11 +199,12 @@ export async function closeDrawer(
 	branchId: number | null,
 	count: { counted: number; banked: number; note: string | null }
 ): Promise<number> {
+	const say = billingRefusals(event);
 	const session = await openSessionFor(tx, branchId);
-	if (!session) throw new WriteRefused(null, 'There is no open drawer at this branch.');
-	if (count.counted < 0) throw new WriteRefused('countedAmount', 'A count cannot be negative.');
+	if (!session) throw new WriteRefused(null, say.noOpenDrawer);
+	if (count.counted < 0) throw new WriteRefused('countedAmount', say.negativeCount);
 	if (count.banked < 0 || count.banked > count.counted) {
-		throw new WriteRefused('bankedAmount', 'Banked must be between nothing and what was counted.');
+		throw new WriteRefused('bankedAmount', say.bankedRange);
 	}
 
 	const takings = await sessionTakings(session.id, tx);
@@ -202,10 +212,7 @@ export async function closeDrawer(
 	const variance = cents(count.counted - expected);
 	const note = count.note?.trim() || null;
 	if (variance !== 0 && !note) {
-		throw new WriteRefused(
-			'note',
-			`The count is ${variance > 0 ? 'over' : 'short'} by ${Math.abs(variance)}. Say what you know about why.`
-		);
+		throw new WriteRefused('note', say.countOff(variance > 0, Math.abs(variance)));
 	}
 
 	const written = {

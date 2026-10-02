@@ -22,16 +22,26 @@
  */
 import { minutesOf, scheduleWeekday } from '$lib/attendance';
 
-/** Monday-first, as `staff_schedule.week_day` stores them. */
-export const WEEKDAY_NAMES = [
-	'Monday',
-	'Tuesday',
-	'Wednesday',
-	'Thursday',
-	'Friday',
-	'Saturday',
-	'Sunday'
-] as const;
+/** How the warnings are worded — English here, Amharic in the messages (`$lib/i18n`). */
+export type HoursWords = {
+	/** Monday first, as `staff_schedule.week_day` counts. */
+	weekdays: readonly string[];
+	onLeave: (name: string) => string;
+	dayOff: (name: string, weekday: string) => string;
+	outside: (name: string, spans: string, weekday: string) => string;
+	/** Joins two stretches of one day: "08:00–12:00 and 14:00–18:00". */
+	and: string;
+};
+
+/** The warnings in English, which the server's audit row and the tests read. */
+export const HOURS_WORDS_EN: HoursWords = {
+	weekdays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+	onLeave: (name) => `${name} is on approved leave that day.`,
+	dayOff: (name, weekday) => `${name} does not work on ${weekday}s.`,
+	outside: (name, spans, weekday) =>
+		`${name} works ${spans} on ${weekday}s, and this runs outside those hours.`,
+	and: ' and '
+};
 
 /** One stretch of a dentist's week: `HH:MM` or `HH:MM:SS` clock times, clinic-local. */
 export type WorkingHours = { weekDay: number; start: string; end: string };
@@ -54,22 +64,24 @@ const clock = (time: string) => time.slice(0, 5);
  *
  * @param day clinic-local `YYYY-MM-DD`
  * @param time clinic-local `HH:mm`
+ * @param words how to say it — the viewer's language on screen, English by default
  */
 export function availabilityWarnings(
 	who: ProviderAvailability,
 	day: string,
 	time: string,
-	durationMinutes: number
+	durationMinutes: number,
+	words: HoursWords = HOURS_WORDS_EN
 ): string[] {
 	if (who.leave.some((l) => l.from <= day && l.to >= day)) {
-		return [`${who.name} is on approved leave that day.`];
+		return [words.onLeave(who.name)];
 	}
 	if (who.hours.length === 0) return [];
 
 	const weekDay = scheduleWeekday(day);
-	const dayName = WEEKDAY_NAMES[weekDay];
+	const dayName = words.weekdays[weekDay];
 	const today = who.hours.filter((h) => h.weekDay === weekDay);
-	if (today.length === 0) return [`${who.name} does not work on ${dayName}s.`];
+	if (today.length === 0) return [words.dayOff(who.name, dayName)];
 
 	const start = minutesOf(time);
 	const end = start + durationMinutes;
@@ -79,6 +91,6 @@ export function availabilityWarnings(
 	const spans = today
 		.toSorted((a, b) => minutesOf(a.start) - minutesOf(b.start))
 		.map((h) => `${clock(h.start)}–${clock(h.end)}`)
-		.join(' and ');
-	return [`${who.name} works ${spans} on ${dayName}s, and this runs outside those hours.`];
+		.join(words.and);
+	return [words.outside(who.name, spans, dayName)];
 }

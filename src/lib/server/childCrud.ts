@@ -12,6 +12,7 @@ import { notDeleted, softDeleteOwnedRecord } from '$lib/server/softDelete';
 import { recordAudit, type AuditedTable } from '$lib/server/audit';
 import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { requirePermission, requireSuperAdmin } from '$lib/server/permissions';
+import { messagesFor } from '$lib/i18n/messages';
 
 /**
  * CRUD for a table of rows owned by one parent record — the tabs on a detail page.
@@ -63,6 +64,8 @@ export interface ChildCrudOptions {
 	ownerColumn: string;
 	/** Singular, human readable, for toasts and the delete prompt. */
 	label: string;
+	/** The label in Amharic, for the replies an Amharic screen gets. English when left out. */
+	labelAm?: string;
 	addSchema: AnySchema;
 	editSchema: AnySchema;
 	/** Fields holding an uploaded File; saved to disk, stored as a filename. */
@@ -153,8 +156,15 @@ export function childCrud({
 	transform,
 	audit,
 	permission,
-	superAdminDelete = false
+	superAdminDelete = false,
+	labelAm
 }: ChildCrudOptions) {
+	/** The section's words in the request's language: its label, and the sentences around it. */
+	const say = (event: RequestEvent) => {
+		const lang = event.locals.lang ?? 'en';
+		return { name: lang === 'am' ? (labelAm ?? label) : label, s: messagesFor(lang).common.crud };
+	};
+
 	const owner = table[ownerColumn];
 	if (!owner) throw new Error(`childCrud: ${ownerColumn} is not a column on this table`);
 
@@ -226,11 +236,7 @@ export function childCrud({
 				const form = await superValidate(event.request, zod4(addSchema));
 
 				if (!form.valid) {
-					return message(
-						form,
-						{ type: 'error', text: 'Please check the form for errors' },
-						{ status: 400 }
-					);
+					return message(form, { type: 'error', text: say(event).s.checkForm }, { status: 400 });
 				}
 
 				try {
@@ -251,20 +257,24 @@ export function childCrud({
 					} else {
 						await db.insert(table).values(written as never);
 					}
-					return message(form, { type: 'success', text: `${label} added` });
+					return message(form, { type: 'success', text: say(event).s.added(say(event).name) });
 				} catch (err) {
 					if (err instanceof WriteRefused) return refused(form, err);
 					if (isDuplicateKey(err)) {
-						setError(form, 'name' as never, `That ${label.toLowerCase()} already exists.`);
+						setError(form, 'name' as never, say(event).s.exists(say(event).name));
 						return message(
 							form,
-							{ type: 'error', text: `That ${label.toLowerCase()} already exists.` },
+							{ type: 'error', text: say(event).s.exists(say(event).name) },
 							{ status: 400 }
 						);
 					}
 
 					console.error(`Failed to add ${label}:`, err);
-					return message(form, { type: 'error', text: `Could not add ${label}` }, { status: 500 });
+					return message(
+						form,
+						{ type: 'error', text: say(event).s.couldNotAdd(say(event).name) },
+						{ status: 500 }
+					);
 				}
 			},
 
@@ -273,11 +283,7 @@ export function childCrud({
 				const form = await superValidate(event.request, zod4(editSchema));
 
 				if (!form.valid) {
-					return message(
-						form,
-						{ type: 'error', text: 'Please check the form for errors' },
-						{ status: 400 }
-					);
+					return message(form, { type: 'error', text: say(event).s.checkForm }, { status: 400 });
 				}
 
 				try {
@@ -315,10 +321,10 @@ export function childCrud({
 					});
 
 					return found
-						? message(form, { type: 'success', text: `${label} updated` })
+						? message(form, { type: 'success', text: say(event).s.updated(say(event).name) })
 						: message(
 								form,
-								{ type: 'error', text: `That ${label.toLowerCase()} no longer exists.` },
+								{ type: 'error', text: say(event).s.gone(say(event).name) },
 								{ status: 404 }
 							);
 				} catch (err) {
@@ -326,7 +332,7 @@ export function childCrud({
 					console.error(`Failed to update ${label}:`, err);
 					return message(
 						form,
-						{ type: 'error', text: `Could not update ${label}` },
+						{ type: 'error', text: say(event).s.couldNotUpdate(say(event).name) },
 						{ status: 500 }
 					);
 				}
@@ -346,7 +352,7 @@ export function childCrud({
 				const form = await superValidate(event.request, zod4(idSchema));
 
 				if (!form.valid) {
-					return message(form, { type: 'error', text: 'Invalid request' }, { status: 400 });
+					return message(form, { type: 'error', text: say(event).s.invalid }, { status: 400 });
 				}
 
 				try {
@@ -371,17 +377,17 @@ export function childCrud({
 					});
 
 					return removed
-						? message(form, { type: 'success', text: `${label} deleted` })
+						? message(form, { type: 'success', text: say(event).s.deleted(say(event).name) })
 						: message(
 								form,
-								{ type: 'error', text: `That ${label.toLowerCase()} no longer exists.` },
+								{ type: 'error', text: say(event).s.gone(say(event).name) },
 								{ status: 404 }
 							);
 				} catch (err) {
 					console.error(`Failed to delete ${label}:`, err);
 					return message(
 						form,
-						{ type: 'error', text: `Could not delete ${label}` },
+						{ type: 'error', text: say(event).s.couldNotDelete(say(event).name) },
 						{ status: 500 }
 					);
 				}

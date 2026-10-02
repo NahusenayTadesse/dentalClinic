@@ -3,7 +3,8 @@ import { renderComponent } from '@nahu/admin-kit/components/ui/data-table/index.
 import Statuses from '@nahu/admin-kit/components/Table/statuses.svelte';
 import Copy from '@nahu/admin-kit/Copy.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
-import { STATUS_LABEL, isAppointmentStatus } from '$lib/appointmentStatus';
+import { isAppointmentStatus } from '$lib/appointmentStatus';
+import type { Messages } from '$lib/i18n/messages';
 import { clinicClock, clinicDate, ethiopianClock } from '$lib/clinicTime';
 import { formatEthiopianDate } from '$lib/global.svelte';
 import ReminderAction from './ReminderAction.svelte';
@@ -13,24 +14,29 @@ import type { PageData } from './$types';
 type Row = PageData['rows'][number];
 
 /** When a reminder last went out: the time if it was today, the day if earlier. */
-function remindedWhen(at: Date | string | null): string {
-	if (!at) return 'Not yet';
+function remindedWhen(m: Messages, at: Date | string | null): string {
+	const r = m.appointments.reminders;
+	if (!at) return r.notYet;
 	const day = clinicDate(at);
 	return day === clinicDate(new Date())
-		? `Today, ${clinicClock(at)}`
+		? r.todayAt(clinicClock(at))
 		: formatEthiopianDate(new Date(at));
 }
 
 /**
  * The reminder list. The time opens the appointment in the day view; the patient opens their chart
  * for someone who may (CLAUDE.md §12). The `reminded` column doubles as a facet, so the desk can
- * narrow to who is left to ring.
+ * narrow to who is left to ring. In the viewer's language; rebuilt in a `$derived` on a switch.
  */
-export function reminderColumns(onremind: ((row: Row) => void) | null): ColumnDef<Row>[] {
+export function reminderColumns(
+	m: Messages,
+	onremind: ((row: Row) => void) | null
+): ColumnDef<Row>[] {
+	const r = m.appointments.reminders;
 	const columns: ColumnDef<Row>[] = [
 		{
 			id: 'time',
-			header: 'Time',
+			header: m.common.time,
 			accessorFn: (row) => clinicClock(row.startsAt),
 			cell: ({ row }) =>
 				renderComponent(DataTableLinks, {
@@ -41,7 +47,7 @@ export function reminderColumns(onremind: ((row: Row) => void) | null): ColumnDe
 		},
 		{
 			id: 'patient',
-			header: 'Patient',
+			header: m.common.patient,
 			accessorFn: (row) => row.patient,
 			cell: ({ row }) =>
 				renderComponent(DataTableLinks, {
@@ -52,23 +58,29 @@ export function reminderColumns(onremind: ((row: Row) => void) | null): ColumnDe
 		},
 		{
 			accessorKey: 'phone',
-			header: 'Phone',
+			header: m.common.phone,
 			cell: ({ row }) => renderComponent(Copy, { data: row.original.phone })
 		},
-		{ id: 'type', header: 'For', accessorFn: (row) => row.type ?? 'A visit' },
-		{ id: 'provider', header: 'Dentist', accessorFn: (row) => row.provider ?? 'Not assigned' },
+		{ id: 'type', header: m.common.what, accessorFn: (row) => row.type ?? m.common.aVisit },
+		{
+			id: 'provider',
+			header: m.common.dentist,
+			accessorFn: (row) => row.provider ?? m.common.notAssigned
+		},
 		{
 			id: 'status',
-			header: 'Status',
+			header: m.common.status,
 			accessorFn: (row) =>
-				isAppointmentStatus(row.status) ? STATUS_LABEL[row.status].label : row.status,
-			cell: ({ getValue }) => renderComponent(Statuses, { status: String(getValue()) })
+				isAppointmentStatus(row.status) ? m.appointments.status[row.status] : row.status,
+			// The colour from the status, the words in the viewer's language.
+			cell: ({ row, getValue }) =>
+				renderComponent(Statuses, { status: row.original.status, label: String(getValue()) })
 		},
 		{
 			id: 'reminded',
-			header: 'Reminded',
-			accessorFn: (row) => (row.reminderSentAt ? 'Reminded' : 'Not reminded'),
-			cell: ({ row }) => remindedWhen(row.original.reminderSentAt)
+			header: r.reminded,
+			accessorFn: (row) => (row.reminderSentAt ? r.reminded : r.notReminded),
+			cell: ({ row }) => remindedWhen(m, row.original.reminderSentAt)
 		}
 	];
 	if (onremind) {

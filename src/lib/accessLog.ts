@@ -25,7 +25,28 @@ export const VIEWED_RECORD_LABEL: Record<string, string> = {
 /** What was done: opened on screen, or printed — paper that has left the building. */
 export const VIEW_ACTION_LABEL: Record<string, string> = { view: 'Opened', print: 'Printed' };
 
-/** "Opened Dental chart", "Printed Billing". */
-export function viewedLabel(action: string, recordType: string): string {
+/** The parts of the chart in Amharic, for the overview's "who opened this" in an Amharic screen. */
+const VIEWED_RECORD_LABEL_AM: Record<string, string> = {
+	summary: 'አጠቃላይ እይታ',
+	allergies: 'አለርጂዎች',
+	conditions: 'ሕመሞች',
+	medications: 'መድኃኒቶች',
+	note: 'ማስታወሻዎች',
+	prescription: 'የመድኃኒት ማዘዣዎች',
+	file: 'ፋይሎች',
+	procedure: 'የጥርስ ገበታ',
+	treatmentPlan: 'የሕክምና ዕቅዶች',
+	invoice: 'ክፍያ',
+	consent: 'ስምምነቶች',
+	labCase: 'የላብራቶሪ ሥራ'
+};
+
+/** "Opened Dental chart", "Printed Billing" — or, in Amharic, "የጥርስ ገበታ ተከፍቷል". */
+export function viewedLabel(action: string, recordType: string, lang: 'en' | 'am' = 'en'): string {
+	if (lang === 'am') {
+		const part =
+			VIEWED_RECORD_LABEL_AM[recordType] ?? VIEWED_RECORD_LABEL[recordType] ?? recordType;
+		return `${part} ${action === 'print' ? 'ታትሟል' : 'ተከፍቷል'}`;
+	}
 	return `${VIEW_ACTION_LABEL[action] ?? action} ${VIEWED_RECORD_LABEL[recordType] ?? recordType}`;
 }

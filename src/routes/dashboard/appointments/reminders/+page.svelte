@@ -13,12 +13,15 @@
 	import { clinicClock } from '$lib/clinicTime';
 	import { reminderColumns } from './columns';
 	import { logReminder, type LogReminder } from './schema';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
 
 	/**
 	 * The reminder call list: one day's appointments still to come, with who has been rung. Ring,
 	 * then press **Reminded** — ticking that they will come confirms the visit in the same step.
 	 */
 	let { data } = $props();
+	const t = useI18n();
+	const r = $derived(t.m.appointments.reminders);
 
 	let open = $state(false);
 	let seed = $state<Partial<LogReminder>>({});
@@ -26,6 +29,7 @@
 
 	const columns = $derived(
 		reminderColumns(
+			t.m,
 			data.canRemind
 				? (row) => {
 						calling = `${row.patient} · ${clinicClock(row.startsAt)}`;
@@ -45,14 +49,14 @@
 	const TILES = $derived<Stat[]>([
 		{
 			key: 'appointments',
-			label: 'Appointments',
+			label: r.tileAppointments,
 			value: data.rows.length,
 			format: 'count',
 			group: 'reminders'
 		},
 		{
 			key: 'left',
-			label: 'Left to remind',
+			label: r.tileLeft,
 			value: left,
 			format: 'count',
 			group: 'reminders',
@@ -60,43 +64,51 @@
 		},
 		{
 			key: 'confirmed',
-			label: 'Confirmed',
+			label: r.tileConfirmed,
 			value: confirmed,
 			format: 'count',
 			group: 'reminders'
 		},
 		{
 			key: 'effect',
-			label: 'No-shows when reminded',
+			label: r.tileEffect,
 			value: percent(data.effect.reminded.rate),
 			format: 'percent',
 			group: 'reminders',
 			hint:
 				data.effect.reminded.rate === null || data.effect.notReminded.rate === null
-					? `Not enough visits in the last ${data.effectWindow} days to compare`
-					: `Against ${percent(data.effect.notReminded.rate)}% when not reminded · ${data.effect.reminded.visits} and ${data.effect.notReminded.visits} visits, last ${data.effectWindow} days`
+					? r.notEnough(data.effectWindow)
+					: r.against(
+							percent(data.effect.notReminded.rate),
+							data.effect.reminded.visits,
+							data.effect.notReminded.visits,
+							data.effectWindow
+						)
 		}
 	]);
 
 	const dayLabel = $derived(
-		data.day === data.today ? 'Today' : data.day === data.tomorrow ? 'Tomorrow' : null
+		data.day === data.today
+			? t.m.common.today
+			: data.day === data.tomorrow
+				? t.m.common.tomorrow
+				: null
 	);
 </script>
 
 <svelte:head>
-	<title>Reminders</title>
+	<title>{r.title}</title>
 </svelte:head>
 
 <div class="mx-auto flex max-w-305 flex-col gap-6 p-4 md:p-8">
 	<header class="flex flex-col gap-1">
-		<h1 class="text-3xl font-extrabold tracking-tight">Reminders</h1>
+		<h1 class="text-3xl font-extrabold tracking-tight">{r.title}</h1>
 		<p class="text-muted-foreground">
-			Appointments at this branch still to come on one day. Ring each patient and record it here, so
-			nobody is rung twice and the clinic can see whether reminding cuts no-shows.
+			{r.intro}
 		</p>
 	</header>
 
-	<section class="grid grid-cols-2 gap-4 sm:grid-cols-4" aria-label="Reminders at a glance">
+	<section class="grid grid-cols-2 gap-4 sm:grid-cols-4" aria-label={r.title}>
 		{#each TILES as stat (stat.key)}
 			<StatCard {stat} amharicMoney={false} />
 		{/each}
@@ -110,21 +122,31 @@
 		style="identityIcon"
 	>
 		{#snippet editDialog()}
-			<div class="ml-auto flex flex-wrap gap-1" role="group" aria-label="Which day">
-				<Button size="sm" variant="outline" href="?date={data.previousDay}" aria-label="Day before">
+			<div class="ml-auto flex flex-wrap gap-1" role="group" aria-label={r.whichDay}>
+				<Button
+					size="sm"
+					variant="outline"
+					href="?date={data.previousDay}"
+					aria-label={t.m.common.dayBefore}
+				>
 					<ChevronLeft class="size-4" />
 				</Button>
 				<Button
 					size="sm"
 					variant={data.day === data.today ? 'default' : 'outline'}
-					href="?date={data.today}">Today</Button
+					href="?date={data.today}">{t.m.common.today}</Button
 				>
 				<Button
 					size="sm"
 					variant={data.day === data.tomorrow ? 'default' : 'outline'}
-					href="?date={data.tomorrow}">Tomorrow</Button
+					href="?date={data.tomorrow}">{t.m.common.tomorrow}</Button
 				>
-				<Button size="sm" variant="outline" href="?date={data.nextDay}" aria-label="Day after">
+				<Button
+					size="sm"
+					variant="outline"
+					href="?date={data.nextDay}"
+					aria-label={t.m.common.dayAfter}
+				>
 					<ChevronRight class="size-4" />
 				</Button>
 			</div>
@@ -134,28 +156,33 @@
 				{columns}
 				data={data.rows}
 				facetKeys={['reminded', 'status', 'provider']}
+				facetLabels={{
+					reminded: r.reminded,
+					status: t.m.common.status,
+					provider: t.m.common.dentist
+				}}
 				search
 				fileName="reminders-{data.day}"
 				height="auto"
 			/>
 		{:else}
 			<p class="text-sm text-muted-foreground">
-				No appointments still to come at this branch on this day.
+				{r.empty}
 			</p>
 		{/if}
 	</Section>
 </div>
 
 <FormDialog
-	title="Reminded {calling}"
-	description="Record that the patient has been reminded of this appointment."
+	title={r.dialogTitle(calling)}
+	description={r.dialogDescription}
 	action="?/logReminder"
 	data={data.form}
 	schema={logReminder}
 	bind:open
 	{seed}
 	hideTrigger
-	submitLabel="Record it"
+	submitLabel={r.recordIt}
 >
 	{#snippet fields({ form, errors, values })}
 		<input type="hidden" name="appointmentId" value={values.appointmentId} />
@@ -164,8 +191,8 @@
 			{errors}
 			name="confirmed"
 			type="checkboxSingle"
-			label="Confirmed"
-			placeholder="They said they will come"
+			label={r.confirmed}
+			placeholder={r.confirmedHint}
 		/>
 	{/snippet}
 </FormDialog>

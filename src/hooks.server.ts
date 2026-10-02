@@ -20,6 +20,7 @@ import { notDeleted } from '$lib/server/softDelete';
 import { computeIsSuperAdmin } from '$lib/server/permissions';
 import { PROTECTED_ROOT, ruleForPath } from '$lib/routeAccess';
 import { BRANCH_COOKIE, resolveBranch } from '$lib/server/branchScope';
+import { LANG_COOKIE, isLang } from '$lib/i18n/lang';
 
 /**
  * Blocks the public sign-up endpoint.
@@ -223,11 +224,25 @@ const handleLeaveBackstop: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
+/**
+ * The interface language, from the viewer's cookie, onto `locals.lang` and the page's `<html lang>`
+ * — which is what tells a screen reader to read Amharic as Amharic. First in the chain, so even a
+ * refusal page is in the viewer's language. An unknown or missing cookie is English.
+ */
+const handleLanguage: Handle = async ({ event, resolve }) => {
+	const asked = event.cookies.get(LANG_COOKIE);
+	event.locals.lang = isLang(asked) ? asked : 'en';
+	return resolve(event, {
+		transformPageChunk: ({ html }) => html.replace('%lang%', event.locals.lang)
+	});
+};
+
 /** Serves better-auth's own endpoints under /api/auth. */
 const handleBetterAuth: Handle = async ({ event, resolve }) =>
 	svelteKitHandler({ event, resolve, auth, building });
 
 export const handle = sequence(
+	handleLanguage,
 	handleBlockPublicSignup,
 	handleBetterAuth,
 	handleAuth,

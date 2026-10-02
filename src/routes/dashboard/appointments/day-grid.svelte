@@ -2,7 +2,8 @@
 	import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
 	import FlaskConical from '@lucide/svelte/icons/flask-conical';
 	import { clinicClock, clinicMinutes } from '$lib/clinicTime';
-	import { STATUS_LABEL, isAppointmentStatus, isLive } from '$lib/appointmentStatus';
+	import { isAppointmentStatus, isLive } from '$lib/appointmentStatus';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
 	import type { DayAppointment } from './types';
 
 	/**
@@ -37,6 +38,9 @@
 		onOpen: (appointment: DayAppointment) => void;
 	} = $props();
 
+	const t = useI18n();
+	const g = $derived(t.m.appointments.grid);
+
 	/** Pixels per minute: a 30-minute slot is 48px, tall enough for two lines. */
 	const SCALE = 1.6;
 	const SLOT = 15;
@@ -60,7 +64,7 @@
 		...(appointments.some(
 			(a) => a.operatoryId === null || !chairs.some((c) => c.id === a.operatoryId)
 		)
-			? [{ id: null, name: 'No chair' }]
+			? [{ id: null, name: g.noChair }]
 			: [])
 	]);
 
@@ -81,7 +85,8 @@
 
 	function clickSlot(event: MouseEvent, chairId: number | null) {
 		if (!canBook) return;
-		const target = event.currentTarget as HTMLElement;
+		const target = event.currentTarget;
+		if (!(target instanceof HTMLElement)) return;
 		const offset = event.clientY - target.getBoundingClientRect().top;
 		const minutes = first + Math.floor(offset / SCALE / SLOT) * SLOT;
 		const hh = String(Math.floor(minutes / 60)).padStart(2, '0');
@@ -136,7 +141,7 @@
 				class="relative border-l {canBook ? 'cursor-copy' : ''}"
 				style="height: {(last - first) * SCALE}px"
 				onclick={(e) => clickSlot(e, column.id)}
-				title={canBook ? 'Click an empty time to book' : undefined}
+				title={canBook ? g.clickToBook : undefined}
 			>
 				{#each hours as hour (hour)}
 					<div class="absolute inset-x-0 border-t" style="top: {(hour - first) * SCALE}px"></div>
@@ -179,18 +184,18 @@
 							{#if a.lab?.ready || a.lab?.overdue}
 								<FlaskConical
 									class="ml-auto size-3 shrink-0 {a.lab.overdue ? 'text-destructive' : ''}"
-									aria-label={a.lab.overdue ? 'Lab work overdue' : 'Lab work back to fit'}
+									aria-label={a.lab.overdue ? g.labOverdue : g.labBack}
 								/>
 							{/if}
 						</span>
 						<span class="truncate text-muted-foreground">
-							{clinicClock(a.startsAt)} · {a.type ?? 'Appointment'}{a.provider
+							{clinicClock(a.startsAt)} · {a.type ?? g.appointment}{a.provider
 								? ` · ${a.provider}`
 								: ''}
 						</span>
 						{#if a.status !== 'scheduled'}
 							<span class="truncate text-muted-foreground">
-								{isAppointmentStatus(a.status) ? STATUS_LABEL[a.status].label : a.status}
+								{isAppointmentStatus(a.status) ? t.m.appointments.status[a.status] : a.status}
 							</span>
 						{/if}
 					</button>

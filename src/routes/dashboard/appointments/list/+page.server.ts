@@ -16,7 +16,8 @@ import { patientFullName, patientSearch } from '$lib/server/patients';
 import { appointmentQuery, providerName } from '$lib/server/appointments';
 import { alias } from 'drizzle-orm/mysql-core';
 import { employee } from '$lib/server/db/schema';
-import { APPOINTMENT_STATUSES, STATUS_LABEL, isAppointmentStatus } from '$lib/appointmentStatus';
+import { APPOINTMENT_STATUSES, isAppointmentStatus } from '$lib/appointmentStatus';
+import { messagesFor } from '$lib/i18n/messages';
 import { clinicDayRange, isIsoDate } from '$lib/clinicTime';
 import type { PageServerLoad } from './$types';
 
@@ -101,6 +102,11 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		.offset(query.offset);
 
 	const providerEmployee = alias(employee, 'provider_employee');
+	// Facet labels in the viewer's language. A missing name is filled in here rather than in SQL,
+	// so no language is written into a query.
+	const m = messagesFor(locals.lang);
+	const named = async <R extends { label: string | null }>(rows: Promise<R[]>, none: string) =>
+		(await rows).map((r) => ({ ...r, label: r.label ?? none }));
 
 	type FilterKey = (typeof FILTERS)[number];
 	const tally = (
@@ -129,25 +135,34 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 				)
 			).map((r) => ({
 				...r,
-				label: isAppointmentStatus(r.value) ? STATUS_LABEL[r.value].label : String(r.value)
+				label: isAppointmentStatus(r.value) ? m.appointments.status[r.value] : String(r.value)
 			})),
 		type: () =>
-			tally(
-				sql<string>`coalesce(${appointmentType.id}, 'none')`,
-				sql<string>`coalesce(${appointmentType.name}, 'Not given')`,
-				'typeId'
+			named(
+				tally(
+					sql<string>`coalesce(${appointmentType.id}, 'none')`,
+					sql<string | null>`${appointmentType.name}`,
+					'typeId'
+				),
+				m.appointments.list.notGiven
 			),
 		provider: () =>
-			tally(
-				sql<string>`coalesce(${provider.id}, 'none')`,
-				sql<string>`coalesce(${providerName}, 'Not assigned')`,
-				'providerId'
+			named(
+				tally(
+					sql<string>`coalesce(${provider.id}, 'none')`,
+					sql<string | null>`${providerName}`,
+					'providerId'
+				),
+				m.common.notAssigned
 			),
 		chair: () =>
-			tally(
-				sql<string>`coalesce(${operatory.id}, 'none')`,
-				sql<string>`coalesce(${operatory.name}, 'No chair')`,
-				'chairId'
+			named(
+				tally(
+					sql<string>`coalesce(${operatory.id}, 'none')`,
+					sql<string | null>`${operatory.name}`,
+					'chairId'
+				),
+				m.appointments.list.noChair
 			),
 		flags: async () => {
 			const counted = async (
@@ -163,8 +178,8 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 				return { value: flag, label, count: Number(row?.count ?? 0) };
 			};
 			return Promise.all([
-				counted('new', 'First visit', 'isNewPatient'),
-				counted('asap', 'Short notice', 'isAsap')
+				counted('new', m.appointments.list.firstVisit, 'isNewPatient'),
+				counted('asap', m.appointments.list.shortNotice, 'isAsap')
 			]);
 		}
 	});

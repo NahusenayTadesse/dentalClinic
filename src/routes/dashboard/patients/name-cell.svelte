@@ -2,6 +2,7 @@
 	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
 	import * as Tooltip from '@nahu/admin-kit/components/ui/tooltip/index.js';
 	import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
 
 	/**
 	 * A patient's name in the list, and whether they belong to another branch.
@@ -23,22 +24,25 @@
 		fromOtherBranch?: boolean;
 		branch: string | null;
 	} = $props();
+
+	const t = useI18n();
+	const pm = $derived(t.m.patients);
 </script>
 
 <div class="flex flex-col items-start gap-0.5">
 	<DataTableLinks {id} {name} entity="patient" />
 	<div class="flex items-center gap-1 px-3 text-xs text-muted-foreground">
-		{fileNo ? `File ${fileNo}` : 'No file number'}
+		{fileNo ? pm.file(fileNo) : pm.noFileNumber}
 		{#if fromOtherBranch}
 			<Tooltip.Provider>
 				<Tooltip.Root>
 					<Tooltip.Trigger>
 						<Badge variant="outline" class="border-amber-500 text-amber-700 dark:text-amber-400">
-							{branch ?? 'Other branch'}
+							{branch ?? pm.otherBranch}
 						</Badge>
 					</Tooltip.Trigger>
 					<Tooltip.Content>
-						This patient is not from this branch, but can be treated here.
+						{pm.notFromHere}
 					</Tooltip.Content>
 				</Tooltip.Root>
 			</Tooltip.Provider>

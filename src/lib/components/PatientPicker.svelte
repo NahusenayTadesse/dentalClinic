@@ -7,6 +7,7 @@
 	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
 	import { Button } from '@nahu/admin-kit/components/ui/button/index.js';
 	import { Badge } from '@nahu/admin-kit/components/ui/badge/index.js';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
 
 	/**
 	 * Choose a patient by searching for them — for any form with a `patientId`.
@@ -47,6 +48,9 @@
 		initial?: { id: number; name: string; fileNo: string | null } | null;
 		error?: string[];
 	} = $props();
+
+	const t = useI18n();
+	const pm = $derived(t.m.patients);
 
 	// svelte-ignore state_referenced_locally
 	let chosen = $state<{ id: number; name: string; fileNo: string | null } | null>(initial);
@@ -89,7 +93,7 @@
 </script>
 
 <div class="flex flex-col gap-2">
-	<span class="text-sm font-medium">Patient</span>
+	<span class="text-sm font-medium">{pm.picker.label}</span>
 	<input type="hidden" {name} value={chosen?.id ?? ''} />
 
 	{#if chosen}
@@ -97,10 +101,10 @@
 			<div class="flex flex-col">
 				<span class="font-medium">{chosen.name}</span>
 				<span class="text-xs text-muted-foreground">
-					{chosen.fileNo ? `File ${chosen.fileNo}` : 'No file number'}
+					{chosen.fileNo ? pm.file(chosen.fileNo) : pm.noFileNumber}
 				</span>
 			</div>
-			<Button variant="ghost" size="icon" aria-label="Choose a different patient" onclick={clear}>
+			<Button variant="ghost" size="icon" aria-label={pm.picker.change} onclick={clear}>
 				<X class="size-4" />
 			</Button>
 		</div>
@@ -109,7 +113,7 @@
 			<Search class="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
 			<Input
 				class="pl-9"
-				placeholder="Name, file number or phone"
+				placeholder={pm.picker.placeholder}
 				value={query}
 				oninput={(e) => search(e.currentTarget.value)}
 				aria-invalid={error?.length ? 'true' : undefined}
@@ -117,10 +121,10 @@
 		</div>
 
 		{#if searching}
-			<p class="text-xs text-muted-foreground">Searching…</p>
+			<p class="text-xs text-muted-foreground">{pm.picker.searching}</p>
 		{:else if query.trim().length >= 2 && !results.length}
 			<p class="text-xs text-muted-foreground">
-				No patient matches. Register them first from Patients → Register a patient.
+				{pm.picker.none}
 			</p>
 		{/if}
 
@@ -135,10 +139,10 @@
 						>
 							<span class="font-medium">{result.name}</span>
 							<span class="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-								{result.fileNo ? `File ${result.fileNo}` : 'No file number'}
+								{result.fileNo ? pm.file(result.fileNo) : pm.noFileNumber}
 								{#if result.phone}· {result.phone}{/if}
 								{#if result.fromOtherBranch}
-									<Badge variant="outline">{result.branch ?? 'Other branch'}</Badge>
+									<Badge variant="outline">{result.branch ?? pm.otherBranch}</Badge>
 								{/if}
 								{#each result.severeAllergies as allergy (allergy)}
 									<Badge variant="destructive" class="gap-1">

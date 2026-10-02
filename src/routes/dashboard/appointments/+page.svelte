@@ -10,13 +10,16 @@
 	import { Input } from '@nahu/admin-kit/components/ui/input/index.js';
 	import { formatEthiopianDate } from '$lib/global.svelte';
 	import { clinicClock } from '$lib/clinicTime';
-	import { STATUS_LABEL, APPOINTMENT_STATUSES } from '$lib/appointmentStatus';
+	import { APPOINTMENT_STATUSES } from '$lib/appointmentStatus';
+	import { useI18n } from '$lib/i18n/i18n.svelte';
 	import DayGrid from './day-grid.svelte';
 	import BookDialog from './book-dialog.svelte';
 	import AppointmentDialog from './appointment-dialog.svelte';
 	import type { DayAppointment } from './types';
 
 	let { data } = $props();
+	const t = useI18n();
+	const d = $derived(t.m.appointments.day);
 
 	const isToday = $derived(data.day === data.today);
 
@@ -76,16 +79,16 @@
 </script>
 
 <svelte:head>
-	<title>Appointments</title>
+	<title>{d.title}</title>
 </svelte:head>
 
 <div class="flex flex-col gap-4 py-4">
 	<div class="flex flex-wrap items-center justify-between gap-3">
 		<div>
-			<h1>Appointments</h1>
+			<h1>{d.title}</h1>
 			<p class="text-sm text-muted-foreground">
 				{formatEthiopianDate(new Date(`${data.day}T12:00:00Z`))} · {data.day}{isToday
-					? ' · Today'
+					? ` · ${t.m.common.today}`
 					: ''}
 			</p>
 		</div>
@@ -95,12 +98,14 @@
 				variant="outline"
 				size="icon"
 				href="?date={data.previousDay}"
-				aria-label="Previous day"
+				aria-label={d.previousDay}
 			>
 				<ChevronLeft class="size-4" />
 			</Button>
-			<Button variant="outline" href="?date={data.today}" disabled={isToday}>Today</Button>
-			<Button variant="outline" size="icon" href="?date={data.nextDay}" aria-label="Next day">
+			<Button variant="outline" href="?date={data.today}" disabled={isToday}
+				>{t.m.common.today}</Button
+			>
+			<Button variant="outline" size="icon" href="?date={data.nextDay}" aria-label={d.nextDay}>
 				<ChevronRight class="size-4" />
 			</Button>
 			<!-- A GET form rather than goto(): picking a date is navigation, and SvelteKit already does
@@ -111,18 +116,19 @@
 					name="date"
 					class="w-40"
 					value={data.day}
-					aria-label="Go to date"
+					aria-label={d.goToDate}
 					onchange={(e) => e.currentTarget.value && e.currentTarget.form?.requestSubmit()}
 				/>
 			</form>
 			<Button variant="outline" href="/dashboard/appointments/list"
-				><List class="size-4" /> List</Button
+				><List class="size-4" /> {d.list}</Button
 			>
 			{#if data.canBook && !data.needsBranch}
 				<Button variant="outline" onclick={() => book({ walkIn: true })}>
-					<DoorOpen class="size-4" /> Walk-in
+					<DoorOpen class="size-4" />
+					{d.walkIn}
 				</Button>
-				<Button onclick={() => book()}><CalendarPlus class="size-4" /> Book</Button>
+				<Button onclick={() => book()}><CalendarPlus class="size-4" /> {d.book}</Button>
 			{/if}
 		</div>
 	</div>
@@ -130,10 +136,11 @@
 	{#if data.needsBranch}
 		<!-- A grid of every branch would put two clinics' Chair 1 under one heading (§15). -->
 		<div class="rounded-lg border bg-card p-6">
-			<p class="font-medium">Choose a branch in the top bar to see its day.</p>
+			<p class="font-medium">{d.needsBranchTitle}</p>
 			<p class="text-sm text-muted-foreground">
-				The day view is drawn by chair, and chairs belong to a branch. The
-				<a class="underline" href="/dashboard/appointments/list">appointment list</a> shows every branch.
+				{d.needsBranchBody}
+				<a class="underline" href="/dashboard/appointments/list">{d.needsBranchLink}</a>
+				{d.needsBranchEnd}
 			</p>
 		</div>
 	{:else}
@@ -142,15 +149,15 @@
 				class="flex items-center gap-2 rounded-md border border-amber-500 bg-amber-50 p-3 text-amber-900 dark:bg-amber-950/40 dark:text-amber-200"
 			>
 				<CalendarOff class="size-4" />
-				The clinic is closed today: {data.closure.name}. New bookings on this day are refused.
+				{d.closed(data.closure.name)}
 			</p>
 		{/if}
 
 		<div class="flex flex-wrap items-center gap-2 text-sm">
-			<span class="font-medium">{data.appointments.length} appointments</span>
+			<span class="font-medium">{d.count(data.appointments.length)}</span>
 			{#each counts as c (c.status)}
 				<span class="rounded-md border px-2 py-0.5 text-muted-foreground">
-					{STATUS_LABEL[c.status].label}
+					{t.m.appointments.status[c.status]}
 					{c.count}
 				</span>
 			{/each}
@@ -168,10 +175,10 @@
 				/>
 			{:else}
 				<div class="rounded-lg border bg-card p-6">
-					<p class="font-medium">This branch has no chairs yet.</p>
+					<p class="font-medium">{d.noChairsTitle}</p>
 					<p class="text-sm text-muted-foreground">
-						The day view has a column per chair. Add them under
-						<a class="underline" href="/dashboard/admin-panel/chairs">Admin Panel → Chairs</a>.
+						{d.noChairsBody}
+						<a class="underline" href="/dashboard/admin-panel/chairs">{d.noChairsLink}</a>.
 					</p>
 				</div>
 			{/if}
@@ -179,7 +186,7 @@
 			<!-- Who is here: the front desk's actual question once the day has started. -->
 			<aside class="flex flex-col gap-4">
 				<section class="rounded-lg border bg-card p-4">
-					<h3 class="mb-2 text-sm font-semibold">Waiting ({waiting.length})</h3>
+					<h3 class="mb-2 text-sm font-semibold">{d.waiting(waiting.length)}</h3>
 					{#each waiting as a (a.id)}
 						<button
 							type="button"
@@ -192,16 +199,16 @@
 									? 'text-destructive'
 									: 'text-muted-foreground'}
 							>
-								{minutesSince(a.arrivedAt)} min
+								{d.minutes(minutesSince(a.arrivedAt))}
 							</span>
 						</button>
 					{:else}
-						<p class="text-sm text-muted-foreground">Nobody waiting.</p>
+						<p class="text-sm text-muted-foreground">{d.nobodyWaiting}</p>
 					{/each}
 				</section>
 
 				<section class="rounded-lg border bg-card p-4">
-					<h3 class="mb-2 text-sm font-semibold">In the chair ({inChair.length})</h3>
+					<h3 class="mb-2 text-sm font-semibold">{d.inChair(inChair.length)}</h3>
 					{#each inChair as a (a.id)}
 						<button
 							type="button"
@@ -210,17 +217,17 @@
 						>
 							<span class="truncate">{a.patient}</span>
 							<span class="text-muted-foreground"
-								>{a.chair ?? '—'} · {minutesSince(a.seatedAt)} min</span
+								>{a.chair ?? '—'} · {d.minutes(minutesSince(a.seatedAt))}</span
 							>
 						</button>
 					{:else}
-						<p class="text-sm text-muted-foreground">No one in a chair.</p>
+						<p class="text-sm text-muted-foreground">{d.nobodyInChair}</p>
 					{/each}
 				</section>
 
 				{#if shortNotice.length}
 					<section class="rounded-lg border bg-card p-4">
-						<h3 class="mb-2 text-sm font-semibold">Could come earlier</h3>
+						<h3 class="mb-2 text-sm font-semibold">{d.couldComeEarlier}</h3>
 						{#each shortNotice as a (a.id)}
 							<button
 								type="button"

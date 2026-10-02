@@ -1,5 +1,6 @@
 import type { Session, User } from '$lib/server/auth';
 import type { BranchContext } from '$lib/server/branchScope';
+import type { Lang } from '$lib/i18n/lang';
 
 declare global {
 	namespace App {
@@ -14,6 +15,8 @@ declare global {
 			 * user may see. Loaders read `branch.active`; they never read the cookie.
 			 */
 			branch: BranchContext;
+			/** The interface language, from the viewer's cookie (`handleLanguage`). */
+			lang: Lang;
 		}
 
 		interface PageData {
@@ -21,6 +24,7 @@ declare global {
 			permList?: string[];
 			isSuperAdmin?: boolean;
 			branch?: BranchContext;
+			lang?: Lang;
 		}
 	}
 }

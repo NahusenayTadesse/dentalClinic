@@ -38,6 +38,7 @@ import { clinicToday } from '$lib/clinicTime';
 import { loadMerge, mergeAction } from './merge';
 import { patientRecall } from '$lib/server/recalls';
 import { patientAccessHistory } from '$lib/server/accessLog';
+import { messagesFor } from '$lib/i18n/messages';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
 
 /**
@@ -294,13 +295,10 @@ export const actions: Actions = {
 
 	editIdentity: async (event) => {
 		requirePermission(event.locals, 'patients.edit');
+		const toast = messagesFor(event.locals.lang).patients.toast;
 		const form = await superValidate(event.request, zod4(editIdentity));
 		if (!form.valid) {
-			return message(
-				form,
-				{ type: 'error', text: 'Please check the form for errors' },
-				{ status: 400 }
-			);
+			return message(form, { type: 'error', text: toast.checkForm }, { status: 400 });
 		}
 
 		const data = form.data;
@@ -314,34 +312,23 @@ export const actions: Actions = {
 				...birthDateFrom(data),
 				bloodType: data.bloodType ?? null
 			});
-			return message(form, { type: 'success', text: 'Details updated' });
+			return message(form, { type: 'success', text: toast.detailsUpdated });
 		} catch (err: unknown) {
 			if (isDuplicateKey(err)) {
-				setError(form, 'fileNo', 'Another patient already has this file number.');
-				return message(
-					form,
-					{ type: 'error', text: 'That file number is already in use.' },
-					{ status: 400 }
-				);
+				setError(form, 'fileNo', toast.fileNoTaken);
+				return message(form, { type: 'error', text: toast.fileNoInUse }, { status: 400 });
 			}
 			console.error('[patients] editIdentity failed:', err);
-			return message(
-				form,
-				{ type: 'error', text: 'Could not save. Please try again.' },
-				{ status: 500 }
-			);
+			return message(form, { type: 'error', text: toast.saveFailed }, { status: 500 });
 		}
 	},
 
 	editReach: async (event) => {
 		requirePermission(event.locals, 'patients.edit');
+		const toast = messagesFor(event.locals.lang).patients.toast;
 		const form = await superValidate(event.request, zod4(editReach));
 		if (!form.valid) {
-			return message(
-				form,
-				{ type: 'error', text: 'Please check the form for errors' },
-				{ status: 400 }
-			);
+			return message(form, { type: 'error', text: toast.checkForm }, { status: 400 });
 		}
 
 		const data = form.data;
@@ -353,26 +340,19 @@ export const actions: Actions = {
 				referredBy: data.referredBy ?? null,
 				customerId: data.customerId ?? null
 			});
-			return message(form, { type: 'success', text: 'Contact and billing updated' });
+			return message(form, { type: 'success', text: toast.reachUpdated });
 		} catch (err: unknown) {
 			console.error('[patients] editReach failed:', err);
-			return message(
-				form,
-				{ type: 'error', text: 'Could not save. Please try again.' },
-				{ status: 500 }
-			);
+			return message(form, { type: 'error', text: toast.saveFailed }, { status: 500 });
 		}
 	},
 
 	editHistory: async (event) => {
 		requirePermission(event.locals, 'patients.clinical');
+		const toast = messagesFor(event.locals.lang).patients.toast;
 		const form = await superValidate(event.request, zod4(editHistory));
 		if (!form.valid) {
-			return message(
-				form,
-				{ type: 'error', text: 'Please check the form for errors' },
-				{ status: 400 }
-			);
+			return message(form, { type: 'error', text: toast.checkForm }, { status: 400 });
 		}
 
 		try {
@@ -385,15 +365,11 @@ export const actions: Actions = {
 			});
 			return message(form, {
 				type: 'success',
-				text: form.data.markTaken ? 'History recorded as taken today' : 'Medical notes updated'
+				text: form.data.markTaken ? toast.historyTaken : toast.notesUpdated
 			});
 		} catch (err: unknown) {
 			console.error('[patients] editHistory failed:', err);
-			return message(
-				form,
-				{ type: 'error', text: 'Could not save. Please try again.' },
-				{ status: 500 }
-			);
+			return message(form, { type: 'error', text: toast.saveFailed }, { status: 500 });
 		}
 	}
 };

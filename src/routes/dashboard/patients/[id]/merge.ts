@@ -7,6 +7,8 @@ import { patientAction } from '$lib/server/patientAction';
 import { possibleDuplicates } from '$lib/server/patients';
 import { mergePatients } from '$lib/server/patientMerge';
 import { mergeForm } from './mergeSchema';
+import { messagesFor } from '$lib/i18n/messages';
+import { duplicateReason } from '../labels.server';
 
 /**
  * Merging a duplicate into the patient whose chart is open — the overview's part of it. The rules
@@ -30,7 +32,14 @@ export async function loadMerge(
 		superValidate(zod4(mergeForm)),
 		superValidate(zod4(mergeForm), { id: 'merge-pick' })
 	]);
-	return { duplicates: duplicates.filter((d) => d.id !== record.id), form, pick };
+	const m = messagesFor(locals.lang);
+	return {
+		duplicates: duplicates
+			.filter((d) => d.id !== record.id)
+			.map((d) => ({ ...d, reason: duplicateReason(m, d.reason) })),
+		form,
+		pick
+	};
 }
 
 /** The merge action: this chart's patient keeps; the chosen one becomes its tombstone. */
@@ -42,6 +51,6 @@ export function mergeAction(event: RequestEvent) {
 			duplicateId: data.duplicateId
 		});
 		const rows = Object.values(moved).reduce((sum, n) => sum + n, 0);
-		return `Merged. ${rows} record${rows === 1 ? '' : 's'} moved to this chart; the old file number now leads here.`;
+		return messagesFor(event.locals.lang).patients.toast.merged(rows);
 	});
 }

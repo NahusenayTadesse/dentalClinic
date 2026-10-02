@@ -9,6 +9,7 @@ import { openSessionFor } from '$lib/server/cashDrawer';
 import { db } from '$lib/server/db';
 import { clinicDate } from '$lib/clinicTime';
 import { formatEthiopianDate } from '$lib/global.svelte';
+import { messagesFor } from '$lib/i18n/messages';
 import { canPay } from '$lib/invoiceStatus';
 import { BILLING_PERMISSION, billingAction, payAction } from './billingAction';
 import { payment } from '$lib/forms/payment';
@@ -26,6 +27,7 @@ import type { Actions, PageServerLoad } from './$types';
 export const load: PageServerLoad = async (event) => {
 	requirePermission(event.locals, BILLING_PERMISSION);
 	const { patient } = await event.parent();
+	const say = messagesFor(event.locals.lang).billing.tab;
 
 	const [balance, bills, unbilled, methods, drawer, invoiceForm, payForm] = await Promise.all([
 		patientBalance(patient.id),
@@ -47,9 +49,9 @@ export const load: PageServerLoad = async (event) => {
 			where: w.where,
 			price: w.fee,
 			detail: w.visitAt
-				? `Visit of ${formatEthiopianDate(new Date(clinicDate(w.visitAt)))}`
+				? say.visitOf(formatEthiopianDate(new Date(clinicDate(w.visitAt))))
 				: w.completedOn
-					? `Done ${formatEthiopianDate(new Date(w.completedOn))}`
+					? say.doneOn(formatEthiopianDate(new Date(w.completedOn)))
 					: undefined
 		})),
 		// The bills a payment can go to right now, with what each still owes.
@@ -72,7 +74,7 @@ export const actions: Actions = {
 			});
 			return {
 				redirect: `/dashboard/patients/${patientId}/billing/${id}`,
-				text: 'Draft bill started. Check it, then issue it.'
+				text: messagesFor(event.locals.lang).billing.tab.draftStarted
 			};
 		}),
 	pay: payAction
