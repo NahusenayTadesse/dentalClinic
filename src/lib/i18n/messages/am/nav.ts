@@ -15,6 +15,7 @@ export const nav: Record<string, string> = {
 	Billing: 'ክፍያ',
 	'Who Owes': 'ዕዳ ያለባቸው',
 	'Cash Drawer': 'የገንዘብ መሳቢያ',
+	'Mobile Money': 'የሞባይል ገንዘብ',
 	Approvals: 'ማጽደቂያዎች',
 	'All Queues': 'ሁሉም ወረፋዎች',
 	Rejections: 'ውድቅ የተደረጉ',

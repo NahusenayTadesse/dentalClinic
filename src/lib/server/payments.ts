@@ -28,6 +28,7 @@ import { WriteRefused, refuseUnless } from '$lib/server/childCrud';
 import { recordAudit, type AuditRequest } from '$lib/server/audit';
 import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { nextNumber } from '$lib/server/documentNumbers';
+import { isDuplicateKey } from '@nahu/admin-kit/server/dbErrors.js';
 import { asRequested } from '$lib/server/approvals';
 import { billFor } from '$lib/server/billing';
 import { billingRefusals, openSessionFor } from '$lib/server/cashDrawer';
@@ -63,6 +64,40 @@ export async function paidOn(reader: Reader, invoiceId: number): Promise<number>
 	return cents(Number(row?.paid ?? 0));
 }
 
+/**
+ * A transfer's reference as it is matched: spaces dropped and upper case, so "bx 1234" typed at the
+ * desk and "BX1234" on the statement are the same transfer.
+ */
+export function normalReference(reference: string | null | undefined): string | null {
+	const cleaned = (reference ?? '').replace(/\s+/g, '').toUpperCase().slice(0, 128);
+	return cleaned || null;
+}
+
+/**
+ * The reference a payment by this method must or may carry, checked against every payment already
+ * taken. Mobile money must have one — it is how the payment is found on the provider's statement,
+ * and the only thing that tells two transfers of the same amount apart. A bank transfer may. Either
+ * way a reference already recorded is refused: the same transfer cannot pay twice. The unique index
+ * on `gateway_txn_token` is what actually guarantees that; this check only gives the reason.
+ */
+async function referenceFor(
+	tx: Tx,
+	say: ReturnType<typeof billingRefusals>,
+	kind: string,
+	reference: string | null
+): Promise<string | null> {
+	const token = normalReference(reference);
+	if (kind === 'mobile') refuseUnless(token !== null, say.referenceRequired, 'reference');
+	if (token === null || (kind !== 'mobile' && kind !== 'bank')) return null;
+	const [taken] = await tx
+		.select({ receipt: transactions.receiptNumber })
+		.from(transactions)
+		.where(eq(transactions.gatewayTxnToken, token))
+		.limit(1);
+	refuseUnless(!taken, say.referenceUsed(taken?.receipt ?? ''), 'reference');
+	return token;
+}
+
 /** The method, and the open drawer when it is cash — refused when it is cash and there is none. */
 async function methodFor(
 	tx: Tx,
@@ -83,6 +118,26 @@ async function methodFor(
 		throw new WriteRefused('paymentMethodId', say.drawerShut);
 	}
 	return { method, cashSessionId: session.id };
+}
+
+/**
+ * Inserts the payment's transaction. Two desks entering the same reference at once both pass the
+ * check in `referenceFor`; the unique index stops the second, and this turns that into the same
+ * refusal rather than a 500.
+ */
+async function insertPayment(
+	tx: Tx,
+	say: ReturnType<typeof billingRefusals>,
+	// `insertReturningId`'s own type: `occurredOn` is written as a clinic day string, which the
+	// driver stores as given though the column's inferred type says `Date`.
+	values: Record<string, unknown>
+): Promise<number> {
+	try {
+		return await insertReturningId(tx, transactions, values);
+	} catch (err: unknown) {
+		if (isDuplicateKey(err)) throw new WriteRefused('reference', say.referenceUsed(''));
+		throw err;
+	}
 }
 
 /** The payment's shared body, once the caller has fetched and checked each bill it is for. */
@@ -109,6 +164,7 @@ async function recordPayment(
 		say.billTwice
 	);
 	const { method, cashSessionId } = await methodFor(tx, say, input.paymentMethodId, input.branchId);
+	const token = await referenceFor(tx, say, method.kind, input.reference);
 
 	// Each bill: the right owner's, payable, and not over-paid by this allocation.
 	const checked: { amount: number; bill: Bill; paid: number }[] = [];
@@ -127,7 +183,7 @@ async function recordPayment(
 	}
 
 	const amount = cents(allocations.reduce((sum, a) => sum + a.amount, 0));
-	const transactionId = await insertReturningId(tx, transactions, {
+	const transactionId = await insertPayment(tx, say, {
 		description: `Payment for ${allocations.length === 1 ? 'bill' : `${allocations.length} bills`}`,
 		direction: 'in',
 		amount,
@@ -138,6 +194,7 @@ async function recordPayment(
 		occurredOn: clinicToday(),
 		receiptNumber: await nextNumber(tx, 'receipt'),
 		gatewayReference: input.reference?.trim().slice(0, 128) || null,
+		gatewayTxnToken: token,
 		cashSessionId,
 		// Money in is not queued; only refunds are (see `APPROVAL_ENTITIES`).
 		approvalStatus: 'approved',

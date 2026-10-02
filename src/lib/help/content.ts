@@ -1005,10 +1005,12 @@ export const HELP_SECTIONS: HelpSection[] = [
 				steps: [
 					'Press **Take a payment**. Every bill that can be paid is listed with what it still owes.',
 					'Type the amount against each bill being paid — or **Pay everything owed** — and choose how it was paid.',
-					'Add the bank or mobile-money reference if there is one, and **Record payment**. Each payment gets a receipt number.'
+					'For **mobile money** (Telebirr, CBE Birr) enter the **transaction ID** from the patient’s confirmation message — it is required. For a bank transfer add its reference if there is one. Then **Record payment**. Each payment gets a receipt number.'
 				],
 				notes: [
 					'A payment can never be more than a bill still owes.',
+					'A transaction ID already recorded is refused, and names the receipt it is on: one transfer pays once, however it is typed.',
+					'At the end of the day, **Billing → Mobile Money** lists the day’s transfers to tick against the provider’s statement — the mobile-money equivalent of counting the drawer.',
 					'**Cash** needs the cash drawer open at the branch you are working at. If it is shut, the form says so and the payment is refused.',
 					'A bill waiting for a manager — for its discount, or to be voided — cannot take a payment until the manager decides.',
 					'What a patient owes shows in red at the top of their chart, on the Billing tab, and in the patient list, for staff who can see billing.'
@@ -2164,6 +2166,14 @@ export const ROUTE_MAP: RouteEntry[] = [
 		title: 'Cash drawer',
 		purpose: 'Open the drawer with a float, see what it should hold, and count and close it.',
 		permission: 'billing.cash_session',
+		group: 'Billing'
+	},
+	{
+		path: '/dashboard/billing/mobile',
+		title: 'Mobile money',
+		purpose:
+			'A day’s Telebirr, CBE Birr and bank transfers, ticked against the provider’s statement.',
+		permission: 'billing.invoice; billing.cash_session to tick',
 		group: 'Billing'
 	},
 	{

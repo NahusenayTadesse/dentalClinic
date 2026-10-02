@@ -145,13 +145,15 @@
 			{w.drawerShutEnd}
 		</p>
 	{/if}
+	<!-- Mobile money must carry its transaction ID: the server refuses without it, and refuses one
+	     already used. Other methods may carry a reference. -->
 	<InputComp
-		label={w.reference}
+		label={chosen?.kind === 'mobile' ? w.referenceMobile : w.reference}
 		name="reference"
 		{form}
 		{errors}
-		required={false}
-		placeholder={w.referencePlaceholder}
+		required={chosen?.kind === 'mobile'}
+		placeholder={chosen?.kind === 'mobile' ? w.referenceMobilePlaceholder : w.referencePlaceholder}
 	/>
 
 	<div class="flex items-center justify-between gap-3">

@@ -16,6 +16,7 @@ import {
 	transactions
 } from './db/schema';
 import { inRollback, type TestTx } from '$lib/testing/rollback';
+import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { WriteRefused } from './childCrud';
 import { patientBalance, payerInvoices, unbilledWork } from './billing';
 import {
@@ -341,6 +342,44 @@ describe('billing', async () => {
 		});
 		expect(message).toMatch(/open the cash drawer/);
 	});
+
+	it.skipIf(!ready)(
+		'needs a mobile payment’s transaction ID, and never takes the same one twice',
+		async () => {
+			const result = await inRollback(async (tx) => {
+				const mobile = await insertReturningId(tx, paymentMethods, {
+					name: 'Mobile money (test)',
+					kind: 'mobile'
+				});
+				const [a, b, c] = await doneWork(tx, [400, 600, 800]);
+				const bills = [await issued(tx, [a]), await issued(tx, [b]), await issued(tx, [c])];
+				const pay = (bill: number, method: number, reference: string | null) =>
+					takePayment(tx, request, {
+						patientId: someone.id,
+						allocations: [{ invoiceId: bill, amount: 100 }],
+						paymentMethodId: method,
+						branchId: place.id,
+						reference
+					});
+
+				const noReference = await refused(pay(bills[0], mobile, null));
+				const first = await pay(bills[0], mobile, 'bx 12ab 34cd');
+				// The same transfer, typed the way the statement prints it, on another bill.
+				const again = await refused(pay(bills[1], mobile, 'BX12AB34CD'));
+				// A bank payment may go without a reference.
+				const bankWithout = await refused(pay(bills[2], bank.id, null));
+				const [stored] = await tx
+					.select({ token: transactions.gatewayTxnToken })
+					.from(transactions)
+					.where(eq(transactions.id, first));
+				return { noReference, again, bankWithout, stored };
+			});
+			expect(result.noReference).toMatch(/transaction ID/);
+			expect(result.again).toMatch(/already recorded, on receipt/);
+			expect(result.bankWithout).toBeNull();
+			expect(result.stored.token).toBe('BX12AB34CD');
+		}
+	);
 
 	it.skipIf(!ready)('lets a payer settle bills of more than one patient at once', async () => {
 		const result = await inRollback(async (tx) => {

@@ -197,6 +197,17 @@ export const transactions = mysqlTable('transactions', {
 	/** The provider's own status string, stored as received rather than mapped. */
 	gatewayStatus: varchar('gateway_status', { length: 50 }),
 
+	/**
+	 * When someone found this payment on the provider's own statement — the Telebirr or CBE Birr
+	 * merchant report, or the bank's — and who. Money that arrives through a phone has no drawer to
+	 * count, so this tick is its count: a mobile payment with no tick at the end of the day is one
+	 * the clinic recorded but has not seen arrive (`server/mobileMoney.ts`). Null until checked.
+	 */
+	reconciledAt: datetime('reconciled_at'),
+	reconciledBy: varchar('reconciled_by', { length: 255 }).references(() => user.id, {
+		onDelete: 'set null'
+	}),
+
 	// ── Corrections ──────────────────────────────────────────────────────────────────────────────
 
 	/**

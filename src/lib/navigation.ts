@@ -53,6 +53,7 @@ import Megaphone from '@lucide/svelte/icons/megaphone';
 import OctagonMinus from '@lucide/svelte/icons/octagon-minus';
 import Phone from '@lucide/svelte/icons/phone';
 import MessageSquare from '@lucide/svelte/icons/message-square';
+import Smartphone from '@lucide/svelte/icons/smartphone';
 import PhoneCall from '@lucide/svelte/icons/phone-call';
 import Pill from '@lucide/svelte/icons/pill';
 import Plus from '@lucide/svelte/icons/plus';
@@ -144,7 +145,8 @@ export const NAVIGATION: NavItem[] = [
 		icon: HandCoins,
 		items: [
 			{ title: 'Who Owes', url: '/dashboard/billing', icon: HandCoins },
-			{ title: 'Cash Drawer', url: '/dashboard/billing/cash', icon: Vault }
+			{ title: 'Cash Drawer', url: '/dashboard/billing/cash', icon: Vault },
+			{ title: 'Mobile Money', url: '/dashboard/billing/mobile', icon: Smartphone }
 		]
 	},
 

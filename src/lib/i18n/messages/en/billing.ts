@@ -264,12 +264,40 @@ export const billing = {
 		drawerShutEnd: 'first.',
 		reference: 'Reference',
 		referencePlaceholder: 'Bank or mobile-money reference, if there is one',
+		referenceMobile: 'Transaction ID',
+		referenceMobilePlaceholder: 'From the Telebirr / CBE Birr message, e.g. BX12AB34CD',
 		total: 'Total',
 		recording: 'Recording',
 		record: 'Record payment'
 	},
 
 	/** What the billing writers say when they refuse a step. */
+	/** Billing → Mobile Money: a day's transfers, ticked against the provider's statement. */
+	mobile: {
+		title: 'Mobile Money',
+		blurb:
+			'Telebirr, CBE Birr and bank transfers taken at this branch on one day. Open the provider’s statement and tick each one you find there; what stays unticked is money recorded but not yet seen to arrive.',
+		tileCount: 'Transfers',
+		tileTotal: 'Total',
+		tileUnchecked: 'Not yet found on a statement',
+		time: 'Time',
+		receipt: 'Receipt',
+		from: 'From',
+		method: 'Method',
+		reference: 'Reference',
+		amount: 'Amount',
+		checked: 'On the statement',
+		checkedBy: (who: string, when: string) => `Found by ${who} · ${when}`,
+		notChecked: 'Not found yet',
+		markFound: 'Found it',
+		unmark: 'Untick',
+		byMethod: (method: string, count: number) => `${method} · ${count}`,
+		empty: 'No transfers were taken at this branch on this day.',
+		marked: 'Ticked as found on the statement',
+		unmarked: 'Tick taken off',
+		notHere: 'That transfer is not on this branch’s list.',
+		noReference: 'No reference'
+	},
 	refused: {
 		chooseBranch: 'Choose the branch you are working at before opening a drawer.',
 		negativeFloat: 'A float cannot be negative.',
@@ -301,6 +329,10 @@ export const billing = {
 		drawerShut: 'The cash drawer is not open at this branch. Open it before handling cash.',
 		enterAmount: 'Enter an amount against at least one bill.',
 		billTwice: 'A bill appears twice in that payment.',
+		referenceRequired:
+			'Enter the transaction ID from the mobile-money message — it is how the payment is found on the statement.',
+		referenceUsed: (receipt: string) =>
+			`That reference is already recorded${receipt ? `, on receipt ${receipt}` : ''}. One transfer pays once.`,
 		billWaiting: (number: string) =>
 			`Bill ${number} is waiting for a manager to approve its discount or void.`,
 		billCannotPay: (number: string) => `Bill ${number} cannot take a payment.`,

@@ -1,0 +1,61 @@
+{
+	"path": "/dashboard/billing/mobile",
+	"languages": {
+		"en": {
+			"title": "Mobile Money",
+			"summary": "A day's Telebirr, CBE Birr and bank transfers at this branch, ticked against the provider's statement.",
+			"sections": [
+				{
+					"heading": "Why check",
+					"body": "Cash is counted in the drawer. A transfer has no drawer: the desk records it from the patient's confirmation message, and only the merchant statement shows the money really arrived. Ticking each one is how that is checked."
+				},
+				{
+					"heading": "Checking a day",
+					"body": "Open the Telebirr, CBE Birr or bank statement for the day. For each transfer on this list, find its reference on the statement and press Found it. Narrow the list to Not found yet to see what is left. The tile shows how much is still unticked, by method — money recorded but not yet seen to arrive. Untick a line ticked by mistake."
+				},
+				{
+					"heading": "References",
+					"body": "A mobile payment cannot be taken without its transaction ID, and the same ID cannot be taken twice — spaces and capitals do not matter. So each line is one transfer the statement should show once."
+				},
+				{
+					"heading": "Who can do what",
+					"body": "Anyone with billing.invoice can read the list; ticking needs billing.cash_session, the same as counting the drawer. Each tick records who and when."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Billing",
+					"href": "/dashboard/help#section-billing"
+				}
+			]
+		},
+		"am": {
+			"title": "የሞባይል ገንዘብ",
+			"summary": "በዚህ ቅርንጫፍ በአንድ ቀን የተቀበሉ የቴሌብር፣ የሲቢኢ ብርና የባንክ ዝውውሮች፣ ከአገልግሎት ሰጪው ሪፖርት ጋር የሚመሳከሩ።",
+			"sections": [
+				{
+					"heading": "ለምን ይመሳከራል",
+					"body": "ጥሬ ገንዘብ በመሳቢያው ይቆጠራል። ዝውውር መሳቢያ የለውም፤ ዴስኩ ከታካሚው የማረጋገጫ መልዕክት ይመዘግበዋል፣ ገንዘቡ በእርግጥ መድረሱን የሚያሳየው የነጋዴው ሪፖርት ብቻ ነው።"
+				},
+				{
+					"heading": "አንድ ቀን ማመሳከር",
+					"body": "የቀኑን የቴሌብር፣ የሲቢኢ ብር ወይም የባንክ ሪፖርት ይክፈቱ። ለእያንዳንዱ ዝውውር መለያውን በሪፖርቱ ላይ ፈልገው «ተገኝቷል»ን ይጫኑ። የቀሩትን ለማየት ዝርዝሩን «ገና አልተገኘም» ብለው ያጣሩ። በስህተት የተደረገ ምልክትን «ምልክቱን አንሳ» ይበሉ።"
+				},
+				{
+					"heading": "መለያዎች",
+					"body": "የሞባይል ክፍያ ያለ የግብይት መለያው አይመዘገብም፣ ተመሳሳዩ መለያም ሁለት ጊዜ አይመዘገብም — ክፍተትና ትልቅ/ትንሽ ፊደል ልዩነት አያመጡም።"
+				},
+				{
+					"heading": "ማን ምን ማድረግ ይችላል",
+					"body": "ዝርዝሩን ለማየት billing.invoice፣ ምልክት ለማድረግ billing.cash_session ያስፈልጋል — መሳቢያውን ለመቁጠር የሚያስፈልገው። እያንዳንዱ ምልክት ማን እና መቼ እንዳደረገው ይመዘግባል።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — ክፍያ",
+					"href": "/dashboard/help#section-billing"
+				}
+			]
+		}
+	}
+}

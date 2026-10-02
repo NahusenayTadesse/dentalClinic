@@ -95,13 +95,18 @@ Patients are phone-first. **Reminders** and **Recalls** record calls, but cannot
   client library and pinned by tests against a fake, but no real message has been sent. Send a
   **Test** from the SMS screen with a real key before relying on it.
 
-### 4. Mobile money: Telebirr and CBE Birr
+### 4. ✅ Mobile money: Telebirr and CBE Birr — reference and matching done
 
 They exist only as payment methods of kind `mobile`. The money arrives without a trail the system
 can check.
 
 - **First step:** record the transaction reference on a mobile payment, and match the day's mobile
   payments at closing, the way the cash drawer is counted (`server/cashDrawer.ts`).
+- **Done:** a mobile-money payment needs its transaction ID; a reference already recorded — however
+  it is typed — is refused and names the receipt it is on (the unique `gateway_txn_token` is the
+  guarantee). **Billing → Mobile Money** lists a day's Telebirr, CBE Birr and bank transfers to
+  tick against the provider's statement, with what is still unticked totalled per method; each
+  tick is audited with who and when (migration 0049).
 - **Later:** a payment gateway (Chapa, ArifPay) to take the payment directly.
 
 ### 5. Receipts that satisfy the tax rules
