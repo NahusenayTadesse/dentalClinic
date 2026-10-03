@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { and, eq, isNotNull } from 'drizzle-orm';
+import { and, eq, isNotNull, isNull } from 'drizzle-orm';
 
 import { db } from './db';
 import {
@@ -39,7 +39,13 @@ import { closeDrawer, openDrawer } from './cashDrawer';
  * dentist, a service, a branch and the two payment methods are borrowed.
  */
 describe('billing', async () => {
-	const [someone] = await db.select({ id: patient.id }).from(patient).limit(1);
+	// A patient who pays cash: these bills are the patient's own, and a payer's cover rules — a
+	// pre-authorisation, a co-payment split — would change what the test is about.
+	const [someone] = await db
+		.select({ id: patient.id })
+		.from(patient)
+		.where(isNull(patient.customerId))
+		.limit(1);
 	const [dentist] = await db.select({ id: provider.id }).from(provider).limit(1);
 	const [service] = await db
 		.select({ id: services.id })

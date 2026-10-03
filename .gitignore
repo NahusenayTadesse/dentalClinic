@@ -36,3 +36,7 @@ build*.tar.gz
 build*.zip
 # Playwright
 test-results
+
+# Written by `npm run db:test-accounts`: it holds the shared password of a test server, so it
+# is handed to testers, not committed.
+TEST-ACCOUNTS.md

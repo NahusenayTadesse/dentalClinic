@@ -24,6 +24,7 @@
 		"auth:schema": "auth generate --config src/lib/server/auth.ts --output src/lib/server/db/auth.schema.ts --yes",
 		"test:e2e": "playwright install && playwright test",
 		"db:seed": "tsx scripts/seed-dev.ts",
+		"db:test-accounts": "tsx scripts/test-accounts.ts",
 		"admin:create": "tsx scripts/create-admin.ts"
 	},
 	"devDependencies": {

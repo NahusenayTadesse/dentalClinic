@@ -60,6 +60,8 @@ import {
 	seedTerminations
 } from './seed/operations';
 import { placeholderFiles } from './seed/files';
+import { seedPayerCover } from './seed/payers';
+import { seedImages } from './seed/images';
 
 const url = process.env.DATABASE_URL;
 
@@ -241,6 +243,7 @@ async function rest() {
 	await seedLeave(db);
 
 	await seedPatients(db, BRANCHES);
+	await seedPayerCover(db);
 	await seedScheduling(db, BRANCHES);
 
 	await seedSupplies(db);
@@ -261,6 +264,7 @@ async function rest() {
 	await seedTerminations(db);
 	await seedRelationships(db);
 	await seedPatientFiles(db, placeholderFiles);
+	await seedImages(db);
 }
 
 await main();

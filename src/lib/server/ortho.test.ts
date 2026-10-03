@@ -20,7 +20,13 @@ import {
  * a closed case takes no visits. Built inside rollbacks; a patient and a user are borrowed.
  */
 describe('orthodontic cases', async () => {
-	const [someone] = await db.select({ id: patient.id }).from(patient).limit(1);
+	// A patient who pays cash: these bills are the patient's own, and a payer's cover rules — a
+	// pre-authorisation, a co-payment split — would change what the test is about.
+	const [someone] = await db
+		.select({ id: patient.id })
+		.from(patient)
+		.where(isNull(patient.customerId))
+		.limit(1);
 	const [clerk] = await db.select({ id: user.id }).from(user).limit(1);
 	const ready = Boolean(someone && clerk);
 
