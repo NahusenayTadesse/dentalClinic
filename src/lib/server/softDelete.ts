@@ -6,6 +6,7 @@ import {
 	address,
 	appointmentTypeServices,
 	orthoInstalment,
+	purchaseOrderLine,
 	smsProvider,
 	customers,
 	damagedSupplies,
@@ -634,6 +635,18 @@ export async function softDeleteOrthoInstalments(tx: Tx, ids: number[], userId?:
 				notDeleted(orthoInstalment)
 			)
 		);
+}
+
+/**
+ * Takes a draft purchase order's lines off it, when the draft is saved with new ones. A sent order's
+ * lines are never removed: deliveries were received against them.
+ */
+export async function softDeletePurchaseLines(tx: Tx, ids: number[], userId?: string) {
+	if (ids.length === 0) return;
+	await tx
+		.update(purchaseOrderLine)
+		.set(deletionStamp(userId))
+		.where(and(inArray(purchaseOrderLine.id, ids), notDeleted(purchaseOrderLine)));
 }
 
 /**

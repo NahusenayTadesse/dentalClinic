@@ -3,7 +3,8 @@
  * for the accountant's ledger. The entry rules and the file formats are `$lib/journal.ts`'s.
  *
  * Every entry is one `transactions` row, classified by what points at it — a bill payment's
- * `invoice_payment` rows, an expense, a stock delivery, a payroll payment — and nothing else. A
+ * `invoice_payment` rows, an expense, a stock delivery or a supplier's invoice, a payroll payment —
+ * and nothing else. A
  * row nothing points at goes to suspense, which the screen counts, rather than being guessed from
  * its description.
  *
@@ -28,6 +29,7 @@ import {
 	paymentMethods,
 	payrollAdjustments,
 	payrollReceipts,
+	supplierInvoice,
 	suppliesAdjustments,
 	transactions
 } from '$lib/server/db/schema';
@@ -163,7 +165,7 @@ export async function journalFor(scope: Pick<BranchContext, 'active'>, period: M
 	const ids = inMonth.map((r) => r.id);
 	if (!ids.length) return { entries: [], unmapped: [], suspense: 0, unbalanced: 0 };
 
-	const [paid, spent, stocked, paidStaff, adjusted, targets] = await Promise.all([
+	const [paid, spent, stocked, suppliersPaid, paidStaff, adjusted, targets] = await Promise.all([
 		db
 			.select({
 				transactionId: invoicePayment.transactionId,
@@ -187,6 +189,10 @@ export async function journalFor(scope: Pick<BranchContext, 'active'>, period: M
 					isNotNull(suppliesAdjustments.transactionId)
 				)
 			),
+		db
+			.select({ transactionId: supplierInvoice.transactionId })
+			.from(supplierInvoice)
+			.where(inArray(supplierInvoice.transactionId, ids)),
 		db
 			.select({ transactionId: payrollReceipts.transactionId })
 			.from(payrollReceipts)
@@ -219,7 +225,7 @@ export async function journalFor(scope: Pick<BranchContext, 'active'>, period: M
 	}
 	const billIds = new Set(paid.map((p) => p.transactionId));
 	const expenseType = new Map(spent.map((e) => [e.transactionId, e.type]));
-	const stockIds = new Set(stocked.map((s) => s.transactionId));
+	const stockIds = new Set([...stocked, ...suppliersPaid].map((s) => s.transactionId));
 	const staffIds = new Set([...paidStaff, ...adjusted].map((s) => s.transactionId));
 
 	const kindOf = (r: (typeof inMonth)[number]): MoneyKind => {

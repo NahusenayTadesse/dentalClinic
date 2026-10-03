@@ -223,9 +223,12 @@ Credit income keeps many clinics running, so this matters more than it looks.
   clinic's account codes are set once on the same screen; the export is refused while any is
   missing, and unplaceable rows go to suspense and are counted. Cash basis by design; payroll's own
   tax and pension split stays in the payroll reports.
-- **Purchase orders and supplier invoices.** Stock has deliveries and issues, and the dashboard flags
-  items below their reorder level — but nothing turns that into an order to a supplier, or matches
-  what arrives against what was ordered.
+- ✅ **Purchase orders and supplier invoices — done.** Supplies → Purchase Orders: a draft with
+  "add everything running low", sent with a PO number and printed for the supplier, received line by
+  line straight into the lots (never more than outstanding; expiry and controlled-medicine rules as
+  on the item page), and the supplier's invoice set against ordered and received before it is paid.
+  Payments post as stock in the accounting export. Found and fixed on the way: `onHand()` read
+  the wrong lots in any query without a join — the dashboard's low-stock count among them.
 - **Patient account statements, treatment packages and deposits.** `patientBalance` is the single
   definition of what a patient owes, so a statement is a printout of what already exists.
 - **Personal data protection (2024 proclamation).** Retention rules, giving patients a copy of their

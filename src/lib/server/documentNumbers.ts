@@ -1,5 +1,5 @@
 /**
- * Numbers for the documents a clinic hands over — bills, receipts and refunds — from a counter that cannot
+ * Numbers for the documents a clinic hands over — bills, receipts, refunds and purchase orders — from a counter that cannot
  * give two documents the same number (`document_sequence`).
  *
  * Non-goal: a number on a draft. A number is taken when a document is issued, inside the issuing
@@ -23,7 +23,7 @@ type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
  */
 export async function nextNumber(
 	tx: Tx | typeof db,
-	series: 'invoice' | 'receipt' | 'refund'
+	series: 'invoice' | 'receipt' | 'refund' | 'purchaseOrder'
 ): Promise<string> {
 	const year = getEthiopianYearMonth(new Date(`${clinicToday()}T12:00:00Z`))?.year ?? 0;
 	const name = `${series}-${year}`;
@@ -45,6 +45,6 @@ export async function nextNumber(
 		.set({ nextValue: row.next + 1 })
 		.where(eq(documentSequence.name, name));
 
-	const prefix = { invoice: 'INV', receipt: 'RCT', refund: 'RFD' }[series];
+	const prefix = { invoice: 'INV', receipt: 'RCT', refund: 'RFD', purchaseOrder: 'PO' }[series];
 	return `${prefix}-${year}-${String(row.next).padStart(5, '0')}`;
 }

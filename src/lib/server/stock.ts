@@ -53,14 +53,21 @@ type Tx = MySqlTransaction<any, any, any, any>;
  *
  *     .select({ name: supplies.name, quantity: onHand() })
  *     .where(lte(onHand(), supplies.reorderLevel))
+ *
+ * **Every column is spelled with its table**, by name. Drizzle qualifies a column only when the
+ * query has a join; in a query on `supplies` alone it wrote `WHERE supply_id = id`, and inside the
+ * subquery `id` is the lot's own id — so every item's stock was the sum of whichever lots happened to
+ * share its number. The dashboard's low-stock count and the item pages read it that way, and a new
+ * item with no lots at all showed hundreds on hand. `stock.test.ts` pins it on a single-table query.
  */
 export function onHand() {
+	const lot = (column: string) => sql`${sql.identifier('supply_batch')}.${sql.identifier(column)}`;
 	return sql<number>`(
-		SELECT COALESCE(SUM(${supplyBatch.quantity}), 0)
-		FROM ${supplyBatch}
-		WHERE ${supplyBatch.supplyId} = ${supplies.id}
-			AND ${supplyBatch.status} = 'active'
-			AND ${supplyBatch.deletedAt} IS NULL
+		SELECT COALESCE(SUM(${lot('quantity')}), 0)
+		FROM ${sql.identifier('supply_batch')}
+		WHERE ${lot('supply_id')} = ${sql.identifier('supplies')}.${sql.identifier('id')}
+			AND ${lot('status')} = 'active'
+			AND ${lot('deleted_at')} IS NULL
 	)`;
 }
 

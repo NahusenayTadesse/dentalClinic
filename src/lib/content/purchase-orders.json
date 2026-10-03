@@ -1,0 +1,41 @@
+{
+	"match": "/dashboard/supplies/orders",
+	"languages": {
+		"en": {
+			"title": "Purchase orders",
+			"summary": "Orders to suppliers: drafted, sent with a number, received as deliveries arrive, and the supplier's invoice checked and paid.",
+			"sections": [
+				{
+					"heading": "Ordering",
+					"body": "New order, choose the supplier. Add items one by one, or Add everything running low — each at the quantity that brings it back to twice its reorder level. Set quantities and prices, Save the draft, then Send the order: it gets its number (PO-…) and is fixed. Print it for the supplier."
+				},
+				{
+					"heading": "Receiving",
+					"body": "When a delivery comes, press Receive on its line and say how many arrived, with the batch number and the expiry date from the box. It goes straight into stock as a lot, with the order's supplier and price. A line cannot receive more than is still to come; extra stock is received on the item's own page. A controlled medicine needs its batch number."
+				},
+				{
+					"heading": "The invoice",
+					"body": "Record the supplier's invoice with their number, date and amount. Ordered, received and invoiced are set side by side; an invoice for more than arrived is shown in red before anyone pays it. Pay now by choosing how, or later with Pay. Payments appear in the transactions and in the accounting export as stock."
+				}
+			]
+		},
+		"am": {
+			"title": "የግዢ ትዕዛዞች",
+			"summary": "ለአቅራቢዎች የሚሰጡ ትዕዛዞች፦ ይረቀቃሉ፣ በቁጥር ይላካሉ፣ ዕቃው ሲደርስ ይገባል፣ የአቅራቢው ደረሰኝ ተፈትሾ ይከፈላል።",
+			"sections": [
+				{
+					"heading": "ማዘዝ",
+					"body": "New order ይጫኑ፣ አቅራቢውን ይምረጡ። ዕቃዎችን አንድ በአንድ ወይም Add everything running low ይጨምሩ። ብዛትና ዋጋ ይጻፉ፣ ረቂቁን ያስቀምጡ፣ ከዚያ Send the order — ቁጥር ያገኛል።"
+				},
+				{
+					"heading": "መቀበል",
+					"body": "ዕቃ ሲደርስ በመስመሩ ላይ Receive ይጫኑ፣ የደረሰውን ብዛት፣ የባች ቁጥሩንና የአገልግሎት ማብቂያ ቀኑን ይጻፉ። በቀጥታ ወደ ክምችት ይገባል።"
+				},
+				{
+					"heading": "ደረሰኙ",
+					"body": "የአቅራቢውን ደረሰኝ ይመዝግቡ። የታዘዘው፣ የደረሰውና የተጠየቀው ጎን ለጎን ይታያሉ፤ ከደረሰው በላይ የተጠየቀ በቀይ ይታያል። አሁን ወይም በኋላ ይክፈሉ።"
+				}
+			]
+		}
+	}
+}

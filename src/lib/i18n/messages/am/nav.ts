@@ -75,6 +75,7 @@ export const nav: Record<string, string> = {
 	Sterilisation: 'የመሣሪያ ማምከን',
 	Orthodontics: 'ኦርቶዶንቲክስ',
 	'Accounting Export': 'ለሂሳብ ሶፍትዌር መላኪያ',
+	'Purchase Orders': 'የግዢ ትዕዛዞች',
 	Sterilisers: 'ማምከኛ ማሽኖች',
 	'Controlled Medicines': 'ቁጥጥር የሚደረግባቸው መድኃኒቶች',
 	Allergens: 'አለርጂ አምጪዎች',

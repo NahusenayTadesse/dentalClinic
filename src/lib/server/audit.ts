@@ -58,6 +58,9 @@ export type AuditedTable =
 	| 'ortho_case'
 	| 'ortho_visit'
 	| 'ortho_instalment'
+	// buying: an order's sending and deliveries, and a supplier's invoice and its payment
+	| 'purchase_order'
+	| 'supplier_invoice'
 	| 'appointment'
 	// money
 	| 'invoice'

@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 import { inRollback, type TestTx } from '$lib/testing/rollback';
 import { db } from './db';
 import { addClinicDays, clinicToday } from '$lib/clinicTime';
-import { expiringLots, lotRecipients, moveStock } from './stock';
+import { expiringLots, lotRecipients, moveStock, onHand } from './stock';
 import { softDeleteDamagedSupply } from './softDelete';
 import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { damagedSupplies, patient, supplies, suppliesAdjustments, supplyTypes } from './db/schema';
@@ -181,5 +181,23 @@ describe('reading lots', async () => {
 		expect(ids.found).not.toContain(ids.item.undated);
 		expect(ids.found).not.toContain(ids.farOff);
 		expect(ids.found).not.toContain(ids.emptied);
+	});
+});
+
+describe('onHand', () => {
+	it('sums only the item’s own open lots, in a query on supplies alone', async () => {
+		const result = await inRollback(async (tx) => {
+			const { supplyId } = await stocked(tx);
+			const empty = await insertReturningId(tx, supplies, {
+				supplyTypeId: (await tx.select({ id: supplyTypes.id }).from(supplyTypes).limit(1))[0].id,
+				name: 'Stock test, never delivered'
+			});
+			// No join: the shape that used to compare a lot's own id with itself.
+			const read = async (id: number) =>
+				Number((await tx.select({ n: onHand() }).from(supplies).where(eq(supplies.id, id)))[0].n);
+			return { stocked: await read(supplyId), empty: await read(empty) };
+		});
+		// All three lots are open; expiry is for issuing, not for counting.
+		expect(result).toEqual({ stocked: 10, empty: 0 });
 	});
 });

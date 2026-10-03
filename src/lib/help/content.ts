@@ -803,6 +803,36 @@ export const HELP_SECTIONS: HelpSection[] = [
 				]
 			},
 			{
+				id: 'purchase-orders',
+				title: 'Ordering from suppliers',
+				summary:
+					'From what is running low to an order, a delivery into stock, and the supplier’s invoice checked against both before it is paid.',
+				where: 'Menu → **Supplies → Purchase Orders** → `/dashboard/supplies/orders`',
+				permission: 'supplies_suppliers.manage',
+				steps: [
+					'**New order**, choose the supplier, and **Add everything running low** — or add items one at a time. Adjust quantities and prices and **Save the draft**.',
+					'**Send the order**: it is numbered and fixed. **Print** it for the supplier.',
+					'When the delivery arrives, **Receive** each line with the batch and expiry from the box. Part deliveries are fine; the order shows Partly received until the rest comes.',
+					'Record the **supplier’s invoice**. Check ordered, received and invoiced agree, then pay it — now, or later with **Pay**.'
+				],
+				notes: [
+					'Receiving here is the same as receiving on the item’s page — a new lot, soonest expiry first out — with the order’s supplier and price filled in, and the delivery tied to the order line.',
+					'An invoice for more than arrived is shown in red. It can still be paid: sometimes the rest came and was not recorded. It cannot be paid by accident.',
+					'An order that has received anything cannot be cancelled.',
+					'Each branch orders for its own store; choose the branch in the top bar.'
+				],
+				keywords: [
+					'purchase order',
+					'order',
+					'supplier',
+					'delivery',
+					'invoice',
+					'reorder',
+					'low stock',
+					'receive'
+				]
+			},
+			{
 				id: 'accounting-export',
 				title: 'Sending the books to the accountant',
 				summary:
@@ -2404,6 +2434,28 @@ export const ROUTE_MAP: RouteEntry[] = [
 			'A month of money as journal entries for Peachtree or any ledger, and the account codes.',
 		permission: 'transactions.manage',
 		group: 'Finance'
+	},
+	{
+		path: '/dashboard/supplies/orders',
+		title: 'Purchase orders',
+		purpose: 'Orders to suppliers, what has arrived against them, and their invoices.',
+		permission: 'supplies_suppliers.manage',
+		group: 'Supplies'
+	},
+	{
+		path: '/dashboard/supplies/orders/[id]',
+		title: 'Purchase order',
+		purpose:
+			'One order: its lines, deliveries received, and the supplier’s invoice matched and paid.',
+		permission: 'supplies_suppliers.manage',
+		group: 'Supplies'
+	},
+	{
+		path: '/dashboard/supplies/orders/[id]/print',
+		title: 'Purchase order (printed)',
+		purpose: 'A sent order on the letterhead, for the supplier.',
+		permission: 'supplies_suppliers.manage',
+		group: 'Supplies'
 	},
 	{
 		path: '/dashboard/supplies/controlled',

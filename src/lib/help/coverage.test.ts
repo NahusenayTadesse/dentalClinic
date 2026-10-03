@@ -85,6 +85,9 @@ const HELP_FAMILY = new Set([
 	// A cycle of the sterilisation log and its labels: covered by `sterilisation.json`'s match.
 	'/dashboard/sterilisation/[cycleId]',
 	'/dashboard/sterilisation/[cycleId]/labels',
+	// One purchase order and its printout: covered by `purchase-orders.json`'s match.
+	'/dashboard/supplies/orders/[id]',
+	'/dashboard/supplies/orders/[id]/print',
 	// The controlled-medicine register on paper: covered by `supplies-controlled.json`.
 	'/dashboard/supplies/controlled/print',
 	// Paper to sign: covered by the chart's "Consents" and "Medical alerts" sections.

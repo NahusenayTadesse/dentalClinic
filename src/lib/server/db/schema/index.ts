@@ -36,3 +36,4 @@ export * from './perio';
 export * from './sterilisation';
 export * from './ortho';
 export * from './ledger';
+export * from './purchasing';

@@ -63,6 +63,7 @@ import Pill from '@lucide/svelte/icons/pill';
 import Plus from '@lucide/svelte/icons/plus';
 import ScanLine from '@lucide/svelte/icons/scan-line';
 import ScrollText from '@lucide/svelte/icons/scroll-text';
+import ShoppingCart from '@lucide/svelte/icons/shopping-cart';
 import BookOpen from '@lucide/svelte/icons/book-open';
 import Smile from '@lucide/svelte/icons/smile';
 import ShieldAlert from '@lucide/svelte/icons/shield-alert';
@@ -223,6 +224,7 @@ export const NAVIGATION: NavItem[] = [
 		items: [
 			{ title: 'Stock Levels', url: '/dashboard/supplies', icon: List },
 			{ title: 'Add Supply', url: '/dashboard/supplies/add-supplies', icon: Plus },
+			{ title: 'Purchase Orders', url: '/dashboard/supplies/orders', icon: ShoppingCart },
 			{ title: 'Controlled Medicines', url: '/dashboard/supplies/controlled', icon: ShieldAlert },
 			{ title: 'Suppliers', url: '/dashboard/supplies/suppliers', icon: Sheet },
 			{

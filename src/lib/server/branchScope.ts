@@ -70,7 +70,9 @@ export const BRANCH_SCOPED = [
 	'attendance',
 	'employee',
 	// Each branch sterilises its own instruments; its log is its inspector's.
-	'sterilisation_cycle'
+	'sterilisation_cycle',
+	// A branch orders for its own store.
+	'purchase_order'
 ] as const;
 
 export type BranchScopedTable = (typeof BRANCH_SCOPED)[number];

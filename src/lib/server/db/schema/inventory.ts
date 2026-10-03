@@ -169,6 +169,13 @@ export const suppliesAdjustments = mysqlTable('supplies_adjustments', {
 	damagedSuppliesId: int('damaged_supplies_id').references(() => damagedSupplies.id, {
 		onDelete: 'set null'
 	}),
+
+	/**
+	 * The order line a delivery was received against, so an order knows what has arrived and a
+	 * lot knows which order brought it. Plain int, not a reference: `purchasing.ts` imports this
+	 * file, and the reference would be a cycle.
+	 */
+	purchaseOrderLineId: int('purchase_order_line_id'),
 	...secureFields
 });
 
