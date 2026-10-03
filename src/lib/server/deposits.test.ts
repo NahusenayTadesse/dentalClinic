@@ -42,6 +42,15 @@ describe('deposits and statements', async () => {
 				const startBalance = await patientBalance(someone.id, tx);
 				const startCredit = await patientCredit(someone.id, tx);
 
+				// The bill's number before the deposit's receipt: every test that takes both takes
+				// them in this order, or two running at once each hold the lock the other waits for.
+				const billId = await createInvoice(tx, event, {
+					patientId: someone.id,
+					procedureIds: [],
+					branchId: null,
+					charges: [{ description: 'Crown', quantity: 1, unitPrice: 3500 }]
+				});
+				await issueInvoice(tx, event, someone.id, billId, { dueOn: null });
 				await takeDeposit(tx, event, {
 					patientId: someone.id,
 					amount: 2000,
@@ -50,13 +59,6 @@ describe('deposits and statements', async () => {
 					reference: null,
 					note: 'Crown on 36'
 				});
-				const billId = await createInvoice(tx, event, {
-					patientId: someone.id,
-					procedureIds: [],
-					branchId: null,
-					charges: [{ description: 'Crown', quantity: 1, unitPrice: 3500 }]
-				});
-				await issueInvoice(tx, event, someone.id, billId, { dueOn: null });
 				const creditBefore = await patientCredit(someone.id, tx);
 				const applied = await applyCredit(tx, event, someone.id, billId);
 				const [bill] = await tx

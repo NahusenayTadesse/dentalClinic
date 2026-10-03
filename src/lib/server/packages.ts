@@ -178,7 +178,6 @@ export async function sellPackage(
 		branchId: input.branchId,
 		charges: [{ description: `Package: ${offer.name}`, quantity: 1, unitPrice: offer.price }]
 	});
-	await issueInvoice(tx, event, input.patientId, invoiceId, { dueOn: null });
 	const soldOn = clinicToday();
 	const id = await insertReturningId(tx, patientPackage, {
 		patientId: input.patientId,
@@ -190,6 +189,11 @@ export async function sellPackage(
 		createdBy: event.locals.user?.id
 	});
 	await recordAudit(tx, event, { table: 'patient_package', recordId: id, action: 'create' });
+	// Numbered last. Raising a bill from work locks the patient's packages (`coverageFor`) and, when
+	// issued in the same transaction, then waits for the bill number; numbering this sale before
+	// recording its package took the same two locks the other way round, and a sale and a bill for
+	// one patient at one moment deadlocked.
+	await issueInvoice(tx, event, input.patientId, invoiceId, { dueOn: null });
 	return { invoiceId, name: offer.name };
 }
 
