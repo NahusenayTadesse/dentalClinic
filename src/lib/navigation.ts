@@ -63,6 +63,7 @@ import Pill from '@lucide/svelte/icons/pill';
 import Plus from '@lucide/svelte/icons/plus';
 import ScanLine from '@lucide/svelte/icons/scan-line';
 import ScrollText from '@lucide/svelte/icons/scroll-text';
+import Package from '@lucide/svelte/icons/package';
 import LockKeyhole from '@lucide/svelte/icons/lock-keyhole';
 import FileWarning from '@lucide/svelte/icons/file-warning';
 import ShoppingCart from '@lucide/svelte/icons/shopping-cart';
@@ -293,6 +294,11 @@ export const NAVIGATION: NavItem[] = [
 			{ title: 'Conditions', url: '/dashboard/admin-panel/conditions', icon: Activity },
 			{ title: 'Medicines', url: '/dashboard/admin-panel/medicines', icon: Pill },
 			{ title: 'Consent Forms', url: '/dashboard/admin-panel/consent-forms', icon: FileSignature },
+			{
+				title: 'Treatment Packages',
+				url: '/dashboard/admin-panel/treatment-packages',
+				icon: Package
+			},
 			{ title: 'Sterilisers', url: '/dashboard/admin-panel/sterilisers', icon: ShieldCheck },
 			{
 				title: 'Referral Sources',

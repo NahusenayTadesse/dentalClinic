@@ -7,6 +7,7 @@ import {
 	appointmentTypeServices,
 	orthoInstalment,
 	purchaseOrderLine,
+	treatmentPackageItem,
 	smsProvider,
 	customers,
 	damagedSupplies,
@@ -647,6 +648,18 @@ export async function softDeletePurchaseLines(tx: Tx, ids: number[], userId?: st
 		.update(purchaseOrderLine)
 		.set(deletionStamp(userId))
 		.where(and(inArray(purchaseOrderLine.id, ids), notDeleted(purchaseOrderLine)));
+}
+
+/**
+ * Takes services out of a treatment package when its list is saved anew. Configuration: patients'
+ * bills keep their lines whatever the package lists now.
+ */
+export async function softDeletePackageItems(tx: Tx, ids: number[], userId?: string) {
+	if (ids.length === 0) return;
+	await tx
+		.update(treatmentPackageItem)
+		.set(deletionStamp(userId))
+		.where(and(inArray(treatmentPackageItem.id, ids), notDeleted(treatmentPackageItem)));
 }
 
 /**

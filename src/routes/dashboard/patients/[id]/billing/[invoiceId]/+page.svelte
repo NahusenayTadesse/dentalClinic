@@ -12,7 +12,6 @@
 	import * as Table from '@nahu/admin-kit/components/ui/table/index.js';
 	import Section from '@nahu/admin-kit/components/Section.svelte';
 	import InvoiceStatusBadge from '$lib/components/InvoiceStatusBadge.svelte';
-	import ProcedurePicker from '$lib/components/ProcedurePicker.svelte';
 	import DialogComp from '@nahu/admin-kit/formComponents/DialogComp.svelte';
 	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
 	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
@@ -22,17 +21,10 @@
 	import { canEditInvoice, canPay, canRequestVoid } from '$lib/invoiceStatus';
 	import PaymentForm from '$lib/components/PaymentForm.svelte';
 	import BillPayments from './BillPayments.svelte';
+	import BillBundles from './BillBundles.svelte';
+	import DraftAdditions from './DraftAdditions.svelte';
 	import { useI18n } from '$lib/i18n/i18n.svelte';
-	import {
-		addCharge,
-		addWork,
-		discount,
-		editLine,
-		issue,
-		payer,
-		voidRequest,
-		type EditLine
-	} from '../schema';
+	import { discount, editLine, issue, payer, voidRequest, type EditLine } from '../schema';
 
 	/**
 	 * One bill, and whatever its next step is: a draft is put together and issued; an issued bill
@@ -222,6 +214,14 @@
 		{/if}
 	</Section>
 
+	{#if draft}
+		<BillBundles
+			applied={data.bundles.applied}
+			fitting={data.bundles.fitting}
+			form={data.forms.bundle}
+		/>
+	{/if}
+
 	<Section title={w.lines} IconComp={Receipt} style="systemIcon">
 		<Table.Root>
 			<Table.Header>
@@ -344,66 +344,15 @@
 	{/if}
 </div>
 
-<FormDialog
-	title={w.addWorkTitle}
-	action="?/addWork"
-	data={data.forms.add}
-	schema={addWork}
-	bind:open={addOpen}
-	hideTrigger
-	resetOnSuccess
-	submitLabel={w.addToBill}
-	disabled={!draft}
->
-	{#snippet fields({ form })}
-		<ProcedurePicker {form} work={data.unbilled} legend={t.m.billing.tab.completedWork}>
-			{#snippet empty()}{w.nothingElse}{/snippet}
-		</ProcedurePicker>
-	{/snippet}
-</FormDialog>
-
-<FormDialog
-	title={w.addCharge}
-	description={w.chargeDescription}
-	action="?/addCharge"
-	data={data.forms.charge}
-	schema={addCharge}
-	bind:open={chargeOpen}
-	hideTrigger
-	resetOnSuccess
-	submitLabel={w.addChargeSubmit}
-	disabled={!draft}
->
-	{#snippet fields({ form, errors })}
-		<InputComp
-			label={w.whatFor}
-			name="description"
-			{form}
-			{errors}
-			placeholder={w.whatForPlaceholder}
-		/>
-		<InputComp label={w.quantity} name="quantity" type="number" step="1" min="1" {form} {errors} />
-		<InputComp
-			label={w.priceEach}
-			name="unitPrice"
-			type="number"
-			step="0.01"
-			min="0"
-			{form}
-			{errors}
-		/>
-		{#if data.vatRegistered}
-			<InputComp
-				label={w.chargeTaxable}
-				name="taxable"
-				type="checkboxSingle"
-				placeholder={w.chargeTaxableHint}
-				{form}
-				{errors}
-			/>
-		{/if}
-	{/snippet}
-</FormDialog>
+<DraftAdditions
+	bind:workOpen={addOpen}
+	bind:chargeOpen
+	workForm={data.forms.add}
+	chargeForm={data.forms.charge}
+	unbilled={data.unbilled}
+	vatRegistered={data.vatRegistered}
+	{draft}
+/>
 
 <FormDialog
 	title={w.changeLineTitle}

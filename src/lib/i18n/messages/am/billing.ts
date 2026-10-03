@@ -105,7 +105,22 @@ export const billing: typeof en = {
 		depositFor: 'ለምን እንደሆነ',
 		depositTaken: (amount) => `${amount} ቅድመ ክፍያ ተቀብሏል።`,
 		useCredit: (amount) => `ቅድመ ክፍያ ተጠቀም (${amount})`,
-		creditApplied: (amount) => `${amount} ቅድመ ክፍያ በደረሰኙ ላይ ውሏል።`
+		creditApplied: (amount) => `${amount} ቅድመ ክፍያ በደረሰኙ ላይ ውሏል።`,
+		sellPackage: 'ፓኬጅ ሽጥ',
+		sellDescription:
+			'ቅድመ ክፍያ ፓኬጅ አሁን በአንድ መስመር ደረሰኝ ይቆረጣል። የሚሸፍነው ሥራ ከዚያ በኋላ እስኪያልቅ ወይም ጊዜው እስኪያልፍ ድረስ በዜሮ ይቆረጣል።',
+		packageField: 'ፓኬጅ',
+		packageSold: (name) => `${name} ተሽጧል። ክፍያውን በደረሰኙ ላይ ይቀበሉ።`,
+		packages: 'ቅድመ ክፍያ ፓኬጆች',
+		packageLeft: (left, total) => `ከ${total} ${left} ቀርቷል`,
+		packageExpires: (day) => `እስከ ${day} ድረስ`,
+		packageNoExpiry: 'ጊዜ ገደብ የለውም',
+		packageExpired: 'ጊዜው አልፏል',
+		packageApplied: (name) => `${name} ተተግብሯል፦ መስመሮቹ ወደ ፓኬጁ ዋጋ ተስተካክለዋል።`,
+		packageRemoved: 'ፓኬጁ ተነስቷል፦ መስመሮቹ ወደ ራሳቸው ዋጋ ተመልሰዋል።',
+		bundles: 'ፓኬጆች',
+		applyBundle: (name, price) => `${name} ተግብር (${price})`,
+		removeBundle: (name) => `${name} አንሳ`
 	},
 
 	bill: {

@@ -11,6 +11,7 @@ import {
 	packUse,
 	orthoCase,
 	patientDeposit,
+	patientPackage,
 	patient,
 	patientAllergies,
 	patientConditions,
@@ -97,6 +98,8 @@ export const OWNED: Owned[] = [
 	},
 	// A pack opened for the duplicate was opened for this person: a failed cycle must still find them.
 	{ name: 'pack_use', table: packUse, patientId: packUse.patientId },
+	// A prepaid package is the person's, with what is left of it.
+	{ name: 'patient_package', table: patientPackage, patientId: patientPackage.patientId },
 	// Money paid ahead of a bill is the person's credit, wherever it was taken.
 	{ name: 'patient_deposit', table: patientDeposit, patientId: patientDeposit.patientId },
 	// A course of braces is the patient's, with its visits and its payment plan.

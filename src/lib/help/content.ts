@@ -854,6 +854,28 @@ export const HELP_SECTIONS: HelpSection[] = [
 				keywords: ['deposit', 'advance', 'prepayment', 'credit', 'statement', 'account', 'balance']
 			},
 			{
+				id: 'treatment-packages',
+				title: 'Treatment packages',
+				summary:
+					'Bundles of services at a price of their own, in the two ways clinics sell them: paid up front and used over time, or a price for services done together.',
+				where:
+					'Menu → **Clinic Setup → Treatment Packages**; a patient’s **Billing** tab; a draft bill',
+				permission: 'settings.manage to set up; billing.invoice to sell and apply',
+				steps: [
+					'Under **Treatment Packages**, add a package: its name, how it is sold, its price and — for a prepaid one — how many days it can be used. Then click **Services** on its row and choose what is in it, and how many.',
+					'**Prepaid**: on the patient’s Billing tab, **Sell a package**. It is billed at once as one line; take the payment as for any bill.',
+					'When work the package covers is done and billed, those lines come to nothing and say which package paid for them. The Prepaid packages list shows what is left.',
+					'**Bundle**: raise the bill from the visit’s work as usual. On the draft, **Apply** the bundle; the lines re-price to add up to its price. **Take off** puts them back.'
+				],
+				notes: [
+					'A prepaid package is used soonest-expiring first, and never after it expires.',
+					'A line taken off a draft, a draft thrown away, or a bill voided gives the package’s use back.',
+					'A bundle only applies when the bill holds every service in it, as many times as it counts.',
+					'Each bundled line keeps its share of the price, so commissions and reports still see what each service brought in.'
+				],
+				keywords: ['package', 'bundle', 'prepaid', 'offer', 'membership', 'discount', 'check-up']
+			},
+			{
 				id: 'data-protection',
 				title: 'Personal data protection',
 				summary:
@@ -2336,6 +2358,13 @@ export const ROUTE_MAP: RouteEntry[] = [
 		path: '/dashboard/admin-panel/data-breaches',
 		title: 'Breach log',
 		purpose: 'Every personal-data breach, what was done, and who was told.',
+		permission: 'settings.manage',
+		group: 'Clinic setup'
+	},
+	{
+		path: '/dashboard/admin-panel/treatment-packages',
+		title: 'Treatment packages',
+		purpose: 'Bundles of services at a price of their own: prepaid, or applied to a bill.',
 		permission: 'settings.manage',
 		group: 'Clinic setup'
 	},

@@ -78,6 +78,7 @@ export const nav: Record<string, string> = {
 	'Purchase Orders': 'የግዢ ትዕዛዞች',
 	'Data Protection': 'የግል መረጃ ጥበቃ',
 	'Breach Log': 'የመረጃ ጥሰት መዝገብ',
+	'Treatment Packages': 'የሕክምና ፓኬጆች',
 	Sterilisers: 'ማምከኛ ማሽኖች',
 	'Controlled Medicines': 'ቁጥጥር የሚደረግባቸው መድኃኒቶች',
 	Allergens: 'አለርጂ አምጪዎች',

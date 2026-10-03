@@ -113,7 +113,22 @@ export const billing = {
 		depositFor: 'What it is towards',
 		depositTaken: (amount: string) => `Deposit of ${amount} taken.`,
 		useCredit: (amount: string) => `Use credit (${amount})`,
-		creditApplied: (amount: string) => `${amount} of credit put towards the bill.`
+		creditApplied: (amount: string) => `${amount} of credit put towards the bill.`,
+		sellPackage: 'Sell a package',
+		sellDescription:
+			'A prepaid package is billed now, as one line. Work it covers is then billed at nothing until it is used up or expires.',
+		packageField: 'Package',
+		packageSold: (name: string) => `${name} sold. Take the payment on its bill.`,
+		packages: 'Prepaid packages',
+		packageLeft: (left: number, total: number) => `${left} of ${total} left`,
+		packageExpires: (day: string) => `usable until ${day}`,
+		packageNoExpiry: 'no expiry',
+		packageExpired: 'expired',
+		packageApplied: (name: string) => `${name} applied: the lines now add up to its price.`,
+		packageRemoved: 'Package taken off: the lines are back to their own prices.',
+		bundles: 'Packages',
+		applyBundle: (name: string, price: string) => `Apply ${name} (${price})`,
+		removeBundle: (name: string) => `Take off ${name}`
 	},
 
 	bill: {

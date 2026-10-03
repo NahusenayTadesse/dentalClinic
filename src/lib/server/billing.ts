@@ -204,6 +204,8 @@ export async function unbilledWork(patientId: number, reader: Reader = db) {
 	const rows = await reader
 		.select({
 			id: procedures.id,
+			// For the prepaid-package check when the work is billed (`packageCover.ts`).
+			serviceId: procedures.serviceId,
 			service: services.name,
 			area: services.area,
 			toothId: procedures.toothId,

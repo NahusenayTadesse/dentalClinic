@@ -229,10 +229,20 @@ export const invoiceLine = mysqlTable(
 
 		sortOrder: int('sort_order').notNull().default(0),
 
+		/**
+		 * The prepaid package this line's work was covered by, and so billed at nothing
+		 * (`$lib/packages.ts`). Plain int, not a reference: `packages.ts` imports this file.
+		 */
+		patientPackageId: int('patient_package_id'),
+
+		/** The bundle that re-priced this line, so the bundle can be taken off again. Plain int, as above. */
+		bundlePackageId: int('bundle_package_id'),
+
 		...secureFields
 	},
 	(table) => [
 		index('invoice_line_invoice_idx').on(table.invoiceId),
+		index('invoice_line_patient_package_idx').on(table.patientPackageId),
 		index('invoice_line_procedure_idx').on(table.procedureId),
 		index('invoice_line_supply_idx').on(table.supplyId)
 	]

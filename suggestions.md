@@ -229,13 +229,14 @@ Credit income keeps many clinics running, so this matters more than it looks.
   on the item page), and the supplier's invoice set against ordered and received before it is paid.
   Payments post as stock in the accounting export. Found and fixed on the way: `onHand()` read
   the wrong lots in any query without a join — the dashboard's low-stock count among them.
-- 🟡 **Patient account statements, treatment packages and deposits — statements and deposits
-  done.** Billing → Take a deposit receipts money before a bill exists; it shows as _In credit_ and
-  **Use credit** on a bill applies it, oldest first, as ordinary bill payments. **Statement** prints
-  a period's bills, payments, refunds and deposits with a running balance that closes on what is
-  owed less credit. The accounting export holds deposits as a liability until used. **Packages not
-  done**: selling a bundle needs a rule for marking the covered work as already paid when it is
-  done, or it is billed twice — a decision about how clinics here sell packages.
+- ✅ **Patient account statements, treatment packages and deposits — done.** Billing → Take a
+  deposit receipts money before a bill exists; it shows as _In credit_ and **Use credit** on a bill
+  applies it, oldest first. **Statement** prints a period's bills, payments, refunds and deposits
+  with a running balance. **Treatment packages** (Clinic Setup) come in two kinds: _prepaid_, sold
+  as one bill, after which the work it covers is billed at nothing until its counts run out or it
+  expires; and _bundles_, applied to a draft that holds all their services so the lines add up to
+  the package price. A third kind is a new member of `PACKAGE_KINDS` and a branch in
+  `server/packages.ts`.
 - ✅ **Personal data protection (2024 proclamation) — done.** _The patient's copy of their record_ on
   every chart (new permission `patients.export`): the whole record printed, or as a JSON file for
   another clinic, logged as handed over. **Admin Panel → Data Protection** sets the retention period

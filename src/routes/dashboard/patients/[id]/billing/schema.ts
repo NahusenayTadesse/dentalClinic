@@ -73,6 +73,8 @@ export const refund = z.object({
 /** A step with nothing to fill in: issuing without a due date, discarding a draft. */
 export const confirmOnly = z.object({});
 
+export type AddWork = z.infer<typeof addWork>;
+export type AddCharge = z.infer<typeof addCharge>;
 export type EditLine = z.infer<typeof editLine>;
 export type Refund = z.infer<typeof refund>;
 
@@ -85,3 +87,13 @@ export const deposit = z.object({
 });
 
 export type Deposit = z.infer<typeof deposit>;
+
+/** Selling a prepaid package (`server/packages.ts`). */
+export const sellPackageForm = z.object({
+	packageId: z.string().min(1, 'Choose the package.')
+});
+
+export type SellPackage = z.infer<typeof sellPackageForm>;
+
+/** Applying a bundle to a draft, or taking it off (`server/packages.ts`). */
+export const bundleForm = z.object({ packageId: z.coerce.number().int().positive() });

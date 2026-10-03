@@ -1,0 +1,41 @@
+{
+	"path": "/dashboard/admin-panel/treatment-packages",
+	"languages": {
+		"en": {
+			"title": "Treatment packages",
+			"summary": "The clinic's own bundles of services at a price of their own — sold up front, or applied to a bill.",
+			"sections": [
+				{
+					"heading": "Two kinds",
+					"body": "Prepaid: sold and billed up front as one line, like \"six cleanings a year\". Afterwards the work it covers is billed at nothing when a bill is raised from it, until each service's count is used or the package expires (set Usable for, in days; empty for no limit).\n\nBundle: a price for services done together, like \"check-up: examination, scaling and a bitewing for 1,500\". On a draft bill holding all its services, Apply re-prices those lines so they add up to the package price, each keeping its share."
+				},
+				{
+					"heading": "Services",
+					"body": "Click a package's Services to choose what is in it and how many of each. The standard prices are added up beside the package's own, so the saving shows before it is offered. A package with no services is not offered."
+				},
+				{
+					"heading": "Changing one that is sold",
+					"body": "Patients who bought a prepaid package keep counting against its services as they are. To change what a package includes, retire it (Inactive) and add a new one."
+				}
+			]
+		},
+		"am": {
+			"title": "የሕክምና ፓኬጆች",
+			"summary": "የክሊኒኩ የአገልግሎት ጥቅሎች በራሳቸው ዋጋ — በቅድሚያ የሚሸጡ ወይም በደረሰኝ ላይ የሚተገበሩ።",
+			"sections": [
+				{
+					"heading": "ሁለት ዓይነት",
+					"body": "ቅድመ ክፍያ፦ በቅድሚያ በአንድ መስመር ይሸጣል። ከዚያ የሚሸፍነው ሥራ እስኪያልቅ ወይም ጊዜው እስኪያልፍ ድረስ በዜሮ ይቆረጣል።\n\nጥቅል፦ አብረው ለሚሠሩ አገልግሎቶች አንድ ዋጋ። ሁሉንም አገልግሎቶቹን በያዘ ረቂቅ ደረሰኝ ላይ Apply መስመሮቹን ወደ ፓኬጁ ዋጋ ያስተካክላል።"
+				},
+				{
+					"heading": "አገልግሎቶች",
+					"body": "በፓኬጁ ውስጥ ያሉትንና የእያንዳንዱን ብዛት ለመምረጥ Services ይጫኑ። አገልግሎት የሌለው ፓኬጅ አይቀርብም።"
+				},
+				{
+					"heading": "የተሸጠን መቀየር",
+					"body": "የገዙ ታካሚዎች በገዙት መሠረት ይቀጥላሉ። ለመቀየር ፓኬጁን Inactive አድርገው አዲስ ይጨምሩ።"
+				}
+			]
+		}
+	}
+}

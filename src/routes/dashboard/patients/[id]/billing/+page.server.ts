@@ -13,7 +13,8 @@ import { messagesFor } from '$lib/i18n/messages';
 import { canPay } from '$lib/invoiceStatus';
 import { BILLING_PERMISSION, billingAction, payAction } from './billingAction';
 import { payment } from '$lib/forms/payment';
-import { deposit, newInvoice } from './schema';
+import { deposit, newInvoice, sellPackageForm } from './schema';
+import { offeredPackages, patientPackages, sellPackage } from '$lib/server/packages';
 import { patientCredit, takeDeposit } from '$lib/server/deposits';
 import { AUTHORISATIONS } from './authorisations.server';
 import { childActions } from '$lib/server/childCrud';
@@ -45,7 +46,10 @@ export const load: PageServerLoad = async (event) => {
 		payForm,
 		depositForm,
 		authorisations,
-		payers
+		payers,
+		prepaid,
+		packages,
+		sellForm
 	] = await Promise.all([
 		patientBalance(patient.id),
 		patientCredit(patient.id),
@@ -57,7 +61,10 @@ export const load: PageServerLoad = async (event) => {
 		superValidate(zod4(payment)),
 		superValidate(zod4(deposit)),
 		AUTHORISATIONS.Authorisation.load(patient.id),
-		customerList()
+		customerList(),
+		offeredPackages('prepaid'),
+		patientPackages(patient.id),
+		superValidate(zod4(sellPackageForm))
 	]);
 
 	return {
@@ -82,7 +89,10 @@ export const load: PageServerLoad = async (event) => {
 			.map((b) => ({ id: b.id, number: b.invoiceNumber, owed: b.owed, issuedOn: b.issuedOn })),
 		methods,
 		drawerOpen: drawer !== null,
-		forms: { invoice: invoiceForm, payment: payForm, deposit: depositForm },
+		forms: { invoice: invoiceForm, payment: payForm, deposit: depositForm, sell: sellForm },
+		// Prepaid packages that can be sold, and the ones this patient has, with what is left.
+		prepaid: prepaid.map((p) => ({ id: p.id, name: p.name, price: p.price })),
+		packages,
 		authorisations,
 		payers
 	};
@@ -102,6 +112,18 @@ export const actions: Actions = {
 			};
 		}),
 	pay: payAction,
+	sellPackage: (event) =>
+		billingAction(event, sellPackageForm, async (tx, { patientId, data }) => {
+			const sold = await sellPackage(tx, event, {
+				patientId,
+				packageId: Number(data.packageId),
+				branchId: event.locals.branch.active
+			});
+			return {
+				redirect: `/dashboard/patients/${patientId}/billing/${sold.invoiceId}`,
+				text: messagesFor(event.locals.lang).billing.tab.packageSold(sold.name)
+			};
+		}),
 	deposit: (event) =>
 		billingAction(event, deposit, async (tx, { patientId, data }) => {
 			await takeDeposit(tx, event, {

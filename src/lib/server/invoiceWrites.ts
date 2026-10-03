@@ -25,6 +25,7 @@ import { clinicToday } from '$lib/clinicTime';
 import { canEditInvoice, canRequestVoid, cents, discountNeedsApproval } from '$lib/invoiceStatus';
 import { billTotals, type BillTotals, type VatStanding } from '$lib/billTax';
 import { applyCover, checkPreauth } from '$lib/server/payerCover';
+import { coverageFor } from '$lib/server/packageCover';
 
 /** A transaction on the database, as `db.transaction` hands it over. */
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -67,16 +68,27 @@ async function writeWorkLines(
 	);
 	// Charted treatment carries VAT only where the clinic's accountant has said services do.
 	const { vatOnServices } = await readSettings(tx);
+	// Work a prepaid package covers is billed at nothing: it was paid for when the package was sold.
+	const covered = await coverageFor(
+		tx,
+		patientId,
+		chosen.map((w) => ({ procedureId: w.id, serviceId: w.serviceId }))
+	);
 	for (const [index, work] of chosen.entries()) {
+		const cover = covered.get(work.id);
+		const price = cover ? 0 : work.fee;
 		const id = await insertReturningId(tx, invoiceLine, {
 			taxable: vatOnServices,
 			invoiceId,
 			procedureId: work.id,
-			description: work.description,
+			description: cover
+				? `${work.description} — in ${cover.name}`.slice(0, 255)
+				: work.description,
 			toothId: work.toothId,
 			quantity: 1,
-			unitPrice: work.fee,
-			lineTotal: work.fee,
+			unitPrice: price,
+			lineTotal: price,
+			patientPackageId: cover?.patientPackageId ?? null,
 			sortOrder: index + 1,
 			createdBy: event.locals.user?.id
 		});

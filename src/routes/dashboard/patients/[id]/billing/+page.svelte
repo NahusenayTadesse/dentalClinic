@@ -14,6 +14,7 @@
 	import { useI18n } from '$lib/i18n/i18n.svelte';
 	import { billColumns } from './columns';
 	import { deposit, newInvoice } from './schema';
+	import PatientPackages from './PatientPackages.svelte';
 	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
 	import FileText from '@lucide/svelte/icons/file-text';
 	import PiggyBank from '@lucide/svelte/icons/piggy-bank';
@@ -114,6 +115,8 @@
 			<p class="text-sm text-muted-foreground">{w.noBills}</p>
 		{/if}
 	</Section>
+
+	<PatientPackages packages={data.packages} offered={data.prepaid} form={data.forms.sell} />
 
 	<Section title={t.m.billing.authorisations.title} IconComp={ShieldCheck} style="identityIcon">
 		<p class="mb-3 text-sm text-muted-foreground">{t.m.billing.authorisations.hint}</p>

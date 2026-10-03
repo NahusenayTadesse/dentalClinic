@@ -29,6 +29,7 @@ import { BILLING_PERMISSION, billingAction, payAction } from '../billingAction';
 import {
 	addCharge as addChargeForm,
 	addWork,
+	bundleForm,
 	confirmOnly,
 	discount,
 	editLine,
@@ -39,6 +40,7 @@ import {
 	voidRequest
 } from '../schema';
 import { applyCredit, patientCredit } from '$lib/server/deposits';
+import { applyBundle, bundlesOnBill, removeBundle } from '$lib/server/packages';
 import { formatETB } from '$lib/global.svelte';
 import { coverLinks } from '$lib/server/payerCover';
 import type { Actions, PageServerLoad } from './$types';
@@ -83,7 +85,8 @@ export const load: PageServerLoad = async (event) => {
 			superValidate(zod4(payment)),
 			superValidate(zod4(confirmOnly)),
 			superValidate(zod4(refund)),
-			superValidate({ customerId: bill.customerId ? String(bill.customerId) : '' }, zod4(payer))
+			superValidate({ customerId: bill.customerId ? String(bill.customerId) : '' }, zod4(payer)),
+			superValidate(zod4(bundleForm))
 		])
 	]);
 	const [
@@ -97,7 +100,8 @@ export const load: PageServerLoad = async (event) => {
 		payForm,
 		confirm,
 		refundForm,
-		payerForm
+		payerForm,
+		bundle
 	] = forms;
 
 	// Credit can pay the patient's own payable bill; a payer's bill is the payer's to pay.
@@ -132,8 +136,11 @@ export const load: PageServerLoad = async (event) => {
 			payment: payForm,
 			confirm,
 			refund: refundForm,
-			payer: payerForm
-		}
+			payer: payerForm,
+			bundle
+		},
+		// Bundles applied to this draft, and those its lines would fit (`server/packages.ts`).
+		bundles: await bundlesOnBill(bill.id, bill.status)
 	};
 };
 
@@ -205,6 +212,16 @@ export const actions: Actions = {
 		}),
 
 	pay: payAction,
+	applyBundle: (event) =>
+		billingAction(event, bundleForm, async (tx, { patientId, data }) => {
+			const name = await applyBundle(tx, event, patientId, billId(event), data.packageId);
+			return messagesFor(event.locals.lang).billing.tab.packageApplied(name);
+		}),
+	removeBundle: (event) =>
+		billingAction(event, bundleForm, async (tx, { patientId, data }) => {
+			await removeBundle(tx, event, patientId, billId(event), data.packageId);
+			return messagesFor(event.locals.lang).billing.tab.packageRemoved;
+		}),
 	useCredit: (event) =>
 		billingAction(event, confirmOnly, async (tx, { patientId }) => {
 			const applied = await applyCredit(tx, event, patientId, billId(event));

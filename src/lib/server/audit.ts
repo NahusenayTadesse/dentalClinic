@@ -63,6 +63,8 @@ export type AuditedTable =
 	| 'supplier_invoice'
 	// money a patient paid ahead of any bill
 	| 'patient_deposit'
+	// a prepaid treatment package sold to a patient
+	| 'patient_package'
 	| 'appointment'
 	// money
 	| 'invoice'
