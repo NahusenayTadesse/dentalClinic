@@ -309,6 +309,48 @@ export const billing = {
 		record: 'Record payment'
 	},
 
+	/** Taking a payment online, through a gateway: the dialog and the list on the billing tab. */
+	online: {
+		title: 'Online payments',
+		payOnline: 'Pay online',
+		dialogTitle: 'Take a payment online',
+		dialogDescription:
+			'The patient pays from a link on their phone. The bill counts as paid once the gateway confirms the money arrived.',
+		through: 'Through',
+		test: 'test mode',
+		phone: 'Patient’s phone',
+		phonePlaceholder: 'For the gateway, and to text the link',
+		create: 'Create payment link',
+		creating: 'Creating',
+		created: (amount: string) =>
+			`A payment link for ${amount} is ready. Text it to the patient, or open it on this screen.`,
+		status: {
+			pending: 'Waiting for payment',
+			paid: 'Paid',
+			failed: 'Not paid',
+			cancelled: 'Stopped waiting'
+		},
+		paidText: 'Paid — the payment is recorded, and its receipt is on the bill.',
+		pendingText: 'Not paid yet.',
+		cancelledText: 'Stopped waiting, and not paid.',
+		open: 'Open link',
+		copy: 'Copy link',
+		copied: 'Link copied',
+		text: 'Text the link',
+		texted: 'The link was sent by SMS.',
+		notTexted: {
+			optedOut: 'This patient asked not to be texted.',
+			noMobile: 'There is no Ethiopian mobile number to text.',
+			noGateway: 'No SMS gateway is set up.'
+		},
+		check: 'Check now',
+		stop: 'Stop waiting',
+		stopped: 'Stopped waiting. If the patient pays the link anyway, the payment is still recorded.',
+		watching: 'Checking every few seconds while you wait.',
+		receipt: (number: string) => `Receipt ${number}`,
+		none: 'No payments taken online in the last sixty days.'
+	},
+
 	/** What the billing writers say when they refuse a step. */
 	/** Billing → Mobile Money: a day's transfers, ticked against the provider's statement. */
 	mobile: {

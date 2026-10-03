@@ -92,7 +92,10 @@ export type AuditedTable =
 	| 'employee'
 	// credentials the clinic stores for others' services (`server/secrets.ts`): the key itself is
 	// redacted by name, so the row says only that it changed, and who changed it
-	| 'sms_provider';
+	| 'sms_provider'
+	| 'payment_gateway'
+	// an online payment asked for, and what came of it (`server/onlinePayments.ts`)
+	| 'online_payment';
 
 /** What happened. `varchar(20)` in the table; the union is the enforcement (see AUDIT.md). */
 export type AuditAction = 'create' | 'update' | 'delete' | 'restore' | 'merge';

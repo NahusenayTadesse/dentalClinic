@@ -6,7 +6,9 @@ import BigText from '@nahu/admin-kit/components/Table/bigText.svelte';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import { formatETB } from '$lib/global.svelte';
 import { clinicClock, clinicDate } from '$lib/clinicTime';
-import AccountActions from './AccountActions.svelte';
+import RowButtons from '$lib/components/Table/row-buttons.svelte';
+import Send from '@lucide/svelte/icons/send';
+import SquarePen from '@lucide/svelte/icons/square-pen';
 import type { PageData } from './$types';
 
 type Account = PageData['accounts'][number];
@@ -42,10 +44,13 @@ export function accountColumns(
 			header: '',
 			enableSorting: false,
 			cell: ({ row }) =>
-				renderComponent(AccountActions, {
-					canEdit: canManageKeys,
-					onedit: () => on.edit(row.original),
-					ontest: () => on.test(row.original)
+				renderComponent(RowButtons, {
+					buttons: [
+						{ label: 'Test', icon: Send, onclick: () => on.test(row.original) },
+						...(canManageKeys
+							? [{ label: 'Edit', icon: SquarePen, onclick: () => on.edit(row.original) }]
+							: [])
+					]
 				})
 		},
 		{
@@ -80,7 +85,10 @@ export function logColumns(names: Record<string, string>): ColumnDef<Message>[] 
 		{
 			id: 'kind',
 			header: 'For',
-			accessorFn: (row) => ({ reminder: 'Reminder', recall: 'Recall', test: 'Test' })[row.kind]
+			accessorFn: (row) =>
+				({ reminder: 'Reminder', recall: 'Recall', test: 'Test', payment: 'Payment link' })[
+					row.kind
+				]
 		},
 		{
 			id: 'patient',

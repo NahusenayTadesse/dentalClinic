@@ -9,6 +9,7 @@ import {
 	purchaseOrderLine,
 	treatmentPackageItem,
 	smsProvider,
+	paymentGateway,
 	customers,
 	damagedSupplies,
 	employee,
@@ -671,4 +672,16 @@ export async function softDeleteSmsProvider(tx: Tx, providerId: number, userId?:
 		.update(smsProvider)
 		.set({ ...deletionStamp(userId), isDefault: false })
 		.where(and(eq(smsProvider.id, providerId), notDeleted(smsProvider)));
+}
+
+/**
+ * Removes a payment gateway account. Switched off in the same write, so a deleted account is never
+ * offered at the desk. Its online payments keep their rows, which name the gateway as text, and one
+ * still waiting can still be checked — the money may yet arrive (`server/onlinePayments.ts`).
+ */
+export async function softDeletePaymentGateway(tx: Tx, gatewayId: number, userId?: string) {
+	await tx
+		.update(paymentGateway)
+		.set({ ...deletionStamp(userId), enabled: false })
+		.where(and(eq(paymentGateway.id, gatewayId), notDeleted(paymentGateway)));
 }

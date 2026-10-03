@@ -89,6 +89,7 @@ export const nav: Record<string, string> = {
 	'Contact Types': 'የመገናኛ ዓይነቶች',
 	'Billing Settings': 'የክፍያ ቅንብሮች',
 	SMS: 'አጭር መልዕክት (SMS)',
+	'Payment Gateways': 'የመስመር ላይ ክፍያ አገልግሎቶች',
 	'Admin Panel': 'የአስተዳደር ፓነል',
 	Users: 'ተጠቃሚዎች',
 	Roles: 'ሚናዎች',

@@ -12,6 +12,7 @@ import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 import { messagesFor } from '$lib/i18n/messages';
 import { canPay } from '$lib/invoiceStatus';
 import { BILLING_PERMISSION, billingAction, payAction } from './billingAction';
+import { onlineActions, onlinePaymentData } from './onlineActions';
 import { payment } from '$lib/forms/payment';
 import { deposit, newInvoice, sellPackageForm } from './schema';
 import { offeredPackages, patientPackages, sellPackage } from '$lib/server/packages';
@@ -49,7 +50,8 @@ export const load: PageServerLoad = async (event) => {
 		payers,
 		prepaid,
 		packages,
-		sellForm
+		sellForm,
+		online
 	] = await Promise.all([
 		patientBalance(patient.id),
 		patientCredit(patient.id),
@@ -64,7 +66,8 @@ export const load: PageServerLoad = async (event) => {
 		customerList(),
 		offeredPackages('prepaid'),
 		patientPackages(patient.id),
-		superValidate(zod4(sellPackageForm))
+		superValidate(zod4(sellPackageForm)),
+		onlinePaymentData(patient.id)
 	]);
 
 	return {
@@ -94,7 +97,8 @@ export const load: PageServerLoad = async (event) => {
 		prepaid: prepaid.map((p) => ({ id: p.id, name: p.name, price: p.price })),
 		packages,
 		authorisations,
-		payers
+		payers,
+		online
 	};
 };
 
@@ -112,6 +116,7 @@ export const actions: Actions = {
 			};
 		}),
 	pay: payAction,
+	...onlineActions,
 	sellPackage: (event) =>
 		billingAction(event, sellPackageForm, async (tx, { patientId, data }) => {
 			const sold = await sellPackage(tx, event, {

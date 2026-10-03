@@ -1,0 +1,61 @@
+{
+	"path": "/dashboard/admin-panel/payment-gateways",
+	"languages": {
+		"en": {
+			"title": "Payment Gateways",
+			"summary": "Take bills online through Chapa, Telebirr, ArifPay or SantimPay: the patient pays from a link on their phone.",
+			"sections": [
+				{
+					"heading": "Adding an account",
+					"body": "Open a merchant account with the gateway and get its keys. Then Add account here, choose the gateway, and paste what it asks for: Chapa's secret key; Telebirr's fabric app ID, app secret, merchant app ID, merchant code and private key; ArifPay's API key and settlement account; SantimPay's merchant ID and private key. A private key can be pasted as the gateway gave it, PEM or plain base64. Only a super administrator can add, change or remove an account.\n\nStart in Test mode with the gateway's test keys and take a payment on a test patient. Switch the account to Live when it works."
+				},
+				{
+					"heading": "How the keys are kept",
+					"body": "Secret keys are encrypted before they are stored and never shown again — only the last four characters of the main one. To change one, type the new one; leave it empty to keep the saved one. If the server's secret (BETTER_AUTH_SECRET) is ever changed, stored keys can no longer be read and must be entered again."
+				},
+				{
+					"heading": "Notifications",
+					"body": "Each gateway in use has an address listed under Notifications. Give it to the gateway as its webhook or notify URL, and a payment shows as paid as soon as it is made. A notification never pays a bill on its own word — the system asks the gateway, and the amount must be the amount asked. An install the internet cannot reach does without: the desk's Check button and the scheduled check find the payment instead."
+				},
+				{
+					"heading": "Several at once",
+					"body": "Every account switched on is offered at the desk, so a patient with Telebirr can pay through Telebirr and one with a card through Chapa. Switch an account off to stop offering it while keeping its history. Each gateway's money is recorded under its own payment method, such as \"Chapa (online)\", so the day's takings show it apart from cash."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Taking payments online",
+					"href": "/dashboard/help#section-billing"
+				}
+			]
+		},
+		"am": {
+			"title": "የመስመር ላይ ክፍያ አገልግሎቶች",
+			"summary": "ሂሳቦችን በቻፓ፣ በቴሌብር፣ በአሪፍፔይ ወይም በሳንቲምፔይ በመስመር ላይ ይቀበሉ፤ ታካሚው በስልኩ በሚደርሰው ሊንክ ይከፍላል።",
+			"sections": [
+				{
+					"heading": "አካውንት መጨመር",
+					"body": "ከክፍያ አገልግሎት ሰጪው የነጋዴ አካውንት ከፍተው ቁልፎቹን ያግኙ። ከዚያ እዚህ «Add account» ይጫኑ፣ አገልግሎት ሰጪውን ይምረጡና የሚጠየቀውን ይለጥፉ። የግል ቁልፍ እንደተሰጠዎት (PEM ወይም base64) መለጠፍ ይቻላል። አካውንት መጨመር፣ መቀየርና ማስወገድ የሚችለው ሱፐር አድሚን ብቻ ነው።\n\nመጀመሪያ በሙከራ (Test) ሁኔታ በሙከራ ቁልፎች በሙከራ ታካሚ ላይ ክፍያ ይሞክሩ፤ ሲሠራ ወደ «Live» ይቀይሩት።"
+				},
+				{
+					"heading": "ቁልፎቹ እንዴት ይጠበቃሉ",
+					"body": "ሚስጥራዊ ቁልፎች ከመቀመጣቸው በፊት ይመሰጠራሉ፤ ዳግም አይታዩም — የዋናው ቁልፍ የመጨረሻዎቹ አራት ፊደላት ብቻ ይታያሉ። ለመቀየር አዲሱን ያስገቡ፤ ባዶ ከተዉት የተቀመጠው ይቆያል። የሰርቨሩ ሚስጥር (BETTER_AUTH_SECRET) ከተቀየረ ቁልፎቹ እንደገና መግባት አለባቸው።"
+				},
+				{
+					"heading": "ማሳወቂያዎች",
+					"body": "ለእያንዳንዱ አገልግሎት ሰጪ በ«Notifications» ስር አድራሻ ተዘርዝሯል። ለአገልግሎት ሰጪው እንደ webhook ወይም notify URL ይስጡት፤ ክፍያው ሲፈጸም ወዲያው እንደተከፈለ ይታያል። ማሳወቂያ በራሱ ሂሳብ አይከፍልም — ሲስተሙ አገልግሎት ሰጪውን ራሱ ይጠይቃል። ከኢንተርኔት የማይደረስ ሲስተም ላይ የ«Check» ቁልፍና መደበኛው ምርመራ ክፍያውን ያገኙታል።"
+				},
+				{
+					"heading": "ብዙ በአንድ ጊዜ",
+					"body": "የበራ እያንዳንዱ አካውንት በመቀበያው ይቀርባል፤ ቴሌብር ያለው ታካሚ በቴሌብር፣ ካርድ ያለው በቻፓ ሊከፍል ይችላል። የእያንዳንዱ አገልግሎት ሰጪ ገንዘብ በራሱ የክፍያ ዘዴ ለምሳሌ «Chapa (online)» ይመዘገባል።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — የመስመር ላይ ክፍያ",
+					"href": "/dashboard/help#section-billing"
+				}
+			]
+		}
+	}
+}

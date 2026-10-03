@@ -40,3 +40,4 @@ export * from './purchasing';
 export * from './deposits';
 export * from './privacy';
 export * from './packages';
+export * from './onlinePayments';

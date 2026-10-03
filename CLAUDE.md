@@ -63,6 +63,9 @@ thing, give it a new optional prop — do not fork it and leave the old one behi
 | Ethiopian date → Gregorian day      | `ethiopianToIso` — `$lib/ethiopianCalendar.ts`, never `ethiopian-calendar-new`    | 1             |
 | HMIS age groups, month, tallies     | `$lib/hmisReport.ts` — shared by the return's screen, print and server            | 3             |
 | Taking a payment against bills      | `components/PaymentForm.svelte` + `$lib/forms/payment.ts` (patient or payer)      | 3             |
+| Amounts against bills, in a form    | `components/BillAllocations.svelte` — shared by the cash and online forms         | 2             |
+| Taking a payment online             | `components/OnlinePayments.svelte` + `billing/onlineActions.ts`                   | 2             |
+| A table row's own buttons           | `Table/row-buttons.svelte` — Edit, Test, Check, each opening a dialog             | 2             |
 | The logo                            | `components/Logo.svelte` — `static/newLogo.png`, never an `<img>` of it           | 5             |
 
 `InputComp` dispatches on `type` to file, select, date, combo, checkbox and password variants.
@@ -92,6 +95,7 @@ any button, dialog, popover, or menu.
 | Treatment plans: reads and writes        | `server/treatmentPlans.ts` — incl. adjustments to a presented quote (`planAdjustments`)                                                                |
 | Bills: what is owed, and changing them   | `server/billing.ts` (reads, `patientBalance`) · `invoiceWrites.ts` · `payments.ts`                                                                     |
 | Payments, payer payments, refunds        | `server/payments.ts` — `takePayment`, `takePayerPayment`, `requestRefund`, `settleRefunds`                                                             |
+| Online gateways: keys, checkout, confirm | `server/onlinePayments/` — paid only on the gateway's own answer; adapters in `server/payGateways/`                                                    |
 | A write owned by a record, not a patient | `ownedAction` — `server/patientAction.ts` (`patientAction` is it, for a patient)                                                                       |
 | The cash drawer                          | `server/cashDrawer.ts` — `openSessionFor`, `drawerState`, `openDrawer`, `closeDrawer`                                                                  |
 | A numbered document                      | `nextNumber` — `server/documentNumbers.ts` (locked counter, per Ethiopian year)                                                                        |

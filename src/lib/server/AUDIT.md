@@ -91,12 +91,13 @@ compile error rather than a silent omission.
 - money: `invoice`, `invoice_line`, `invoice_payment`, `transactions`, `expenses`, `cash_session`,
   `payer_authorisation` (a payer's promise to pay for treatment), `purchase_order` and
   `supplier_invoice` (what was bought, what arrived, what the supplier was paid), `patient_deposit`, `patient_package`,
-  the pay adjustments `over_time`, `bonuses`, `deductions` and `attendance` — each changes what
+  `online_payment` (a payment asked for through a gateway, and what came of it), the pay adjustments `over_time`, `bonuses`, `deductions` and `attendance` — each changes what
   someone is paid
 - controlled stock: `supplies_adjustments`, `supply_batch`, `damaged_supplies`
 - who may do what: `user`, `roles`, `role_permissions`, `special_permissions`, `employee`
-- credentials the clinic stores for other services: `sms_provider`, whose API key is encrypted in
-  the table and redacted in the audit row by name (`api_key`), so the log says only that it changed
+- credentials the clinic stores for other services: `sms_provider` and `payment_gateway`, whose
+  keys are encrypted in the table and redacted in the audit row by name (`api_key`,
+  `secrets_encrypted`), so the log says only that they changed
 
 **Not audited** — high churn, no evidentiary value, and each row would cost the buffer pool the
 same as a patient record:

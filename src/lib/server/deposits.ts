@@ -23,7 +23,13 @@ import { recordAudit, type AuditRequest } from '$lib/server/audit';
 import { refuseUnless } from '$lib/server/childCrud';
 import { billingRefusals } from '$lib/server/cashDrawer';
 import { billFor } from '$lib/server/billing';
-import { insertPayment, methodFor, paidOn, referenceFor } from '$lib/server/payments';
+import {
+	insertPayment,
+	methodFor,
+	paidOn,
+	referenceColumns,
+	type OnlineConfirmation
+} from '$lib/server/payments';
 import { nextNumber } from '$lib/server/documentNumbers';
 import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { clinicToday } from '$lib/clinicTime';
@@ -97,13 +103,15 @@ export async function takeDeposit(
 		branchId: number | null;
 		reference: string | null;
 		note: string | null;
+		/** Set when a gateway confirmed it — the part of an online payment its bills no longer owed. */
+		online?: OnlineConfirmation;
 	}
 ): Promise<number> {
 	const say = billingRefusals(event);
 	const amount = cents(input.amount);
 	refuseUnless(amount > 0, say.enterAmount, 'amount');
 	const { method, cashSessionId } = await methodFor(tx, say, input.paymentMethodId, input.branchId);
-	const token = await referenceFor(tx, say, method.kind, input.reference);
+	const references = await referenceColumns(tx, say, method.kind, input.reference, input.online);
 	const transactionId = await insertPayment(tx, say, {
 		description: `Deposit${input.note ? `: ${input.note}` : ''}`.slice(0, 255),
 		direction: 'in',
@@ -113,8 +121,7 @@ export async function takeDeposit(
 		patientId: input.patientId,
 		occurredOn: clinicToday(),
 		receiptNumber: await nextNumber(tx, 'receipt'),
-		gatewayReference: input.reference?.trim().slice(0, 128) || null,
-		gatewayTxnToken: token,
+		...references,
 		cashSessionId,
 		approvalStatus: 'approved',
 		branchId: input.branchId ?? undefined,

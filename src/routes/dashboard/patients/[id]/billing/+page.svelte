@@ -11,6 +11,7 @@
 	import FormDialog from '@nahu/admin-kit/formComponents/FormDialog.svelte';
 	import ProcedurePicker from '$lib/components/ProcedurePicker.svelte';
 	import PaymentForm from '$lib/components/PaymentForm.svelte';
+	import OnlinePayments from '$lib/components/OnlinePayments.svelte';
 	import { useI18n } from '$lib/i18n/i18n.svelte';
 	import { billColumns } from './columns';
 	import { deposit, newInvoice } from './schema';
@@ -115,6 +116,8 @@
 			<p class="text-sm text-muted-foreground">{w.noBills}</p>
 		{/if}
 	</Section>
+
+	<OnlinePayments {...data.online} bills={data.payable} phone={data.patient.phone} />
 
 	<PatientPackages packages={data.packages} offered={data.prepaid} form={data.forms.sell} />
 

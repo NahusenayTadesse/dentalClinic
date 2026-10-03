@@ -1467,6 +1467,42 @@ export const HELP_SECTIONS: HelpSection[] = [
 					'The count of bills waiting for a manager is shown beside it, with a link to the queue for those who decide.'
 				],
 				keywords: ['receivables', 'debt', 'outstanding', 'owes', 'unpaid']
+			},
+			{
+				id: 'online-payments',
+				title: 'Taking payments online',
+				summary:
+					'A patient pays a bill from a link on their phone — through Chapa, Telebirr, ArifPay or SantimPay — and the bill is paid once the gateway confirms the money arrived.',
+				where:
+					'Menu → **Admin Panel → Payment Gateways** to set up; a patient’s **Billing** tab or a bill’s page to take one',
+				permission:
+					'settings.manage and a super administrator to add keys; billing.invoice to take a payment',
+				steps: [
+					'A super administrator opens **Payment Gateways**, clicks **Add account**, chooses the gateway and pastes what it gave the clinic — a secret key, or for Telebirr the app ids, merchant code and private key. Start in **Test** mode with the test keys.',
+					'Give each gateway the notification address the screen shows, in its own dashboard, so a payment shows as paid the moment it is made.',
+					'On the Billing tab (or the bill), click **Pay online**, set what goes to each bill, choose the gateway and check the phone. **Create payment link**.',
+					'**Text the link** to the patient, or **Open link** on a screen they can use. While the payment is new, the screen checks it every few seconds; **Check now** asks at once.',
+					'Once the gateway confirms it, the payment is recorded with a receipt number like any other, under the gateway’s own payment method.'
+				],
+				notes: [
+					'Several gateways can be on at once; the desk chooses one each time.',
+					'Keys are stored encrypted and never shown again — only the last four characters.',
+					'Nothing is paid on a notification’s word: the system always asks the gateway itself, and the amount must be the amount asked.',
+					'If the bill was paid some other way meanwhile, what it no longer owes becomes the patient’s credit.',
+					'**Stop waiting** gives up on a link; if the patient pays it anyway, the payment is still recorded.',
+					'A link not paid within a day is given up on. Set up the scheduled check (/api/cron/online-payments) on an install the internet cannot reach.'
+				],
+				keywords: [
+					'online',
+					'chapa',
+					'telebirr',
+					'arifpay',
+					'santimpay',
+					'gateway',
+					'link',
+					'card',
+					'pay'
+				]
 			}
 		]
 	},
@@ -2757,6 +2793,14 @@ export const ROUTE_MAP: RouteEntry[] = [
 		title: 'Billing settings',
 		purpose:
 			'How big a discount the front desk may give before a manager approves it, and the clinic’s TIN and VAT standing.',
+		permission: 'settings.manage',
+		group: 'Admin panel'
+	},
+	{
+		path: '/dashboard/admin-panel/payment-gateways',
+		title: 'Payment Gateways',
+		purpose:
+			'The clinic’s accounts at Chapa, Telebirr, ArifPay and SantimPay and their keys, the address each gateway notifies, and every online payment of the last month.',
 		permission: 'settings.manage',
 		group: 'Admin panel'
 	},

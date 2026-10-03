@@ -26,6 +26,7 @@ import { canPay } from '$lib/invoiceStatus';
 import { messagesFor } from '$lib/i18n/messages';
 import type { Lang } from '$lib/i18n/lang';
 import { BILLING_PERMISSION, billingAction, payAction } from '../billingAction';
+import { onlineActions, onlinePaymentData } from '../onlineActions';
 import {
 	addCharge as addChargeForm,
 	addWork,
@@ -68,12 +69,13 @@ export const load: PageServerLoad = async (event) => {
 
 	const draft = bill.status === 'draft';
 	const cover = await coverLinks(bill);
-	const [unbilled, methods, drawer, settings, payers, forms] = await Promise.all([
+	const [unbilled, methods, drawer, settings, payers, online, forms] = await Promise.all([
 		draft ? unbilledWork(patient.id) : Promise.resolve([]),
 		paymentMethodOptions(),
 		openSessionFor(db, event.locals.branch.active),
 		readSettings(),
 		customerList(),
+		onlinePaymentData(patient.id),
 		Promise.all([
 			superValidate(zod4(addWork)),
 			superValidate(zod4(addChargeForm)),
@@ -119,6 +121,11 @@ export const load: PageServerLoad = async (event) => {
 			: [],
 		methods,
 		payers,
+		// Online payments that went, or would go, to this bill.
+		online: {
+			...online,
+			payments: online.payments.filter((p) => p.allocations.some((a) => a.invoiceId === bill.id))
+		},
 		// Named from the list when the payer is live; a payer deleted since still owns the bill.
 		payerName: payers.find((p) => p.value === bill.customerId)?.name ?? null,
 		drawerOpen: drawer !== null,
@@ -212,6 +219,7 @@ export const actions: Actions = {
 		}),
 
 	pay: payAction,
+	...onlineActions,
 	applyBundle: (event) =>
 		billingAction(event, bundleForm, async (tx, { patientId, data }) => {
 			const name = await applyBundle(tx, event, patientId, billId(event), data.packageId);

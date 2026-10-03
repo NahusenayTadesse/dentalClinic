@@ -98,6 +98,43 @@ export async function referenceFor(
 	return token;
 }
 
+/**
+ * A payment a gateway confirmed (`server/onlinePayments.ts`): which gateway, our reference — the
+ * transaction's unique token, so a confirmation that arrives twice records one payment — and the
+ * gateway's own id and word for it.
+ */
+export type OnlineConfirmation = {
+	gateway: string;
+	token: string;
+	providerReference: string | null;
+	providerStatus: string | null;
+};
+
+/**
+ * The reference columns of a payment: a gateway's confirmation as it came, or what the desk typed,
+ * checked by `referenceFor`.
+ */
+export async function referenceColumns(
+	tx: Tx,
+	say: ReturnType<typeof billingRefusals>,
+	kind: string,
+	reference: string | null,
+	online?: OnlineConfirmation
+) {
+	if (online) {
+		return {
+			gateway: online.gateway,
+			gatewayTxnToken: online.token,
+			gatewayReference: online.providerReference,
+			gatewayStatus: online.providerStatus
+		};
+	}
+	return {
+		gatewayReference: reference?.trim().slice(0, 128) || null,
+		gatewayTxnToken: await referenceFor(tx, say, kind, reference)
+	};
+}
+
 /** The method, and the open drawer when it is cash — refused when it is cash and there is none. */
 export async function methodFor(
 	tx: Tx,
@@ -152,6 +189,7 @@ async function recordPayment(
 		paymentMethodId: number;
 		branchId: number | null;
 		reference: string | null;
+		online?: OnlineConfirmation;
 	}
 ): Promise<number> {
 	const allocations = input.allocations
@@ -164,7 +202,7 @@ async function recordPayment(
 		say.billTwice
 	);
 	const { method, cashSessionId } = await methodFor(tx, say, input.paymentMethodId, input.branchId);
-	const token = await referenceFor(tx, say, method.kind, input.reference);
+	const references = await referenceColumns(tx, say, method.kind, input.reference, input.online);
 
 	// Each bill: the right owner's, payable, and not over-paid by this allocation.
 	const checked: { amount: number; bill: Bill; paid: number }[] = [];
@@ -193,8 +231,7 @@ async function recordPayment(
 		customerId: input.customerId,
 		occurredOn: clinicToday(),
 		receiptNumber: await nextNumber(tx, 'receipt'),
-		gatewayReference: input.reference?.trim().slice(0, 128) || null,
-		gatewayTxnToken: token,
+		...references,
 		cashSessionId,
 		// Money in is not queued; only refunds are (see `APPROVAL_ENTITIES`).
 		approvalStatus: 'approved',
@@ -242,6 +279,8 @@ export async function takePayment(
 		paymentMethodId: number;
 		branchId: number | null;
 		reference: string | null;
+		/** Set when a gateway confirmed it, rather than the desk. */
+		online?: OnlineConfirmation;
 	}
 ): Promise<number> {
 	return recordPayment(tx, event, {

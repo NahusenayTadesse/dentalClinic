@@ -287,6 +287,46 @@ export const billing: typeof en = {
 		record: 'ክፍያውን መዝግብ'
 	},
 
+	online: {
+		title: 'የመስመር ላይ ክፍያዎች',
+		payOnline: 'በመስመር ላይ ክፈል',
+		dialogTitle: 'በመስመር ላይ ክፍያ መቀበል',
+		dialogDescription:
+			'ታካሚው በስልኩ ላይ በሚደርሰው ሊንክ ይከፍላል። ገንዘቡ መድረሱን የክፍያ አገልግሎት ሰጪው ሲያረጋግጥ ሂሳቡ እንደተከፈለ ይቆጠራል።',
+		through: 'በ',
+		test: 'የሙከራ ሁኔታ',
+		phone: 'የታካሚው ስልክ',
+		phonePlaceholder: 'ለክፍያ አገልግሎት ሰጪውና ሊንኩን በSMS ለመላክ',
+		create: 'የክፍያ ሊንክ ፍጠር',
+		creating: 'በመፍጠር ላይ',
+		created: (amount) => `የ${amount} የክፍያ ሊንክ ተዘጋጅቷል። ለታካሚው በSMS ይላኩ ወይም እዚሁ ይክፈቱት።`,
+		status: {
+			pending: 'ክፍያ በመጠበቅ ላይ',
+			paid: 'ተከፍሏል',
+			failed: 'አልተከፈለም',
+			cancelled: 'መጠበቅ ቆሟል'
+		},
+		paidText: 'ተከፍሏል — ክፍያው ተመዝግቧል፤ ደረሰኙ በሂሳቡ ላይ ይገኛል።',
+		pendingText: 'ገና አልተከፈለም።',
+		cancelledText: 'መጠበቅ ቆሟል፤ አልተከፈለም።',
+		open: 'ሊንኩን ክፈት',
+		copy: 'ሊንኩን ቅዳ',
+		copied: 'ሊንኩ ተቀድቷል',
+		text: 'ሊንኩን በSMS ላክ',
+		texted: 'ሊንኩ በSMS ተልኳል።',
+		notTexted: {
+			optedOut: 'ይህ ታካሚ መልዕክት እንዳይላክለት ጠይቋል።',
+			noMobile: 'መልዕክት የሚላክበት የኢትዮጵያ ሞባይል ቁጥር የለም።',
+			noGateway: 'የSMS አገልግሎት አልተዘጋጀም።'
+		},
+		check: 'አሁን አረጋግጥ',
+		stop: 'መጠበቅ አቁም',
+		stopped: 'መጠበቅ ቆሟል። ታካሚው ቢሆንም በሊንኩ ከከፈለ ክፍያው ይመዘገባል።',
+		watching: 'እየጠበቁ ሳሉ በየጥቂት ሰከንዱ ይረጋገጣል።',
+		receipt: (number) => `ደረሰኝ ${number}`,
+		none: 'ባለፉት ስልሳ ቀናት በመስመር ላይ የተቀበለ ክፍያ የለም።'
+	},
+
 	mobile: {
 		title: 'የሞባይል ገንዘብ',
 		blurb:

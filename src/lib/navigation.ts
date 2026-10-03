@@ -44,6 +44,7 @@ import HeartPulse from '@lucide/svelte/icons/heart-pulse';
 import Hospital from '@lucide/svelte/icons/hospital';
 import IdCardLanyard from '@lucide/svelte/icons/id-card-lanyard';
 import Landmark from '@lucide/svelte/icons/landmark';
+import Globe from '@lucide/svelte/icons/globe';
 import LayoutDashboard from '@lucide/svelte/icons/layout-dashboard';
 import LifeBuoy from '@lucide/svelte/icons/life-buoy';
 import List from '@lucide/svelte/icons/list';
@@ -407,6 +408,12 @@ export const NAVIGATION: NavItem[] = [
 				url: '/dashboard/admin-panel/billing-settings',
 				section: 'money',
 				icon: Banknote
+			},
+			{
+				title: 'Payment Gateways',
+				url: '/dashboard/admin-panel/payment-gateways',
+				section: 'money',
+				icon: Globe
 			},
 			{
 				title: 'SMS',

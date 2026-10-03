@@ -25,6 +25,7 @@ import {
 	procedures,
 	recall,
 	smsMessage,
+	onlinePayment,
 	suppliesAdjustments,
 	transactions,
 	treatmentPlan
@@ -100,6 +101,8 @@ export const OWNED: Owned[] = [
 	{ name: 'pack_use', table: packUse, patientId: packUse.patientId },
 	// A prepaid package is the person's, with what is left of it.
 	{ name: 'patient_package', table: patientPackage, patientId: patientPackage.patientId },
+	// An online payment asked for, paid or waiting — the money is the person's either way.
+	{ name: 'online_payment', table: onlinePayment, patientId: onlinePayment.patientId },
 	// Money paid ahead of a bill is the person's credit, wherever it was taken.
 	{ name: 'patient_deposit', table: patientDeposit, patientId: patientDeposit.patientId },
 	// A course of braces is the patient's, with its visits and its payment plan.

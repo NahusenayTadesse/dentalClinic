@@ -21,6 +21,7 @@
 	import { canEditInvoice, canPay, canRequestVoid } from '$lib/invoiceStatus';
 	import PaymentForm from '$lib/components/PaymentForm.svelte';
 	import BillPayments from './BillPayments.svelte';
+	import OnlinePayments from '$lib/components/OnlinePayments.svelte';
 	import BillBundles from './BillBundles.svelte';
 	import DraftAdditions from './DraftAdditions.svelte';
 	import { useI18n } from '$lib/i18n/i18n.svelte';
@@ -342,6 +343,8 @@
 			confirm={data.forms.confirm}
 		/>
 	{/if}
+
+	<OnlinePayments {...data.online} bills={data.payable} phone={data.patient.phone} />
 </div>
 
 <DraftAdditions

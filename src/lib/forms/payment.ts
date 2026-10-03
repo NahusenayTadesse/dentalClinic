@@ -22,3 +22,19 @@ export const payment = z.object({
 });
 
 export type Payment = z.infer<typeof payment>;
+
+/**
+ * A payment asked for through an online gateway: the same split across bills, the gateway account
+ * the desk chose, and the phone the patient pays from. The gateway id stays a string, as a select
+ * posts it — a client schema must parse a value to itself.
+ */
+export const onlinePayment = z.object({
+	allocations: payment.shape.allocations,
+	gatewayId: z.string().min(1, 'Choose the gateway.'),
+	phone: z.string().trim().max(20).optional()
+});
+
+export type OnlinePayment = z.infer<typeof onlinePayment>;
+
+/** One online payment on the list: checking it, texting its link, or giving up on it. */
+export const onlinePaymentId = z.object({ id: z.coerce.number().int().positive() });

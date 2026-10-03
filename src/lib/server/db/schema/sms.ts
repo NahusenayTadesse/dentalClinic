@@ -71,7 +71,7 @@ export const smsMessage = mysqlTable(
 			onDelete: 'set null'
 		}),
 		recallId: int('recall_id').references(() => recall.id, { onDelete: 'set null' }),
-		kind: mysqlEnum('kind', ['reminder', 'recall', 'test']).notNull(),
+		kind: mysqlEnum('kind', ['reminder', 'recall', 'test', 'payment']).notNull(),
 		toPhone: varchar('to_phone', { length: 20 }).notNull(),
 		body: text('body').notNull(),
 		providerId: int('provider_id').references(() => smsProvider.id, { onDelete: 'set null' }),

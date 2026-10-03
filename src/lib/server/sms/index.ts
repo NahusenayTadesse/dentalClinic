@@ -61,7 +61,7 @@ type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 export type SmsGateway = SmsProviderName;
 
 /** Why a message was sent, as the log records it. */
-export type SmsKind = 'reminder' | 'recall' | 'test';
+export type SmsKind = 'reminder' | 'recall' | 'test' | 'payment';
 
 /** What became of one message. */
 /**
