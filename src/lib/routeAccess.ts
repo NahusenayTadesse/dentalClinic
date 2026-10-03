@@ -65,6 +65,17 @@ export const routeRules: RouteRule[] = [
 		permission: 'settings.manage'
 	},
 
+	/*
+	 * Bringing whole lists in from a spreadsheet. Its own permission because it is a setup job held
+	 * by few — a clinic moving onto the system — and an import of a thousand patients is a different
+	 * act from registering one. Not enough on its own: each list's action also requires that list's
+	 * own permission (`patients.register` for patients), so this never widens who may add what.
+	 */
+	{
+		prefix: '/dashboard/import',
+		permission: 'data.import'
+	},
+
 	{
 		prefix: '/dashboard/customers',
 		permission: 'customers.record'

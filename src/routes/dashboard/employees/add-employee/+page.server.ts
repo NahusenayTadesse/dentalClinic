@@ -4,8 +4,9 @@ import { fail } from '@sveltejs/kit';
 
 import { add } from './schema';
 import { db } from '$lib/server/db';
-import { salaries, employee, staffContacts, address } from '$lib/server/db/schema/';
-import { asRequested } from '$lib/server/approvals';
+import { employee } from '$lib/server/db/schema/';
+import { addEmployee, tidyName } from '$lib/server/employees';
+import { recordAudit } from '$lib/server/audit';
 import type { Actions } from './$types';
 import { departments, empStatus, eduLevel, subcities, positions } from '$lib/server/fastData';
 import type { PageServerLoad } from './$types.js';
@@ -32,11 +33,11 @@ export const load: PageServerLoad = async () => {
 };
 
 import { saveUploadedFile } from '$lib/server/upload';
-import { formatEthiopianYear } from '$lib/global.svelte';
 import { redirect } from 'sveltekit-flash-message/server';
 
 export const actions: Actions = {
-	add: async ({ request, locals, cookies }) => {
+	add: async (event) => {
+		const { request, locals, cookies } = event;
 		const form = await superValidate(request, zod4(add));
 
 		/*
@@ -57,59 +58,18 @@ export const actions: Actions = {
 			return fail(400, { form });
 		}
 
-		const {
-			name,
-			fatherName,
-			grandFatherName,
-			email,
-			birthDate,
-			tinNo,
-			gender,
-			nationality,
-			phone,
-			bloodType,
-			department,
-			educationalLevel,
-			salary,
-			positionAllowance,
-			transportAllowance,
-			housingAllowance,
-			nonTaxAllowance,
-			hireDate,
-			govtId,
-			photo,
-			martialStatus,
-			employmentStatus,
-			newEmployeeVerified,
-			street,
-			subcity,
-			kebele,
-			buildingNumber,
-			floor,
-			houseNumber,
-			existingPensionCard,
-			officeCommission,
-			otherSubcity,
-			percentage,
-			position,
-			signature,
-			pensionCard
-		} = form.data;
+		const data = form.data;
 
-		// 1. Duplicate Check
-		if (!newEmployeeVerified) {
-			const sanitizedName = name?.replace(/\s+/g, ' ').trim();
-			const sanitizedFatherName = fatherName?.replace(/\s+/g, ' ').trim();
-			const sanitizedGrandFatherName = grandFatherName?.replace(/\s+/g, ' ').trim();
-
+		// Someone with all three names already here, unless the person adding has said otherwise.
+		if (!data.newEmployeeVerified) {
 			const existingEmployee = await db
 				.select({ id: employee.id })
 				.from(employee)
 				.where(
 					and(
-						eq(employee.name, sanitizedName),
-						eq(employee.fatherName, sanitizedFatherName),
-						eq(employee.grandFatherName, sanitizedGrandFatherName),
+						eq(employee.name, tidyName(data.name)),
+						eq(employee.fatherName, tidyName(data.fatherName)),
+						eq(employee.grandFatherName, tidyName(data.grandFatherName)),
 						notDeleted(employee)
 					)
 				)
@@ -125,130 +85,35 @@ export const actions: Actions = {
 			}
 		}
 
-		// 2. Upload Files
+		let id: number;
+		try {
+			const files = {
+				photo: await saveUploadedFile(data.photo),
+				govtId: await saveUploadedFile(data.govtId),
+				signature: data.signature ? await saveUploadedFile(data.signature) : null,
+				pensionCard: data.pensionCard ? await saveUploadedFile(data.pensionCard) : null
+			};
 
-		// 3. Database Transaction
-		const finalIdNo = await db.transaction(async (tx) => {
-			const photoName = await saveUploadedFile(photo);
-			const govIdFile = await saveUploadedFile(govtId);
-			// Insert main employee record
-			const [staffMember] = await tx
-				.insert(employee)
-				.values({
-					...asRequested(locals.user?.id),
-					name,
-					fatherName,
-					grandFatherName,
-					tinNo,
-					gender,
-					nationality,
-					birthDate: new Date(birthDate).toLocaleDateString('en-CA'),
-					departmentId: department,
-					positionId: position,
-					photo: photoName,
-					govtId: govIdFile,
-					employmentStatus,
-					martialStatus,
-					educationalLevel,
-					bloodType,
-					existingPensionCard,
-					/*
-					 * Stamped from the working branch, never read off the form (§9, §15). It used to be
-					 * a select: a client could post any branch id, including one they cannot see, and
-					 * file an employee out of their own reach.
-					 */
-					branchId: activeBranch,
-					hireDate: new Date(hireDate).toLocaleDateString('en-CA'),
-					createdBy: locals.user?.id,
-					// Balance is derived from `employee_leave_grant`, and a new hire has earned nothing
-					// until their first anniversary. Seeding days here would show leave they cannot
-					// take, and the first accrual run would silently wipe it back to the ledger figure.
-					leavesLeft: 0,
-					isActive: true
-				})
-				.$returningId();
-
-			// Generate idNo: SP + ID + Last 2 digits of hire year
-			const yearSuffix = formatEthiopianYear(new Date(hireDate)).slice(-2);
-			const generatedIdNo = `SP${staffMember.id}${yearSuffix}`;
-
-			const [addressId] = await tx
-				.insert(address)
-				.values({
-					street,
-					subcityId: subcity,
-					kebele,
-					buildingNumber,
-					otherSubcity,
-					floor,
-					houseNumber,
-					status: true
-				})
-				.$returningId();
-
-			// Update the employee with the new idNo
-			await tx
-				.update(employee)
-				.set({ idNo: generatedIdNo, address: addressId.id })
-				.where(eq(employee.id, staffMember.id));
-
-			if (signature) {
-				const signatureName = await saveUploadedFile(signature);
-				await tx
-					.update(employee)
-					.set({ signiture: signatureName })
-					.where(eq(employee.id, staffMember.id));
-			}
-			if (pensionCard) {
-				const pensionCardName = await saveUploadedFile(pensionCard);
-				await tx
-					.update(employee)
-					.set({ pensionCard: pensionCardName })
-					.where(eq(employee.id, staffMember.id));
-			}
-
-			// Insert salary
-			await tx.insert(salaries).values({
-				...asRequested(locals.user?.id),
-				amount: salary,
-				positionAllowance,
-				transportAllowance,
-				housingAllowance,
-				nonTaxAllowance,
-				staffId: staffMember.id,
-				createdBy: locals.user?.id
+			id = await db.transaction(async (tx) => {
+				const newId = await addEmployee(tx, data, files, {
+					userId: locals.user?.id,
+					branchId: activeBranch
+				});
+				await recordAudit(tx, event, { table: 'employee', recordId: newId, action: 'create' });
+				return newId;
 			});
-
-			await tx.insert(staffContacts).values({
-				contactType: 'Phone',
-				contactDetail: phone,
-				staffId: staffMember.id,
-				createdBy: locals.user?.id
-			});
-
-			await tx.insert(staffContacts).values({
-				contactType: 'Email',
-				contactDetail: email,
-				staffId: staffMember.id,
-				createdBy: locals.user?.id
-			});
-
-			delete form.data.govtId;
-			delete form.data.photo;
-
-			return staffMember.id;
-		});
-
-		// Clean up form data for response
-		//
-		if (!finalIdNo)
-			return message(form, {
-				type: 'error',
-				text: `Unexpected Error, please try again later`
-			});
+		} catch (err: unknown) {
+			// Loud in the log, quiet to the client (CLAUDE.md §9).
+			console.error('[employees] add failed:', err);
+			return message(
+				form,
+				{ type: 'error', text: 'The employee could not be saved. Please try again.' },
+				{ status: 500 }
+			);
+		}
 
 		redirect(
-			`/dashboard/employees/single/${finalIdNo}`,
+			`/dashboard/employees/single/${id}`,
 			{ type: 'success', message: 'Employee Successfully Added!' },
 			cookies
 		);

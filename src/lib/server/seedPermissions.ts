@@ -79,6 +79,8 @@ const DESCRIPTIONS: Record<string, string> = {
 	'audit_logs.view': 'Read the audit trail',
 	'branches.view_all': 'See data from every branch, and switch between them',
 	'customers.record': 'Maintain payers — the employers and insurers who pay for some patients',
+	'data.import':
+		'Import lists from a spreadsheet — patients, payers, employees, suppliers. Each list also needs the permission to add one by hand',
 	'employees.create_followup': 'Open and follow up employee records',
 	'lab_cases.manage':
 		'Send work to dental laboratories, receive it, record it fitted, and see the lab board',

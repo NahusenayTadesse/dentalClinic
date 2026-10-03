@@ -1,0 +1,61 @@
+{
+	"path": "/dashboard/import",
+	"languages": {
+		"en": {
+			"title": "Import from a Spreadsheet",
+			"summary": "Bring in patients, payers, employees or suppliers from an Excel or CSV file. Checking saves nothing; importing saves the rows that passed, all together.",
+			"sections": [
+				{
+					"heading": "The template",
+					"body": "Download the Excel template for the list. The first sheet has the headings (required ones starred), the second says what each column takes, and the third lists the names this clinic allows — departments, allergens, subcities, payers. Your own spreadsheet's headings work too: \"First name\", \"Mobile\" and \"DOB\" are understood."
+				},
+				{
+					"heading": "Checking",
+					"body": "Choose the file and say which calendar its dates are written in — the same day is seven years apart in the two, so it is asked rather than guessed. Check the file: every problem is listed by the row number Excel shows, and the first rows are shown as they will be saved."
+				},
+				{
+					"heading": "What is left out",
+					"body": "Rows with a problem are not imported. Rows that look like a record already here — a patient with the same name or phone — are left out unless you tick that they are different people. Fix the file and import all of it again: rows already in are recognised and left out."
+				},
+				{
+					"heading": "After importing",
+					"body": "Patients and suppliers are in their lists straight away. Payers and employees wait in Approvals, as they do when added by hand. Imported employees have no photo or ID scan yet — add them on each employee's page."
+				}
+			],
+			"links": [
+				{
+					"label": "Full guide — Getting started",
+					"href": "/dashboard/help#section-start"
+				}
+			]
+		},
+		"am": {
+			"title": "ከተመን ሉህ ማስገባት",
+			"summary": "ታካሚዎችን፣ ከፋዮችን፣ ሠራተኞችንና አቅራቢዎችን ከExcel ወይም CSV ፋይል ያስገቡ። ማረጋገጥ ምንም አያስቀምጥም፤ ማስገባት ያለፉትን ረድፎች በአንድ ላይ ያስቀምጣል።",
+			"sections": [
+				{
+					"heading": "አብነቱ",
+					"body": "የዝርዝሩን የExcel አብነት ያውርዱ። የመጀመሪያው ሉህ ርዕሶቹን ይዟል (የግድ የሆኑት በኮከብ ምልክት)፣ ሁለተኛው እያንዳንዱ ዓምድ ምን እንደሚወስድ ይገልጻል፣ ሦስተኛው ደግሞ ክሊኒኩ የሚፈቅዳቸውን ስሞች ይዘረዝራል — ክፍሎች፣ አለርጂዎች፣ ክፍለ ከተሞች፣ ከፋዮች። የራስዎ ተመን ሉህ ርዕሶችም ይሠራሉ፤ \"First name\"፣ \"Mobile\" እና \"DOB\" ይታወቃሉ።"
+				},
+				{
+					"heading": "ማረጋገጥ",
+					"body": "ፋይሉን ይምረጡና ቀኖቹ በየትኛው የቀን አቆጣጠር እንደተጻፉ ይንገሩ — አንድ ቀን በሁለቱ አቆጣጠሮች ሰባት ዓመት ስለሚራራቅ ይጠየቃል እንጂ አይገመትም። ፋይሉን ያረጋግጡ፤ እያንዳንዱ ችግር Excel በሚያሳየው የረድፍ ቁጥር ይዘረዘራል፣ የመጀመሪያዎቹ ረድፎችም እንደሚቀመጡት ሆነው ይታያሉ።"
+				},
+				{
+					"heading": "የማይገቡት",
+					"body": "ችግር ያለባቸው ረድፎች አይገቡም። እዚህ ያለን መዝገብ የሚመስሉ ረድፎች — ተመሳሳይ ስም ወይም ስልክ ያለው ታካሚ — የተለያዩ ሰዎች መሆናቸውን ምልክት ካላደረጉ በስተቀር አይገቡም። ፋይሉን አስተካክለው ሁሉንም እንደገና ያስገቡ፤ ቀድመው የገቡት ረድፎች ይታወቃሉ፣ አይደገሙም።"
+				},
+				{
+					"heading": "ካስገቡ በኋላ",
+					"body": "ታካሚዎችና አቅራቢዎች ወዲያውኑ በዝርዝራቸው ውስጥ ይገኛሉ። ከፋዮችና ሠራተኞች በእጅ ሲጨመሩ እንደሚያደርጉት በApprovals ውስጥ ይጠብቃሉ። የገቡ ሠራተኞች ፎቶና መታወቂያ ገና የላቸውም — በእያንዳንዱ ሠራተኛ ገጽ ላይ ይጨምሩ።"
+				}
+			],
+			"links": [
+				{
+					"label": "ሙሉ መመሪያ — መጀመሪያ",
+					"href": "/dashboard/help#section-start"
+				}
+			]
+		}
+	}
+}

@@ -212,6 +212,40 @@ export const HELP_SECTIONS: HelpSection[] = [
 				keywords: ['save', 'error', 'red', 'validation', 'required', 'discard', 'transaction']
 			},
 			{
+				id: 'importing-lists',
+				title: 'Bringing in the lists you already have',
+				summary:
+					'Patients, payers, employees and suppliers can come in from an Excel or CSV file instead of being typed in one at a time.',
+				where: 'Clinic Setup → Import from a Spreadsheet',
+				permission: 'data.import',
+				steps: [
+					'Choose the list, and download its **Excel template**. Its second sheet says what each column takes; its third lists the names this clinic allows — departments, allergens, subcities.',
+					'Fill it in, or paste your own rows under its headings. Your own headings are fine too: “First name”, “Mobile” and “DOB” are understood.',
+					'Choose the file, say which calendar its dates are written in, and press **Check the file**. Nothing is saved yet.',
+					'Read the report. Rows with a problem are listed by the row number Excel shows, and are left out. Rows that look like someone already here are left out unless you tick that they are different people.',
+					'Press **Import**. The rows that passed are saved together — all of them, or, if anything goes wrong, none.'
+				],
+				notes: [
+					'Import **payers before patients**, so a patient’s payer can be named in the file.',
+					'Fix the rows with problems and import the **whole file again**: the rows already in are recognised and left out, so nobody comes in twice.',
+					'An allergy that is not on the Allergens list stops its row. The patient is not imported without it, because an empty allergy list reads as “none reported”.',
+					'Payers and employees wait in **Approvals**, as they do when added by hand. Imported employees have no photo or ID scan; add them on each employee’s page.',
+					'Excel takes the 0 off the front of a phone number it thinks is a number. The import puts it back on a nine-digit number; a TIN it cannot repair, so format the TIN column as Text.',
+					'Importing a list also takes the permission to add one by hand: patients need **patients.register** as well as **data.import**.'
+				],
+				keywords: [
+					'import',
+					'excel',
+					'csv',
+					'spreadsheet',
+					'template',
+					'upload',
+					'migrate',
+					'setup',
+					'bulk'
+				]
+			},
+			{
 				id: 'dates',
 				title: 'Dates, months and the Ethiopian calendar',
 				summary:
@@ -2424,6 +2458,14 @@ export const ROUTE_MAP: RouteEntry[] = [
 		title: 'Referral sources',
 		purpose: 'How patients find the clinic, chosen at registration.',
 		permission: 'settings.manage',
+		group: 'Clinic setup'
+	},
+	{
+		path: '/dashboard/import',
+		title: 'Import from a spreadsheet',
+		purpose:
+			'Bring in patients, payers, employees or suppliers from an Excel or CSV file: download the template, check the file, import the rows that pass. Each list also takes the permission to add one by hand.',
+		permission: 'data.import',
 		group: 'Clinic setup'
 	},
 	{

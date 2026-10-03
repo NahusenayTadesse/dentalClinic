@@ -70,8 +70,11 @@
 
 		{
 			name: 'Termination Date',
-			value:
-				formatEthiopianDate(new Date(data?.staffMember?.terminationDate)) || 'Employee is Active'
+			// `new Date(null)` is 1 January 1970, which formats perfectly well — so every active
+			// employee read as terminated in Tahsas 1962, and the fallback below never showed.
+			value: data?.staffMember?.terminationDate
+				? formatEthiopianDate(new Date(data.staffMember.terminationDate))
+				: 'Employee is Active'
 		}
 	]);
 

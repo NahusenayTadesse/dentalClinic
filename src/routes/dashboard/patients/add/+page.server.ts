@@ -3,12 +3,11 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import { redirect } from 'sveltekit-flash-message/server';
 
 import { db } from '$lib/server/db';
-import { patient, patientAllergies } from '$lib/server/db/schema';
-import { insertReturningId } from '@nahu/admin-kit/server/db/insert.js';
 import { recordAudit } from '$lib/server/audit';
 import { isDuplicateKey } from '@nahu/admin-kit/server/dbErrors.js';
 import { allergens, customerList, referralSources } from '$lib/server/fastData';
-import { birthDateFrom, possibleDuplicates, type PossibleDuplicate } from '$lib/server/patients';
+import { possibleDuplicates, type PossibleDuplicate } from '$lib/server/patients';
+import { insertPatient } from '$lib/server/patientWrites';
 import type { FormMessage } from '@nahu/admin-kit/forms/createForm.js';
 import { registerPatient } from '../schema';
 import { messagesFor } from '$lib/i18n/messages';
@@ -72,63 +71,24 @@ export const actions: Actions = {
 			}
 		}
 
-		const allergenIds = [
-			...new Set(
-				(data.allergenIds ?? '')
-					.split(',')
-					.map((v) => Number(v.trim()))
-					.filter((n) => Number.isInteger(n) && n > 0)
-			)
-		];
-
 		let id: number;
 
 		try {
 			id = await db.transaction(async (tx) => {
-				const newId = await insertReturningId(tx, patient, {
-					fileNo: data.fileNo ?? null,
-					name: data.name,
-					fatherName: data.fatherName,
-					grandFatherName: data.grandFatherName ?? null,
-					sex: data.sex,
-					...birthDateFrom(data),
-					phone: data.phone ?? null,
-					altPhone: data.altPhone ?? null,
-					bloodType: data.bloodType ?? null,
-					medicalNotes: data.medicalNotes ?? null,
-					referralSourceId: data.referralSourceId ?? null,
-					referredBy: data.referredBy ?? null,
-					customerId: data.customerId ?? null,
-					/*
-					 * Stamped from the branch being worked at, never defaulted (CLAUDE.md §15). Someone
-					 * seeing "all branches" is not standing at any of them, so the record falls back to the
-					 * column default — the main branch — rather than to whichever branch sorts first.
-					 */
-					...(locals.branch.active !== null ? { branchId: locals.branch.active } : {}),
-					createdBy: locals.user?.id
+				const created = await insertPatient(tx, data, {
+					userId: locals.user?.id,
+					branchId: locals.branch.active
 				});
-
-				if (allergenIds.length) {
-					await tx.insert(patientAllergies).values(
-						allergenIds.map((allergenId) => ({
-							patientId: newId,
-							allergenId,
-							// Reported at the desk, not assessed. A clinician grades it on the chart.
-							severity: 'unknown' as const,
-							createdBy: locals.user?.id
-						}))
-					);
-				}
 
 				// One audit row for the registration, not one per allergy: it is one act (AUDIT.md).
 				await recordAudit(tx, event, {
 					table: 'patient',
-					recordId: newId,
+					recordId: created.id,
 					action: 'create',
-					detail: allergenIds.length ? { allergiesReported: allergenIds.length } : undefined
+					detail: created.allergies ? { allergiesReported: created.allergies } : undefined
 				});
 
-				return newId;
+				return created.id;
 			});
 		} catch (err: unknown) {
 			if (isDuplicateKey(err)) {

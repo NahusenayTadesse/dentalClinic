@@ -87,6 +87,7 @@ export const nav: Record<string, string> = {
 	'Dental Labs': 'የጥርስ ላብራቶሪዎች',
 	'Referral Sources': 'የሪፈራል ምንጮች',
 	'Contact Types': 'የመገናኛ ዓይነቶች',
+	'Import from a Spreadsheet': 'ከተመን ሉህ ማስገባት',
 	'Billing Settings': 'የክፍያ ቅንብሮች',
 	SMS: 'አጭር መልዕክት (SMS)',
 	'Payment Gateways': 'የመስመር ላይ ክፍያ አገልግሎቶች',

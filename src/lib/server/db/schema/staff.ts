@@ -103,8 +103,15 @@ export const employee = mysqlTable(
 			.references(() => department.id),
 		positionId: int('position_id').references(() => position.id),
 		birthDate: date('birth_date').notNull(),
-		photo: varchar('photo', { length: 255 }).notNull(),
-		govtId: varchar('govt_id', { length: 255 }).notNull(),
+		/*
+		 * Nullable since the spreadsheet import (migration 0064): a staff list typed into Excel
+		 * carries no photographs, and the seed was already filling these with a placeholder name
+		 * that served nothing. The add form still asks for both; an imported employee waits in
+		 * Approvals without them until somebody scans them in. Every reader already checks before
+		 * drawing one.
+		 */
+		photo: varchar('photo', { length: 255 }),
+		govtId: varchar('govt_id', { length: 255 }),
 		hireDate: date('hire_date').notNull(),
 		terminationDate: datetime('termination_date'),
 		employmentStatus: int('employment_status')

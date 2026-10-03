@@ -6,10 +6,10 @@ import { leave } from '$lib/server/db/schema/';
 import { subcities, leaveTypes } from '$lib/server/fastData';
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types.js';
-import { setFlash, redirect } from 'sveltekit-flash-message/server';
 import { saveUploadedFile } from '$lib/server/upload';
 import { computeLeaveDays } from '$lib/leaveDays';
 import { leaveAllowanceError } from '$lib/server/leaveAllowance';
+import { hideFailure } from '@nahu/admin-kit/server/dbErrors.js';
 
 export const load: PageServerLoad = async () => {
 	const form = await superValidate(zod4(schema));
@@ -32,7 +32,7 @@ export const load: PageServerLoad = async () => {
 };
 
 export const actions: Actions = {
-	addLeave: async ({ request, locals, params }) => {
+	addLeave: async ({ request, params }) => {
 		const { id } = params;
 		const form = await superValidate(request, zod4(schema));
 
@@ -66,7 +66,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			const newCustomerResult = await db.transaction(async (tx) => {
+			await db.transaction(async (tx) => {
 				if (leavesLetter) {
 					const leaveLetterFile = await saveUploadedFile(leavesLetter);
 					await tx.insert(leave).values({
@@ -99,12 +99,13 @@ export const actions: Actions = {
 			return message(form, { type: 'success', text: 'Leave added successfully' });
 			// Stay on the same page and set a flash message
 			// setFlash({ type: 'success', message: 'Customer Successfully Added' }, cookies);
-		} catch (err) {
-			console.error('Error' + err?.message);
-
+		} catch (err: unknown) {
+			// Loud in the log, quiet to the client (CLAUDE.md §9). This used to put the database's own
+			// error text on screen, which tells the person at the desk nothing and tells anyone else
+			// the shape of the tables.
 			return message(form, {
 				type: 'error',
-				text: `Unexpected Errror: ${err?.message}`
+				text: hideFailure('employees.addLeave', err, 'Could not add the leave. Please try again.')
 			});
 		}
 	}

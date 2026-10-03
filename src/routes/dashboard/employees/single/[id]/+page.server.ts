@@ -1,6 +1,5 @@
 import { message, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { editStaff as schema } from '$lib/zodschemas/appointmentSchema';
 
 import { db } from '$lib/server/db';
 import {
@@ -199,70 +198,6 @@ export const actions: Actions = {
 	addAccount: (event) => SECTIONS.accounts.actions.add(event, Number(event.params.id)),
 	editAccount: (event) => SECTIONS.accounts.actions.edit(event, Number(event.params.id)),
 
-	editStaff: async ({ request, cookies, locals }) => {
-		const form = await superValidate(request, zod4(schema));
-
-		if (!form.valid) {
-			// Stay on the same page and set a flash message
-			setFlash({ type: 'error', message: 'Please check your form data.' }, cookies);
-			return fail(400, { form });
-		}
-
-		const { staffId, firstName, lastName, position, phone, email, hiredAt, govId, contract } =
-			form.data;
-
-		try {
-			const files = await db
-				.select({ govtId: employee.govtId, contract: employee.contract })
-				.from(employee)
-				.where(eq(employee.id, staffId))
-				.then((rows) => rows[0]);
-			let newGovId: string | null;
-			let newContract: string | null;
-			if (govId && govId.size > 0) {
-				const imageName = await saveUploadedFile(govId);
-				delete form.data.govId;
-				newGovId = imageName;
-			} else {
-				newGovId = files.govtId;
-			}
-
-			if (contract && contract.size > 0) {
-				const contractName = await saveUploadedFile(contract);
-				delete form.data.contract;
-				newContract = contractName;
-			} else {
-				newContract = files.contract;
-			}
-
-			await db
-				.update(employee)
-				.set({
-					firstName,
-					lastName,
-					type: position,
-					phone,
-					email,
-					hireDate: new Date(hiredAt),
-					govtId: newGovId,
-					contract: newContract,
-					updatedBy: locals?.user?.id
-				})
-				.where(eq(employee.id, staffId));
-
-			// Stay on the same page and set a flash message
-			setFlash({ type: 'success', message: 'Service Updated Successuflly' }, cookies);
-			return message(form, { type: 'success', text: 'Staff Member Updated Successfully!' });
-		} catch (err: unknown) {
-			const text = hideFailure(
-				'employees.editStaff',
-				err,
-				'Could not update this staff member. Please try again.'
-			);
-			setFlash({ type: 'error', message: text }, cookies);
-			return message(form, { type: 'error', text });
-		}
-	},
 	/**
 	 * Ends an employee's employment: records why, files the letter if there is one, and marks the
 	 * record inactive under the status the clinic has designated for terminations.
@@ -750,8 +685,11 @@ export const actions: Actions = {
 						otherSubcity,
 						kebele,
 						buildingNumber,
-						floor,
-						houseNumber,
+						// Integer columns, and the form posts text. Left empty, '' was refused by the
+						// database ("Incorrect integer value"), so a guarantor without a floor or house
+						// number could not be added at all. Read the way `editAddress` reads them.
+						floor: floor ? Number(floor) : null,
+						houseNumber: houseNumber ? Number(houseNumber) : null,
 						status: true
 					})
 					.$returningId();
@@ -825,6 +763,5 @@ export const actions: Actions = {
 	deleteGuarantor: deleteStaffRecord('guarantor', 'guarantor'),
 	deleteSchedule: deleteStaffRecord('schedule', 'schedule'),
 	deleteContact: deleteStaffRecord('contact', 'contact'),
-	deleteAccount: deleteStaffRecord('account', 'bank account'),
-	deleteCommission: deleteStaffRecord('commission', 'commission')
+	deleteAccount: deleteStaffRecord('account', 'bank account')
 };

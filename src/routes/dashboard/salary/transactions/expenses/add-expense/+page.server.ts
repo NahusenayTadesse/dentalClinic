@@ -1,17 +1,10 @@
 import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { fail } from '@sveltejs/kit';
-import { sql, eq, and } from 'drizzle-orm';
 import { notDeleted } from '$lib/server/softDelete';
 import { insertExpenseSchema as schema } from './expenseSchema';
 import { db } from '$lib/server/db';
-import {
-	expenses,
-	expensesType,
-	transactions,
-	paymentMethods,
-	reports
-} from '$lib/server/db/schema/';
+import { expenses, expensesType, transactions } from '$lib/server/db/schema/';
 import { asRequested } from '$lib/server/approvals';
 import type { Actions } from './$types';
 import { setFlash } from 'sveltekit-flash-message/server';

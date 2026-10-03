@@ -42,6 +42,7 @@
 		"@tailwindcss/vite": "^4.3.3",
 		"@tanstack/table-core": "^8.21.3",
 		"@types/node": "^25.9.9",
+		"@types/papaparse": "^5.5.2",
 		"@vitest/browser-playwright": "^5.0.3",
 		"auth": "^1.7.7",
 		"better-auth": "^1.7.7",
@@ -89,6 +90,8 @@
 		"mysql2": "^3.24.5",
 		"nodemailer": "^10.0.13",
 		"papaparse": "^5.7.0",
-		"pluralize": "^8.0.0"
+		"pluralize": "^8.0.0",
+		"read-excel-file": "^9.3.10",
+		"write-excel-file": "^4.1.1"
 	}
 }

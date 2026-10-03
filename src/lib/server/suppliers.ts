@@ -34,12 +34,20 @@ const supplierOf = (data: Supplier) => ({
 	status: data.status
 });
 
-/** Adds a supplier and its address. Returns the new supplier's id. */
-export async function addSupplier(data: Supplier): Promise<number> {
-	return db.transaction(async (tx) => {
-		const addressId = await insertReturningId(tx, address, addressOf(data));
-		return insertReturningId(tx, supplySuppliers, { ...supplierOf(data), address: addressId });
-	});
+type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+/**
+ * Adds a supplier and its address. Returns the new supplier's id.
+ *
+ * In a transaction of its own, or in `tx` when given — the spreadsheet import adds a whole file of
+ * suppliers in one, so a failure part-way leaves none of them rather than the first half.
+ */
+export async function addSupplier(data: Supplier, tx?: Tx): Promise<number> {
+	const write = async (writer: Tx) => {
+		const addressId = await insertReturningId(writer, address, addressOf(data));
+		return insertReturningId(writer, supplySuppliers, { ...supplierOf(data), address: addressId });
+	};
+	return tx ? write(tx) : db.transaction(write);
 }
 
 /**

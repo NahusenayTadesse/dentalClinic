@@ -56,6 +56,7 @@ import Phone from '@lucide/svelte/icons/phone';
 import ShieldCheck from '@lucide/svelte/icons/shield-check';
 import FileSignature from '@lucide/svelte/icons/file-signature';
 import FolderInput from '@lucide/svelte/icons/folder-input';
+import FileUp from '@lucide/svelte/icons/file-up';
 import DatabaseBackup from '@lucide/svelte/icons/database-backup';
 import MessageSquare from '@lucide/svelte/icons/message-square';
 import Smartphone from '@lucide/svelte/icons/smartphone';
@@ -306,7 +307,9 @@ export const NAVIGATION: NavItem[] = [
 				url: '/dashboard/admin-panel/referral-sources',
 				icon: Megaphone
 			},
-			{ title: 'Contact Types', url: '/dashboard/admin-panel/contact-types', icon: Contact }
+			{ title: 'Contact Types', url: '/dashboard/admin-panel/contact-types', icon: Contact },
+			// Setting up is when a clinic has whole lists to bring in, so the import sits with setup.
+			{ title: 'Import from a Spreadsheet', url: '/dashboard/import', icon: FileUp }
 		]
 	},
 

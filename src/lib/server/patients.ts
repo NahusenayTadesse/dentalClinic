@@ -506,6 +506,7 @@ export async function possibleDuplicates(input: {
 			fileNo: patient.fileNo,
 			name: patientFullName,
 			phone: patient.phone,
+			altPhone: patient.altPhone,
 			firstName: patient.name,
 			fatherName: patient.fatherName
 		})
@@ -517,24 +518,48 @@ export async function possibleDuplicates(input: {
 		.orderBy(...(byPhone ? [desc(sql`(${byPhone})`)] : []), desc(sql`(${byName})`), asc(patient.id))
 		.limit(10);
 
-	return rows.map((row) => {
-		const sameName =
-			row.firstName.toLowerCase() === input.name.trim().toLowerCase() &&
-			row.fatherName.toLowerCase() === input.fatherName.trim().toLowerCase();
-		const samePhone = digits.length >= 6 && phoneDigits(row.phone ?? '').includes(digits);
-		return {
-			id: row.id,
-			fileNo: row.fileNo,
-			name: row.name,
-			phone: row.phone,
-			reason:
-				sameName && samePhone
-					? 'Same name and phone number'
-					: sameName
-						? 'Same name and father’s name'
-						: 'Same phone number'
-		};
-	});
+	return rows.map((row) => ({
+		id: row.id,
+		fileNo: row.fileNo,
+		name: row.name,
+		phone: row.phone,
+		// Only matches come back from the query, so the rule always has a reason; the fallback is the
+		// clause the LIKE matched on, should the two ever read a phone differently.
+		reason: matchReason({ ...row, name: row.firstName }, input) ?? DUPLICATE_REASONS.samePhone
+	}));
+}
+
+/** The reasons a patient is matched as a possible duplicate, as the labels key them. */
+export const DUPLICATE_REASONS = {
+	both: 'Same name and phone number',
+	sameName: 'Same name and father’s name',
+	samePhone: 'Same phone number'
+} as const;
+
+/**
+ * Why `existing` may be the person described by `input`, or null when nothing matches — the rule
+ * `possibleDuplicates` applies, for a caller that already holds the rows.
+ *
+ * The spreadsheet import is that caller: it checks hundreds of rows at once, so it reads the
+ * roster once and asks this of each pair rather than running the query per row. One rule, so a
+ * patient the import lets through is one registration would also have let through.
+ */
+export function matchReason(
+	existing: { name: string; fatherName: string; phone: string | null; altPhone: string | null },
+	input: { name: string; fatherName: string; phone?: string | null }
+): string | null {
+	const digits = input.phone ? phoneDigits(input.phone) : '';
+	const sameName =
+		existing.name.trim().toLowerCase() === input.name.trim().toLowerCase() &&
+		existing.fatherName.trim().toLowerCase() === input.fatherName.trim().toLowerCase();
+	const samePhone =
+		digits.length >= 6 &&
+		[existing.phone, existing.altPhone].some((p) => p && phoneDigits(p).includes(digits));
+
+	if (sameName && samePhone) return DUPLICATE_REASONS.both;
+	if (sameName) return DUPLICATE_REASONS.sameName;
+	if (samePhone) return DUPLICATE_REASONS.samePhone;
+	return null;
 }
 
 /* ── Birth date ─────────────────────────────────────────────────────────────────────────────── */
