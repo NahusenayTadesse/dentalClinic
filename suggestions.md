@@ -230,13 +230,13 @@ Credit income keeps many clinics running, so this matters more than it looks.
   Payments post as stock in the accounting export. Found and fixed on the way: `onHand()` read
   the wrong lots in any query without a join — the dashboard's low-stock count among them.
 - 🟡 **Patient account statements, treatment packages and deposits — statements and deposits
-  done.** Billing → Take a deposit receipts money before a bill exists; it shows as *In credit* and
+  done.** Billing → Take a deposit receipts money before a bill exists; it shows as _In credit_ and
   **Use credit** on a bill applies it, oldest first, as ordinary bill payments. **Statement** prints
   a period's bills, payments, refunds and deposits with a running balance that closes on what is
   owed less credit. The accounting export holds deposits as a liability until used. **Packages not
   done**: selling a bundle needs a rule for marking the covered work as already paid when it is
   done, or it is billed twice — a decision about how clinics here sell packages.
-- ✅ **Personal data protection (2024 proclamation) — done.** *The patient's copy of their record* on
+- ✅ **Personal data protection (2024 proclamation) — done.** _The patient's copy of their record_ on
   every chart (new permission `patients.export`): the whole record printed, or as a JSON file for
   another clinic, logged as handed over. **Admin Panel → Data Protection** sets the retention period
   and lists records not seen within it for review — nothing is deleted automatically.
