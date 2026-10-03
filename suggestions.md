@@ -248,12 +248,15 @@ Credit income keeps many clinics running, so this matters more than it looks.
 
 ## Smaller things noticed along the way
 
-- **Amharic help text** written in this round (reminders, the HMIS report, usual work, the hours
-  warning) should be read by a native speaker.
-- **The dev database has no upcoming appointments.** The seed builds ±14 days around the day it runs,
-  so a database seeded a while ago has an empty diary ahead. A "move the diary to today" seed step
-  would keep demos honest.
-- **Seed oddity:** a caries finding on a patient under one year old. The seed charts by dentition,
-  not age.
-- **The kit nests a button inside a button** in the sidebar menu, which causes a hydration warning on
-  every page.
+- **Amharic help text** written in this round — reminders, the HMIS report, usual work, the hours
+  warning, and since then the gum chart, radiographs, consent forms and the medical-history
+  questionnaire, sterilisation, controlled medicines, orthodontics, deposits and data protection —
+  should be read by a native speaker. The consent wording also wants the clinic's lawyer.
+- ✅ **The dev database has no upcoming appointments — done.** `npm run db:seed -- --yes --to-today`
+  moves the seeded block of appointments so it is centred on today; running it again does nothing.
+- ✅ **Seed oddity — done.** Patients under three get whole-mouth work only and no findings. The
+  13 unbilled findings the old seed left on babies in the dev database were soft-deleted; 20 billed
+  ones stay until a `--fresh` reseed.
+- ✅ **The kit nests a button inside a button — no longer happens.** Both the app's and the kit's
+  sidebar build the trigger with a `child` snippet; checked on four pages at desktop and phone
+  width with no nested controls and no hydration warning.

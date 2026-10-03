@@ -117,13 +117,27 @@ export async function seedClinicalRecord(db: SeedDb) {
 
 	for (const visit of done) {
 		const issuedOn = visit.startsAt.toISOString().slice(0, 10);
-		const dentition = dentitionForAge(ageAt(visit.birthDate, visit.startsAt));
+		const age = ageAt(visit.birthDate, visit.startsAt);
+		const dentition = dentitionForAge(age);
 		const mouth = mouthFor(dentition);
 		const child = dentition !== 'permanent';
-		const menu = child && childTreatments.length ? childTreatments : treatments;
-		const lines = between(1, 3);
+		/*
+		 * A baby under three has few teeth and no back ones worth the name: an examination and
+		 * advice, not fillings or extractions. The first seed charted a caries finding on a molar of
+		 * a patient under one year old, because it chose by dentition and a baby's dentition is
+		 * "primary" like a five-year-old's.
+		 */
+		const baby = age !== null && age < 3;
+		const wholeMouth = treatments.filter((t) => t.area === 'mouth');
+		const menu =
+			baby && wholeMouth.length
+				? wholeMouth
+				: child && childTreatments.length
+					? childTreatments
+					: treatments;
+		const lines = baby ? 1 : between(1, 3);
 		const chosen = Array.from({ length: lines }, () => {
-			const service = chance(0.08) && extractions.length ? pick(extractions) : pick(menu);
+			const service = !baby && chance(0.08) && extractions.length ? pick(extractions) : pick(menu);
 			const place = placeFor(service.area, random, mouth);
 			return { service, fee: service.price ?? pick(FEES), place };
 		});
@@ -155,7 +169,7 @@ export async function seedClinicalRecord(db: SeedDb) {
 		 * a finding, with the filling for it planned on the same tooth and surfaces. Most charts
 		 * carry some, and a chart with none cannot show the difference between the two.
 		 */
-		if (caries && filling && chance(0.45)) {
+		if (caries && filling && !baby && chance(0.45)) {
 			for (let i = between(1, 2); i > 0; i--) {
 				const place = placeFor('surface', random, mouth, backTooth(random, mouth));
 				const common = {

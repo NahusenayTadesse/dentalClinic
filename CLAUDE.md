@@ -725,6 +725,7 @@ npm run check        # svelte-check — the real signal
 npm run lint         # prettier --check + eslint
 npm run test         # vitest, both projects (browser + node)
 npm run db:seed -- --yes        # fill a development database; --fresh empties first
+npm run db:seed -- --yes --to-today   # move the seeded diary so it is centred on today again
 npm run db:push      # push schema (safe while the DB has no production data)
 npm run db:studio    # drizzle studio
 ```

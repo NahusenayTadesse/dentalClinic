@@ -46,6 +46,7 @@ import { seedPerio } from './seed/perio';
 import { seedSterilisation } from './seed/sterilisation';
 import { seedControlled } from './seed/controlled';
 import { seedOrtho } from './seed/ortho';
+import { moveDiaryToToday } from './seed/diary';
 import {
 	seedDamagedStock,
 	seedExpenses,
@@ -261,4 +262,6 @@ async function rest() {
 }
 
 await main();
+// `--to-today`: centre the seeded diary on today again (see `seed/diary.ts`).
+if (process.argv.includes('--to-today')) await moveDiaryToToday(db);
 await connection.end();
