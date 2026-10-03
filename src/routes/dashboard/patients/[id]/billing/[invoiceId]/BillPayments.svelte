@@ -11,9 +11,12 @@
 	import type { InvoiceDetail } from '$lib/server/billing';
 	import { useI18n } from '$lib/i18n/i18n.svelte';
 	import { refund, type Refund } from '../schema';
+	import PiggyBank from '@lucide/svelte/icons/piggy-bank';
+	import StepButton from '@nahu/admin-kit/formComponents/StepButton.svelte';
 
 	/**
-	 * A bill's payments and refunds, and asking for a refund from one payment.
+	 * A bill's payments and refunds, asking for a refund from one payment, and — when the patient has
+	 * deposits left — putting that credit towards the bill.
 	 *
 	 * A refund is a row of its own, shown negative, and counts against the bill only once a manager
 	 * has approved it — until then it is marked as waiting, and a rejected one stays on the list,
@@ -24,13 +27,19 @@
 		payments,
 		form,
 		methods,
-		canRefund
+		canRefund,
+		credit = 0,
+		confirm
 	}: {
 		payments: InvoiceDetail['payments'];
 		form: SuperValidated<Refund>;
 		methods: { value: number; name: string; kind: string }[];
 		/** False on a void bill, and for a viewer who cannot take money. */
 		canRefund: boolean;
+		/** The patient's credit this bill can use, or 0 (`server/deposits.ts`). */
+		credit?: number;
+		/** The bill page's empty step form, for "use credit". */
+		confirm?: SuperValidated<Record<string, unknown>>;
 	} = $props();
 
 	const t = useI18n();
@@ -58,6 +67,18 @@
 </script>
 
 <Section title={w.title} IconComp={Banknote} style="personalIcon">
+	{#if credit > 0 && confirm}
+		<div class="mb-3">
+			<StepButton
+				id="use-credit"
+				action="?/useCredit"
+				data={confirm}
+				label={t.m.billing.tab.useCredit(formatETB(credit))}
+				icon={PiggyBank}
+				variant="outline"
+			/>
+		</div>
+	{/if}
 	<Table.Root>
 		<Table.Header>
 			<Table.Row>

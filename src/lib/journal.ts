@@ -11,6 +11,10 @@
  *
  *   payment for bills   Dr the payment method's account · Cr revenue (net) · Cr VAT payable
  *   refund              the same, reversed
+ *   deposit taken       Dr the payment method's account · Cr patient deposits
+ *   deposit applied     Dr patient deposits · Cr revenue (net) · Cr VAT payable — no money moves,
+ *                       so it is dated the day it was applied, and a month already exported never
+ *                       changes when a deposit from it is used later
  *   expense             Dr the expense type's account   · Cr the payment method's account
  *   stock bought        Dr inventory                    · Cr the payment method's account
  *   salaries            Dr salaries                     · Cr the payment method's account
@@ -26,12 +30,21 @@ export const FIXED_ACCOUNTS = {
 	vatPayable: 'VAT payable',
 	inventory: 'Stock (inventory)',
 	salaries: 'Salaries and wages',
+	deposits: 'Patient deposits (owed back until used)',
 	suspense: 'Suspense — to be placed'
 } as const;
 export type FixedAccount = keyof typeof FIXED_ACCOUNTS;
 
 /** What a transaction was, as far as the books are concerned. */
-export type MoneyKind = 'billPayment' | 'refund' | 'expense' | 'stock' | 'salaries' | 'other';
+export type MoneyKind =
+	| 'billPayment'
+	| 'refund'
+	| 'deposit'
+	| 'depositApplied'
+	| 'expense'
+	| 'stock'
+	| 'salaries'
+	| 'other';
 
 /** The code put on a line whose account the clinic has not mapped. */
 export const UNMAPPED = 'UNMAPPED';
@@ -84,6 +97,16 @@ export function entryLines(input: {
 			return sales('in');
 		case 'refund':
 			return sales('out');
+		case 'deposit':
+			return [debit(input.money, amount), credit(input.fixed.deposits, amount)];
+		case 'depositApplied': {
+			const lines = [
+				debit(input.fixed.deposits, amount),
+				credit(input.fixed.revenue, cents(amount - vat))
+			];
+			if (vat > 0) lines.push(credit(input.fixed.vatPayable, vat));
+			return lines;
+		}
 		case 'expense':
 			return [debit(input.other ?? UNMAPPED, amount), credit(input.money, amount)];
 		case 'stock':

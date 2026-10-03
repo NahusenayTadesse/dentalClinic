@@ -28,6 +28,7 @@ import {
 	patient,
 	paymentMethods,
 	payrollAdjustments,
+	patientDeposit,
 	payrollReceipts,
 	supplierInvoice,
 	suppliesAdjustments,
@@ -163,46 +164,52 @@ export async function journalFor(scope: Pick<BranchContext, 'active'>, period: M
 		return day >= period.start && day <= period.end;
 	});
 	const ids = inMonth.map((r) => r.id);
-	if (!ids.length) return { entries: [], unmapped: [], suspense: 0, unbalanced: 0 };
+	// `inArray` with no ids is false in Drizzle, so an empty month runs the same path to the end:
+	// deposits applied in it are entries even when no money moved.
 
-	const [paid, spent, stocked, suppliersPaid, paidStaff, adjusted, targets] = await Promise.all([
-		db
-			.select({
-				transactionId: invoicePayment.transactionId,
-				amount: invoicePayment.amount,
-				vat: invoice.vatAmount,
-				total: invoice.total
-			})
-			.from(invoicePayment)
-			.innerJoin(invoice, eq(invoice.id, invoicePayment.invoiceId))
-			.where(and(inArray(invoicePayment.transactionId, ids), notDeleted(invoicePayment))),
-		db
-			.select({ transactionId: expenses.transactionId, type: expenses.type })
-			.from(expenses)
-			.where(and(inArray(expenses.transactionId, ids), notDeleted(expenses))),
-		db
-			.select({ transactionId: suppliesAdjustments.transactionId })
-			.from(suppliesAdjustments)
-			.where(
-				and(
-					inArray(suppliesAdjustments.transactionId, ids),
-					isNotNull(suppliesAdjustments.transactionId)
-				)
-			),
-		db
-			.select({ transactionId: supplierInvoice.transactionId })
-			.from(supplierInvoice)
-			.where(inArray(supplierInvoice.transactionId, ids)),
-		db
-			.select({ transactionId: payrollReceipts.transactionId })
-			.from(payrollReceipts)
-			.where(inArray(payrollReceipts.transactionId, ids)),
-		db
-			.select({ transactionId: payrollAdjustments.transactionId })
-			.from(payrollAdjustments)
-			.where(inArray(payrollAdjustments.transactionId, ids)),
-		accountTargets()
-	]);
+	const [paid, spent, deposited, stocked, suppliersPaid, paidStaff, adjusted, targets] =
+		await Promise.all([
+			db
+				.select({
+					transactionId: invoicePayment.transactionId,
+					amount: invoicePayment.amount,
+					vat: invoice.vatAmount,
+					total: invoice.total
+				})
+				.from(invoicePayment)
+				.innerJoin(invoice, eq(invoice.id, invoicePayment.invoiceId))
+				.where(and(inArray(invoicePayment.transactionId, ids), notDeleted(invoicePayment))),
+			db
+				.select({ transactionId: expenses.transactionId, type: expenses.type })
+				.from(expenses)
+				.where(and(inArray(expenses.transactionId, ids), notDeleted(expenses))),
+			db
+				.select({ transactionId: suppliesAdjustments.transactionId })
+				.from(suppliesAdjustments)
+				.where(
+					and(
+						inArray(suppliesAdjustments.transactionId, ids),
+						isNotNull(suppliesAdjustments.transactionId)
+					)
+				),
+			db
+				.select({ transactionId: patientDeposit.transactionId })
+				.from(patientDeposit)
+				.where(inArray(patientDeposit.transactionId, ids)),
+			db
+				.select({ transactionId: supplierInvoice.transactionId })
+				.from(supplierInvoice)
+				.where(inArray(supplierInvoice.transactionId, ids)),
+			db
+				.select({ transactionId: payrollReceipts.transactionId })
+				.from(payrollReceipts)
+				.where(inArray(payrollReceipts.transactionId, ids)),
+			db
+				.select({ transactionId: payrollAdjustments.transactionId })
+				.from(payrollAdjustments)
+				.where(inArray(payrollAdjustments.transactionId, ids)),
+			accountTargets()
+		]);
 
 	const code = new Map(targets.map((t) => [t.target, t.code]));
 	const label = new Map(targets.map((t) => [t.target, t.label]));
@@ -228,7 +235,10 @@ export async function journalFor(scope: Pick<BranchContext, 'active'>, period: M
 	const stockIds = new Set([...stocked, ...suppliersPaid].map((s) => s.transactionId));
 	const staffIds = new Set([...paidStaff, ...adjusted].map((s) => s.transactionId));
 
+	const depositIds = new Set(deposited.map((d) => d.transactionId));
 	const kindOf = (r: (typeof inMonth)[number]): MoneyKind => {
+		// A deposit first: once applied it has `invoice_payment` rows too, and is still a deposit.
+		if (depositIds.has(r.id)) return 'deposit';
 		if (billIds.has(r.id)) return r.direction === 'in' ? 'billPayment' : 'refund';
 		if (expenseType.has(r.id)) return 'expense';
 		if (stockIds.has(r.id)) return 'stock';
@@ -259,6 +269,48 @@ export async function journalFor(scope: Pick<BranchContext, 'active'>, period: M
 			})
 		};
 	});
+
+	// Deposits applied this month: no money moved, so they are not transactions of the month, but
+	// the deposit becomes revenue on the day it pays a bill (`$lib/journal.ts`).
+	const applications = await db
+		.select({
+			id: invoicePayment.id,
+			amount: invoicePayment.amount,
+			createdAt: invoicePayment.createdAt,
+			number: invoice.invoiceNumber,
+			vat: invoice.vatAmount,
+			total: invoice.total
+		})
+		.from(invoicePayment)
+		.innerJoin(patientDeposit, eq(patientDeposit.transactionId, invoicePayment.transactionId))
+		.innerJoin(invoice, eq(invoice.id, invoicePayment.invoiceId))
+		.where(
+			and(
+				notDeleted(invoicePayment),
+				gte(invoicePayment.createdAt, from),
+				lt(invoicePayment.createdAt, to),
+				branchFilter(invoice.branchId, scope)
+			)
+		);
+	for (const a of applications) {
+		const day = clinicDate(a.createdAt);
+		if (day < period.start || day > period.end) continue;
+		entries.push({
+			date: day,
+			reference: a.number ?? `DEP-${a.id}`,
+			description: `Deposit applied to ${a.number ?? 'a bill'}`,
+			lines: entryLines({
+				kind: 'depositApplied',
+				direction: 'in',
+				amount: a.amount,
+				vat: a.total ? Math.round(((a.amount * (a.vat ?? 0)) / a.total) * 100) / 100 : 0,
+				money: fixed.deposits,
+				other: null,
+				fixed
+			})
+		});
+	}
+	entries.sort((x, y) => (x.date < y.date ? -1 : x.date > y.date ? 1 : 0));
 
 	return {
 		entries,

@@ -90,6 +90,8 @@ const HELP_FAMILY = new Set([
 	'/dashboard/supplies/orders/[id]/print',
 	// The controlled-medicine register on paper: covered by `supplies-controlled.json`.
 	'/dashboard/supplies/controlled/print',
+	// A patient's statement: covered by the chart's "Billing" section.
+	'/dashboard/patients/[id]/billing/statement',
 	// Paper to sign: covered by the chart's "Consents" and "Medical alerts" sections.
 	'/dashboard/patients/[id]/consents/print',
 	'/dashboard/patients/[id]/history-form',

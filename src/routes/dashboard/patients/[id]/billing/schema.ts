@@ -75,3 +75,13 @@ export const confirmOnly = z.object({});
 
 export type EditLine = z.infer<typeof editLine>;
 export type Refund = z.infer<typeof refund>;
+
+/** A deposit: money taken before there is a bill (`server/deposits.ts`). */
+export const deposit = z.object({
+	amount: z.coerce.number().positive('Enter the amount.'),
+	paymentMethodId: z.string().min(1, 'Choose how it was paid.'),
+	reference: z.string().trim().max(128).optional(),
+	note: z.string().trim().max(255).optional()
+});
+
+export type Deposit = z.infer<typeof deposit>;

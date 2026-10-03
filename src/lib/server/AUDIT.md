@@ -90,7 +90,7 @@ compile error rather than a silent omission.
   `ortho_visit` and `ortho_instalment` (an orthodontic plan and its billing)
 - money: `invoice`, `invoice_line`, `invoice_payment`, `transactions`, `expenses`, `cash_session`,
   `payer_authorisation` (a payer's promise to pay for treatment), `purchase_order` and
-  `supplier_invoice` (what was bought, what arrived, what the supplier was paid),
+  `supplier_invoice` (what was bought, what arrived, what the supplier was paid), `patient_deposit`,
   the pay adjustments `over_time`, `bonuses`, `deductions` and `attendance` — each changes what
   someone is paid
 - controlled stock: `supplies_adjustments`, `supply_batch`, `damaged_supplies`

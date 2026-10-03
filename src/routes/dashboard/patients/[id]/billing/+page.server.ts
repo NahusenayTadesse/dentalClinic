@@ -8,12 +8,13 @@ import { createInvoice } from '$lib/server/invoiceWrites';
 import { openSessionFor } from '$lib/server/cashDrawer';
 import { db } from '$lib/server/db';
 import { clinicDate } from '$lib/clinicTime';
-import { formatEthiopianDate } from '$lib/global.svelte';
+import { formatETB, formatEthiopianDate } from '$lib/global.svelte';
 import { messagesFor } from '$lib/i18n/messages';
 import { canPay } from '$lib/invoiceStatus';
 import { BILLING_PERMISSION, billingAction, payAction } from './billingAction';
 import { payment } from '$lib/forms/payment';
-import { newInvoice } from './schema';
+import { deposit, newInvoice } from './schema';
+import { patientCredit, takeDeposit } from '$lib/server/deposits';
 import { AUTHORISATIONS } from './authorisations.server';
 import { childActions } from '$lib/server/childCrud';
 import { livePatientId } from '$lib/server/patients';
@@ -33,21 +34,35 @@ export const load: PageServerLoad = async (event) => {
 	const { patient } = await event.parent();
 	const say = messagesFor(event.locals.lang).billing.tab;
 
-	const [balance, bills, unbilled, methods, drawer, invoiceForm, payForm, authorisations, payers] =
-		await Promise.all([
-			patientBalance(patient.id),
-			patientInvoices(patient.id),
-			unbilledWork(patient.id),
-			paymentMethodOptions(),
-			openSessionFor(db, event.locals.branch.active),
-			superValidate(zod4(newInvoice)),
-			superValidate(zod4(payment)),
-			AUTHORISATIONS.Authorisation.load(patient.id),
-			customerList()
-		]);
+	const [
+		balance,
+		credit,
+		bills,
+		unbilled,
+		methods,
+		drawer,
+		invoiceForm,
+		payForm,
+		depositForm,
+		authorisations,
+		payers
+	] = await Promise.all([
+		patientBalance(patient.id),
+		patientCredit(patient.id),
+		patientInvoices(patient.id),
+		unbilledWork(patient.id),
+		paymentMethodOptions(),
+		openSessionFor(db, event.locals.branch.active),
+		superValidate(zod4(newInvoice)),
+		superValidate(zod4(payment)),
+		superValidate(zod4(deposit)),
+		AUTHORISATIONS.Authorisation.load(patient.id),
+		customerList()
+	]);
 
 	return {
 		balance,
+		credit,
 		bills,
 		// What a new bill can be raised from, each with the visit it was done at.
 		unbilled: unbilled.map((w) => ({
@@ -67,7 +82,7 @@ export const load: PageServerLoad = async (event) => {
 			.map((b) => ({ id: b.id, number: b.invoiceNumber, owed: b.owed, issuedOn: b.issuedOn })),
 		methods,
 		drawerOpen: drawer !== null,
-		forms: { invoice: invoiceForm, payment: payForm },
+		forms: { invoice: invoiceForm, payment: payForm, deposit: depositForm },
 		authorisations,
 		payers
 	};
@@ -87,6 +102,18 @@ export const actions: Actions = {
 			};
 		}),
 	pay: payAction,
+	deposit: (event) =>
+		billingAction(event, deposit, async (tx, { patientId, data }) => {
+			await takeDeposit(tx, event, {
+				patientId,
+				amount: data.amount,
+				paymentMethodId: Number(data.paymentMethodId),
+				branchId: event.locals.branch.active,
+				reference: data.reference || null,
+				note: data.note || null
+			});
+			return messagesFor(event.locals.lang).billing.tab.depositTaken(formatETB(data.amount));
+		}),
 	// Add, edit and delete a pre-authorisation, each checked to be this patient's.
 	...childActions(AUTHORISATIONS, livePatientId)
 };

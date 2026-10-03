@@ -80,7 +80,7 @@ export function normalReference(reference: string | null | undefined): string | 
  * way a reference already recorded is refused: the same transfer cannot pay twice. The unique index
  * on `gateway_txn_token` is what actually guarantees that; this check only gives the reason.
  */
-async function referenceFor(
+export async function referenceFor(
 	tx: Tx,
 	say: ReturnType<typeof billingRefusals>,
 	kind: string,
@@ -99,7 +99,7 @@ async function referenceFor(
 }
 
 /** The method, and the open drawer when it is cash — refused when it is cash and there is none. */
-async function methodFor(
+export async function methodFor(
 	tx: Tx,
 	say: ReturnType<typeof billingRefusals>,
 	paymentMethodId: number,
@@ -125,7 +125,7 @@ async function methodFor(
  * check in `referenceFor`; the unique index stops the second, and this turns that into the same
  * refusal rather than a 500.
  */
-async function insertPayment(
+export async function insertPayment(
 	tx: Tx,
 	say: ReturnType<typeof billingRefusals>,
 	// `insertReturningId`'s own type: `occurredOn` is written as a clinic day string, which the

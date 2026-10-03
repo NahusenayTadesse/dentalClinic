@@ -332,12 +332,14 @@
 		{/if}
 	</Section>
 
-	{#if bill.payments.length}
+	{#if bill.payments.length || data.credit > 0}
 		<BillPayments
 			payments={bill.payments}
 			form={data.forms.refund}
 			methods={data.methods}
 			canRefund={bill.status !== 'void'}
+			credit={data.credit}
+			confirm={data.forms.confirm}
 		/>
 	{/if}
 </div>

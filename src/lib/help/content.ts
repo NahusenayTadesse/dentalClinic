@@ -833,6 +833,27 @@ export const HELP_SECTIONS: HelpSection[] = [
 				]
 			},
 			{
+				id: 'deposits-statements',
+				title: 'Deposits, credit and statements',
+				summary:
+					'Money taken before a bill exists, kept as the patient’s credit and used on their bills; and a statement of account to hand over or send to an employer.',
+				where: 'A patient’s **Billing** tab',
+				permission: 'billing.invoice',
+				steps: [
+					'**Take a deposit**: the amount, how it was paid, and what it is towards — “Crown on 36”. It gets a receipt like any payment; cash goes through the drawer.',
+					'The patient’s **In credit** tile shows what is left of their deposits.',
+					'When the bill is issued, open it and press **Use credit**. As much as the bill owes, or the credit holds, is applied — oldest deposit first.',
+					'**Statement** prints the account for the last three months, or any range chosen above the sheet.'
+				],
+				notes: [
+					'A deposit does not reduce what the patient owes until it is used on a bill; the credit is shown beside the balance so the two are read together.',
+					'On the statement a deposit counts when it was paid, and the closing figure is what is owed less the credit — negative when the patient is in credit.',
+					'In the accounting export a deposit is held as owed to the patient until it is used, and becomes fee income on the day it pays a bill.',
+					'A deposit pays the patient’s own bills, not those billed to an employer or insurer.'
+				],
+				keywords: ['deposit', 'advance', 'prepayment', 'credit', 'statement', 'account', 'balance']
+			},
+			{
 				id: 'accounting-export',
 				title: 'Sending the books to the accountant',
 				summary:
@@ -2493,6 +2514,14 @@ export const ROUTE_MAP: RouteEntry[] = [
 		purpose: 'A cycle’s pack labels, three across an A4 sheet.',
 		permission: 'sterilisation.record',
 		group: 'Appointments'
+	},
+	{
+		path: '/dashboard/patients/[id]/billing/statement',
+		title: 'Statement of account',
+		purpose:
+			'A patient’s bills, payments, refunds and deposits over a period, with the balance carried.',
+		permission: 'billing.invoice',
+		group: 'Patients'
 	},
 	{
 		path: '/dashboard/patients/[id]/consents/print',

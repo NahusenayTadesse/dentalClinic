@@ -229,8 +229,13 @@ Credit income keeps many clinics running, so this matters more than it looks.
   on the item page), and the supplier's invoice set against ordered and received before it is paid.
   Payments post as stock in the accounting export. Found and fixed on the way: `onHand()` read
   the wrong lots in any query without a join — the dashboard's low-stock count among them.
-- **Patient account statements, treatment packages and deposits.** `patientBalance` is the single
-  definition of what a patient owes, so a statement is a printout of what already exists.
+- 🟡 **Patient account statements, treatment packages and deposits — statements and deposits
+  done.** Billing → Take a deposit receipts money before a bill exists; it shows as *In credit* and
+  **Use credit** on a bill applies it, oldest first, as ordinary bill payments. **Statement** prints
+  a period's bills, payments, refunds and deposits with a running balance that closes on what is
+  owed less credit. The accounting export holds deposits as a liability until used. **Packages not
+  done**: selling a bundle needs a rule for marking the covered work as already paid when it is
+  done, or it is billed twice — a decision about how clinics here sell packages.
 - **Personal data protection (2024 proclamation).** Retention rules, giving patients a copy of their
   record, and a breach log. The access log (`patient_access_log`) is a good start.
 

@@ -13,7 +13,10 @@
 	import PaymentForm from '$lib/components/PaymentForm.svelte';
 	import { useI18n } from '$lib/i18n/i18n.svelte';
 	import { billColumns } from './columns';
-	import { newInvoice } from './schema';
+	import { deposit, newInvoice } from './schema';
+	import InputComp from '@nahu/admin-kit/formComponents/InputComp.svelte';
+	import FileText from '@lucide/svelte/icons/file-text';
+	import PiggyBank from '@lucide/svelte/icons/piggy-bank';
 	import ShieldCheck from '@lucide/svelte/icons/shield-check';
 	import LookupSection from '@nahu/admin-kit/components/lookup/LookupSection.svelte';
 	import { childActionPaths } from '@nahu/admin-kit/components/lookup/actions.js';
@@ -28,6 +31,7 @@
 
 	let invoiceOpen = $state(false);
 	let payOpen = $state(false);
+	let depositOpen = $state(false);
 	const t = useI18n();
 	const w = $derived(t.m.billing.tab);
 	const columns = $derived(billColumns(data.patient.id, t.m));
@@ -49,6 +53,14 @@
 			format: 'money',
 			group: 'billing',
 			hint: w.unbilledHint(data.unbilled.length)
+		},
+		{
+			key: 'credit',
+			label: w.credit,
+			value: data.credit,
+			format: 'money',
+			group: 'billing',
+			hint: w.creditHint
 		}
 	]);
 </script>
@@ -58,7 +70,7 @@
 </svelte:head>
 
 <div class="flex flex-col gap-6">
-	<section class="grid grid-cols-1 gap-4 sm:grid-cols-3" aria-label={w.account}>
+	<section class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label={w.account}>
 		{#each TILES as stat (stat.key)}
 			<StatCard {stat} amharicMoney={false} />
 		{/each}
@@ -71,6 +83,21 @@
 				<Banknote class="size-4" />
 				{w.takePayment}
 			</Button>
+			<div class="grid grid-cols-2 gap-2">
+				<Button variant="outline" size="sm" onclick={() => (depositOpen = true)}>
+					<PiggyBank class="size-4" />
+					{w.takeDeposit}
+				</Button>
+				<Button
+					variant="outline"
+					size="sm"
+					href="/dashboard/patients/{data.patient.id}/billing/statement"
+					target="_blank"
+				>
+					<FileText class="size-4" />
+					{w.statement}
+				</Button>
+			</div>
 		</div>
 	</section>
 
@@ -134,3 +161,36 @@
 		/>
 	</div>
 </DialogComp>
+
+<FormDialog
+	title={w.depositTitle}
+	description={w.depositDescription}
+	action="?/deposit"
+	data={data.forms.deposit}
+	schema={deposit}
+	bind:open={depositOpen}
+	hideTrigger
+	resetOnSuccess
+	submitLabel={w.takeDeposit}
+>
+	{#snippet fields({ form, errors })}
+		<InputComp label={w.depositAmount} name="amount" type="number" {form} {errors} />
+		<InputComp
+			label={w.depositMethod}
+			name="paymentMethodId"
+			type="select"
+			items={data.methods.map((m) => ({ value: String(m.value), name: m.name }))}
+			{form}
+			{errors}
+		/>
+		<InputComp label={w.depositReference} name="reference" required={false} {form} {errors} />
+		<InputComp
+			label={w.depositFor}
+			name="note"
+			required={false}
+			placeholder="Crown on 36"
+			{form}
+			{errors}
+		/>
+	{/snippet}
+</FormDialog>

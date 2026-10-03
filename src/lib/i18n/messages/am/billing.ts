@@ -91,7 +91,21 @@ export const billing: typeof en = {
 		paid: 'የተከፈለ',
 		stillOwed: 'ቀሪ ዕዳ',
 		draftStarted: 'ረቂቅ ሂሳብ ተጀምሯል። አረጋግጠው ያውጡት።',
-		paymentRecorded: (amount) => `የ${amount} ክፍያ ተመዝግቧል።`
+		paymentRecorded: (amount) => `የ${amount} ክፍያ ተመዝግቧል።`,
+		credit: 'ቀሪ ቅድመ ክፍያ',
+		creditHint: 'ገና በደረሰኝ ላይ ያልዋለ ቅድመ ክፍያ',
+		takeDeposit: 'ቅድመ ክፍያ ተቀበል',
+		statement: 'የሂሳብ መግለጫ',
+		depositTitle: 'ቅድመ ክፍያ ተቀበል',
+		depositDescription:
+			'ደረሰኝ ከመቆረጡ በፊት የሚከፈል ገንዘብ — ለምሳሌ ላብራቶሪው ዘውዱን ከመሥራቱ በፊት። አሁን ደረሰኝ ይሰጣል፣ በኋላ በታካሚው ደረሰኞች ላይ ይውላል።',
+		depositAmount: 'መጠን (ብር)',
+		depositMethod: 'የተከፈለበት',
+		depositReference: 'የዝውውር መለያ',
+		depositFor: 'ለምን እንደሆነ',
+		depositTaken: (amount) => `${amount} ቅድመ ክፍያ ተቀብሏል።`,
+		useCredit: (amount) => `ቅድመ ክፍያ ተጠቀም (${amount})`,
+		creditApplied: (amount) => `${amount} ቅድመ ክፍያ በደረሰኙ ላይ ውሏል።`
 	},
 
 	bill: {

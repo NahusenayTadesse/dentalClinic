@@ -10,6 +10,7 @@ import {
 	perioExam,
 	packUse,
 	orthoCase,
+	patientDeposit,
 	patient,
 	patientAllergies,
 	patientConditions,
@@ -96,6 +97,8 @@ export const OWNED: Owned[] = [
 	},
 	// A pack opened for the duplicate was opened for this person: a failed cycle must still find them.
 	{ name: 'pack_use', table: packUse, patientId: packUse.patientId },
+	// Money paid ahead of a bill is the person's credit, wherever it was taken.
+	{ name: 'patient_deposit', table: patientDeposit, patientId: patientDeposit.patientId },
 	// A course of braces is the patient's, with its visits and its payment plan.
 	{ name: 'ortho_case', table: orthoCase, patientId: orthoCase.patientId },
 	// A periodontal chart is the baseline the next is compared with: it follows the patient.

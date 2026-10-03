@@ -421,6 +421,13 @@
       "when": 1790985318316,
       "tag": "0059_purchasing",
       "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "5",
+      "when": 1790986267351,
+      "tag": "0060_patient_deposits",
+      "breakpoints": true
     }
   ]
 }

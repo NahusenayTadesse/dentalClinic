@@ -61,6 +61,8 @@ export type AuditedTable =
 	// buying: an order's sending and deliveries, and a supplier's invoice and its payment
 	| 'purchase_order'
 	| 'supplier_invoice'
+	// money a patient paid ahead of any bill
+	| 'patient_deposit'
 	| 'appointment'
 	// money
 	| 'invoice'

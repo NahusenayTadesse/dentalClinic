@@ -38,6 +38,8 @@ import {
 	removeLine,
 	voidRequest
 } from '../schema';
+import { applyCredit, patientCredit } from '$lib/server/deposits';
+import { formatETB } from '$lib/global.svelte';
 import { coverLinks } from '$lib/server/payerCover';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -98,8 +100,15 @@ export const load: PageServerLoad = async (event) => {
 		payerForm
 	] = forms;
 
+	// Credit can pay the patient's own payable bill; a payer's bill is the payer's to pay.
+	const credit =
+		canPay(bill.status, bill.approvalStatus) && bill.customerId === null && bill.owed > 0
+			? await patientCredit(patient.id)
+			: 0;
+
 	return {
 		bill,
+		credit,
 		unbilled: unbilled.map((w) => ({ id: w.id, service: w.service, where: w.where, price: w.fee })),
 		payable: canPay(bill.status, bill.approvalStatus)
 			? [{ id: bill.id, number: bill.invoiceNumber, owed: bill.owed, issuedOn: bill.issuedOn }]
@@ -196,6 +205,11 @@ export const actions: Actions = {
 		}),
 
 	pay: payAction,
+	useCredit: (event) =>
+		billingAction(event, confirmOnly, async (tx, { patientId }) => {
+			const applied = await applyCredit(tx, event, patientId, billId(event));
+			return messagesFor(event.locals.lang).billing.tab.creditApplied(formatETB(applied));
+		}),
 
 	requestRefund: (event) =>
 		billingAction(event, refund, async (tx, { patientId, data }) => {

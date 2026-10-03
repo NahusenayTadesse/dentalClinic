@@ -99,7 +99,21 @@ export const billing = {
 		paid: 'Paid',
 		stillOwed: 'Still owed',
 		draftStarted: 'Draft bill started. Check it, then issue it.',
-		paymentRecorded: (amount: string) => `Payment of ${amount} recorded.`
+		paymentRecorded: (amount: string) => `Payment of ${amount} recorded.`,
+		credit: 'In credit',
+		creditHint: 'Deposits not yet used on a bill',
+		takeDeposit: 'Take a deposit',
+		statement: 'Statement',
+		depositTitle: 'Take a deposit',
+		depositDescription:
+			'Money paid before there is a bill — towards a crown, before the lab makes it. It is receipted now and used on the patient’s bills later.',
+		depositAmount: 'Amount (Br)',
+		depositMethod: 'Paid with',
+		depositReference: 'Transfer reference',
+		depositFor: 'What it is towards',
+		depositTaken: (amount: string) => `Deposit of ${amount} taken.`,
+		useCredit: (amount: string) => `Use credit (${amount})`,
+		creditApplied: (amount: string) => `${amount} of credit put towards the bill.`
 	},
 
 	bill: {

@@ -13,6 +13,7 @@ const fixed = {
 	vatPayable: '2200',
 	inventory: '1300',
 	salaries: '6000',
+	deposits: '2300',
 	suspense: '9999'
 };
 
@@ -75,6 +76,39 @@ describe('entryLines', () => {
 			{ account: '1000', debit: 80, credit: 0 },
 			{ account: '9999', debit: 0, credit: 80 }
 		]);
+	});
+});
+
+describe('deposits', () => {
+	it('holds a deposit as owed to the patient, and turns it into revenue when it pays a bill', () => {
+		const taken = entryLines({
+			kind: 'deposit',
+			direction: 'in',
+			amount: 2000,
+			vat: 0,
+			money: '1010',
+			other: null,
+			fixed
+		});
+		expect(taken).toEqual([
+			{ account: '1010', debit: 2000, credit: 0 },
+			{ account: '2300', debit: 0, credit: 2000 }
+		]);
+		const applied = entryLines({
+			kind: 'depositApplied',
+			direction: 'in',
+			amount: 1150,
+			vat: 150,
+			money: '1010',
+			other: null,
+			fixed
+		});
+		expect(applied).toEqual([
+			{ account: '2300', debit: 1150, credit: 0 },
+			{ account: '4000', debit: 0, credit: 1000 },
+			{ account: '2200', debit: 0, credit: 150 }
+		]);
+		expect(balances(applied)).toBe(true);
 	});
 });
 
