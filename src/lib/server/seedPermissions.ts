@@ -52,6 +52,7 @@ export const SUPER_ADMIN_ROLE = 'Super Admin';
  *   `patients.edit`      — change who a patient is and how to reach them (`patients/[id]`)
  *   `patients.clinical`  — change allergies, conditions, medicines and history (`patients/[id]`)
  *   `appointments.book`  — book, move, cancel and check in appointments (`appointmentActions.ts`)
+ *   `patients.export`    — give a patient a copy of their whole record (`patients/[id]/record`)
  *
  * Everything else is derived from `routeRules`, which is the single source of truth for route
  * gating (CLAUDE.md §9). Deriving rather than restating means a new gated route cannot ship
@@ -63,7 +64,8 @@ const CODE_ONLY_PERMISSIONS = [
 	'branches.view_all',
 	'patients.edit',
 	'patients.clinical',
-	'appointments.book'
+	'appointments.book',
+	'patients.export'
 ] as const;
 
 /** Human wording for the permission list in the admin panel. */
@@ -84,6 +86,8 @@ const DESCRIPTIONS: Record<string, string> = {
 		'Record autoclave cycles and spore tests, label instrument packs, and record which pack was used on which patient',
 	'leaves.view_approved': 'See approved leave',
 	'patients.clinical': 'Change a patient’s allergies, conditions, medicines and medical history',
+	'patients.export':
+		'Give a patient a copy of their whole record — printed or as a file — when they ask for it',
 	'patients.edit': 'Change a patient’s details, contacts and billing',
 	'patients.register': 'Register new patients',
 	'providers.manage': 'Maintain dentists and their licences',

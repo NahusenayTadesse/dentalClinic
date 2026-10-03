@@ -92,6 +92,8 @@ const HELP_FAMILY = new Set([
 	'/dashboard/supplies/controlled/print',
 	// A patient's statement: covered by the chart's "Billing" section.
 	'/dashboard/patients/[id]/billing/statement',
+	// The patient's copy of their record: covered by the chart's "Access log" section.
+	'/dashboard/patients/[id]/record',
 	// Paper to sign: covered by the chart's "Consents" and "Medical alerts" sections.
 	'/dashboard/patients/[id]/consents/print',
 	'/dashboard/patients/[id]/history-form',

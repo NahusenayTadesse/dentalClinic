@@ -63,6 +63,8 @@ import Pill from '@lucide/svelte/icons/pill';
 import Plus from '@lucide/svelte/icons/plus';
 import ScanLine from '@lucide/svelte/icons/scan-line';
 import ScrollText from '@lucide/svelte/icons/scroll-text';
+import LockKeyhole from '@lucide/svelte/icons/lock-keyhole';
+import FileWarning from '@lucide/svelte/icons/file-warning';
 import ShoppingCart from '@lucide/svelte/icons/shopping-cart';
 import BookOpen from '@lucide/svelte/icons/book-open';
 import Smile from '@lucide/svelte/icons/smile';
@@ -314,6 +316,18 @@ export const NAVIGATION: NavItem[] = [
 				url: '/dashboard/admin-panel/backups',
 				section: 'access',
 				icon: DatabaseBackup
+			},
+			{
+				title: 'Data Protection',
+				url: '/dashboard/admin-panel/privacy',
+				section: 'access',
+				icon: LockKeyhole
+			},
+			{
+				title: 'Breach Log',
+				url: '/dashboard/admin-panel/data-breaches',
+				section: 'access',
+				icon: FileWarning
 			},
 			{
 				title: 'Regions',

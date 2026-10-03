@@ -854,6 +854,36 @@ export const HELP_SECTIONS: HelpSection[] = [
 				keywords: ['deposit', 'advance', 'prepayment', 'credit', 'statement', 'account', 'balance']
 			},
 			{
+				id: 'data-protection',
+				title: 'Personal data protection',
+				summary:
+					'What the Personal Data Protection Proclamation (No. 1321/2024) asks of a clinic, and where each part is done.',
+				where: 'Menu → **Admin Panel → Data Protection** and **Breach Log**; a patient’s chart',
+				permission: 'settings.manage; patients.export to give a patient their record',
+				steps: [
+					'**A patient asks for their record**: open the chart and choose **The patient’s copy of their record**. Print it, or download it as a file for another clinic. The handover is logged.',
+					'**A patient asks who has seen it**: the chart’s **Access log** shows every opening and printout, by whom and when.',
+					'**A patient asks for a correction**: change it on the chart. Every change is kept in the audit trail.',
+					'**Something goes wrong**: record it in the **Breach Log** the day it is found, then what was done and who was told.',
+					'**Once a year**: open **Data Protection**, review the records not seen within the retention period, and decide each.'
+				],
+				notes: [
+					'Giving a patient their record needs its own permission: reading a chart is not the same as handing all of it over.',
+					'Nothing is ever deleted automatically. The retention list is for a person to review.',
+					'The files themselves — radiographs, photographs — are handed over from the Files tab; the copy lists them.'
+				],
+				keywords: [
+					'data protection',
+					'privacy',
+					'proclamation',
+					'personal data',
+					'breach',
+					'retention',
+					'subject access',
+					'copy of record'
+				]
+			},
+			{
 				id: 'accounting-export',
 				title: 'Sending the books to the accountant',
 				summary:
@@ -2296,6 +2326,20 @@ export const ROUTE_MAP: RouteEntry[] = [
 		group: 'Clinic setup'
 	},
 	{
+		path: '/dashboard/admin-panel/privacy',
+		title: 'Data protection',
+		purpose: 'Record retention and the records past it, the breach log, and patients’ data rights.',
+		permission: 'settings.manage',
+		group: 'Clinic setup'
+	},
+	{
+		path: '/dashboard/admin-panel/data-breaches',
+		title: 'Breach log',
+		purpose: 'Every personal-data breach, what was done, and who was told.',
+		permission: 'settings.manage',
+		group: 'Clinic setup'
+	},
+	{
 		path: '/dashboard/admin-panel/consent-forms',
 		title: 'Consent forms',
 		purpose: 'The wording of the consent forms patients sign, in English and Amharic.',
@@ -2514,6 +2558,13 @@ export const ROUTE_MAP: RouteEntry[] = [
 		purpose: 'A cycle’s pack labels, three across an A4 sheet.',
 		permission: 'sterilisation.record',
 		group: 'Appointments'
+	},
+	{
+		path: '/dashboard/patients/[id]/record',
+		title: 'Patient’s copy of their record',
+		purpose: 'The whole record, printed or as a file, for the patient who asks for it.',
+		permission: 'patients.export',
+		group: 'Patients'
 	},
 	{
 		path: '/dashboard/patients/[id]/billing/statement',

@@ -616,7 +616,7 @@ export async function logPatientView(
 	 * Which row, and what was done with it. A print is its own act — paper leaves the building —
 	 * so it is windowed separately from a view of the same record rather than hidden by one.
 	 */
-	options: { recordId?: number; action?: 'view' | 'print' } = {}
+	options: { recordId?: number; action?: 'view' | 'print' | 'export' } = {}
 ) {
 	const action = options.action ?? 'view';
 	const recordId = options.recordId ?? null;

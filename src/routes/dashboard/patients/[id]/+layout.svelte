@@ -62,6 +62,15 @@
 			<Badge variant="secondary">{p.fileNo ? pm.file(p.fileNo) : pm.noFileNumber}</Badge>
 			<Badge variant="outline">{pm.sex[p.sex]} · {ageText}</Badge>
 			{#if p.bloodType}<Badge variant="outline">{c.blood(p.bloodType)}</Badge>{/if}
+			{#if data.can.exportRecord}
+				<a
+					href="{base}/record"
+					target="_blank"
+					class="ml-auto text-sm text-muted-foreground underline-offset-2 hover:underline"
+				>
+					{c.recordCopy}
+				</a>
+			{/if}
 			{#if data.balance}
 				<a href="{base}/billing">
 					<Badge variant="destructive">{c.owes(formatETB(data.balance))}</Badge>

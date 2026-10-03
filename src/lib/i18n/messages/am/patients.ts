@@ -140,6 +140,7 @@ export const patients: typeof en = {
 		noHistoryWhy: 'እዚህ ባዶ የአለርጂ ዝርዝር ማለት ገና ማንም አልጠየቀም ማለት ነው — አለርጂ የለም ማለት አይደለም።',
 		staleHistory: (date) => `የሕክምና ታሪኩ ከአንድ ዓመት በላይ ሆኖታል (የተወሰደው ${date})። ከሕክምና በፊት እንደገና ይጠይቁ።`,
 		record: 'የታካሚ መዝገብ',
+		recordCopy: 'ለታካሚው የሚሰጥ የመዝገቡ ቅጂ',
 		tabs: {
 			overview: 'አጠቃላይ እይታ',
 			chart: 'የጥርስ ገበታ',

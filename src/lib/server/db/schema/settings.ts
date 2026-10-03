@@ -66,6 +66,14 @@ export const clinicSettings = mysqlTable('clinic_settings', {
 		.notNull()
 		.default(DEFAULT_SMS_TEMPLATES.recall),
 
+	/**
+	 * How many years after a patient was last seen their record is kept before it is reviewed for
+	 * deletion or anonymising (Personal Data Protection Proclamation 1321/2024: kept no longer than
+	 * needed). Ten years is common practice for health records here; a child's record is usually
+	 * kept until they are adults and then some, which the review list leaves to a person.
+	 */
+	recordRetentionYears: int('record_retention_years').notNull().default(10),
+
 	updatedBy: varchar('updated_by', { length: 255 }).references(() => user.id, {
 		onDelete: 'set null'
 	}),

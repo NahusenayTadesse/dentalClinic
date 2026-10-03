@@ -144,7 +144,9 @@ export const load: LayoutServerLoad = async ({ params, locals, url }) => {
 			clinical: hasPermission(locals, 'patients.clinical'),
 			seeViews: hasPermission(locals, 'audit_logs.view'),
 			book: hasPermission(locals, BOOK_PERMISSION),
-			bill: canBill
+			bill: canBill,
+			// Handing over the whole record (`patients/[id]/record`) — not the same as reading it.
+			exportRecord: hasPermission(locals, 'patients.export')
 		}
 	};
 };

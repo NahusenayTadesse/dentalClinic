@@ -72,7 +72,9 @@ export const patientAccessLog = mysqlTable(
 			'consent',
 			'labCase',
 			'perio',
-			'ortho'
+			'ortho',
+			// The whole record, handed to the patient (`server/patientRecord.ts`).
+			'fullRecord'
 		]).notNull(),
 
 		/** Which row, where one was opened. Null for the patient summary, which is the patient. */

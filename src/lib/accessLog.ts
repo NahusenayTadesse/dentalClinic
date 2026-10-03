@@ -21,11 +21,16 @@ export const VIEWED_RECORD_LABEL: Record<string, string> = {
 	consent: 'Consents',
 	labCase: 'Lab work',
 	perio: 'Periodontal chart',
-	ortho: 'Orthodontics'
+	ortho: 'Orthodontics',
+	fullRecord: 'The whole record'
 };
 
 /** What was done: opened on screen, or printed — paper that has left the building. */
-export const VIEW_ACTION_LABEL: Record<string, string> = { view: 'Opened', print: 'Printed' };
+export const VIEW_ACTION_LABEL: Record<string, string> = {
+	view: 'Opened',
+	print: 'Printed',
+	export: 'Exported'
+};
 
 /** The parts of the chart in Amharic, for the overview's "who opened this" in an Amharic screen. */
 const VIEWED_RECORD_LABEL_AM: Record<string, string> = {
@@ -42,7 +47,8 @@ const VIEWED_RECORD_LABEL_AM: Record<string, string> = {
 	consent: 'ስምምነቶች',
 	labCase: 'የላብራቶሪ ሥራ',
 	perio: 'የድድ ገበታ',
-	ortho: 'ኦርቶዶንቲክስ'
+	ortho: 'ኦርቶዶንቲክስ',
+	fullRecord: 'ሙሉ መዝገቡ'
 };
 
 /** "Opened Dental chart", "Printed Billing" — or, in Amharic, "የጥርስ ገበታ ተከፍቷል". */

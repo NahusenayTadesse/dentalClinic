@@ -24,6 +24,7 @@ export type ClinicSettings = {
 	vatRegistered: boolean;
 	vatRate: number;
 	vatOnServices: boolean;
+	recordRetentionYears: number;
 };
 
 /** What a clinic that never touched its settings gets — the same values as the column defaults. */
@@ -32,7 +33,8 @@ export const DEFAULT_SETTINGS: ClinicSettings = {
 	tin: null,
 	vatRegistered: false,
 	vatRate: 15,
-	vatOnServices: false
+	vatOnServices: false,
+	recordRetentionYears: 10
 };
 
 /** The clinic's settings. */
@@ -43,7 +45,8 @@ export async function readSettings(reader: Reader = db): Promise<ClinicSettings>
 			tin: clinicSettings.tin,
 			vatRegistered: clinicSettings.vatRegistered,
 			vatRate: clinicSettings.vatRate,
-			vatOnServices: clinicSettings.vatOnServices
+			vatOnServices: clinicSettings.vatOnServices,
+			recordRetentionYears: clinicSettings.recordRetentionYears
 		})
 		.from(clinicSettings)
 		.where(eq(clinicSettings.id, 1))

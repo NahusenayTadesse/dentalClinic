@@ -1,0 +1,33 @@
+{
+	"path": "/dashboard/admin-panel/data-breaches",
+	"languages": {
+		"en": {
+			"title": "Breach log",
+			"summary": "Every personal-data breach, what was done about it, and whether the authority and the people affected were told.",
+			"sections": [
+				{
+					"heading": "What to record",
+					"body": "Anything that put patients' or staff's personal data where it should not be: a lost or stolen device, a record sent to the wrong person, an account used by someone else, a paper chart left out. Record it the day it is found, even if it looks small."
+				},
+				{
+					"heading": "Closing one",
+					"body": "Fill in what was done and, where it applies, when it was reported to the authority and when the people affected were told. Untick Open when nothing more is to be done."
+				}
+			]
+		},
+		"am": {
+			"title": "የመረጃ ጥሰት መዝገብ",
+			"summary": "እያንዳንዱ የግል መረጃ ጥሰት፣ የተወሰደው እርምጃ፣ እና ለባለሥልጣኑና ለተጎጂዎች መነገሩ።",
+			"sections": [
+				{
+					"heading": "ምን ይመዘገባል",
+					"body": "የጠፋ ወይም የተሰረቀ መሣሪያ፣ ለተሳሳተ ሰው የተላከ መዝገብ፣ በሌላ ሰው የተጠቀመ መለያ፣ ተትቶ የተገኘ የወረቀት ቻርት። በተገኘበት ቀን ይመዝግቡ።"
+				},
+				{
+					"heading": "መዝጋት",
+					"body": "የተወሰደውን እርምጃ፣ ለባለሥልጣኑ የተነገረበትንና ለተጎጂዎች የተነገረበትን ቀን ይሙሉ። ምንም የሚቀር ነገር ሲኖር Open ን ያንሱ።"
+				}
+			]
+		}
+	}
+}

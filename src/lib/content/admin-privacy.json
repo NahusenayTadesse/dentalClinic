@@ -1,0 +1,33 @@
+{
+	"path": "/dashboard/admin-panel/privacy",
+	"languages": {
+		"en": {
+			"title": "Data protection",
+			"summary": "The clinic's obligations under the Personal Data Protection Proclamation (No. 1321/2024): how long records are kept, the breach log, and where patients' rights are answered.",
+			"sections": [
+				{
+					"heading": "Retention",
+					"body": "Set how many years after a patient was last seen their record is kept. The list shows the records past that period, oldest first. Nothing is deleted automatically — review each and decide; a child's record, or one in a dispute, is kept."
+				},
+				{
+					"heading": "A patient's rights",
+					"body": "A copy of their record: on the chart, The patient's copy of their record — printed or as a file, logged when given. Who has seen it: the chart's Access log. A correction: change it on the chart; every change is in the audit trail."
+				}
+			]
+		},
+		"am": {
+			"title": "የግል መረጃ ጥበቃ",
+			"summary": "በግል መረጃ ጥበቃ አዋጅ (ቁጥር 1321/2016) የክሊኒኩ ግዴታዎች፦ መዝገቦች ለምን ያህል ጊዜ እንደሚቀመጡ፣ የጥሰት መዝገብ፣ እና የታካሚዎች መብቶች።",
+			"sections": [
+				{
+					"heading": "የማቆያ ጊዜ",
+					"body": "አንድ ታካሚ ለመጨረሻ ጊዜ ከታየ በኋላ መዝገቡ ለስንት ዓመት እንደሚቀመጥ ያስቀምጡ። ዝርዝሩ ጊዜው ያለፈባቸውን መዝገቦች ያሳያል። ምንም በራስ-ሰር አይሰረዝም።"
+				},
+				{
+					"heading": "የታካሚ መብቶች",
+					"body": "የመዝገቡ ቅጂ፦ በቻርቱ ላይ \"ለታካሚው የሚሰጥ የመዝገቡ ቅጂ\"። ማን እንዳየው፦ የቻርቱ የመዳረሻ መዝገብ። እርማት፦ በቻርቱ ላይ ይቀይሩ፤ እያንዳንዱ ለውጥ ይመዘገባል።"
+				}
+			]
+		}
+	}
+}

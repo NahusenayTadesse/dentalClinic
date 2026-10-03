@@ -158,6 +158,7 @@ export const patients = {
 		staleHistory: (date: string) =>
 			`The medical history is over a year old (taken ${date}). Ask again before treatment.`,
 		record: 'Patient record',
+		recordCopy: 'The patient’s copy of their record',
 		tabs: {
 			overview: 'Overview',
 			chart: 'Dental chart',

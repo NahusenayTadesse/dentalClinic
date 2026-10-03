@@ -38,3 +38,4 @@ export * from './ortho';
 export * from './ledger';
 export * from './purchasing';
 export * from './deposits';
+export * from './privacy';

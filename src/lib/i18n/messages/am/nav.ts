@@ -76,6 +76,8 @@ export const nav: Record<string, string> = {
 	Orthodontics: 'ኦርቶዶንቲክስ',
 	'Accounting Export': 'ለሂሳብ ሶፍትዌር መላኪያ',
 	'Purchase Orders': 'የግዢ ትዕዛዞች',
+	'Data Protection': 'የግል መረጃ ጥበቃ',
+	'Breach Log': 'የመረጃ ጥሰት መዝገብ',
 	Sterilisers: 'ማምከኛ ማሽኖች',
 	'Controlled Medicines': 'ቁጥጥር የሚደረግባቸው መድኃኒቶች',
 	Allergens: 'አለርጂ አምጪዎች',

@@ -59,7 +59,7 @@
 				},
 				{
 					"heading": "Access log",
-					"body": "Every time a part of this chart was opened or printed: by whom, which tab, from which branch and when. It is the answer when a patient asks who has seen their record. Openings by the same person within a few minutes count once.\n\nThe tab and the short list on the overview are shown only to holders of audit_logs.view."
+					"body": "Every time a part of this chart was opened or printed: by whom, which tab, from which branch and when. It is the answer when a patient asks who has seen their record. Openings by the same person within a few minutes count once.\n\nThe tab and the short list on the overview are shown only to holders of audit_logs.view. When a patient asks for a copy of their record, The patient's copy of their record (top of the chart, for staff allowed to give it) prints the whole record or downloads it as a file, and the handover is logged here."
 				},
 				{
 					"heading": "Duplicate records",
@@ -139,7 +139,7 @@
 				},
 				{
 					"heading": "የመዳረሻ መዝገብ",
-					"body": "የዚህ መዝገብ ማንኛውም ክፍል በተከፈተ ወይም በታተመ ቁጥር፦ በማን፣ የትኛው ትር፣ ከየትኛው ቅርንጫፍና መቼ። ታካሚ መዝገቡን ማን እንዳየ ሲጠይቅ መልሱ ይህ ነው። በጥቂት ደቂቃዎች ውስጥ በአንድ ሰው የተደረጉ መክፈቶች አንድ ጊዜ ይቆጠራሉ።\n\nትሩና በአጠቃላይ እይታው ላይ ያለው አጭር ዝርዝር ለaudit_logs.view ባለቤቶች ብቻ ይታያሉ።"
+					"body": "የዚህ መዝገብ ማንኛውም ክፍል በተከፈተ ወይም በታተመ ቁጥር፦ በማን፣ የትኛው ትር፣ ከየትኛው ቅርንጫፍና መቼ። ታካሚ መዝገቡን ማን እንዳየ ሲጠይቅ መልሱ ይህ ነው። በጥቂት ደቂቃዎች ውስጥ በአንድ ሰው የተደረጉ መክፈቶች አንድ ጊዜ ይቆጠራሉ።\n\nትሩና በአጠቃላይ እይታው ላይ ያለው አጭር ዝርዝር ለaudit_logs.view ባለቤቶች ብቻ ይታያሉ። ታካሚ የመዝገቡን ቅጂ ሲጠይቅ \"ለታካሚው የሚሰጥ የመዝገቡ ቅጂ\" ሙሉውን መዝገብ ያትማል ወይም እንደ ፋይል ያወርዳል፤ መሰጠቱም እዚህ ይመዘገባል።"
 				},
 				{
 					"heading": "የተደጋገሙ መዝገቦች",

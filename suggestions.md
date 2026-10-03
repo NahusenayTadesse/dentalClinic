@@ -236,8 +236,13 @@ Credit income keeps many clinics running, so this matters more than it looks.
   owed less credit. The accounting export holds deposits as a liability until used. **Packages not
   done**: selling a bundle needs a rule for marking the covered work as already paid when it is
   done, or it is billed twice — a decision about how clinics here sell packages.
-- **Personal data protection (2024 proclamation).** Retention rules, giving patients a copy of their
-  record, and a breach log. The access log (`patient_access_log`) is a good start.
+- ✅ **Personal data protection (2024 proclamation) — done.** *The patient's copy of their record* on
+  every chart (new permission `patients.export`): the whole record printed, or as a JSON file for
+  another clinic, logged as handed over. **Admin Panel → Data Protection** sets the retention period
+  and lists records not seen within it for review — nothing is deleted automatically.
+  **Breach Log** records each breach, what was done, and when the authority and the people affected
+  were told. Corrections are ordinary audited edits. Not done: erasure or anonymising (a person's
+  decision, record by record).
 
 ---
 

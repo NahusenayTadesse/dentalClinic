@@ -428,6 +428,13 @@
       "when": 1790986267351,
       "tag": "0060_patient_deposits",
       "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "5",
+      "when": 1790987215337,
+      "tag": "0061_data_protection",
+      "breakpoints": true
     }
   ]
 }
